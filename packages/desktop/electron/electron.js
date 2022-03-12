@@ -3,8 +3,9 @@ const ElectronGoogleOAuth2 =
 
 const path = require("path");
 
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, session, ipcMain } = require("electron");
 const isDev = require("electron-is-dev");
+const { channels } = require("../src/shared/constants");
 
 function createWindow() {
   // Create the browser window.
@@ -13,6 +14,7 @@ function createWindow() {
     height: 800,
     webPreferences: {
       nodeIntegration: true,
+      preload: path.resolve(path.join(__dirname, "./preload.js")),
     },
   });
 
@@ -51,15 +53,33 @@ app.on("activate", () => {
 
 app.on("ready", () => {
   console.log(process.env);
-  const myApiOauth = new ElectronGoogleOAuth2(
-    "423533244953-banligobgbof8hg89i6cr1l7u0p7c2pk.apps.googleusercontent.com",
-    "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",
-    [""],
-    { successRedirectURL: "http://localhost:3000" }
-  );
+  // const myApiOauth = new ElectronGoogleOAuth2(
+  //   "423533244953-banligobgbof8hg89i6cr1l7u0p7c2pk.apps.googleusercontent.com",
+  //   "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",
+  //   [""],
+  //   { successRedirectURL: "https://usenirvana.com" }
+  // );
 
-  myApiOauth.openAuthWindowAndGetTokens().then((token) => {
-    // use your token.access_token
-    console.log(`got the user's authentication: ${token}`);
-  });
+  // myApiOauth.openAuthWindowAndGetTokens().then((token) => {
+  //   // use your token.access_token
+  //   const cookie = {
+  //     name: "access_token",
+  //     value: token,
+  //   };
+
+  //   // session.defaultSession.cookies.set(cookie).then(
+  //   //   () => {
+  //   //     // success
+  //   //     console.log("stored auth token in cookies");
+  //   //   },
+  //   //   (error) => {
+  //   //     console.error(error);
+  //   //   }
+  //   // );
+  // });
+});
+
+// End of the file
+ipcMain.on(channels.ACTIVATE_LOG_IN, (event, arg) => {
+  console.log("activated log in channel");
 });
