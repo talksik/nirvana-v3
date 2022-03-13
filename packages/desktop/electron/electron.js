@@ -27,7 +27,7 @@ function createWindow() {
   );
   // Open the DevTools.
   if (isDev) {
-    win.webContents.openDevTools({ mode: "detach" });
+    win.webContents.openDevTools({ mode: "attach" });
   }
 }
 
@@ -82,4 +82,21 @@ app.on("ready", () => {
 // End of the file
 ipcMain.on(channels.ACTIVATE_LOG_IN, (event, arg) => {
   console.log("activated log in channel");
+
+  const myApiOauth = new ElectronGoogleOAuth2(
+    "423533244953-banligobgbof8hg89i6cr1l7u0p7c2pk.apps.googleusercontent.com",
+    "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",
+    [""],
+    { successRedirectURL: "https://usenirvana.com" }
+  );
+
+  myApiOauth.openAuthWindowAndGetTokens().then((token) => {
+    // use your token.access_token
+    const cookie = {
+      name: "access_token",
+      value: token,
+    };
+
+    console.log(cookie);
+  });
 });
