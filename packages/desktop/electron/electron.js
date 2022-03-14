@@ -5,16 +5,33 @@ const path = require("path");
 
 const { app, BrowserWindow, session, ipcMain } = require("electron");
 const isDev = require("electron-is-dev");
+
+const Store = require("electron-store");
+const store = new Store();
+
 const { channels } = require("../src/shared/constants");
+
+// Keep a global reference of the window object, if you don't, the window will
+// be closed automatically when the JavaScript object is garbage collected.
+let win;
+
+const myApiOauth = new ElectronGoogleOAuth2(
+  "423533244953-banligobgbof8hg89i6cr1l7u0p7c2pk.apps.googleusercontent.com",
+  "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",
+  [""],
+  { successRedirectURL: "https://usenirvana.com" }
+);
 
 function createWindow() {
   // Create the browser window.
-  const win = new BrowserWindow({
+  win = new BrowserWindow({
     width: 800,
     height: 800,
     webPreferences: {
-      nodeIntegration: true,
-      preload: path.resolve(path.join(__dirname, "./preload.js")),
+      nodeIntegration: false, // is default value after Electron v5
+      contextIsolation: true, // protect against prototype pollution
+      enableRemoteModule: false, // turn off remote
+      preload: path.join(__dirname, "preload.js"), // use a preload script
     },
   });
 
@@ -29,12 +46,23 @@ function createWindow() {
   if (isDev) {
     win.webContents.openDevTools({ mode: "attach" });
   }
+
+  // End of the file
+  ipcMain.on(channels.ACTIVATE_LOG_IN, async (event, arg) => {
+    await handleLogin();
+  });
 }
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.whenReady().then(createWindow);
+app
+  .whenReady()
+  .then(createWindow)
+  .then(async () => {
+    console.log(process.env);
+    await handleLogin();
+  });
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
@@ -51,52 +79,26 @@ app.on("activate", () => {
   }
 });
 
-app.on("ready", () => {
-  console.log(process.env);
-  // const myApiOauth = new ElectronGoogleOAuth2(
-  //   "423533244953-banligobgbof8hg89i6cr1l7u0p7c2pk.apps.googleusercontent.com",
-  //   "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",
-  //   [""],
-  //   { successRedirectURL: "https://usenirvana.com" }
-  // );
+async function handleLogin() {
+  // read saved refresh token if any
+  // todo: fix this...should be working
+  const refreshToken = await store.get("refresh_token");
+  console.log(refreshToken);
 
-  // myApiOauth.openAuthWindowAndGetTokens().then((token) => {
-  //   // use your token.access_token
-  //   const cookie = {
-  //     name: "access_token",
-  //     value: token,
-  //   };
+  if (refreshToken) {
+    console.log("have a refresh token from user auth previously", refreshToken);
+    myApiOauth.setTokens({ refresh_token: refreshToken });
 
-  //   // session.defaultSession.cookies.set(cookie).then(
-  //   //   () => {
-  //   //     // success
-  //   //     console.log("stored auth token in cookies");
-  //   //   },
-  //   //   (error) => {
-  //   //     console.error(error);
-  //   //   }
-  //   // );
-  // });
-});
+    // send token to client
+    win.webContents.send(channels.AUTH_TOKEN, refreshToken);
+  } else {
+    const token = await myApiOauth.openAuthWindowAndGetTokens();
 
-// End of the file
-ipcMain.on(channels.ACTIVATE_LOG_IN, (event, arg) => {
-  console.log("activated log in channel");
+    // store the refresh token in cookies for app reopen
+    store.set("refresh_token", token.refresh_token);
 
-  const myApiOauth = new ElectronGoogleOAuth2(
-    "423533244953-banligobgbof8hg89i6cr1l7u0p7c2pk.apps.googleusercontent.com",
-    "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",
-    [""],
-    { successRedirectURL: "https://usenirvana.com" }
-  );
-
-  myApiOauth.openAuthWindowAndGetTokens().then((token) => {
-    // use your token.access_token
-    const cookie = {
-      name: "access_token",
-      value: token,
-    };
-
-    console.log(cookie);
-  });
-});
+    // todo: send the access token to the renderer
+    // send token to client
+    win.webContents.send(channels.AUTH_TOKEN, token.access_token);
+  }
+}
