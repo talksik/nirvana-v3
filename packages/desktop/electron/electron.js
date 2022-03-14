@@ -25,7 +25,8 @@ const myApiOauth = new ElectronGoogleOAuth2(
 function createWindow() {
   // Create the browser window.
   win = new BrowserWindow({
-    width: 800,
+    title: "Nirvana",
+    width: 600,
     height: 800,
     webPreferences: {
       nodeIntegration: false, // is default value after Electron v5
@@ -44,7 +45,7 @@ function createWindow() {
   );
   // Open the DevTools.
   if (isDev) {
-    win.webContents.openDevTools({ mode: "attach" });
+    win.webContents.openDevTools({ mode: "detach" });
   }
 
   // End of the file
@@ -83,9 +84,9 @@ async function handleLogin() {
   // read saved refresh token if any
   // todo: fix this...should be working
   const refreshToken = await store.get("refresh_token");
-  console.log(refreshToken);
 
-  if (refreshToken) {
+  // todo: remove this when I have way of getting access token from a refresh token
+  if (refreshToken && false) {
     console.log("have a refresh token from user auth previously", refreshToken);
     myApiOauth.setTokens({ refresh_token: refreshToken });
 
