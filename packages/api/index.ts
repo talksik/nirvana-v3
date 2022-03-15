@@ -1,12 +1,10 @@
 import express, { Application, Request, Response } from "express";
 
 import { NextFunction } from "express";
+import cors from "cors";
 import getRoutes from "./routes";
 
-const cors = require("cors");
-
 const app = express();
-
 
 app.use(cors());
 

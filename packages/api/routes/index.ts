@@ -1,10 +1,10 @@
 import express from "express";
-import getAuthRoutes from "./auth";
+import getUserRoutes from "./user";
 
 export default function getRoutes() {
   const router = express.Router();
 
-  router.use("/auth", getAuthRoutes());
+  router.use("/user", getUserRoutes());
 
   return router;
 }

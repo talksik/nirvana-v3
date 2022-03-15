@@ -83,7 +83,7 @@ app.on("activate", () => {
 async function handleLogin() {
   // read saved refresh token if any
   // todo: fix this...should be working
-  const refreshToken = await store.get("refresh_token");
+  const refreshToken = await store.get("tokens");
 
   // todo: remove this when I have way of getting access token from a refresh token
   if (refreshToken && false) {
@@ -96,10 +96,10 @@ async function handleLogin() {
     const token = await myApiOauth.openAuthWindowAndGetTokens();
 
     // store the refresh token in cookies for app reopen
-    store.set("refresh_token", token.refresh_token);
+    store.set("tokens", token);
 
     // todo: send the access token to the renderer
     // send token to client
-    win.webContents.send(channels.AUTH_TOKEN, token.access_token);
+    win.webContents.send(channels.AUTH_TOKENS, token);
   }
 }

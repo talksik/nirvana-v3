@@ -15,7 +15,7 @@ export default function Login() {
   };
 
   useEffect(() => {
-    window.API.receive(channels.AUTH_TOKEN, async (accessToken: string) => {
+    window.API.receive(channels.AUTH_TOKENS, async (accessToken: string) => {
       console.log(accessToken);
 
       // get user info from access token
