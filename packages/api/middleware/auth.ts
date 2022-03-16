@@ -12,17 +12,21 @@ export const authCheck = async (
   res: Response,
   next: NextFunction
 ) => {
-  console.log(req.headers);
+  const { authorization } = req.headers;
+  console.log(authorization);
 
-  // todo get idToken from frontend
-  const ticket = await client.verifyIdToken({
-    idToken: "",
-    audience:
-      "423533244953-banligobgbof8hg89i6cr1l7u0p7c2pk.apps.googleusercontent.com", // Specify the CLIENT_ID of the app that accesses the backend
-  });
-  const userid = ticket.getPayload()?.sub;
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken: authorization ?? "",
+      audience:
+        "423533244953-banligobgbof8hg89i6cr1l7u0p7c2pk.apps.googleusercontent.com", // Specify the CLIENT_ID of the app that accesses the backend
+    });
+    const userid = ticket.getPayload()?.sub;
 
-  console.log(userid);
+    console.log(userid);
 
-  next();
+    next();
+  } catch (error) {
+    res.status(401).send(error);
+  }
 };
