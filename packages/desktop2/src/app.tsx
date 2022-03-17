@@ -3,11 +3,10 @@ import "./index.css";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
+import NirvanaApp from "./nirvanaApp";
+
 function render() {
-  ReactDOM.render(
-    <h2 className="text-sm bg-black">Hello from React!</h2>,
-    document.getElementById("root")
-  );
+  ReactDOM.render(<NirvanaApp />, document.getElementById("root"));
 }
 
 render();

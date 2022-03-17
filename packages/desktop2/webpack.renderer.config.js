@@ -1,8 +1,6 @@
 const rules = require("./webpack.rules");
 const plugins = require("./webpack.plugins");
 
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-
 const path = require("path");
 
 rules.push({
