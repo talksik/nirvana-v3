@@ -1,9 +1,9 @@
-import store, { STORE_ITEMS } from "./store";
+import Channels, { STORE_ITEMS } from "./constants";
 
-import Channels from "./constants";
 import ElectronGoogleOAuth2 from "@getstation/electron-google-oauth2";
 import { browserWindow } from "../index";
 import { ipcMain } from "electron";
+import store from "./store";
 
 const myApiOauth = new ElectronGoogleOAuth2(
   "423533244953-banligobgbof8hg89i6cr1l7u0p7c2pk.apps.googleusercontent.com",
@@ -12,6 +12,7 @@ const myApiOauth = new ElectronGoogleOAuth2(
   { successRedirectURL: "https://usenirvana.com" }
 );
 
+// FRESH LOGIN...either tokens of user expired or never had them
 export async function handleLogin() {
   // read saved refresh token if any
   // todo: fix this...should be working

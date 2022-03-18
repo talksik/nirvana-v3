@@ -45,17 +45,19 @@ app
   .whenReady()
   .then(createWindow)
   .then(() => {
+    // activate login
     ipcMain.on(Channels.ACTIVATE_LOG_IN, async (event, arg) => {
       console.log("initiating log in");
       await handleLogin();
     });
 
     // IPC listener
-    ipcMain.on("electron-store-get", async (event, val) => {
-      event.returnValue = store.get(val);
-    });
     ipcMain.on("electron-store-set", async (event, key, val) => {
       store.set(key, val);
+    });
+    ipcMain.handle("electron-store-get", async (event, val) => {
+      const result = await store.get(val);
+      return result;
     });
   });
 

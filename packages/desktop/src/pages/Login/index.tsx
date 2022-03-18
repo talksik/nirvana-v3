@@ -5,6 +5,7 @@ import Channels from "../../electron/constants";
 import { CircularProgress } from "@mui/material";
 import { FcGoogle } from "react-icons/fc";
 import Logo from "../../components/Logo";
+// import { STORE_ITEMS } from "../../electron/store";
 import { nirvanaApi } from "../../controller/nirvanaApi";
 import { useCreateUser } from "../../controller/index";
 import { useSetRecoilState } from "recoil";
@@ -19,22 +20,46 @@ export default function Login({ onReady }: { onReady: Function }) {
     window.electronAPI.auth.initiateLogin();
   };
 
-  useEffect(() => {
-    window.electronAPI.auth.receiveTokens(
-      Channels.AUTH_TOKENS,
-      (tokens: any) => {
-        // todo: implement refresh token procedure in api layer by sending refresh_token and such
-        const { access_token, id_token, refresh_token } = tokens;
-        setAuthTokens({
-          accessToken: access_token,
-          idToken: id_token,
-          refreshToken: refresh_token,
-        });
+  const setAccessTokensAndContinue = (tokens: {
+    accessToken: string;
+    idToken: string;
+    refreshToken: string;
+  }) => {
+    setAuthTokens(tokens);
 
-        // now can go to home and get authenticated regardless of type of user
-        onReady();
-      }
-    );
+    onReady();
+  };
+
+  useEffect(() => {
+    // see if we have tokens in localstorage in which case we can continue on
+    // const tokensFromStore: any = window.electronAPI.store.get(
+    //   STORE_ITEMS.AUTH_TOKENS
+    // );
+
+    // if (tokensFromStore) {
+    //   setIsLoading(true);
+
+    //   const { access_token, id_token, refresh_token } = tokensFromStore;
+
+    //   setAccessTokensAndContinue({
+    //     accessToken: access_token,
+    //     idToken: id_token,
+    //     refreshToken: refresh_token,
+    //   });
+    // }
+
+    window.electronAPI.once(Channels.AUTH_TOKENS, (tokens: any) => {
+      setIsLoading(true);
+
+      // todo: implement refresh token procedure in api layer by sending refresh_token and such
+      const { access_token, id_token, refresh_token } = tokens;
+
+      setAccessTokensAndContinue({
+        accessToken: access_token,
+        idToken: id_token,
+        refreshToken: refresh_token,
+      });
+    });
 
     // todo: figure out how to clean up with the preload api
     // return () => {
