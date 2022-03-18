@@ -14,8 +14,7 @@ export default function getUserRoutes() {
   // get user details based on id token
   router.get("/", authCheck, getUserDetails);
 
-  //
-  router.post("/", createUser);
+  router.post("/create", createUser);
 
   return router;
 }
@@ -45,8 +44,10 @@ async function createUser(req: Request, res: Response) {
   try {
     const { access_token } = req.query;
 
+    console.log(access_token);
+
     if (!access_token) {
-      res.status(400);
+      res.status(400).send("No access token provided");
       return;
     }
 
@@ -79,6 +80,7 @@ async function createUser(req: Request, res: Response) {
       ? res.status(200).send("User created")
       : res.status(500).send("Failed to create new user");
   } catch (error) {
-    res.status(500);
+    console.log(error);
+    res.status(500).send("Problem in creating user");
   }
 }

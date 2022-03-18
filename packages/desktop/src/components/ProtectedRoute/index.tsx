@@ -5,23 +5,26 @@ import { nirvanaApi } from "../../controller/nirvanaApi";
 import { useEffect } from "react";
 import { useGetUserDetails } from "../../controller/index";
 
-export default function ProtectedRoute({ ...children }) {
+export default function ProtectedRoute({
+  children,
+}: {
+  children?: React.ReactNode;
+}) {
   const { isLoading, isError } = useGetUserDetails();
-
-  useEffect(() => {
-    // console.log(window.electronAPI.store.get(STORE_ITEMS.AUTH_TOKENS));
-    // nirvanaApi.getUserDetails();
-  }, []);
-
   const navigate = useNavigate();
-
-  if (isLoading) return <span>please wait while we authenticate you</span>;
 
   useEffect(() => {
     if (isError) {
       navigate("/login");
     }
   }, [isError]);
+
+  useEffect(() => {
+    // console.log(window.electronAPI.store.get(STORE_ITEMS.AUTH_TOKENS));
+    // nirvanaApi.getUserDetails();
+  }, []);
+
+  if (isLoading) return <span>please wait while we authenticate you</span>;
 
   // if we can successfully get user details, we are good to continue
 

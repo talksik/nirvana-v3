@@ -40,14 +40,24 @@ class NirvanaApi {
     }
   }
 
-  async getUserDetails(): Promise<User> {
-    return await (
-      await fetch(localHost + `/users`, {
-        method: "GET",
-        headers: { Authorization: this._authToken },
-      })
-    ).json();
-  }
+  user = {
+    async getUserDetails(): Promise<User> {
+      return await (
+        await fetch(localHost + `/users`, {
+          method: "GET",
+          headers: { Authorization: this._authToken },
+        })
+      ).json();
+    },
+    async createUser(accessToken: string) {
+      return await fetch(
+        localHost + `/users/create?access_token=${accessToken}`,
+        {
+          method: "POST",
+        }
+      );
+    },
+  };
 }
 
 export const nirvanaApi = new NirvanaApi();

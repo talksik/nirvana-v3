@@ -10,7 +10,7 @@ import testConnection from "@nirvana/core";
 testConnection();
 
 // Create a client
-const queryClient = new QueryClient();
+export const queryClient = new QueryClient();
 
 function NirvanaApp() {
   return (

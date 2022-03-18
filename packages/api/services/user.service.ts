@@ -1,5 +1,7 @@
+import { GoogleUserInfo, User } from "@nirvana/core/models";
+
 import { ObjectId } from "mongodb";
-import { User } from "@nirvana/core/models";
+import axios from "axios";
 import { collections } from "./database.service";
 
 export class UserService {
@@ -13,11 +15,11 @@ export class UserService {
     return await collections.users?.insertOne(newUser);
   }
 
-  static async getGoogleUserInfoWithAccessToken(accessToken: string) {
-    return await (
-      await fetch(
-        `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${accessToken}`
-      )
-    ).json();
+  static async getGoogleUserInfoWithAccessToken(
+    accessToken: string
+  ): Promise<GoogleUserInfo> {
+    return await axios.get(
+      `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${accessToken}`
+    );
   }
 }

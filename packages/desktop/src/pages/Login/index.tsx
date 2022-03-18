@@ -4,12 +4,17 @@ import Channels from "../../electron/constants";
 import { CircularProgress } from "@mui/material";
 import Logo from "../../components/Logo";
 import { nirvanaApi } from "../../controller/nirvanaApi";
+import { useCreateUser } from "../../controller/index";
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const navigate = useNavigate();
 
-  const logIn = () => {
+  const [isSignUp, setIsSignUp] = useState<boolean>(false);
+
+  const { mutateAsync } = useCreateUser();
+
+  const continueAuth = () => {
     setIsLoading(true);
     // send to main process
     // ipcRenderer.send(Channels.ACTIVATE_LOG_IN);
@@ -25,7 +30,12 @@ export default function Login() {
 
       nirvanaApi.setGoogleIdToken(id_token);
 
-      // home should handle this user now that they have signed in with google
+      // create user if on sign up page
+      if (isSignUp) {
+        await mutateAsync(access_token);
+      }
+
+      // now can go to home and get authenticated regardless of type of user
       navigate("/home");
     });
 
@@ -48,10 +58,20 @@ export default function Login() {
         </>
       ) : (
         <button
-          onClick={logIn}
+          onClick={continueAuth}
           className="text-white p-3 rounded shadow border border-white"
         >
-          Sign In
+          {isSignUp ? "Sign Up" : "Sign In"}
+        </button>
+      )}
+
+      {isSignUp ? (
+        <button onClick={() => setIsSignUp(false)} className="text-slate-200">
+          Sign In Here
+        </button>
+      ) : (
+        <button onClick={() => setIsSignUp(true)} className="text-slate-200">
+          Create Account Here
         </button>
       )}
     </div>

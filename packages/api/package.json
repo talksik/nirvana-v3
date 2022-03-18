@@ -5,6 +5,7 @@
   "license": "MIT",
   "dependencies": {
     "@nirvana/core": "*",
+    "axios": "^0.26.1",
     "cors": "^2.8.5",
     "express": "^4.17.3",
     "google-auth-library": "^7.14.0",
