@@ -8,7 +8,7 @@ export default function ProtectedRoute({ ...children }) {
   const { isLoading, isError } = useGetUserDetails();
 
   useEffect(() => {
-    console.log(window.electronAPI.store.get(STORE_ITEMS.AUTH_TOKENS));
+    // console.log(window.electronAPI.store.get(STORE_ITEMS.AUTH_TOKENS));
   }, []);
 
   const navigate = useNavigate();

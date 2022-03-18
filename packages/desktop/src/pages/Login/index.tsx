@@ -45,7 +45,7 @@ export default function Login() {
       ) : (
         <button
           onClick={logIn}
-          className="text-white p-3 rounded shadow border-white"
+          className="text-white p-3 rounded shadow border border-white"
         >
           Sign In
         </button>
