@@ -14,15 +14,13 @@ export default function ProtectedRoute({
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (isError) {
-      navigate("/login");
-    }
-  }, [isError]);
-
-  useEffect(() => {
     // console.log(window.electronAPI.store.get(STORE_ITEMS.AUTH_TOKENS));
     // nirvanaApi.getUserDetails();
   }, []);
+
+  if (isError) {
+    navigate("/login");
+  }
 
   if (isLoading) return <span>please wait while we authenticate you</span>;
 

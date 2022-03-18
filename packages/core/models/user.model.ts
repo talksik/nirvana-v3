@@ -9,7 +9,6 @@ export class User {
     public family_name: string,
     public picture: string,
     public locale: string,
-    public _id?: ObjectId
-  ) // additional properties specific to our users collection
-  {}
+    public _id?: ObjectId // additional properties specific to our users collection
+  ) {}
 }

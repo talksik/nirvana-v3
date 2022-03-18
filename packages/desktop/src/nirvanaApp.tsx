@@ -1,4 +1,4 @@
-import { HashRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, HashRouter, Route, Routes } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
 
 import Home from "./pages/Home";
@@ -17,21 +17,19 @@ function NirvanaApp() {
     <>
       <QueryClientProvider client={queryClient}>
         <HashRouter>
-          <div className="App">
-            <Routes>
-              <Route path="/" element={<Login />} />
-              <Route
-                path="/home"
-                element={
-                  <ProtectedRoute>
-                    <Home />
-                  </ProtectedRoute>
-                }
-              />
-              {/* <Route exact path="/profile/create" component={Sit} />
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route
+              path="home"
+              element={
+                <ProtectedRoute>
+                  <Home />
+                </ProtectedRoute>
+              }
+            />
+            {/* <Route exact path="/profile/create" component={Sit} />
             <Route exact path="/profile/edit" component={Sit} /> */}
-            </Routes>
-          </div>
+          </Routes>
         </HashRouter>
 
         <ReactQueryDevtools initialIsOpen={false} />

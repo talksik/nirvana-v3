@@ -8,7 +8,27 @@ export class UserService {
   static async getUserById(userId: string) {
     const query = { _id: new ObjectId(userId) };
 
-    return (await collections.users?.findOne(query)) as unknown as User;
+    const res = await collections.users?.findOne(query);
+
+    // exists
+    if (res?._id) {
+      return res as User;
+    }
+
+    return null;
+  }
+
+  static async getUserByEmail(email: string) {
+    const query = { email };
+
+    const res = await collections.users?.findOne(query);
+
+    // exists
+    if (res?._id) {
+      return res as User;
+    }
+
+    return null;
   }
 
   static async createUserIfNotExists(newUser: User) {

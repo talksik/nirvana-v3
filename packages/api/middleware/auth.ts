@@ -22,9 +22,11 @@ export const authCheck = async (
         "423533244953-banligobgbof8hg89i6cr1l7u0p7c2pk.apps.googleusercontent.com", // Specify the CLIENT_ID of the app that accesses the backend
     });
     const userId = ticket.getPayload()?.sub;
+    const email = ticket.getPayload()?.email;
 
     // used in subsequent handlers
     res.locals.userId = userId;
+    res.locals.email = email;
 
     console.log(userId);
 

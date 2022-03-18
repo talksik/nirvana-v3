@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import Channels from "../../electron/constants";
 import { CircularProgress } from "@mui/material";
+import { FcGoogle } from "react-icons/fc";
 import Logo from "../../components/Logo";
 import { nirvanaApi } from "../../controller/nirvanaApi";
 import { useCreateUser } from "../../controller/index";
@@ -9,10 +10,6 @@ import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const navigate = useNavigate();
-
-  const [isSignUp, setIsSignUp] = useState<boolean>(false);
-
-  const { mutateAsync } = useCreateUser();
 
   const continueAuth = () => {
     setIsLoading(true);
@@ -31,11 +28,6 @@ export default function Login() {
         const { access_token, id_token, refresh_token } = tokens;
 
         nirvanaApi.setGoogleIdToken(id_token);
-
-        // create user if on sign up page
-        if (isSignUp) {
-          await mutateAsync(access_token);
-        }
 
         // now can go to home and get authenticated regardless of type of user
         navigate("/home");
@@ -62,19 +54,10 @@ export default function Login() {
       ) : (
         <button
           onClick={continueAuth}
-          className="text-white p-3 rounded shadow border border-white"
+          className=" text-md text-slate-200 py-2 px-5 border border-gray-200 transition-all hover:bg-gray-200 hover:text-teal-500 rounded flex flex-row items-center space-x-2"
         >
-          {isSignUp ? "Sign Up" : "Sign In"}
-        </button>
-      )}
-
-      {isSignUp ? (
-        <button onClick={() => setIsSignUp(false)} className="text-slate-200">
-          Sign In Here
-        </button>
-      ) : (
-        <button onClick={() => setIsSignUp(true)} className="text-slate-200">
-          Create Account Here
+          <FcGoogle className="text-lg" />
+          <span>Continue with Google</span>
         </button>
       )}
     </div>

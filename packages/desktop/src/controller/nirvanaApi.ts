@@ -41,8 +41,8 @@ class NirvanaApi {
   }
 
   user = {
-    async getUserDetails(): Promise<User> {
-      return await axios.get(localHost + `/users`, {
+    async getUserDetails(accessToken: string): Promise<User> {
+      return await axios.get(localHost + `/users?access_token=${accessToken}`, {
         headers: { Authorization: this._authToken },
       });
     },
