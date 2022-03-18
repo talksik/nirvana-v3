@@ -1,5 +1,6 @@
 import Login from "../../pages/Login";
 import { STORE_ITEMS } from "../../electron/store";
+import SkeletonLoader from "../loading/skeleton";
 import { nirvanaApi } from "../../controller/nirvanaApi";
 import { useEffect } from "react";
 import { useGetUserDetails } from "../../controller/index";
@@ -16,8 +17,12 @@ export default function ProtectedRoute({
     // nirvanaApi.getUserDetails();
   }, []);
 
-  if (isLoading || true)
-    return <span>please wait while we authenticate you</span>;
+  if (isLoading)
+    return (
+      <div className="container h-screen w-screen">
+        <SkeletonLoader />
+      </div>
+    );
 
   if (isError) {
     return <Login onReady={() => refetch()} />;

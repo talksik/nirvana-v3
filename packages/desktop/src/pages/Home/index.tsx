@@ -8,8 +8,11 @@ import {
 import Logo, { LogoType } from "../../components/Logo";
 
 import { useEffect } from "react";
+import { useGetUserDetails } from "../../controller/index";
 
 export default function Home() {
+  const { data: user } = useGetUserDetails();
+
   return (
     <div className="h-screen w-screen bg-slate-700">
       {/* header */}
@@ -26,7 +29,7 @@ export default function Home() {
 
         <span className="relative mx-5">
           <img
-            src="https://lh3.googleusercontent.com/a-/AOh14Gjm29Sd1Wnm8NvZbXkosvf6SoID6kBP5OHRLVIOBQ=s96-c"
+            src={user.picture}
             className="rounded-lg h-8 hover:bg-slate-200 hover:cursor-pointer hover:scale-110"
             alt="cannot find"
           />
