@@ -30,10 +30,6 @@ async function getUserDetails(req: Request, res: Response) {
   // passed in accesstoken no matter what
   const { access_token } = req.query;
 
-  console.log(res.locals);
-
-  console.log(`getting data for ${userId}`);
-
   try {
     // return user details if it passed auth middleware
     const user = await UserService.getUserById(userId);
