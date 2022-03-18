@@ -11,6 +11,7 @@ import { useSetRecoilState } from "recoil";
 
 export default function Login({ onReady }: { onReady: Function }) {
   const setAuthTokens = useSetRecoilState($authTokens);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const continueAuth = () => {
     setIsLoading(true);
@@ -26,6 +27,8 @@ export default function Login({ onReady }: { onReady: Function }) {
   }) => {
     setAuthTokens(tokens);
 
+    console.log(tokens.idToken);
+
     onReady();
   };
 
@@ -34,8 +37,6 @@ export default function Login({ onReady }: { onReady: Function }) {
     window.electronAPI.store
       .get(STORE_ITEMS.AUTH_TOKENS)
       .then((tokensFromStore: any) => {
-        console.log(tokensFromStore);
-
         if (tokensFromStore) {
           setIsLoading(true);
 
@@ -67,8 +68,6 @@ export default function Login({ onReady }: { onReady: Function }) {
     //   window.electronAPI.removeAllListeners(Channels.AUTH_TOKENS);
     // };
   }, []);
-
-  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   return (
     <div className="container flex flex-col space-y-5 justify-center items-center h-screen bg-slate-900">

@@ -8,3 +8,8 @@ export const $authTokens = atom<{
   key: "AUTH_TOKENS", // unique ID (with respect to other atoms/selectors)
   default: null, // default value (aka initial value)
 });
+
+export const $searchQuery = atom<string>({
+  key: "SEARCH_QUERY",
+  default: "",
+});

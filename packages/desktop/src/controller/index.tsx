@@ -1,16 +1,14 @@
+import { $authTokens, $searchQuery } from "./recoil";
 import { useMutation, useQuery } from "react-query";
 
-import { $authTokens } from "./recoil";
+import SearchResponse from "@nirvana/core/responses/search.response";
 import { User } from "@nirvana/core/models";
 import axios from "axios";
 import { nirvanaApi } from "./nirvanaApi";
 import { queryClient } from "../nirvanaApp";
 import { useRecoilValue } from "recoil";
 
-export enum Querytypes {
-  GET_USER_DETAILS = "GET_USER_DETAILS",
-}
-
+// =========== API
 export const localHost = "http://localhost:5000/api";
 
 const getUserDetails = async (
@@ -22,6 +20,20 @@ const getUserDetails = async (
   });
 };
 
+const search = async (
+  idToken: string,
+  searchQuery: string
+): Promise<SearchResponse> => {
+  return await axios.get(localHost + `/search?query=${searchQuery}`, {
+    headers: { Authorization: idToken },
+  });
+};
+
+// ====== QUERIES
+export enum Querytypes {
+  GET_USER_DETAILS = "GET_USER_DETAILS",
+  GET_SEARCH_RESULTS = "GET_SEARCH_RESULTS",
+}
 export function useGetUserDetails() {
   const authTokens = useRecoilValue($authTokens);
 
@@ -34,6 +46,16 @@ export function useGetUserDetails() {
   );
 }
 
+export function useSearch() {
+  const authTokens = useRecoilValue($authTokens);
+  const searchQuery = useRecoilValue($searchQuery);
+
+  return useQuery(Querytypes.GET_SEARCH_RESULTS, () =>
+    search(authTokens.idToken, searchQuery)
+  );
+}
+
+// =========== MUTATIONS
 export function useCreateUser() {
   return useMutation(nirvanaApi.user.createUser, {
     onSettled: (data, error) => {

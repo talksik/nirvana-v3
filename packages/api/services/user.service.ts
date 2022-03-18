@@ -31,6 +31,32 @@ export class UserService {
     return null;
   }
 
+  static async getUsersLikeEmailAndName(searchQuery: string) {
+    // based on index defined in Mongo atlas
+    const query = {
+      $search: {
+        index: "default",
+        text: {
+          query: searchQuery,
+          path: {
+            wildcard: "*",
+          },
+        },
+      },
+    };
+
+    // const res = await collections.users?.find(query).toArray();
+
+    const res = await collections.users?.aggregate([query]).toArray();
+
+    // exists
+    if (res?.length) {
+      return res as User[];
+    }
+
+    return null;
+  }
+
   static async createUserIfNotExists(newUser: User) {
     const exists = (await collections.users?.findOne({ email: newUser.email }))
       ?._id;
