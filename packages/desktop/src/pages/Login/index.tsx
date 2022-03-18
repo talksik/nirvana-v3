@@ -1,11 +1,10 @@
+import Channels, { STORE_ITEMS } from "../../electron/constants";
 import { useEffect, useState } from "react";
 
 import { $authTokens } from "../../controller/recoil";
-import Channels from "../../electron/constants";
 import { CircularProgress } from "@mui/material";
 import { FcGoogle } from "react-icons/fc";
 import Logo from "../../components/Logo";
-// import { STORE_ITEMS } from "../../electron/store";
 import { nirvanaApi } from "../../controller/nirvanaApi";
 import { useCreateUser } from "../../controller/index";
 import { useSetRecoilState } from "recoil";
@@ -32,21 +31,23 @@ export default function Login({ onReady }: { onReady: Function }) {
 
   useEffect(() => {
     // see if we have tokens in localstorage in which case we can continue on
-    // const tokensFromStore: any = window.electronAPI.store.get(
-    //   STORE_ITEMS.AUTH_TOKENS
-    // );
+    window.electronAPI.store
+      .get(STORE_ITEMS.AUTH_TOKENS)
+      .then((tokensFromStore: any) => {
+        console.log(tokensFromStore);
 
-    // if (tokensFromStore) {
-    //   setIsLoading(true);
+        if (tokensFromStore) {
+          setIsLoading(true);
 
-    //   const { access_token, id_token, refresh_token } = tokensFromStore;
+          const { access_token, id_token, refresh_token } = tokensFromStore;
 
-    //   setAccessTokensAndContinue({
-    //     accessToken: access_token,
-    //     idToken: id_token,
-    //     refreshToken: refresh_token,
-    //   });
-    // }
+          setAccessTokensAndContinue({
+            accessToken: access_token,
+            idToken: id_token,
+            refreshToken: refresh_token,
+          });
+        }
+      });
 
     window.electronAPI.once(Channels.AUTH_TOKENS, (tokens: any) => {
       setIsLoading(true);
