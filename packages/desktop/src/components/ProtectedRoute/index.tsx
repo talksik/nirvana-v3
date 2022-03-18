@@ -1,9 +1,15 @@
 import { Route, useNavigate } from "react-router-dom";
 
+import { STORE_ITEMS } from "../../electron/store";
+import { useEffect } from "react";
 import { useGetUserDetails } from "../../controller/index";
 
 export default function ProtectedRoute({ ...children }) {
   const { isLoading, isError } = useGetUserDetails();
+
+  useEffect(() => {
+    console.log(window.electronAPI.store.get(STORE_ITEMS.AUTH_TOKENS));
+  }, []);
 
   const navigate = useNavigate();
 

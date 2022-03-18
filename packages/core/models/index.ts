@@ -1,1 +1,2 @@
-export * from "./userInfo.model";
+export * from "./googleUserInfo.model";
+export * from "./user.model";

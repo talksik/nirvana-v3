@@ -7,6 +7,8 @@ import {
 } from "@mui/icons-material";
 import Logo, { LogoType } from "../../components/Logo";
 
+import { useEffect } from "react";
+
 export default function Home() {
   return (
     <div className="h-screen w-screen bg-slate-700">

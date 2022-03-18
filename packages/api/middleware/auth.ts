@@ -21,12 +21,15 @@ export const authCheck = async (
       audience:
         "423533244953-banligobgbof8hg89i6cr1l7u0p7c2pk.apps.googleusercontent.com", // Specify the CLIENT_ID of the app that accesses the backend
     });
-    const userid = ticket.getPayload()?.sub;
+    const userId = ticket.getPayload()?.sub;
 
-    console.log(userid);
+    // used in subsequent handlers
+    res.locals.userId = userId;
+
+    console.log(userId);
 
     next();
   } catch (error) {
-    res.status(401).send(error);
+    res.status(401).send("unauthorized");
   }
 };

@@ -1,6 +1,8 @@
-export class UserInfo {
+import { ObjectId } from "mongodb";
+
+export class GoogleUserInfo {
   constructor(
-    public id: string,
+    public id: ObjectId,
     public email: string,
     public verifiedEmail: boolean,
     public name: string,
