@@ -44,8 +44,6 @@ async function createUser(req: Request, res: Response) {
   try {
     const { access_token } = req.query;
 
-    console.log(access_token);
-
     if (!access_token) {
       res.status(400).send("No access token provided");
       return;
@@ -57,11 +55,8 @@ async function createUser(req: Request, res: Response) {
         access_token as string
       );
 
-    console.log(userInfo);
-
     // create initial user model object
     const newUser = new User(
-      new ObjectId(userInfo.id),
       userInfo.email,
       userInfo.verifiedEmail,
       userInfo.name,
@@ -71,14 +66,12 @@ async function createUser(req: Request, res: Response) {
       userInfo.locale
     );
 
-    console.log(newUser);
-
     // create user if not exists
     const insertResult = await UserService.createUserIfNotExists(newUser);
 
     insertResult
       ? res.status(200).send("User created")
-      : res.status(500).send("Failed to create new user");
+      : res.status(500).send("Failed to create account, already exists");
   } catch (error) {
     console.log(error);
     res.status(500).send("Problem in creating user");
