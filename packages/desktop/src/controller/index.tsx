@@ -27,7 +27,7 @@ export function useGetUserDetails() {
 
   return useQuery(
     Querytypes.GET_USER_DETAILS,
-    () => getUserDetails(authTokens.accessToken, authTokens.idToken),
+    () => getUserDetails(authTokens?.accessToken, authTokens?.idToken),
     {
       retry: false,
     }

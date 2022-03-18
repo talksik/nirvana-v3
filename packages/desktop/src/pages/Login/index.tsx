@@ -7,11 +7,9 @@ import { FcGoogle } from "react-icons/fc";
 import Logo from "../../components/Logo";
 import { nirvanaApi } from "../../controller/nirvanaApi";
 import { useCreateUser } from "../../controller/index";
-import { useNavigate } from "react-router-dom";
 import { useSetRecoilState } from "recoil";
 
-export default function Login() {
-  const navigate = useNavigate();
+export default function Login({ onReady }: { onReady: Function }) {
   const setAuthTokens = useSetRecoilState($authTokens);
 
   const continueAuth = () => {
@@ -34,7 +32,7 @@ export default function Login() {
         });
 
         // now can go to home and get authenticated regardless of type of user
-        navigate("/home");
+        onReady();
       }
     );
 
