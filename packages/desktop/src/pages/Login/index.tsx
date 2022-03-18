@@ -37,6 +37,9 @@ export default function Login({ onReady }: { onReady: Function }) {
   };
 
   useEffect(() => {
+    // hack for now log out in this case
+    logOut();
+
     // see if we have tokens in localstorage in which case we can continue on
     window.electronAPI.store
       .get(STORE_ITEMS.AUTH_TOKENS)

@@ -24,6 +24,8 @@ export const authCheck = async (
     const email = ticket.getPayload()?.email;
 
     // used in subsequent handlers
+
+    // todo: have to get our database id for the user instead of google's id
     res.locals.userId = userId;
     res.locals.email = email;
 

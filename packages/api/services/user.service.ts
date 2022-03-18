@@ -6,7 +6,7 @@ import { collections } from "./database.service";
 
 export class UserService {
   static async getUserById(userId: string) {
-    const query = { _id: new ObjectId(userId) };
+    const query = { googleId: userId };
 
     const res = await collections.users?.findOne(query);
 
@@ -58,7 +58,7 @@ export class UserService {
   }
 
   static async createUserIfNotExists(newUser: User) {
-    const exists = (await collections.users?.findOne({ email: newUser.email }))
+    const exists = (await collections.users?.findOne({ id: newUser.googleId }))
       ?._id;
 
     if (!exists) {

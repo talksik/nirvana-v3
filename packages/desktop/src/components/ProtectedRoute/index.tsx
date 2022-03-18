@@ -9,7 +9,6 @@ export default function ProtectedRoute({
   children?: React.ReactNode;
 }) {
   const { data, isLoading, isError, refetch } = useGetUserDetails();
-  console.log(data);
 
   if (isLoading)
     return (
