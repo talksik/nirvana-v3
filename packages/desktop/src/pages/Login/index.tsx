@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 
+import { $authTokens } from "../../controller/recoil";
 import Channels from "../../electron/constants";
 import { CircularProgress } from "@mui/material";
 import { FcGoogle } from "react-icons/fc";
@@ -7,9 +8,11 @@ import Logo from "../../components/Logo";
 import { nirvanaApi } from "../../controller/nirvanaApi";
 import { useCreateUser } from "../../controller/index";
 import { useNavigate } from "react-router-dom";
+import { useSetRecoilState } from "recoil";
 
 export default function Login() {
   const navigate = useNavigate();
+  const setAuthTokens = useSetRecoilState($authTokens);
 
   const continueAuth = () => {
     setIsLoading(true);
@@ -21,13 +24,14 @@ export default function Login() {
   useEffect(() => {
     window.electronAPI.auth.receiveTokens(
       Channels.AUTH_TOKENS,
-      async (tokens: any) => {
-        console.log(tokens);
-
+      (tokens: any) => {
         // todo: implement refresh token procedure in api layer by sending refresh_token and such
         const { access_token, id_token, refresh_token } = tokens;
-
-        nirvanaApi.setGoogleIdToken(id_token);
+        setAuthTokens({
+          accessToken: access_token,
+          idToken: id_token,
+          refreshToken: refresh_token,
+        });
 
         // now can go to home and get authenticated regardless of type of user
         navigate("/home");

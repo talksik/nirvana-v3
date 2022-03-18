@@ -61,10 +61,13 @@ async function getUserDetails(req: Request, res: Response) {
 
       // create user if not exists
       const insertResult = await UserService.createUserIfNotExists(newUser);
+      newUser._id = insertResult?.insertedId;
 
       insertResult
-        ? res.status(200).send("User created")
+        ? res.status(200).send(newUser)
         : res.status(500).send("Failed to create account, already exists");
+
+      return;
     }
 
     // otherwise, just return the user details

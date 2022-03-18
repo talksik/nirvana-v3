@@ -13,7 +13,6 @@ export const authCheck = async (
   next: NextFunction
 ) => {
   const { authorization } = req.headers;
-  console.log(authorization);
 
   try {
     const ticket = await client.verifyIdToken({
@@ -27,8 +26,6 @@ export const authCheck = async (
     // used in subsequent handlers
     res.locals.userId = userId;
     res.locals.email = email;
-
-    console.log(userId);
 
     next();
   } catch (error) {

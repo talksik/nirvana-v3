@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { ReactQueryDevtools } from "react-query/devtools";
+import { RecoilRoot } from "recoil";
 import testConnection from "@nirvana/core";
 
 testConnection();
@@ -16,23 +17,25 @@ function NirvanaApp() {
   return (
     <>
       <QueryClientProvider client={queryClient}>
-        <HashRouter>
-          <Routes>
-            <Route path="/" element={<Login />} />
-            <Route
-              path="home"
-              element={
-                <ProtectedRoute>
-                  <Home />
-                </ProtectedRoute>
-              }
-            />
-            {/* <Route exact path="/profile/create" component={Sit} />
+        <RecoilRoot>
+          <HashRouter>
+            <Routes>
+              <Route path="/" element={<Login />} />
+              <Route
+                path="home"
+                element={
+                  <ProtectedRoute>
+                    <Home />
+                  </ProtectedRoute>
+                }
+              />
+              {/* <Route exact path="/profile/create" component={Sit} />
             <Route exact path="/profile/edit" component={Sit} /> */}
-          </Routes>
-        </HashRouter>
+            </Routes>
+          </HashRouter>
 
-        <ReactQueryDevtools initialIsOpen={false} />
+          <ReactQueryDevtools initialIsOpen={false} />
+        </RecoilRoot>
       </QueryClientProvider>
     </>
   );

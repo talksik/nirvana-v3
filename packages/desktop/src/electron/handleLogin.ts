@@ -37,8 +37,6 @@ export async function handleLogin() {
 
   const tokens = await myApiOauth.openAuthWindowAndGetTokens();
 
-  console.log(tokens);
-
   store.set(STORE_ITEMS.AUTH_TOKENS, tokens);
 
   browserWindow.webContents.send(Channels.AUTH_TOKENS, tokens);
