@@ -37,8 +37,9 @@ export default function Login({ onReady }: { onReady: Function }) {
   };
 
   useEffect(() => {
+    // todo make sure we don't loop flash when id token expires for user
     // hack for now log out in this case
-    logOut();
+    // logOut();
 
     // see if we have tokens in localstorage in which case we can continue on
     window.electronAPI.store

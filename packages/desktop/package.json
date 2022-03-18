@@ -1,8 +1,8 @@
 {
-  "name": "desktop2",
-  "productName": "desktop2",
+  "name": "@nirvana/desktop",
+  "productName": "nirvana",
   "version": "1.0.0",
-  "description": "My Electron application description",
+  "description": "Walkie Talkie for Remote Teams",
   "main": ".webpack/main",
   "scripts": {
     "start": "electron-forge start",
