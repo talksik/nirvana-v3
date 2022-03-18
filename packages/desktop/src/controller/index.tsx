@@ -6,7 +6,7 @@ export enum Querytypes {
 }
 
 export function useGetUserDetails() {
-  return useQuery(Querytypes.GET_USER_DETAILS, nirvanaApi.getUserDetails, {
-    retry: true,
-  });
+  return useQuery(Querytypes.GET_USER_DETAILS, () =>
+    nirvanaApi.getUserDetails()
+  );
 }

@@ -4,38 +4,49 @@ import { User } from "@nirvana/core/models";
 
 // export const localHost = process.env.REACT_APP_API_DOMAIN;
 
-export const localHost = "http://localhost:5000";
+export const localHost = "http://localhost:5000/api";
 
 class NirvanaApi {
   // auth token from google that our backend will use
   private _authToken?: string;
 
-  setPrivateToken(_googleIdToken: string) {
+  setGoogleIdToken(_googleIdToken: string) {
     this._authToken = _googleIdToken;
   }
 
-  async fetch<T>(options: AxiosRequestConfig, privateRoute = false) {
+  async fetch(url: string, method: string, privateRoute = false) {
     // use the auth token if it's a private route
     // error if no auth token and it's a private route
     // throw error and show message on anything that is an error from the backend
-    if (privateRoute && this._authToken) {
-      return await axios.request<T>({
-        ...options,
-        headers: { Authorization: this._authToken },
-      });
-    }
 
-    return axios.request<T>(options);
+    try {
+      const fullUrl = localHost + url;
+
+      var res;
+      if (privateRoute && this._authToken) {
+        res = await fetch(fullUrl, {
+          method: method,
+          headers: { Authorization: this._authToken },
+        });
+      } else {
+        res = await fetch(fullUrl);
+      }
+
+      return await res.json();
+    } catch (error) {
+      console.log(error);
+
+      throw Error(error);
+    }
   }
 
-  async getUserDetails(): Promise<AxiosResponse<User>> {
-    return await this.fetch<User>(
-      {
+  async getUserDetails(): Promise<User> {
+    return await (
+      await fetch(localHost + `/users`, {
         method: "GET",
-        url: localHost + `/users`,
-      },
-      true
-    );
+        headers: { Authorization: this._authToken },
+      })
+    ).json();
   }
 }
 

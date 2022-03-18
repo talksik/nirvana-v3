@@ -1,6 +1,7 @@
 import express, { Application, Request, Response } from "express";
 
 import { NextFunction } from "express";
+import { connectToDatabase } from "./services/database.service";
 import cors from "cors";
 import getRoutes from "./routes";
 
@@ -20,3 +21,5 @@ app.get("/", (req: Request, res: Response) => {
 app.use("/api", getRoutes());
 
 app.listen(5000, () => console.log("Example app is listening on port 5000."));
+
+connectToDatabase();

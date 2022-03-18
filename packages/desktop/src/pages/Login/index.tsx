@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Channels from "../../electron/constants";
 import { CircularProgress } from "@mui/material";
 import Logo from "../../components/Logo";
+import { nirvanaApi } from "../../controller/nirvanaApi";
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
@@ -19,7 +20,10 @@ export default function Login() {
     window.electronAPI.auth.receiveTokens(async (tokens: any) => {
       console.log(tokens);
 
+      // todo: implement refresh token procedure in api layer by sending refresh_token and such
       const { access_token, id_token, refresh_token } = tokens;
+
+      nirvanaApi.setGoogleIdToken(id_token);
 
       // home should handle this user now that they have signed in with google
       navigate("/home");

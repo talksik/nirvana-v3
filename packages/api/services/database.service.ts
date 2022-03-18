@@ -9,7 +9,7 @@ export const collections: { users?: mongoDB.Collection } = {};
 // Initialize Connection
 export async function connectToDatabase() {
   const client: mongoDB.MongoClient = new mongoDB.MongoClient(
-    process.env.DB_CONN_STRING!
+    "mongodb+srv://default:M9iZXokJlZpN4KLX@cluster0.mkuqa.mongodb.net/default?retryWrites=true&w=majority"
   );
 
   await client.connect();

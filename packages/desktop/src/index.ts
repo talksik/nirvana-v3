@@ -23,10 +23,11 @@ export let browserWindow: BrowserWindow;
 const createWindow = (): void => {
   // Create the browser window.
   browserWindow = new BrowserWindow({
-    height: 600,
-    width: 800,
+    height: 900,
+    width: 900,
     webPreferences: {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
+      sandbox: true,
     },
   });
 

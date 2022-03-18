@@ -4,7 +4,7 @@ import getUserRoutes from "./user";
 export default function getRoutes() {
   const router = express.Router();
 
-  router.use("/user", getUserRoutes());
+  router.use("/users", getUserRoutes());
 
   return router;
 }

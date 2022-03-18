@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { ReactQueryDevtools } from "react-query/devtools";
 import testConnection from "@nirvana/core";
 
 testConnection();
@@ -32,6 +33,8 @@ function NirvanaApp() {
             </Routes>
           </div>
         </HashRouter>
+
+        <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </>
   );

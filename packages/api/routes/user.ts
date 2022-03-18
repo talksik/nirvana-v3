@@ -2,6 +2,7 @@ import { GoogleUserInfo, User } from "@nirvana/core/models";
 import express, { Application, Request, Response } from "express";
 
 import { ObjectId } from "mongodb";
+import { UserService } from "../services/user.service";
 import { authCheck } from "../middleware/auth";
 import { collections } from "../services/database.service";
 
@@ -26,11 +27,11 @@ export default function getUserRoutes() {
 async function getUserDetails(req: Request, res: Response) {
   const userId: string = res.locals.userId;
 
-  try {
-    const query = { _id: new ObjectId(userId) };
+  console.log(`getting data for ${userId}`);
 
+  try {
     // return user details if it passed auth middleware
-    const user = (await collections.users?.findOne(query)) as unknown as User;
+    const user = await UserService.getUserById(userId);
 
     res.status(200).send(user);
   } catch (error) {
@@ -46,19 +47,37 @@ async function createUser(req: Request, res: Response) {
 
     if (!access_token) {
       res.status(400);
-
       return;
     }
+
+    // get google user info from access token
+    const userInfo: GoogleUserInfo =
+      await UserService.getGoogleUserInfoWithAccessToken(
+        access_token as string
+      );
+
+    console.log(userInfo);
+
+    // create initial user model object
+    const newUser = new User(
+      new ObjectId(userInfo.id),
+      userInfo.email,
+      userInfo.verifiedEmail,
+      userInfo.name,
+      userInfo.given_name,
+      userInfo.family_name,
+      userInfo.picture,
+      userInfo.locale
+    );
+
+    console.log(newUser);
+
     // create user if not exists
+    const insertResult = await UserService.createUserIfNotExists(newUser);
 
-    // get user info from access token
-    const userInfo: GoogleUserInfo = await (
-      await fetch(
-        `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${access_token}`
-      )
-    ).json();
-
-    res.send();
+    insertResult
+      ? res.status(200).send("User created")
+      : res.status(500).send("Failed to create new user");
   } catch (error) {
     res.status(500);
   }
