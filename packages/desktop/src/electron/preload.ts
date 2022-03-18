@@ -7,8 +7,8 @@ const electronAPI = {
     initiateLogin() {
       ipcRenderer.send(Channels.ACTIVATE_LOG_IN);
     },
-    receiveTokens(callback: any) {
-      ipcRenderer.on(Channels.AUTH_TOKENS, callback);
+    receiveTokens(channel: Channels, func: any) {
+      ipcRenderer.on(channel, (event, ...args) => func(...args));
     },
   },
   batteryApi: {},

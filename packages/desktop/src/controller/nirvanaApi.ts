@@ -42,19 +42,13 @@ class NirvanaApi {
 
   user = {
     async getUserDetails(): Promise<User> {
-      return await (
-        await fetch(localHost + `/users`, {
-          method: "GET",
-          headers: { Authorization: this._authToken },
-        })
-      ).json();
+      return await axios.get(localHost + `/users`, {
+        headers: { Authorization: this._authToken },
+      });
     },
     async createUser(accessToken: string) {
-      return await fetch(
-        localHost + `/users/create?access_token=${accessToken}`,
-        {
-          method: "POST",
-        }
+      return await axios.post(
+        localHost + `/users/create?access_token=${accessToken}`
       );
     },
   };

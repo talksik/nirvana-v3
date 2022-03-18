@@ -22,22 +22,25 @@ export default function Login() {
   };
 
   useEffect(() => {
-    window.electronAPI.auth.receiveTokens(async (tokens: any) => {
-      console.log(tokens);
+    window.electronAPI.auth.receiveTokens(
+      Channels.AUTH_TOKENS,
+      async (tokens: any) => {
+        console.log(tokens);
 
-      // todo: implement refresh token procedure in api layer by sending refresh_token and such
-      const { access_token, id_token, refresh_token } = tokens;
+        // todo: implement refresh token procedure in api layer by sending refresh_token and such
+        const { access_token, id_token, refresh_token } = tokens;
 
-      nirvanaApi.setGoogleIdToken(id_token);
+        nirvanaApi.setGoogleIdToken(id_token);
 
-      // create user if on sign up page
-      if (isSignUp) {
-        await mutateAsync(access_token);
+        // create user if on sign up page
+        if (isSignUp) {
+          await mutateAsync(access_token);
+        }
+
+        // now can go to home and get authenticated regardless of type of user
+        navigate("/home");
       }
-
-      // now can go to home and get authenticated regardless of type of user
-      navigate("/home");
-    });
+    );
 
     // todo: figure out how to clean up with the preload api
     // return () => {
