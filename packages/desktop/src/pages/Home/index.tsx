@@ -13,7 +13,7 @@ export default function Home() {
   const searchQuery = useRecoilValue($searchQuery);
 
   return (
-    <div className="h-screen w-screen bg-slate-700">
+    <div className="h-screen w-full bg-slate-700">
       {/* header */}
       <Header />
 

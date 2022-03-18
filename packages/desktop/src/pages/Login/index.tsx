@@ -20,6 +20,10 @@ export default function Login({ onReady }: { onReady: Function }) {
     window.electronAPI.auth.initiateLogin();
   };
 
+  const logOut = () => {
+    window.electronAPI.store.set(STORE_ITEMS.AUTH_TOKENS, null);
+  };
+
   const setAccessTokensAndContinue = (tokens: {
     accessToken: string;
     idToken: string;
@@ -87,6 +91,8 @@ export default function Login({ onReady }: { onReady: Function }) {
           <span>Continue with Google</span>
         </button>
       )}
+
+      <button onClick={logOut}>Log Out</button>
     </div>
   );
 }

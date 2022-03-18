@@ -5,8 +5,12 @@ import { useGetUserDetails } from "../../../controller/index";
 import { useRecoilState } from "recoil";
 
 export default function Header() {
-  const { data: user } = useGetUserDetails();
+  const { data: user, isLoading } = useGetUserDetails();
   const [searchQuery, setSearchQuery] = useRecoilState($searchQuery);
+
+  if (isLoading) {
+    return <span>getting data</span>;
+  }
 
   return (
     <div className="flex flex-row items-center bg-slate-800 h-20">
@@ -24,7 +28,7 @@ export default function Header() {
 
       <span className="relative mx-5">
         <img
-          src={user.picture}
+          src={user.data.picture}
           className="rounded-lg h-8 hover:bg-slate-200 hover:cursor-pointer hover:scale-110"
           alt="cannot find"
         />
