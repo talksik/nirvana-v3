@@ -49,6 +49,14 @@ app
       console.log("initiating log in");
       await handleLogin();
     });
+
+    // IPC listener
+    ipcMain.on("electron-store-get", async (event, val) => {
+      event.returnValue = store.get(val);
+    });
+    ipcMain.on("electron-store-set", async (event, key, val) => {
+      store.set(key, val);
+    });
   });
 
 // Quit when all windows are closed, except on macOS. There, it's common

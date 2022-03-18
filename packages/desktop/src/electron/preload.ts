@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer } from "electron";
 
 import Channels from "./constants";
+import { STORE_ITEMS } from "./store";
 
 const electronAPI = {
   auth: {
@@ -11,8 +12,15 @@ const electronAPI = {
       ipcRenderer.on(channel, (event, ...args) => func(...args));
     },
   },
-  batteryApi: {},
-  fileApi: {},
+  store: {
+    get(val: STORE_ITEMS) {
+      return ipcRenderer.sendSync("electron-store-get", val);
+    },
+    set(property: STORE_ITEMS, val: any) {
+      ipcRenderer.send("electron-store-set", property, val);
+    },
+    // Other method you want to add like has(), reset(), etc.
+  },
 };
 
 contextBridge.exposeInMainWorld("electronAPI", electronAPI);
