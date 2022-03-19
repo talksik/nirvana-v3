@@ -1,17 +1,19 @@
+import { $authFailureCount, $authTokens } from "../../controller/recoil";
 import Channels, { STORE_ITEMS } from "../../electron/constants";
 import { useEffect, useState } from "react";
+import { useRecoilState, useSetRecoilState } from "recoil";
 
-import { $authTokens } from "../../controller/recoil";
 import { CircularProgress } from "@mui/material";
 import { FcGoogle } from "react-icons/fc";
 import Logo from "../../components/Logo";
 import { nirvanaApi } from "../../controller/nirvanaApi";
 import { useCreateUser } from "../../controller/index";
-import { useSetRecoilState } from "recoil";
 
 export default function Login({ onReady }: { onReady: Function }) {
   const setAuthTokens = useSetRecoilState($authTokens);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [authFailureCount, setAuthFailureCount] =
+    useRecoilState($authFailureCount);
 
   const continueAuth = () => {
     setIsLoading(true);
@@ -37,26 +39,31 @@ export default function Login({ onReady }: { onReady: Function }) {
   };
 
   useEffect(() => {
-    // todo make sure we don't loop flash when id token expires for user
-    // hack for now log out in this case
-    // logOut();
+    // todo solve this better by just using refresh token in the backend
 
-    // see if we have tokens in localstorage in which case we can continue on
-    window.electronAPI.store
-      .get(STORE_ITEMS.AUTH_TOKENS)
-      .then((tokensFromStore: any) => {
-        if (tokensFromStore) {
-          setIsLoading(true);
+    setAuthFailureCount((prevVal) => prevVal + 1);
 
-          const { access_token, id_token, refresh_token } = tokensFromStore;
+    // if failure count is 2, then just log the user out
+    if (authFailureCount >= 2) {
+      logOut();
+    } else {
+      // see if we have tokens in localstorage in which case we can continue on
+      window.electronAPI.store
+        .get(STORE_ITEMS.AUTH_TOKENS)
+        .then((tokensFromStore: any) => {
+          if (tokensFromStore) {
+            setIsLoading(true);
 
-          setAccessTokensAndContinue({
-            accessToken: access_token,
-            idToken: id_token,
-            refreshToken: refresh_token,
-          });
-        }
-      });
+            const { access_token, id_token, refresh_token } = tokensFromStore;
+
+            setAccessTokensAndContinue({
+              accessToken: access_token,
+              idToken: id_token,
+              refreshToken: refresh_token,
+            });
+          }
+        });
+    }
 
     window.electronAPI.once(Channels.AUTH_TOKENS, (tokens: any) => {
       setIsLoading(true);

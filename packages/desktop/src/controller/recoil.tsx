@@ -13,3 +13,8 @@ export const $searchQuery = atom<string>({
   key: "SEARCH_QUERY",
   default: "",
 });
+
+export const $authFailureCount = atom<number>({
+  key: "AUTH_FAILURE_COUNT",
+  default: 0,
+});
