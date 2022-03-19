@@ -18,3 +18,9 @@ export const $authFailureCount = atom<number>({
   key: "AUTH_FAILURE_COUNT",
   default: 0,
 });
+
+// google Id of the selected person/conversation
+export const $selectedConversation = atom<string>({
+  key: "SELECTED_CONVERSATION",
+  default: null,
+});

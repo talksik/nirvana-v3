@@ -7,6 +7,15 @@ import {
 } from "@mui/icons-material";
 
 export default function Conversations() {
+  /** Data we need: have this huge data store client side to be able to access
+   * for now, need a simple list of contacts
+   * - first list is the live/pinned
+   * - second list is the pending invites, out going or incoming? or this on a separate page?
+   * - third list is just the rest of my contacts
+   *
+   * web sockets for all of my active contacts
+   * - actually play messages if pinned contact for me
+   */
   return (
     <>
       {/* actions navbar */}

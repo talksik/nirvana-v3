@@ -45,6 +45,7 @@ export function useGetUserDetails() {
     () => getUserDetails(authTokens?.accessToken, authTokens?.idToken),
     {
       retry: false,
+      refetchOnWindowFocus: false,
     }
   );
 }

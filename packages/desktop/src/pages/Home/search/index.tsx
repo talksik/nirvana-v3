@@ -1,5 +1,9 @@
-import { $searchQuery } from "../../../controller/recoil";
-import { FaPaperPlane } from "react-icons/fa";
+import {
+  $searchQuery,
+  $selectedConversation,
+} from "../../../controller/recoil";
+
+import { FaAngleRight } from "react-icons/fa";
 import { Tooltip } from "@mui/material";
 import { User } from "@nirvana/core/models";
 import { useEffect } from "react";
@@ -13,6 +17,10 @@ import { useSearch } from "../../../controller";
 
 export default function Search() {
   const [searchQuery, setSearchQuery] = useRecoilState($searchQuery);
+
+  const [selectedConvo, setSelectedConvo] = useRecoilState(
+    $selectedConversation
+  );
 
   const { data, isLoading, isError, refetch } = useSearch();
 
@@ -33,11 +41,22 @@ export default function Search() {
     setSearchQuery("");
   };
 
+  const selectContact = async (googleUserId: string) => {
+    // if this person is already selected, unselect
+    if (selectedConvo === googleUserId) {
+      setSelectedConvo(null);
+      return;
+    }
+
+    setSelectedConvo(googleUserId);
+  };
+
   const renderUserRow = (user: User) => {
     return (
       <span
-        className="border-t border-t-slate-400 py-5 flex flex-row justify-start 
-      items-center w-full hover:bg-slate-600 cursor-pointer"
+        onClick={() => selectContact(user.googleId)}
+        className="border-t border-t-slate-500 py-5 flex flex-row justify-start 
+      items-center w-full hover:bg-slate-600 cursor-pointer group"
       >
         <span className="relative mx-5">
           <img
@@ -59,7 +78,7 @@ export default function Search() {
         {/* actions */}
         <Tooltip title="Request connect">
           <button className="hover:bg-slate-300 p-1 flex flex-row items-center justify-center ml-auto">
-            <FaPaperPlane className="text-emerald-500 text-lg" />
+            <FaAngleRight className="group-hover:text-slate-300 text-lg" />
           </button>
         </Tooltip>
       </span>

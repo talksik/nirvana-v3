@@ -32,7 +32,7 @@ async function getUserDetails(req: Request, res: Response) {
 
   try {
     // return user details if it passed auth middleware
-    const user = await UserService.getUserById(userId);
+    const user = await UserService.getUserByGoogleId(userId);
 
     // if no user found, then go ahead and create user
     if (!user) {

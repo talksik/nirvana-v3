@@ -5,7 +5,7 @@ import axios from "axios";
 import { collections } from "./database.service";
 
 export class UserService {
-  static async getUserById(userId: string) {
+  static async getUserByGoogleId(userId: string) {
     const query = { googleId: userId };
 
     const res = await collections.users?.findOne(query);

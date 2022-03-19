@@ -23,8 +23,9 @@ export const authCheck = async (
     const userId = ticket.getPayload()?.sub;
     const email = ticket.getPayload()?.email;
 
-    // used in subsequent handlers
+    if (!userId) throw new Error("No google user Id found");
 
+    // used in subsequent handlers
     // todo: have to get our database id for the user instead of google's id
     res.locals.userId = userId;
     res.locals.email = email;
