@@ -63,7 +63,7 @@ app
     ipcMain.on(Channels.RESIZE_WINDOW, (event, arg) => {
       const { width, height } = arg;
 
-      browserWindow.setSize(width, height, true);
+      browserWindow.setSize(width, height, false);
     });
   });
 

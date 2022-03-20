@@ -109,7 +109,7 @@ export default function SelectedConversation() {
 
           <span className="text-slate-300 text-sm">{`joined ${moment(
             convoDetailsResponse.contactUser.createdDate
-          )}`}</span>
+          ).fromNow()}`}</span>
         </span>
       </span>
 
