@@ -71,7 +71,7 @@ async function addContact(req: Request, res: Response) {
 
     insertResult
       ? res.status(200).send(newRelationship)
-      : res.status(500).send("Failed to create account, already exists");
+      : res.status(500).send("Failed to create relationship, already exists");
 
     return;
   } catch (error) {

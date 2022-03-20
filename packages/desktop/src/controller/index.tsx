@@ -52,8 +52,11 @@ const sendContactRequest = async (
   idToken: string,
   otherUserGoogleId: string
 ) => {
+  console.log(idToken);
+
   const response = await axios.post(
     localHost + `/contacts/${otherUserGoogleId}`,
+    null,
     {
       headers: { Authorization: idToken },
     }
@@ -103,13 +106,6 @@ export function useConversationDetails(otherUserGoogleId: string) {
 }
 
 // =========== MUTATIONS
-export function useCreateUser() {
-  return useMutation(nirvanaApi.user.createUser, {
-    onSettled: (data, error) => {
-      return queryClient.invalidateQueries(Querytypes.GET_USER_DETAILS);
-    },
-  });
-}
 
 export function useSendContactRequest() {
   const authTokens = useRecoilValue($authTokens);

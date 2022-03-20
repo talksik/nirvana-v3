@@ -6,8 +6,6 @@ import { useRecoilState, useSetRecoilState } from "recoil";
 import { CircularProgress } from "@mui/material";
 import { FcGoogle } from "react-icons/fc";
 import Logo from "../../components/Logo";
-import { nirvanaApi } from "../../controller/nirvanaApi";
-import { useCreateUser } from "../../controller/index";
 
 export default function Login({ onReady }: { onReady: Function }) {
   const setAuthTokens = useSetRecoilState($authTokens);
