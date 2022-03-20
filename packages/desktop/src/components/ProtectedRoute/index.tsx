@@ -1,7 +1,9 @@
+import { $authTokens } from "../../controller/recoil";
 import Login from "../../pages/Login";
 import SkeletonLoader from "../loading/skeleton";
 import { useEffect } from "react";
 import { useGetUserDetails } from "../../controller/index";
+import { useRecoilValue } from "recoil";
 
 export default function ProtectedRoute({
   children,
@@ -9,6 +11,14 @@ export default function ProtectedRoute({
   children?: React.ReactNode;
 }) {
   const { data, isLoading, isError, refetch } = useGetUserDetails();
+
+  const authTokens = useRecoilValue($authTokens);
+
+  useEffect(() => {
+    if (!authTokens) {
+      refetch();
+    }
+  }, [authTokens]);
 
   if (isLoading)
     return (
