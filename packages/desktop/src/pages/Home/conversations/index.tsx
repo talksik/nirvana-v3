@@ -50,13 +50,14 @@ export default function Conversations() {
       <div className="flex flex-col m-5 p-4">
         {contactDetailsListResponse?.contactsDetails.map((contactDetail) => {
           return (
-            <div>
+            <div className="flex flex-row items-center">
               <Avatar src={contactDetail.otherUser.picture} />
 
-              <span className="text-white font-semibold">
+              <span className="text-white font-semibold ml-2">
                 {contactDetail.otherUser.name}
               </span>
-              <span>{contactDetail.otherUser.status}</span>
+
+              <span className="ml-2">{contactDetail.otherUser.status}</span>
 
               <span className="ml-auto">speaking...</span>
             </div>
