@@ -4,6 +4,7 @@ import { $searchQuery } from "../../controller/recoil";
 import Conversations from "./conversations";
 import Header from "./header";
 import Search from "./search";
+import SelectedConversation from "./selectedConversation";
 import { useEffect } from "react";
 import { useGetUserDetails } from "../../controller/";
 import { useRecoilValue } from "recoil";
@@ -13,11 +14,17 @@ export default function Home() {
   const searchQuery = useRecoilValue($searchQuery);
 
   return (
-    <div className="h-screen w-full bg-slate-700">
-      {/* header */}
-      <Header />
+    <div className="h-screen bg-slate-700 flex flex-row">
+      <div className="flex-1">
+        {/* header */}
+        <Header />
 
-      {searchQuery ? <Search /> : <Conversations />}
+        {/*  main content */}
+
+        {searchQuery ? <Search /> : <Conversations />}
+      </div>
+
+      <SelectedConversation />
     </div>
   );
 }

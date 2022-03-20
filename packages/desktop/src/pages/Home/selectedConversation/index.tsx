@@ -15,5 +15,7 @@ export default function SelectedConversation() {
    * all messages between me and them
    */
 
-  return <span>this is the selected conversation</span>;
+  return (
+    <div className="bg-slate-800 flex-1">this is the selected conversation</div>
+  );
 }
