@@ -2,13 +2,13 @@ import {
   $searchQuery,
   $selectedConversation,
 } from "../../../controller/recoil";
+import { useGetUserDetails, useSearch } from "../../../controller";
 
 import { FaAngleRight } from "react-icons/fa";
 import { Tooltip } from "@mui/material";
 import { User } from "@nirvana/core/models";
 import { useEffect } from "react";
 import { useRecoilState } from "recoil";
-import { useSearch } from "../../../controller";
 
 // todo:
 // remove myself from list
@@ -21,6 +21,8 @@ export default function Search() {
   const [selectedConvo, setSelectedConvo] = useRecoilState(
     $selectedConversation
   );
+
+  const { data: userDetails } = useGetUserDetails();
 
   const { data, isLoading, isError, refetch } = useSearch();
 
@@ -96,6 +98,7 @@ export default function Search() {
       </button>
 
       {data?.users?.map((user) => {
+        if (user.googleId === userDetails.googleId) return <></>;
         return renderUserRow(user);
       })}
     </div>
