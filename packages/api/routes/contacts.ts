@@ -93,7 +93,7 @@ async function updateRelationshipState(req: Request, res: Response) {
       requestObj.newState
     );
 
-    updateResult?.acknowledged
+    updateResult?.modifiedCount
       ? res.status(200).send("Updated state of relationship")
       : res.status(500).send("Failed to update relationship");
 

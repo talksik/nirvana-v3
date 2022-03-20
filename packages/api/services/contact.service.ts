@@ -20,8 +20,8 @@ export class ContactService {
     // i could also be the receiver and them the sender
     const clauseTwo = {
       $and: [
-        { senderUserId: myGoogleUserId },
-        { receiverUserId: otherGoogleUserId },
+        { senderUserId: otherGoogleUserId },
+        { receiverUserId: myGoogleUserId },
       ],
     };
 
@@ -58,8 +58,12 @@ export class ContactService {
     relationshipId: ObjectId,
     newState: RelationshipState
   ) {
-    const query = { _id: relationshipId };
-    const updateDoc = { $set: { state: newState } };
+    const query = { _id: new ObjectId(relationshipId) };
+    console.log(newState);
+    console.log(relationshipId);
+    const updateDoc = {
+      $set: { state: newState, lastUpdatedDate: new Date() },
+    };
     const result = await collections.relationships?.updateOne(query, updateDoc);
 
     return result;
