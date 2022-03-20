@@ -1,4 +1,8 @@
-import { useConversationDetails, useGetUserDetails } from "../../../controller";
+import {
+  useConversationDetails,
+  useGetUserDetails,
+  useSendContactRequest,
+} from "../../../controller";
 
 import { $selectedConversation } from "../../../controller/recoil";
 import { Dimensions } from "../../../electron/constants";
@@ -13,8 +17,9 @@ export default function SelectedConversation() {
     $selectedConversation
   );
   const { data: userDetailsData } = useGetUserDetails();
-  const { data: convoDetailsResponse, isLoading } =
+  const { data: convoDetailsResponse, isFetching } =
     useConversationDetails(selectedConvo);
+  const { mutate } = useSendContactRequest();
 
   useEffect(() => {
     // if selected, then change the bounds of this window as well
@@ -31,7 +36,7 @@ export default function SelectedConversation() {
     return <></>;
   }
 
-  if (isLoading) {
+  if (isFetching) {
     return <span className="text-slate-200">Loading conversation details</span>;
   }
 
@@ -41,6 +46,7 @@ export default function SelectedConversation() {
     const otherUserGoogleId = convoDetailsResponse.contactUser.googleId;
 
     // todo mutation to create a user
+    mutate(otherUserGoogleId);
   };
 
   const renderMainContent = () => {

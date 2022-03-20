@@ -1,3 +1,4 @@
+import { Db } from "mongodb";
 import Relationship from "@nirvana/core/models/relationship.model";
 import { collections } from "./database.service";
 
@@ -22,7 +23,7 @@ export class ContactService {
     };
 
     const query = { $or: [clauseOne, clauseTwo] };
-    const res = await collections.users?.findOne(query);
+    const res = await collections.relationships?.findOne(query);
 
     // exists
     if (res?._id) {
@@ -30,5 +31,23 @@ export class ContactService {
     }
 
     return null;
+  }
+
+  static async createRelationship(newRelationship: Relationship) {
+    // i am the sender and they are the receiver
+    const relationshipRes = await this.getRelationship(
+      newRelationship.senderUserId,
+      newRelationship.receiverUserId
+    );
+
+    if (relationshipRes) {
+      throw new Error("Already exists");
+    }
+
+    const insertResult = await collections.relationships?.insertOne(
+      newRelationship
+    );
+
+    return insertResult;
   }
 }

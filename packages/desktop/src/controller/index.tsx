@@ -48,6 +48,20 @@ const getConversationDetails = async (
   return response.data;
 };
 
+const sendContactRequest = async (
+  idToken: string,
+  otherUserGoogleId: string
+) => {
+  const response = await axios.post(
+    localHost + `/contacts/${otherUserGoogleId}`,
+    {
+      headers: { Authorization: idToken },
+    }
+  );
+
+  return response.data;
+};
+
 // ====== QUERIES
 export enum Querytypes {
   GET_USER_DETAILS = "GET_USER_DETAILS",
@@ -74,7 +88,7 @@ export function useSearch() {
   return useQuery(
     Querytypes.GET_SEARCH_RESULTS,
     () => search(authTokens.idToken, searchQuery),
-    { enabled: searchQuery ? true : false }
+    { enabled: searchQuery ? true : false, refetchOnWindowFocus: false }
   );
 }
 
@@ -95,4 +109,20 @@ export function useCreateUser() {
       return queryClient.invalidateQueries(Querytypes.GET_USER_DETAILS);
     },
   });
+}
+
+export function useSendContactRequest() {
+  const authTokens = useRecoilValue($authTokens);
+
+  return useMutation(
+    (otherGoogleUserId: string) =>
+      sendContactRequest(authTokens.idToken, otherGoogleUserId),
+    {
+      onSettled: (data, error) => {
+        return queryClient.invalidateQueries(
+          Querytypes.GET_CONVERSATION_DETAILS + "/" + ""
+        );
+      },
+    }
+  );
 }

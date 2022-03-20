@@ -4,7 +4,10 @@ import * as mongoDB from "mongodb";
 
 // Global Variables
 
-export const collections: { users?: mongoDB.Collection } = {};
+export const collections: {
+  users?: mongoDB.Collection;
+  relationships?: mongoDB.Collection;
+} = {};
 
 // Initialize Connection
 export async function connectToDatabase() {
@@ -17,10 +20,13 @@ export async function connectToDatabase() {
   const db: mongoDB.Db = client.db(process.env.DB_NAME);
 
   const usersCollection: mongoDB.Collection = db.collection("users");
+  const relationshipCollection: mongoDB.Collection =
+    db.collection("relationships");
 
   collections.users = usersCollection;
+  collections.relationships = relationshipCollection;
 
   console.log(
-    `Successfully connected to database: ${db.databaseName} and collection: ${usersCollection.collectionName}`
+    `Successfully connected to database: ${db.databaseName} and collections`
   );
 }
