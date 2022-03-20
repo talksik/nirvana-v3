@@ -3,8 +3,9 @@ import {
   CardGiftcardRounded,
   ContactsRounded,
   LinkRounded,
-  PushPinRounded,
 } from "@mui/icons-material";
+
+import { FaVolumeUp } from "react-icons/fa";
 
 export default function Conversations() {
   /** Data we need: have this huge data store client side to be able to access
@@ -37,12 +38,16 @@ export default function Conversations() {
       </div>
 
       {/* pinned conversations */}
-      <div className="m-5 bg-slate-500 shadow-lg rounded">
-        <span className="flex flex-row justify-start p-4 items-center">
-          <PushPinRounded className="text-slate-100" />
-          <span className="tracking-wider text-slate-100 uppercase text-sm font-semibold">
-            Pinned
+      <div className="m-5 p-4 bg-slate-500 shadow-lg rounded">
+        <span className="flex flex-row justify-start items-center">
+          <FaVolumeUp className="text-red-500" />
+          <span className="ml-2 tracking-wider text-slate-100 uppercase text-sm font-semibold">
+            Live
           </span>
+        </span>
+
+        <span className="text-slate-300">
+          Mark Conversations as Pinned to Hear Them Live
         </span>
       </div>
     </>
