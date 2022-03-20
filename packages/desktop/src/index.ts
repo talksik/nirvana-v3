@@ -1,6 +1,6 @@
 import { BrowserWindow, app, ipcMain } from "electron";
+import Channels, { Dimensions } from "./electron/constants";
 
-import Channels from "./electron/constants";
 import { handleLogin } from "./electron/handleLogin";
 import store from "./electron/store";
 
@@ -23,8 +23,7 @@ export let browserWindow: BrowserWindow;
 const createWindow = (): void => {
   // Create the browser window.
   browserWindow = new BrowserWindow({
-    height: 900,
-    width: 900,
+    ...Dimensions.default,
     webPreferences: {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
       sandbox: true,
@@ -51,13 +50,20 @@ app
       await handleLogin();
     });
 
-    // IPC listener
+    // access storage/cookies
     ipcMain.on("electron-store-set", async (event, key, val) => {
       store.set(key, val);
     });
     ipcMain.handle("electron-store-get", async (event, val) => {
       const result = await store.get(val);
       return result;
+    });
+
+    // dynamically changing the window bounds
+    ipcMain.on(Channels.RESIZE_WINDOW, (event, arg) => {
+      const { width, height } = arg;
+
+      browserWindow.setSize(width, height, true);
     });
   });
 

@@ -54,6 +54,7 @@ export default function Search() {
   const renderUserRow = (user: User) => {
     return (
       <span
+        key={user.googleId}
         onClick={() => selectContact(user.googleId)}
         className="border-t border-t-slate-500 py-5 flex flex-row justify-start 
       items-center w-full hover:bg-slate-600 cursor-pointer group"

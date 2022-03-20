@@ -4,10 +4,22 @@
 enum Channels {
   ACTIVATE_LOG_IN = "ACTIVATE_LOG_IN",
   AUTH_TOKENS = "AUTH_TOKENS",
+  RESIZE_WINDOW = "RESIZE_WINDOW",
 }
 
 export enum STORE_ITEMS {
   AUTH_TOKENS = "AUTH_TOKENS",
 }
+
+export const Dimensions = {
+  default: {
+    height: 600,
+    width: 500,
+  },
+  selectedConvo: {
+    height: 600,
+    width: 900,
+  },
+};
 
 export default Channels;

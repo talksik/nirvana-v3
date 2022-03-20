@@ -19,6 +19,12 @@ const electronAPI = {
     // Other method you want to add like has(), reset(), etc.
   },
 
+  window: {
+    resizeWindow(newDimensions: { width: number; height: number }) {
+      ipcRenderer.send(Channels.RESIZE_WINDOW, newDimensions);
+    },
+  },
+
   on(channel: Channels, func: any) {
     const validChannels = ["ipc-example"];
     // if (validChannels.includes(channel)) {
