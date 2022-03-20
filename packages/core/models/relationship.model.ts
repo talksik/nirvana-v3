@@ -10,7 +10,7 @@ export default class Relationship {
     public createdDate: Date = new Date(),
     public lastUpdatedDate: Date = new Date(),
 
-    public _id: ObjectId = new ObjectId()
+    public _id?: ObjectId
   ) {}
 }
 
@@ -18,4 +18,5 @@ export enum RelationshipState {
   PENDING = "PENDING",
   ACTIVE = "ACTIVE",
   BLOCKED = "BLOCKED",
+  DENIED = "DENIED",
 }

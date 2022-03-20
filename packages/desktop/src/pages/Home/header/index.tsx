@@ -28,7 +28,7 @@ export default function Header() {
 
       <span className="relative mx-5">
         <img
-          src={user.data.picture}
+          src={user.picture}
           className="rounded-lg h-8 hover:bg-slate-200 hover:cursor-pointer hover:scale-110"
           alt="cannot find"
         />

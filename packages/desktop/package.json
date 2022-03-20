@@ -102,6 +102,8 @@
     "axios": "^0.26.1",
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^8.0.1",
+    "moment": "^2.29.1",
+    "mongodb": "^4.4.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-icons": "^4.3.1",

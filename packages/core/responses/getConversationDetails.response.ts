@@ -7,7 +7,7 @@ export default class GetConversationDetailsResponse {
 
   constructor(
     public contactUser: User,
-    isLiveOrPinned: boolean,
+    public isLiveOrPinned: boolean,
     public ourRelationship?: Relationship,
     public latestContent?: Content[]
   ) {}

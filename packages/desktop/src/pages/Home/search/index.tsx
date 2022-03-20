@@ -28,7 +28,7 @@ export default function Search() {
     refetch();
   }, [searchQuery]);
 
-  if (!data?.data?.users) {
+  if (!data?.users) {
     return (
       <span className="text-white">
         no results. please try someone's email or name.
@@ -95,7 +95,7 @@ export default function Search() {
         Go back
       </button>
 
-      {data?.data?.users?.map((user) => {
+      {data?.users?.map((user) => {
         return renderUserRow(user);
       })}
     </div>
