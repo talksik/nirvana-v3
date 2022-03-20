@@ -1,8 +1,14 @@
 import { Add, LinkRounded } from "@mui/icons-material";
 
+import { Avatar } from "antd";
 import { FaVolumeUp } from "react-icons/fa";
+import SkeletonLoader from "../../../components/loading/skeleton";
+import { useGetAllContactBasicDetails } from "../../../controller";
 
 export default function Conversations() {
+  const { data: contactDetailsListResponse, isLoading } =
+    useGetAllContactBasicDetails();
+
   /** Data we need: have this huge data store client side to be able to access
    * for now, need a simple list of contacts
    * - first list is the live/pinned
@@ -12,6 +18,7 @@ export default function Conversations() {
    * web sockets for all of my active contacts
    * - actually play messages if pinned contact for me
    */
+
   return (
     <>
       {/* actions navbar */}
@@ -37,6 +44,24 @@ export default function Conversations() {
         <span className="text-slate-300">
           Mark Conversations as Pinned to Hear Them Live
         </span>
+      </div>
+
+      {isLoading ? <SkeletonLoader /> : null}
+      <div className="flex flex-col m-5 p-4">
+        {contactDetailsListResponse?.contactsDetails.map((contactDetail) => {
+          return (
+            <div>
+              <Avatar src={contactDetail.otherUser.picture} />
+
+              <span className="text-white font-semibold">
+                {contactDetail.otherUser.name}
+              </span>
+              <span>{contactDetail.otherUser.status}</span>
+
+              <span className="ml-auto">speaking...</span>
+            </div>
+          );
+        })}
       </div>
     </>
   );

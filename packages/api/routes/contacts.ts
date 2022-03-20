@@ -1,3 +1,6 @@
+import GetContactsResponse, {
+  ContactDetails,
+} from "../../core/responses/getContacts.response";
 import Relationship, {
   RelationshipState,
 } from "@nirvana/core/models/relationship.model";
@@ -6,6 +9,7 @@ import express, { Application, Request, Response } from "express";
 import { ContactService } from "../services/contact.service";
 import { ObjectId } from "mongodb";
 import UpdateRelationshipStateRequest from "../../core/requests/updateRelationshipState.request";
+import { UserService } from "../services/user.service";
 import { authCheck } from "../middleware/auth";
 import { collections } from "../services/database.service";
 
@@ -25,16 +29,35 @@ export default function getContactsRoutes() {
   return router;
 }
 
+// todo optimization with mongo lookups and such
 async function getAllContacts(req: Request, res: Response) {
   try {
-    const { email } = res.locals;
+    const { userId } = res.locals;
 
-    if (!email) {
-      res.status(400).send("No email of user!");
-      return;
-    }
+    const resultRelationships = await ContactService.getAllUserRelationships(
+      userId
+    );
 
-    // todo: fetch all of my contacts
+    const responseObj = new GetContactsResponse();
+
+    // get all of the other users based on these relationships and join them
+    await Promise.all(
+      resultRelationships.map(async (relationship) => {
+        const otherUserId =
+          relationship.receiverUserId === userId
+            ? relationship.senderUserId
+            : relationship.receiverUserId;
+
+        const otherUser = await UserService.getUserByGoogleId(otherUserId);
+
+        if (otherUser)
+          responseObj.contactsDetails.push(
+            new ContactDetails(otherUser, relationship)
+          );
+      })
+    );
+
+    res.status(200).send(responseObj);
   } catch (error) {
     console.log(error);
     res.status(500).send(`something went wrong`);

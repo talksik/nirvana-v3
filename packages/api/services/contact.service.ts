@@ -6,6 +6,17 @@ import Relationship, {
 import { collections } from "./database.service";
 
 export class ContactService {
+  static async getAllUserRelationships(userId: string) {
+    const query = {
+      $or: [{ senderUserId: userId }, { receiverUserId: userId }],
+    };
+    const res = (await collections.relationships
+      ?.find(query)
+      .toArray()) as Relationship[];
+
+    return res;
+  }
+
   static async getRelationship(
     myGoogleUserId: string,
     otherGoogleUserId: string

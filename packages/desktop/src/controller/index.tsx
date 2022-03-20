@@ -2,6 +2,7 @@ import { $authTokens, $searchQuery } from "./recoil";
 import axios, { AxiosResponse } from "axios";
 import { useMutation, useQuery } from "react-query";
 
+import GetContactsResponse from "../../../core/responses/getContacts.response";
 import GetConversationDetailsResponse from "@nirvana/core/responses/getConversationDetails.response";
 import { ObjectId } from "mongodb";
 import { RelationshipState } from "@nirvana/core/models/relationship.model";
@@ -77,11 +78,23 @@ const updateContactRequestState = async (
   return response.data;
 };
 
+const getContactsBasicDetails = async (idToken: string) => {
+  const response = await axios.get<GetContactsResponse>(
+    localHost + `/contacts`,
+    {
+      headers: { Authorization: idToken },
+    }
+  );
+
+  return response.data;
+};
+
 // ====== QUERIES
 export enum Querytypes {
   GET_USER_DETAILS = "GET_USER_DETAILS",
   GET_SEARCH_RESULTS = "GET_SEARCH_RESULTS",
   GET_CONVERSATION_DETAILS = "GET_CONVERSATION_DETAILS",
+  GET_CONTACTS_RELATIONSHIPS = "GET_CONTACTS_RELATIONSHIPS",
 }
 export function useGetUserDetails() {
   const authTokens = useRecoilValue($authTokens);
@@ -114,6 +127,18 @@ export function useConversationDetails(otherUserGoogleId: string) {
     Querytypes.GET_CONVERSATION_DETAILS + "/" + otherUserGoogleId,
     () => getConversationDetails(authTokens.idToken, otherUserGoogleId),
     { enabled: otherUserGoogleId ? true : false }
+  );
+}
+
+export function useGetAllContactBasicDetails() {
+  const authTokens = useRecoilValue($authTokens);
+
+  return useQuery(
+    Querytypes.GET_CONTACTS_RELATIONSHIPS,
+    () => getContactsBasicDetails(authTokens.idToken),
+    {
+      refetchOnWindowFocus: false,
+    }
   );
 }
 
