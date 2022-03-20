@@ -1,9 +1,4 @@
-import {
-  Add,
-  CardGiftcardRounded,
-  ContactsRounded,
-  LinkRounded,
-} from "@mui/icons-material";
+import { Add, LinkRounded } from "@mui/icons-material";
 
 import { FaVolumeUp } from "react-icons/fa";
 
@@ -22,16 +17,9 @@ export default function Conversations() {
       {/* actions navbar */}
       <div className="flex justify-end mx-10 mt-5 space-x-3">
         <span className="hover:bg-slate-500 p-1 rounded-full cursor-pointer flex justify-center items-center">
-          <ContactsRounded className="text-slate-100" fontSize="small" />
-        </span>
-
-        <span className="hover:bg-slate-500 p-1 rounded-full cursor-pointer flex justify-center items-center">
           <LinkRounded className="text-slate-100" fontSize="small" />
         </span>
 
-        <span className="hover:bg-slate-500 p-1 rounded-full cursor-pointer flex justify-center items-center">
-          <CardGiftcardRounded className="text-pink-100" fontSize="small" />
-        </span>
         <span className="hover:bg-slate-500 p-1 rounded-full cursor-pointer flex justify-center items-center">
           <Add className="text-slate-100" fontSize="small" />
         </span>

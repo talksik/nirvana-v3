@@ -3,12 +3,16 @@ import { Dropdown, Menu } from "antd";
 import Logo, { LogoType } from "../../../components/Logo";
 import { useRecoilState, useSetRecoilState } from "recoil";
 
+import { GlobalHotKeys } from "react-hotkeys";
 import { STORE_ITEMS } from "../../../electron/constants";
 import { useGetUserDetails } from "../../../controller/index";
+import { useRef } from "react";
 
 export default function Header() {
   const { data: user, isLoading } = useGetUserDetails();
   const [searchQuery, setSearchQuery] = useRecoilState($searchQuery);
+
+  const inputRef = useRef(null);
 
   const setAuthTokens = useSetRecoilState($authTokens);
 
@@ -29,30 +33,46 @@ export default function Header() {
     </Menu>
   );
 
+  // hot keys for selecting search
+  const handleSearch = () => {
+    if (inputRef?.current) {
+      inputRef?.current?.focus();
+      setSearchQuery("");
+    }
+  };
+
+  const keyMap = { START_SEARCH: "/" };
+  const handlers = { START_SEARCH: handleSearch };
+
   return (
-    <div className="flex flex-row items-center bg-slate-800 h-20">
-      <Logo type={LogoType.small} className="scale-[0.4]" />
-      <input
-        placeholder="type / to search"
-        className="placeholder:text-slate-400 bg-transparent outline-none text-slate-100"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-      />
+    <>
+      <GlobalHotKeys handlers={handlers} keyMap={keyMap}></GlobalHotKeys>
 
-      <button className="ml-auto hover:scale-110 bg-slate-600 text-teal-500 py-1 px-2 rounded-lg text-sm">
-        flow state
-      </button>
+      <div className="flex flex-row items-center bg-slate-800 h-20">
+        <Logo type={LogoType.small} className="scale-[0.4]" />
+        <input
+          ref={inputRef}
+          placeholder="type / to search"
+          className="placeholder:text-slate-400 bg-transparent outline-none text-slate-100"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
 
-      <Dropdown overlay={ProfileMenu} trigger={["click"]}>
-        <span className="relative mx-5">
-          <img
-            src={user.picture}
-            className="rounded-lg h-8 hover:bg-slate-200 hover:cursor-pointer hover:scale-110"
-            alt="cannot find"
-          />
-          <span className="absolute bottom-0 -right-1.5 rounded-full bg-emerald-600 h-3 w-3"></span>
-        </span>
-      </Dropdown>
-    </div>
+        <button className="ml-auto hover:scale-110 bg-slate-600 text-teal-500 py-1 px-2 rounded-lg text-sm">
+          flow state
+        </button>
+
+        <Dropdown overlay={ProfileMenu} trigger={["click"]}>
+          <span className="relative mx-5">
+            <img
+              src={user.picture}
+              className="rounded-lg h-8 hover:bg-slate-200 hover:cursor-pointer hover:scale-110"
+              alt="cannot find"
+            />
+            <span className="absolute bottom-0 -right-1.5 rounded-full bg-emerald-600 h-3 w-3"></span>
+          </span>
+        </Dropdown>
+      </div>
+    </>
   );
 }
