@@ -100,8 +100,6 @@ export default function Login({ onReady }: { onReady: Function }) {
           <span>Continue with Google</span>
         </button>
       )}
-
-      <button onClick={logOut}>Log Out</button>
     </div>
   );
 }

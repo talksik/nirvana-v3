@@ -46,6 +46,8 @@
         [
           "@electron-forge/plugin-webpack",
           {
+            "port": "3001",
+            "loggerPort": "9001",
             "mainConfig": "./webpack.main.config.js",
             "devContentSecurityPolicy": "connect-src 'self' http://localhost:5000 'unsafe-eval'",
             "renderer": {

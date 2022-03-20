@@ -5,6 +5,7 @@ import express, { Application, Request, Response } from "express";
 
 import { ContactService } from "../services/contact.service";
 import { ObjectId } from "mongodb";
+import UpdateRelationshipStateRequest from "../../core/requests/updateRelationshipState.request";
 import { authCheck } from "../middleware/auth";
 import { collections } from "../services/database.service";
 
@@ -18,6 +19,8 @@ export default function getContactsRoutes() {
 
   // send a friend request
   router.post("/:otherUserGoogleId", authCheck, addContact);
+
+  router.put("/", authCheck, updateRelationshipState);
 
   return router;
 }
@@ -76,6 +79,26 @@ async function addContact(req: Request, res: Response) {
     return;
   } catch (error) {
     console.log(error);
+    res.status(500).send(`something went wrong`);
+  }
+}
+
+async function updateRelationshipState(req: Request, res: Response) {
+  try {
+    // get the userId of the person to add as a friend/contact
+    const requestObj = req.body as UpdateRelationshipStateRequest;
+
+    const updateResult = await ContactService.updateRelationshipState(
+      requestObj.relationshipId,
+      requestObj.newState
+    );
+
+    updateResult?.acknowledged
+      ? res.status(200).send("Updated state of relationship")
+      : res.status(500).send("Failed to update relationship");
+
+    return;
+  } catch (error) {
     res.status(500).send(`something went wrong`);
   }
 }

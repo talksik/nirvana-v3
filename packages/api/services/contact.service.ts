@@ -1,5 +1,8 @@
-import { Db } from "mongodb";
-import Relationship from "@nirvana/core/models/relationship.model";
+import { Db, ObjectId } from "mongodb";
+import Relationship, {
+  RelationshipState,
+} from "@nirvana/core/models/relationship.model";
+
 import { collections } from "./database.service";
 
 export class ContactService {
@@ -49,5 +52,16 @@ export class ContactService {
     );
 
     return insertResult;
+  }
+
+  static async updateRelationshipState(
+    relationshipId: ObjectId,
+    newState: RelationshipState
+  ) {
+    const query = { _id: relationshipId };
+    const updateDoc = { $set: { state: newState } };
+    const result = await collections.relationships?.updateOne(query, updateDoc);
+
+    return result;
   }
 }

@@ -3,7 +3,10 @@ import axios, { AxiosResponse } from "axios";
 import { useMutation, useQuery } from "react-query";
 
 import GetConversationDetailsResponse from "@nirvana/core/responses/getConversationDetails.response";
+import { ObjectId } from "mongodb";
+import { RelationshipState } from "@nirvana/core/models/relationship.model";
 import SearchResponse from "@nirvana/core/responses/search.response";
+import UpdateRelationshipStateRequest from "../../../core/requests/updateRelationshipState.request";
 import { User } from "@nirvana/core/models";
 import { nirvanaApi } from "./nirvanaApi";
 import { queryClient } from "../nirvanaApp";
@@ -52,8 +55,6 @@ const sendContactRequest = async (
   idToken: string,
   otherUserGoogleId: string
 ) => {
-  console.log(idToken);
-
   const response = await axios.post(
     localHost + `/contacts/${otherUserGoogleId}`,
     null,
@@ -61,6 +62,17 @@ const sendContactRequest = async (
       headers: { Authorization: idToken },
     }
   );
+
+  return response.data;
+};
+
+const updateContactRequestState = async (
+  idToken: string,
+  reqObj: UpdateRelationshipStateRequest
+) => {
+  const response = await axios.put(localHost + `/contacts`, reqObj, {
+    headers: { Authorization: idToken },
+  });
 
   return response.data;
 };
@@ -110,9 +122,17 @@ export function useConversationDetails(otherUserGoogleId: string) {
 export function useSendContactRequest() {
   const authTokens = useRecoilValue($authTokens);
 
+  return useMutation((otherGoogleUserId: string) =>
+    sendContactRequest(authTokens.idToken, otherGoogleUserId)
+  );
+}
+
+export function useUpdateRelationshipState() {
+  const authTokens = useRecoilValue($authTokens);
+
   return useMutation(
-    (otherGoogleUserId: string) =>
-      sendContactRequest(authTokens.idToken, otherGoogleUserId),
+    (updateReqObj: UpdateRelationshipStateRequest) =>
+      updateContactRequestState(authTokens.idToken, updateReqObj),
     {
       onSettled: (data, error) => {
         return queryClient.invalidateQueries(

@@ -1,14 +1,18 @@
 import {
+  Querytypes,
   useConversationDetails,
   useGetUserDetails,
   useSendContactRequest,
+  useUpdateRelationshipState,
 } from "../../../controller";
 
 import { $selectedConversation } from "../../../controller/recoil";
 import { Dimensions } from "../../../electron/constants";
 import { FaWindowClose } from "react-icons/fa";
 import { RelationshipState } from "@nirvana/core/models/relationship.model";
+import UpdateRelationshipStateRequest from "@nirvana/core/requests/updateRelationshipState.request";
 import moment from "moment";
+import { queryClient } from "../../../nirvanaApp";
 import { useEffect } from "react";
 import { useRecoilState } from "recoil";
 
@@ -19,7 +23,8 @@ export default function SelectedConversation() {
   const { data: userDetailsData } = useGetUserDetails();
   const { data: convoDetailsResponse, isFetching } =
     useConversationDetails(selectedConvo);
-  const { mutate } = useSendContactRequest();
+  const { mutate: sendContactRequest } = useSendContactRequest();
+  const { mutate: updateRelationshipState } = useUpdateRelationshipState();
 
   useEffect(() => {
     // if selected, then change the bounds of this window as well
@@ -46,8 +51,34 @@ export default function SelectedConversation() {
     const otherUserGoogleId = convoDetailsResponse.contactUser.googleId;
 
     // todo mutation to create a user
-    mutate(otherUserGoogleId);
+    sendContactRequest(otherUserGoogleId, {
+      onSettled: (data, error) => {
+        return queryClient.invalidateQueries(
+          Querytypes.GET_CONVERSATION_DETAILS + "/" + otherUserGoogleId
+        );
+      },
+    });
   };
+
+  const acceptRequest = () => {
+    const otherUserGoogleId = convoDetailsResponse.contactUser.googleId;
+
+    updateRelationshipState(
+      new UpdateRelationshipStateRequest(
+        convoDetailsResponse.ourRelationship._id,
+        RelationshipState.ACTIVE
+      ),
+      {
+        onSettled: (data, error) => {
+          return queryClient.invalidateQueries(
+            Querytypes.GET_CONVERSATION_DETAILS + "/" + otherUserGoogleId
+          );
+        },
+      }
+    );
+  };
+
+  if (isFetching) return <span>Please wait</span>;
 
   const renderMainContent = () => {
     // if there's no relationship, then don't show messages, show "send request" button
@@ -64,7 +95,8 @@ export default function SelectedConversation() {
     ) {
       return (
         <span>
-          please accept this request by clicking here: <button>accept</button>
+          please accept this request by clicking here:{" "}
+          <button onClick={acceptRequest}>accept</button>
         </span>
       );
     }
