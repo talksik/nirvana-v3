@@ -59,8 +59,6 @@ export class ContactService {
     newState: RelationshipState
   ) {
     const query = { _id: new ObjectId(relationshipId) };
-    console.log(newState);
-    console.log(relationshipId);
     const updateDoc = {
       $set: { state: newState, lastUpdatedDate: new Date() },
     };
