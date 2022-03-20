@@ -9,6 +9,7 @@ import {
 import { $selectedConversation } from "../../../controller/recoil";
 import { Dimensions } from "../../../electron/constants";
 import { FaWindowClose } from "react-icons/fa";
+import { GlobalHotKeys } from "react-hotkeys";
 import { RelationshipState } from "@nirvana/core/models/relationship.model";
 import UpdateRelationshipStateRequest from "@nirvana/core/requests/updateRelationshipState.request";
 import moment from "moment";
@@ -124,34 +125,48 @@ export default function SelectedConversation() {
     }
   };
 
+  // hot keys for closing this window
+  const handleClose = () => {
+    setSelectedConvo(null);
+  };
+  const keyMap = { CLOSE_SELECTED_CONVO: "esc" };
+  const handlers = { CLOSE_SELECTED_CONVO: handleClose };
+
   return (
-    <div className="bg-slate-800 flex-1 flex flex-col relative">
-      {/* close marker */}
-      <FaWindowClose className="text-slate-400 hover:text-white hover:scale-110 absolute top-0 right-0 m-1" />
+    <>
+      <GlobalHotKeys handlers={handlers} keyMap={keyMap}></GlobalHotKeys>
 
-      {/* top header/profile information */}
-      <span className="flex flex-row justify-start items-center p-2">
-        <img
-          className="rounded"
-          src={convoDetailsResponse.contactUser.picture}
+      <div className="bg-slate-800 flex-1 flex flex-col relative">
+        {/* close marker */}
+        <FaWindowClose
+          onClick={handleClose}
+          className="text-slate-400 text-xl hover:text-slate-200 hover:scale-110 absolute top-0 right-0 m-1 cursor-pointer"
         />
-        <span className="flex flex-col items-start pl-2">
-          <span className="flex flex-row space-x-2">
-            <span className="text-white font-semibold text-lg">
-              {convoDetailsResponse.contactUser.name}
+
+        {/* top header/profile information */}
+        <span className="flex flex-row justify-start items-center p-2">
+          <img
+            className="rounded"
+            src={convoDetailsResponse.contactUser.picture}
+          />
+          <span className="flex flex-col items-start pl-2">
+            <span className="flex flex-row space-x-2">
+              <span className="text-white font-semibold text-lg">
+                {convoDetailsResponse.contactUser.name}
+              </span>
+              <span className="text-emerald-500 text-sm">
+                {convoDetailsResponse.contactUser.status}
+              </span>
             </span>
-            <span className="text-emerald-500 text-sm">
-              {convoDetailsResponse.contactUser.status}
-            </span>
+
+            <span className="text-slate-300 text-sm">{`joined ${moment(
+              convoDetailsResponse.contactUser.createdDate
+            ).fromNow()}`}</span>
           </span>
-
-          <span className="text-slate-300 text-sm">{`joined ${moment(
-            convoDetailsResponse.contactUser.createdDate
-          ).fromNow()}`}</span>
         </span>
-      </span>
 
-      {renderMainContent()}
-    </div>
+        {renderMainContent()}
+      </div>
+    </>
   );
 }
