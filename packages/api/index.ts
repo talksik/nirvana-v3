@@ -7,6 +7,7 @@ import getContactsRoutes from "./routes/contacts";
 import getConversationRoutes from "./routes/conversation";
 import getSearchRoutes from "./routes/search";
 import getUserRoutes from "./routes/user";
+import http from "http";
 
 const app = express();
 
@@ -26,6 +27,15 @@ app.use("/api/search", getSearchRoutes());
 app.use("/api/conversations", getConversationRoutes());
 app.use("/api/contacts", getContactsRoutes());
 
-app.listen(5000, () => console.log("Example app is listening on port 5000."));
+const server = new http.Server(app);
+server.listen(5000, () =>
+  console.log("Example app is listening on port 5000.")
+);
+
+const io = require("socket.io")(server);
+
+io.on("connection", function (socket: any) {
+  console.log("a user connected");
+});
 
 connectToDatabase();
