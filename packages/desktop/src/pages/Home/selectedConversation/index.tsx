@@ -12,6 +12,7 @@ import { FaWindowClose } from "react-icons/fa";
 import { GlobalHotKeys } from "react-hotkeys";
 import { RelationshipState } from "@nirvana/core/models/relationship.model";
 import UpdateRelationshipStateRequest from "@nirvana/core/requests/updateRelationshipState.request";
+import UserStatusText from "../../../components/User/userStatusText";
 import moment from "moment";
 import { queryClient } from "../../../nirvanaApp";
 import { useEffect } from "react";
@@ -150,13 +151,13 @@ export default function SelectedConversation() {
             src={convoDetailsResponse.contactUser.picture}
           />
           <span className="flex flex-col items-start pl-2">
-            <span className="flex flex-row space-x-2">
+            <span className="flex flex-row space-x-2 items-center">
               <span className="text-white font-semibold text-lg">
                 {convoDetailsResponse.contactUser.name}
               </span>
-              <span className="text-emerald-500 text-sm">
-                {convoDetailsResponse.contactUser.status}
-              </span>
+              <UserStatusText
+                status={convoDetailsResponse.contactUser.status}
+              />
             </span>
 
             <span className="text-slate-300 text-sm">{`joined ${moment(
