@@ -5,6 +5,7 @@ import { useRecoilState, useSetRecoilState } from "recoil";
 
 import { GlobalHotKeys } from "react-hotkeys";
 import { STORE_ITEMS } from "../../../electron/constants";
+import UserAvatarWithStatus from "../../../components/User/userAvatarWithStatus";
 import { useGetUserDetails } from "../../../controller/index";
 import { useRef } from "react";
 
@@ -48,7 +49,7 @@ export default function Header() {
     <>
       <GlobalHotKeys handlers={handlers} keyMap={keyMap}></GlobalHotKeys>
 
-      <div className="flex flex-row items-center bg-slate-800 h-20">
+      <div className="flex flex-row items-center bg-slate-800 h-20 px-5">
         <Logo type={LogoType.small} className="scale-[0.4]" />
         <input
           ref={inputRef}
@@ -58,18 +59,13 @@ export default function Header() {
           onChange={(e) => setSearchQuery(e.target.value)}
         />
 
-        <button className="ml-auto hover:scale-110 bg-slate-600 text-teal-500 py-1 px-2 rounded-lg text-sm">
+        <button className="ml-auto mr-2 hover:scale-110 bg-slate-600 text-teal-500 py-1 px-2 rounded-lg text-sm">
           flow state
         </button>
 
         <Dropdown overlay={ProfileMenu} trigger={["click"]}>
-          <span className="relative mx-5">
-            <img
-              src={user.picture}
-              className="rounded-lg h-8 hover:bg-slate-200 hover:cursor-pointer hover:scale-110"
-              alt="cannot find"
-            />
-            <span className="absolute bottom-0 -right-1.5 rounded-full bg-emerald-600 h-3 w-3"></span>
+          <span className="px-5">
+            <UserAvatarWithStatus user={user} />
           </span>
         </Dropdown>
       </div>

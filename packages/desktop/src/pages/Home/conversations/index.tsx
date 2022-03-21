@@ -1,23 +1,32 @@
 import { Add, LinkRounded } from "@mui/icons-material";
 
+import { $selectedConversation } from "../../../controller/recoil";
 import { Avatar } from "antd";
 import { FaVolumeUp } from "react-icons/fa";
 import SkeletonLoader from "../../../components/loading/skeleton";
+import UserAvatarWithStatus from "../../../components/User/userAvatarWithStatus";
+import UserStatusText from "../../../components/User/userStatusText";
 import { useGetAllContactBasicDetails } from "../../../controller";
+import { useRecoilState } from "recoil";
 
 export default function Conversations() {
   const { data: contactDetailsListResponse, isLoading } =
     useGetAllContactBasicDetails();
+  const [selectedConvo, setSelectedConvo] = useRecoilState(
+    $selectedConversation
+  );
 
-  /** Data we need: have this huge data store client side to be able to access
-   * for now, need a simple list of contacts
-   * - first list is the live/pinned
-   * - second list is the pending invites, out going or incoming? or this on a separate page?
-   * - third list is just the rest of my contacts
-   *
-   * web sockets for all of my active contacts
-   * - actually play messages if pinned contact for me
-   */
+  // todo: show conversations with activity/new content for me first...then the rest of the contacts
+
+  const selectContact = async (googleUserId: string) => {
+    // if this person is already selected, unselect
+    if (selectedConvo === googleUserId) {
+      setSelectedConvo(null);
+      return;
+    }
+
+    setSelectedConvo(googleUserId);
+  };
 
   return (
     <>
@@ -48,16 +57,28 @@ export default function Conversations() {
 
       {isLoading ? <SkeletonLoader /> : null}
       <div className="flex flex-col m-5 p-4">
+        <span className="flex flex-row justify-start items-center mb-2">
+          <span className="ml-2 tracking-wider text-slate-100 uppercase text-sm font-semibold">
+            Inbox
+          </span>
+        </span>
+
         {contactDetailsListResponse?.contactsDetails.map((contactDetail) => {
           return (
-            <div className="flex flex-row items-center">
-              <Avatar src={contactDetail.otherUser.picture} />
+            <div
+              onClick={() => selectContact(contactDetail.otherUser.googleId)}
+              className="flex flex-row items-center hover:bg-slate-600 group border-t border-t-slate-500
+            py-4 px-2 cursor-pointer"
+            >
+              <UserAvatarWithStatus user={contactDetail.otherUser} />
 
               <span className="text-white font-semibold ml-2">
                 {contactDetail.otherUser.name}
               </span>
 
-              <span className="ml-2">{contactDetail.otherUser.status}</span>
+              <span className="ml-2">
+                <UserStatusText status={contactDetail.otherUser.status} />
+              </span>
 
               <span className="ml-auto">speaking...</span>
             </div>
