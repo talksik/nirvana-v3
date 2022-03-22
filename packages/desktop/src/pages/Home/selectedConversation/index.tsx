@@ -132,13 +132,23 @@ export default function SelectedConversation() {
   const socketStartedSpeaking = () => {
     // send the room name and the update type
 
-    socket.emit(SocketChannels.SEND_STARTED_SPEAKING_TO_SERVER, selectedConvo);
+    // only send if we are in a relationship
+    if (convoDetailsResponse.ourRelationship._id.toString())
+      socket.emit(
+        SocketChannels.SEND_STARTED_SPEAKING,
+        convoDetailsResponse.ourRelationship._id.toString()
+      );
   };
 
   const socketStopSpeaking = () => {
     // send the room name and the update type
 
-    socket.emit(SocketChannels.SEND_STOPPED_SPEAKING_TO_SERVER, selectedConvo);
+    // only send if we are in a relationship
+    if (convoDetailsResponse.ourRelationship._id.toString())
+      socket.emit(
+        SocketChannels.SEND_STOPPED_SPEAKING,
+        convoDetailsResponse.ourRelationship._id.toString()
+      );
   };
 
   // hot keys for closing this window

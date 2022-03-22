@@ -139,18 +139,23 @@ export function useGetAllContactBasicDetails() {
   const [speakingRooms, setSpeakingRooms] = useState<string[]>([]);
 
   useEffect(() => {
-    socket.on(SocketChannels.SEND_STARTED_SPEAKING_TO_CLIENT, () => {
-      console.log("yayaya someone started speaking!!!!");
+    socket.on(
+      SocketChannels.SEND_STARTED_SPEAKING,
+      (relationshipId: string) => {
+        console.log(`yayaya someone started speaking in ${relationshipId}!!!!`);
 
-      // setSpeakingRooms((prevSpeakingRooms) => [
-      //   ...prevSpeakingRooms,
-      //   relationshipId,
-      // ]);
-    });
+        setSpeakingRooms((prevSpeakingRooms) => [
+          ...prevSpeakingRooms,
+          relationshipId,
+        ]);
+      }
+    );
 
     socket.on(
-      SocketChannels.SEND_STOPPED_SPEAKING_TO_CLIENT,
+      SocketChannels.SEND_STOPPED_SPEAKING,
       (relationshipId: string) => {
+        console.log(`stopped speaking in ${relationshipId}!!!!`);
+
         setSpeakingRooms((prevSpeakingRooms) =>
           prevSpeakingRooms.filter(
             (relationshipRoomId) => relationshipRoomId !== relationshipId
@@ -160,8 +165,8 @@ export function useGetAllContactBasicDetails() {
     );
 
     return () => {
-      socket.removeAllListeners(SocketChannels.SEND_STARTED_SPEAKING_TO_CLIENT);
-      socket.removeAllListeners(SocketChannels.SEND_STOPPED_SPEAKING_TO_CLIENT);
+      socket.removeAllListeners(SocketChannels.SEND_STARTED_SPEAKING);
+      socket.removeAllListeners(SocketChannels.SEND_STOPPED_SPEAKING);
     };
   }, []);
 
@@ -192,6 +197,8 @@ export function useGetAllContactBasicDetails() {
       // if this contact/conversation is in the list of speaking ones, then change isSpeaking
       if (speakingRooms.includes(contactDet.relationship._id.toString())) {
         contactDet.isSpeaking = true;
+      } else {
+        contactDet.isSpeaking = false;
       }
     });
   }

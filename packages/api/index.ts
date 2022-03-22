@@ -56,6 +56,8 @@ io.on("connection", function (socket: any) {
     );
 
     socket.join(relationshipId);
+
+    console.log(`${socket.id} now in rooms ${socket.rooms}`);
   });
 
   // ==== UPDATES ====
@@ -72,28 +74,22 @@ io.on("connection", function (socket: any) {
   );
 
   // tell everyone in a room when someone is starting to speak
-  socket.on(
-    SocketChannels.SEND_STARTED_SPEAKING_TO_SERVER,
-    (relationshipId: string) => {
-      console.log("started speaking");
-      socket.emit(
-        SocketChannels.SEND_STARTED_SPEAKING_TO_CLIENT,
-        relationshipId
-      );
-    }
-  );
+  socket.on(SocketChannels.SEND_STARTED_SPEAKING, (relationshipId: string) => {
+    console.log(`started speaking in ${relationshipId}`);
+    io.in(relationshipId).emit(
+      SocketChannels.SEND_STARTED_SPEAKING,
+      relationshipId
+    );
+  });
 
   // tell everyone in a room when someone is stopping to speak
-  socket.on(
-    SocketChannels.SEND_STOPPED_SPEAKING_TO_SERVER,
-    (relationshipId: string) => {
-      console.log("stopped speaking");
-      socket.emit(
-        SocketChannels.SEND_STOPPED_SPEAKING_TO_CLIENT,
-        relationshipId
-      );
-    }
-  );
+  socket.on(SocketChannels.SEND_STOPPED_SPEAKING, (relationshipId: string) => {
+    console.log(`stopped speaking in ${relationshipId}`);
+    io.in(relationshipId).emit(
+      SocketChannels.SEND_STOPPED_SPEAKING,
+      relationshipId
+    );
+  });
 
   // ==== DISCONNECT ====
   socket.on("disconnect", () => {
