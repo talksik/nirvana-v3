@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { RecoilRoot } from "recoil";
+import { Toaster } from "react-hot-toast";
 import io from "socket.io-client";
 import testConnection from "@nirvana/core";
 
@@ -25,6 +26,8 @@ function NirvanaApp() {
           </ProtectedRoute>
           <ReactQueryDevtools initialIsOpen={true} position={"bottom-left"} />
         </RecoilRoot>
+
+        <Toaster />
       </QueryClientProvider>
     </>
   );

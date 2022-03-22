@@ -23,6 +23,17 @@ import { useRecoilState } from "recoil";
 
 var audioChunks: any = [];
 
+var constraints = {
+  audio: true,
+  // {
+  //   // mandatory: {
+  //   //   chromeMediaSource: "desktop",
+  //   // },
+  //   autoGainControl: true,
+  //   echoCancellation: true,
+  // } as MediaTrackConstraints,
+};
+
 export default function SelectedConversation() {
   const [selectedConvo, setSelectedConvo] = useRecoilState(
     $selectedConversation
@@ -44,21 +55,24 @@ export default function SelectedConversation() {
       // checking for permissions for recording
       // won't work in https!!!
       navigator.mediaDevices
-        .getUserMedia({
-          audio: true,
-        })
+        .getUserMedia(constraints)
         .then((stream) => {
           const mediaRecorder = new MediaRecorder(stream);
           setMediaRecorder(mediaRecorder);
 
+          console.log(mediaRecorder);
+
           console.log("Permission Granted");
           sethasMicPermissions(true);
         })
-        .catch((e) => {
+        .catch((e: any) => {
           console.log("Permission Denied");
+
           toast.error(
             "Please make sure that you have connected a microphone and given permissions."
           );
+
+          console.log(e);
           sethasMicPermissions(false);
         });
     } catch (error) {
@@ -89,10 +103,11 @@ export default function SelectedConversation() {
       audioChunks
     );
 
-    const audioBlob = new Blob(audioChunks);
-    const audioUrl = URL.createObjectURL(audioBlob);
-    const audio = new Audio(audioUrl);
-    audio.play();
+    // testing playing before sending off
+    // const audioBlob = new Blob(audioChunks);
+    // const audioUrl = URL.createObjectURL(audioBlob);
+    // const audio = new Audio(audioUrl);
+    // audio.play();
 
     audioChunks = [];
   };
