@@ -23,7 +23,7 @@ function NirvanaApp() {
           <ProtectedRoute>
             <Home />
           </ProtectedRoute>
-          <ReactQueryDevtools initialIsOpen={false} />
+          <ReactQueryDevtools initialIsOpen={true} position={"bottom-left"} />
         </RecoilRoot>
       </QueryClientProvider>
     </>

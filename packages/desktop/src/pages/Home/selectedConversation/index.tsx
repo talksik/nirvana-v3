@@ -1,3 +1,5 @@
+import { FaMicrophone, FaPlay, FaWindowClose } from "react-icons/fa";
+import { GlobalHotKeys, KeyMap } from "react-hotkeys";
 import {
   Querytypes,
   useConversationDetails,
@@ -5,11 +7,10 @@ import {
   useSendContactRequest,
   useUpdateRelationshipState,
 } from "../../../controller";
+import { useEffect, useState } from "react";
 
 import { $selectedConversation } from "../../../controller/recoil";
 import { Dimensions } from "../../../electron/constants";
-import { FaWindowClose } from "react-icons/fa";
-import { GlobalHotKeys } from "react-hotkeys";
 import { RelationshipState } from "@nirvana/core/models/relationship.model";
 import SocketChannels from "@nirvana/core/sockets/channels";
 import UpdateRelationshipStateRequest from "@nirvana/core/requests/updateRelationshipState.request";
@@ -17,7 +18,7 @@ import UserStatusText from "../../../components/User/userStatusText";
 import moment from "moment";
 import { queryClient } from "../../../nirvanaApp";
 import { socket } from "../../../nirvanaApp";
-import { useEffect } from "react";
+import toast from "react-hot-toast";
 import { useRecoilState } from "recoil";
 
 export default function SelectedConversation() {
@@ -29,6 +30,37 @@ export default function SelectedConversation() {
     useConversationDetails(selectedConvo);
   const { mutate: sendContactRequest } = useSendContactRequest();
   const { mutate: updateRelationshipState } = useUpdateRelationshipState();
+  const [isRecording, setIsRecording] = useState<boolean>(false);
+
+  const [hasMicPermissions, sethasMicPermissions] = useState<boolean>(false);
+
+  // audio handling
+  // setting up recording permissions
+  useEffect(() => {
+    try {
+      // checking for permissions for recording
+      // won't work in https!!!
+      navigator.mediaDevices
+        .getUserMedia({ audio: true })
+        .then((stream) => {
+          // stop playing anything
+          // stopBothVideoAndAudio(stream);
+
+          console.log("Permission Granted");
+          sethasMicPermissions(true);
+        })
+        .catch((e) => {
+          console.log("Permission Denied");
+          toast.error(
+            "Please make sure that you have connected a microphone and given permissions."
+          );
+          sethasMicPermissions(false);
+        });
+    } catch (error) {
+      console.log(error);
+      toast.error("something went wrong");
+    }
+  }, []);
 
   useEffect(() => {
     // if selected, then change the bounds of this window as well
@@ -128,6 +160,16 @@ export default function SelectedConversation() {
     }
   };
 
+  const startRecording = async () => {
+    socketStartedSpeaking();
+    setIsRecording(true);
+  };
+
+  const stopRecording = () => {
+    socketStopSpeaking();
+    setIsRecording(false);
+  };
+
   // emit to room/conversation that someone started speaking
   const socketStartedSpeaking = () => {
     // send the room name and the update type
@@ -155,12 +197,28 @@ export default function SelectedConversation() {
   const handleClose = () => {
     setSelectedConvo(null);
   };
-  const keyMap = { CLOSE_SELECTED_CONVO: "esc" };
-  const handlers = { CLOSE_SELECTED_CONVO: handleClose };
+  const keyMap: KeyMap = {
+    CLOSE_SELECTED_CONVO: "esc",
+    START_RECORDING: {
+      name: "START RECORDING",
+      sequence: "r",
+      action: "keydown",
+    },
+    STOP_RECORDING: {
+      name: "STOP RECORDING",
+      sequence: "r",
+      action: "keyup",
+    },
+  };
+  const handlers = {
+    CLOSE_SELECTED_CONVO: handleClose,
+    START_RECORDING: startRecording,
+    STOP_RECORDING: stopRecording,
+  };
 
   return (
     <>
-      <GlobalHotKeys handlers={handlers} keyMap={keyMap}></GlobalHotKeys>
+      <GlobalHotKeys handlers={handlers} keyMap={keyMap} />
 
       <div className="bg-slate-800 flex-1 flex flex-col relative">
         {/* close marker */}
@@ -195,6 +253,20 @@ export default function SelectedConversation() {
 
         <button onClick={socketStartedSpeaking}>start speaking</button>
         <button onClick={socketStopSpeaking}>stop speaking</button>
+
+        <span className="flex flex-row my-5 items-center justify-center space-x-5">
+          <span className="flex flex-row justify-center items-center p-1 rounded shadow-lg h-10 w-10 bg-slate-500 cursor-pointer">
+            {isRecording ? (
+              <FaMicrophone className="text-red-600 text-xl animate-pulse" />
+            ) : (
+              <FaMicrophone className="text-red-600 text-lg" />
+            )}
+          </span>
+
+          <span className="flex flex-row justify-center items-center p-1 rounded shadow-lg h-10 w-10 bg-slate-500 cursor-pointer">
+            <FaPlay className="text-blue-600 text-lg" />
+          </span>
+        </span>
       </div>
     </>
   );
