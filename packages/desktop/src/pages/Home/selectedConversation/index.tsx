@@ -90,6 +90,16 @@ export default function SelectedConversation() {
       );
       mediaRecorder.addEventListener("stop", mediaRecorderStop);
     }
+
+    return () => {
+      if (mediaRecorder) {
+        mediaRecorder.removeEventListener(
+          "dataavailable",
+          mediaRecorderDataAvailable
+        );
+        mediaRecorder.removeEventListener("stop", mediaRecorderStop);
+      }
+    };
   }, [mediaRecorder, convoDetailsResponse]);
 
   const mediaRecorderDataAvailable = (event: any) => {
