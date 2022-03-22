@@ -139,18 +139,17 @@ export function useGetAllContactBasicDetails() {
   const [speakingRooms, setSpeakingRooms] = useState<string[]>([]);
 
   useEffect(() => {
-    socket.on(
-      SocketChannels.SEND_STARTED_SPEAKING,
-      (relationshipId: string) => {
-        setSpeakingRooms((prevSpeakingRooms) => [
-          ...prevSpeakingRooms,
-          relationshipId,
-        ]);
-      }
-    );
+    socket.on(SocketChannels.SEND_STARTED_SPEAKING_TO_CLIENT, () => {
+      console.log("yayaya someone started speaking!!!!");
+
+      // setSpeakingRooms((prevSpeakingRooms) => [
+      //   ...prevSpeakingRooms,
+      //   relationshipId,
+      // ]);
+    });
 
     socket.on(
-      SocketChannels.SEND_STOPPED_SPEAKING,
+      SocketChannels.SEND_STOPPED_SPEAKING_TO_CLIENT,
       (relationshipId: string) => {
         setSpeakingRooms((prevSpeakingRooms) =>
           prevSpeakingRooms.filter(
@@ -161,8 +160,8 @@ export function useGetAllContactBasicDetails() {
     );
 
     return () => {
-      socket.removeAllListeners(SocketChannels.SEND_STARTED_SPEAKING);
-      socket.removeAllListeners(SocketChannels.SEND_STOPPED_SPEAKING);
+      socket.removeAllListeners(SocketChannels.SEND_STARTED_SPEAKING_TO_CLIENT);
+      socket.removeAllListeners(SocketChannels.SEND_STOPPED_SPEAKING_TO_CLIENT);
     };
   }, []);
 
@@ -174,16 +173,22 @@ export function useGetAllContactBasicDetails() {
     }
   );
 
+  useEffect(() => {
+    if (reactQueryRes.data) {
+      reactQueryRes.data.contactsDetails.map((contactDet) => {
+        // join the right rooms based on the relevant contacts/conversations returned here
+        socket.emit(
+          SocketChannels.JOIN_ROOM,
+          contactDet.relationship._id.toString()
+        );
+      });
+    }
+  }, [reactQueryRes.isFetched]);
+
   // go through all conversations and mutate adding in data
   // on whether or not someone is speaking or not
   if (reactQueryRes.data) {
     reactQueryRes.data.contactsDetails.map((contactDet) => {
-      // todo: join the right rooms based on the relevant contacts/conversations returned here
-      socket.emit(
-        SocketChannels.JOIN_ROOM,
-        contactDet.relationship._id.toString()
-      );
-
       // if this contact/conversation is in the list of speaking ones, then change isSpeaking
       if (speakingRooms.includes(contactDet.relationship._id.toString())) {
         contactDet.isSpeaking = true;

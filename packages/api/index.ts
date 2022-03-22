@@ -71,14 +71,28 @@ io.on("connection", function (socket: any) {
     (relationshipId: string, data: any) => {}
   );
 
+  // tell everyone in a room when someone is starting to speak
   socket.on(
-    SocketChannels.SEND_STARTED_SPEAKING,
-    (relationshipId: string, data: any) => {}
+    SocketChannels.SEND_STARTED_SPEAKING_TO_SERVER,
+    (relationshipId: string) => {
+      console.log("started speaking");
+      socket.emit(
+        SocketChannels.SEND_STARTED_SPEAKING_TO_CLIENT,
+        relationshipId
+      );
+    }
   );
 
+  // tell everyone in a room when someone is stopping to speak
   socket.on(
-    SocketChannels.SEND_STOPPED_SPEAKING,
-    (relationshipId: string, data: any) => {}
+    SocketChannels.SEND_STOPPED_SPEAKING_TO_SERVER,
+    (relationshipId: string) => {
+      console.log("stopped speaking");
+      socket.emit(
+        SocketChannels.SEND_STOPPED_SPEAKING_TO_CLIENT,
+        relationshipId
+      );
+    }
   );
 
   // ==== DISCONNECT ====

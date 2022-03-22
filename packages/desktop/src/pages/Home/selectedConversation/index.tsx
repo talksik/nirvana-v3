@@ -132,7 +132,13 @@ export default function SelectedConversation() {
   const socketStartedSpeaking = () => {
     // send the room name and the update type
 
-    socket.emit(SocketChannels.SEND_STARTED_SPEAKING);
+    socket.emit(SocketChannels.SEND_STARTED_SPEAKING_TO_SERVER, selectedConvo);
+  };
+
+  const socketStopSpeaking = () => {
+    // send the room name and the update type
+
+    socket.emit(SocketChannels.SEND_STOPPED_SPEAKING_TO_SERVER, selectedConvo);
   };
 
   // hot keys for closing this window
@@ -176,6 +182,9 @@ export default function SelectedConversation() {
         </span>
 
         {renderMainContent()}
+
+        <button onClick={socketStartedSpeaking}>start speaking</button>
+        <button onClick={socketStopSpeaking}>stop speaking</button>
       </div>
     </>
   );
