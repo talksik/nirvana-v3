@@ -265,12 +265,12 @@ export default function SelectedConversation() {
     CLOSE_SELECTED_CONVO: "esc",
     START_RECORDING: {
       name: "START RECORDING",
-      sequence: "r",
+      sequence: "`",
       action: "keydown",
     },
     STOP_RECORDING: {
       name: "STOP RECORDING",
-      sequence: "r",
+      sequence: "`",
       action: "keyup",
     },
   };
