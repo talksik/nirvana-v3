@@ -45,6 +45,8 @@ export default function Login({ onReady }: { onReady: Function }) {
     if (authFailureCount >= 2) {
       logOut();
     } else {
+      // todo: comment all of this else when trying to test with two users/instances
+
       // see if we have tokens in localstorage in which case we can continue on
       window.electronAPI.store
         .get(STORE_ITEMS.AUTH_TOKENS)

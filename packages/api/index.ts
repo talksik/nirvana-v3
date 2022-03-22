@@ -1,6 +1,7 @@
 import express, { Application, Request, Response } from "express";
 
 import { NextFunction } from "express";
+import SocketChannels from "@nirvana/core/sockets/channels";
 import { connectToDatabase } from "./services/database.service";
 import cors from "cors";
 import getContactsRoutes from "./routes/contacts";
@@ -27,15 +28,61 @@ app.use("/api/search", getSearchRoutes());
 app.use("/api/conversations", getConversationRoutes());
 app.use("/api/contacts", getContactsRoutes());
 
-const server = new http.Server(app);
-server.listen(5000, () =>
-  console.log("Example app is listening on port 5000.")
-);
+const PORT = 5000;
+var server = app.listen(PORT, () => console.log("express running"));
+connectToDatabase();
 
-const io = require("socket.io")(server);
+// socket IO stuff
 
-io.on("connection", function (socket: any) {
-  console.log("a user connected");
+const io = require("socket.io")(server, {
+  // todo: add protection
+  cors: {
+    origin: "*",
+  },
 });
 
-connectToDatabase();
+io.on("connection", function (socket: any) {
+  // add to map between between googleUserIds and socketId
+
+  console.log("a user connected");
+
+  // ===== JOIN ====
+  /** User wants to subscribe to live emissions of a conversation */
+  socket.on(SocketChannels.JOIN_ROOM, (relationshipId: string) => {
+    // add this user to the room
+
+    console.log(
+      `${socket.id} user joined room for relationship ${relationshipId}`
+    );
+
+    socket.join(relationshipId);
+  });
+
+  // ==== UPDATES ====
+  // can be a change of:
+  // 1. status...later...do short polling for this instead
+  // 2. new content: audio clip or link
+  // 3. someone is starting to speak
+  // send message to everyone in room except sender...
+
+  /** User wants to send some update to a particular room */
+  socket.on(
+    SocketChannels.SEND_AUDIO_CLIP,
+    (relationshipId: string, data: any) => {}
+  );
+
+  socket.on(
+    SocketChannels.SEND_STARTED_SPEAKING,
+    (relationshipId: string, data: any) => {}
+  );
+
+  socket.on(
+    SocketChannels.SEND_STOPPED_SPEAKING,
+    (relationshipId: string, data: any) => {}
+  );
+
+  // ==== DISCONNECT ====
+  socket.on("disconnect", () => {
+    console.log("user disconnected");
+  });
+});

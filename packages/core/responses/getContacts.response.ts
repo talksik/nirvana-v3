@@ -8,5 +8,7 @@ export default class GetContactsResponse {
 }
 
 export class ContactDetails {
+  isSpeaking: boolean = false;
+
   constructor(public otherUser: User, public relationship: Relationship) {}
 }

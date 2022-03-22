@@ -2,6 +2,7 @@ import { Add, LinkRounded } from "@mui/icons-material";
 
 import { $selectedConversation } from "../../../controller/recoil";
 import { Avatar } from "antd";
+import { ContactDetails } from "@nirvana/core/responses/getContacts.response";
 import { FaVolumeUp } from "react-icons/fa";
 import SkeletonLoader from "../../../components/loading/skeleton";
 import UserAvatarWithStatus from "../../../components/User/userAvatarWithStatus";
@@ -55,36 +56,46 @@ export default function Conversations() {
         </span>
       </div>
 
-      {isLoading ? <SkeletonLoader /> : null}
-      <div className="flex flex-col m-5 p-4">
-        <span className="flex flex-row justify-start items-center mb-2">
-          <span className="ml-2 tracking-wider text-slate-100 uppercase text-sm font-semibold">
-            Inbox
+      {isLoading ? (
+        <SkeletonLoader />
+      ) : (
+        <div className="flex flex-col m-5 p-4">
+          <span className="flex flex-row justify-start items-center mb-2">
+            <span className="ml-2 tracking-wider text-slate-100 uppercase text-sm font-semibold">
+              Inbox
+            </span>
           </span>
-        </span>
 
-        {contactDetailsListResponse?.contactsDetails.map((contactDetail) => {
-          return (
-            <div
-              onClick={() => selectContact(contactDetail.otherUser.googleId)}
-              className="flex flex-row items-center hover:bg-slate-600 group border-t border-t-slate-500
+          {contactDetailsListResponse?.contactsDetails.map(
+            (contactDetail: ContactDetails) => {
+              return (
+                <div
+                  key={contactDetail.relationship._id.toString()}
+                  onClick={() =>
+                    selectContact(contactDetail.otherUser.googleId)
+                  }
+                  className="flex flex-row items-center hover:bg-slate-600 group border-t border-t-slate-500
             py-4 px-2 cursor-pointer"
-            >
-              <UserAvatarWithStatus user={contactDetail.otherUser} />
+                >
+                  <UserAvatarWithStatus user={contactDetail.otherUser} />
 
-              <span className="text-white font-semibold ml-2">
-                {contactDetail.otherUser.name}
-              </span>
+                  <span className="text-white font-semibold ml-2">
+                    {contactDetail.otherUser.name}
+                  </span>
 
-              <span className="ml-2">
-                <UserStatusText status={contactDetail.otherUser.status} />
-              </span>
+                  <span className="ml-2">
+                    <UserStatusText status={contactDetail.otherUser.status} />
+                  </span>
 
-              <span className="ml-auto">speaking...</span>
-            </div>
-          );
-        })}
-      </div>
+                  {contactDetail.isSpeaking ? (
+                    <span className="ml-auto">speaking...</span>
+                  ) : null}
+                </div>
+              );
+            }
+          )}
+        </div>
+      )}
     </>
   );
 }

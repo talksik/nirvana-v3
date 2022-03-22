@@ -11,10 +11,12 @@ import { Dimensions } from "../../../electron/constants";
 import { FaWindowClose } from "react-icons/fa";
 import { GlobalHotKeys } from "react-hotkeys";
 import { RelationshipState } from "@nirvana/core/models/relationship.model";
+import SocketChannels from "@nirvana/core/sockets/channels";
 import UpdateRelationshipStateRequest from "@nirvana/core/requests/updateRelationshipState.request";
 import UserStatusText from "../../../components/User/userStatusText";
 import moment from "moment";
 import { queryClient } from "../../../nirvanaApp";
+import { socket } from "../../../nirvanaApp";
 import { useEffect } from "react";
 import { useRecoilState } from "recoil";
 
@@ -124,6 +126,13 @@ export default function SelectedConversation() {
     ) {
       return <span>this request was denied</span>;
     }
+  };
+
+  // emit to room/conversation that someone started speaking
+  const socketStartedSpeaking = () => {
+    // send the room name and the update type
+
+    socket.emit(SocketChannels.SEND_STARTED_SPEAKING);
   };
 
   // hot keys for closing this window

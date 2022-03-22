@@ -46,10 +46,10 @@
         [
           "@electron-forge/plugin-webpack",
           {
-            "port": "3001",
-            "loggerPort": "9001",
+            "port": "3000",
+            "loggerPort": "9000",
             "mainConfig": "./webpack.main.config.js",
-            "devContentSecurityPolicy": "connect-src 'self' http://localhost:5000 'unsafe-eval'",
+            "devContentSecurityPolicy": "connect-src 'self' http://localhost:5000 ws://localhost:5000 'unsafe-eval'",
             "renderer": {
               "config": "./webpack.renderer.config.js",
               "entryPoints": [
@@ -112,6 +112,7 @@
     "react-hotkeys": "^2.0.0",
     "react-icons": "^4.3.1",
     "react-query": "^3.34.16",
-    "recoil": "^0.6.1"
+    "recoil": "^0.6.1",
+    "socket.io-client": "^4.4.1"
   }
 }

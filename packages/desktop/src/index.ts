@@ -34,7 +34,7 @@ const createWindow = (): void => {
   browserWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
   // Open the DevTools.
-  browserWindow.webContents.openDevTools({ mode: "detach" });
+  browserWindow.webContents.openDevTools({ mode: "right" });
 };
 
 // This method will be called when Electron has finished

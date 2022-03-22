@@ -1,5 +1,7 @@
 import { $authTokens, $searchQuery } from "./recoil";
 import axios, { AxiosResponse } from "axios";
+import { queryClient, socket } from "../nirvanaApp";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "react-query";
 
 import GetContactsResponse from "../../../core/responses/getContacts.response";
@@ -7,10 +9,10 @@ import GetConversationDetailsResponse from "@nirvana/core/responses/getConversat
 import { ObjectId } from "mongodb";
 import { RelationshipState } from "@nirvana/core/models/relationship.model";
 import SearchResponse from "@nirvana/core/responses/search.response";
+import SocketChannels from "@nirvana/core/sockets/channels";
 import UpdateRelationshipStateRequest from "../../../core/requests/updateRelationshipState.request";
 import { User } from "@nirvana/core/models";
 import { nirvanaApi } from "./nirvanaApi";
-import { queryClient } from "../nirvanaApp";
 import { useRecoilValue } from "recoil";
 
 // =========== API
@@ -133,13 +135,63 @@ export function useConversationDetails(otherUserGoogleId: string) {
 export function useGetAllContactBasicDetails() {
   const authTokens = useRecoilValue($authTokens);
 
-  return useQuery(
+  // relationshipId's of the conversations where there is someone speaking
+  const [speakingRooms, setSpeakingRooms] = useState<string[]>([]);
+
+  useEffect(() => {
+    socket.on(
+      SocketChannels.SEND_STARTED_SPEAKING,
+      (relationshipId: string) => {
+        setSpeakingRooms((prevSpeakingRooms) => [
+          ...prevSpeakingRooms,
+          relationshipId,
+        ]);
+      }
+    );
+
+    socket.on(
+      SocketChannels.SEND_STOPPED_SPEAKING,
+      (relationshipId: string) => {
+        setSpeakingRooms((prevSpeakingRooms) =>
+          prevSpeakingRooms.filter(
+            (relationshipRoomId) => relationshipRoomId !== relationshipId
+          )
+        );
+      }
+    );
+
+    return () => {
+      socket.removeAllListeners(SocketChannels.SEND_STARTED_SPEAKING);
+      socket.removeAllListeners(SocketChannels.SEND_STOPPED_SPEAKING);
+    };
+  }, []);
+
+  const reactQueryRes = useQuery(
     Querytypes.GET_CONTACTS_RELATIONSHIPS,
     () => getContactsBasicDetails(authTokens.idToken),
     {
       refetchOnWindowFocus: false,
     }
   );
+
+  // go through all conversations and mutate adding in data
+  // on whether or not someone is speaking or not
+  if (reactQueryRes.data) {
+    reactQueryRes.data.contactsDetails.map((contactDet) => {
+      // todo: join the right rooms based on the relevant contacts/conversations returned here
+      socket.emit(
+        SocketChannels.JOIN_ROOM,
+        contactDet.relationship._id.toString()
+      );
+
+      // if this contact/conversation is in the list of speaking ones, then change isSpeaking
+      if (speakingRooms.includes(contactDet.relationship._id.toString())) {
+        contactDet.isSpeaking = true;
+      }
+    });
+  }
+
+  return reactQueryRes;
 }
 
 // =========== MUTATIONS
