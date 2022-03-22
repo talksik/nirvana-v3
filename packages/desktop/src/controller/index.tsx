@@ -201,6 +201,14 @@ export function useGetAllContactBasicDetails() {
         contactDet.isSpeaking = false;
       }
     });
+
+    // todo: go through all content and add in the socket messages
+    // find out which convos have new content for user
+    // sort and get rid of duplicate messages for the clip timeline
+    // set the latest link for the view component
+
+    // sort the conversations according to this:
+    // live -> new messages -> speaking -> incoming requests
   }
 
   return reactQueryRes;
