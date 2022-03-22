@@ -70,7 +70,17 @@ io.on("connection", function (socket: any) {
   /** User wants to send some update to a particular room */
   socket.on(
     SocketChannels.SEND_AUDIO_CLIP,
-    (relationshipId: string, data: any) => {}
+    (relationshipId: string, audioChunks: any) => {
+      console.log(`new audio chunks received..routing to appropriate room!`);
+      console.log(relationshipId);
+      console.log(audioChunks);
+
+      io.in(relationshipId).emit(
+        SocketChannels.SEND_AUDIO_CLIP,
+        relationshipId,
+        audioChunks
+      );
+    }
   );
 
   // tell everyone in a room when someone is starting to speak

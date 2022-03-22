@@ -9,10 +9,12 @@ import UserAvatarWithStatus from "../../../components/User/userAvatarWithStatus"
 import UserStatusText from "../../../components/User/userStatusText";
 import { useGetAllContactBasicDetails } from "../../../controller";
 import { useRecoilState } from "recoil";
+import useSocketData from "../../../controller/sockets";
 
 export default function Conversations() {
   const { data: contactDetailsListResponse, isLoading } =
     useGetAllContactBasicDetails();
+  const { speakingRooms } = useSocketData();
   const [selectedConvo, setSelectedConvo] = useRecoilState(
     $selectedConversation
   );
@@ -87,7 +89,9 @@ export default function Conversations() {
                     <UserStatusText status={contactDetail.otherUser.status} />
                   </span>
 
-                  {contactDetail.isSpeaking ? (
+                  {speakingRooms.includes(
+                    contactDetail.relationship._id.toString()
+                  ) ? (
                     <span className="ml-auto">speaking...</span>
                   ) : null}
                 </div>

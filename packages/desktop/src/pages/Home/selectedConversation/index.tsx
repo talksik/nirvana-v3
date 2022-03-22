@@ -21,6 +21,8 @@ import { socket } from "../../../nirvanaApp";
 import toast from "react-hot-toast";
 import { useRecoilState } from "recoil";
 
+var audioChunks: any = [];
+
 export default function SelectedConversation() {
   const [selectedConvo, setSelectedConvo] = useRecoilState(
     $selectedConversation
@@ -33,6 +35,7 @@ export default function SelectedConversation() {
   const [isRecording, setIsRecording] = useState<boolean>(false);
 
   const [hasMicPermissions, sethasMicPermissions] = useState<boolean>(false);
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder>();
 
   // audio handling
   // setting up recording permissions
@@ -41,10 +44,12 @@ export default function SelectedConversation() {
       // checking for permissions for recording
       // won't work in https!!!
       navigator.mediaDevices
-        .getUserMedia({ audio: true })
+        .getUserMedia({
+          audio: true,
+        })
         .then((stream) => {
-          // stop playing anything
-          // stopBothVideoAndAudio(stream);
+          const mediaRecorder = new MediaRecorder(stream);
+          setMediaRecorder(mediaRecorder);
 
           console.log("Permission Granted");
           sethasMicPermissions(true);
@@ -61,6 +66,36 @@ export default function SelectedConversation() {
       toast.error("something went wrong");
     }
   }, []);
+
+  // todo: hacky way of re-linking event listeners once we have the relationship id
+  useEffect(() => {
+    if (mediaRecorder && convoDetailsResponse) {
+      mediaRecorder.addEventListener(
+        "dataavailable",
+        mediaRecorderDataAvailable
+      );
+      mediaRecorder.addEventListener("stop", mediaRecorderStop);
+    }
+  }, [mediaRecorder, convoDetailsResponse]);
+
+  const mediaRecorderDataAvailable = (event: any) => {
+    audioChunks.push(event.data);
+  };
+
+  const mediaRecorderStop = () => {
+    socket.emit(
+      SocketChannels.SEND_AUDIO_CLIP,
+      convoDetailsResponse.ourRelationship._id.toString(),
+      audioChunks
+    );
+
+    const audioBlob = new Blob(audioChunks);
+    const audioUrl = URL.createObjectURL(audioBlob);
+    const audio = new Audio(audioUrl);
+    audio.play();
+
+    audioChunks = [];
+  };
 
   useEffect(() => {
     // if selected, then change the bounds of this window as well
@@ -163,11 +198,15 @@ export default function SelectedConversation() {
   const startRecording = async () => {
     socketStartedSpeaking();
     setIsRecording(true);
+
+    mediaRecorder.start();
   };
 
   const stopRecording = () => {
     socketStopSpeaking();
     setIsRecording(false);
+
+    mediaRecorder.stop();
   };
 
   // emit to room/conversation that someone started speaking
@@ -250,9 +289,6 @@ export default function SelectedConversation() {
         </span>
 
         {renderMainContent()}
-
-        <button onClick={socketStartedSpeaking}>start speaking</button>
-        <button onClick={socketStopSpeaking}>stop speaking</button>
 
         <span className="flex flex-row my-5 items-center justify-center space-x-5">
           <span className="flex flex-row justify-center items-center p-1 rounded shadow-lg h-10 w-10 bg-slate-500 cursor-pointer">

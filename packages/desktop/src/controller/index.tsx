@@ -135,83 +135,13 @@ export function useConversationDetails(otherUserGoogleId: string) {
 export function useGetAllContactBasicDetails() {
   const authTokens = useRecoilValue($authTokens);
 
-  // relationshipId's of the conversations where there is someone speaking
-  const [speakingRooms, setSpeakingRooms] = useState<string[]>([]);
-
-  useEffect(() => {
-    socket.on(
-      SocketChannels.SEND_STARTED_SPEAKING,
-      (relationshipId: string) => {
-        console.log(`yayaya someone started speaking in ${relationshipId}!!!!`);
-
-        setSpeakingRooms((prevSpeakingRooms) => [
-          ...prevSpeakingRooms,
-          relationshipId,
-        ]);
-      }
-    );
-
-    socket.on(
-      SocketChannels.SEND_STOPPED_SPEAKING,
-      (relationshipId: string) => {
-        console.log(`stopped speaking in ${relationshipId}!!!!`);
-
-        setSpeakingRooms((prevSpeakingRooms) =>
-          prevSpeakingRooms.filter(
-            (relationshipRoomId) => relationshipRoomId !== relationshipId
-          )
-        );
-      }
-    );
-
-    return () => {
-      socket.removeAllListeners(SocketChannels.SEND_STARTED_SPEAKING);
-      socket.removeAllListeners(SocketChannels.SEND_STOPPED_SPEAKING);
-    };
-  }, []);
-
-  const reactQueryRes = useQuery(
+  return useQuery(
     Querytypes.GET_CONTACTS_RELATIONSHIPS,
     () => getContactsBasicDetails(authTokens.idToken),
     {
       refetchOnWindowFocus: false,
     }
   );
-
-  useEffect(() => {
-    if (reactQueryRes.data) {
-      reactQueryRes.data.contactsDetails.map((contactDet) => {
-        // join the right rooms based on the relevant contacts/conversations returned here
-        socket.emit(
-          SocketChannels.JOIN_ROOM,
-          contactDet.relationship._id.toString()
-        );
-      });
-    }
-  }, [reactQueryRes.isFetched]);
-
-  // go through all conversations and mutate adding in data
-  // on whether or not someone is speaking or not
-  if (reactQueryRes.data) {
-    reactQueryRes.data.contactsDetails.map((contactDet) => {
-      // if this contact/conversation is in the list of speaking ones, then change isSpeaking
-      if (speakingRooms.includes(contactDet.relationship._id.toString())) {
-        contactDet.isSpeaking = true;
-      } else {
-        contactDet.isSpeaking = false;
-      }
-    });
-
-    // todo: go through all content and add in the socket messages
-    // find out which convos have new content for user
-    // sort and get rid of duplicate messages for the clip timeline
-    // set the latest link for the view component
-
-    // sort the conversations according to this:
-    // live -> new messages -> speaking -> incoming requests
-  }
-
-  return reactQueryRes;
 }
 
 // =========== MUTATIONS
