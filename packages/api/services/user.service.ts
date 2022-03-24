@@ -1,6 +1,7 @@
 import { GoogleUserInfo, User } from "@nirvana/core/models";
 
 import { ObjectId } from "mongodb";
+import { UserStatus } from "../../core/models/user.model";
 import axios from "axios";
 import { collections } from "./database.service";
 
@@ -58,8 +59,9 @@ export class UserService {
   }
 
   static async createUserIfNotExists(newUser: User) {
-    const exists = (await collections.users?.findOne({ id: newUser.googleId }))
-      ?._id;
+    const exists = (
+      await collections.users?.findOne({ googleId: newUser.googleId })
+    )?._id;
 
     if (!exists) {
       return await collections.users?.insertOne(newUser);
@@ -77,5 +79,16 @@ export class UserService {
         `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${accessToken}`
       )
     ).data;
+  }
+
+  static async updateUserStatus(userGoogleId: string, newStatus: UserStatus) {
+    const query = { googleId: userGoogleId };
+    const updateDoc = {
+      $set: { status: newStatus, lastUpdatedDate: new Date() },
+    };
+
+    const resultUpdate = await collections.users?.updateOne(query, updateDoc);
+
+    return resultUpdate;
   }
 }

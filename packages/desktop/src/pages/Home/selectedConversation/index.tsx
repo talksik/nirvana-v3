@@ -39,7 +39,7 @@ export default function SelectedConversation() {
     $selectedConversation
   );
   const { data: userDetailsData } = useGetUserDetails();
-  const { data: convoDetailsResponse, isFetching } =
+  const { data: convoDetailsResponse, isLoading } =
     useConversationDetails(selectedConvo);
   const { mutate: sendContactRequest } = useSendContactRequest();
   const { mutate: updateRelationshipState } = useUpdateRelationshipState();
@@ -137,10 +137,6 @@ export default function SelectedConversation() {
     return <></>;
   }
 
-  if (isFetching) {
-    return <span className="text-slate-200">Loading conversation details</span>;
-  }
-
   // todo: add cancel request option
 
   const sendRequest = () => {
@@ -174,7 +170,7 @@ export default function SelectedConversation() {
     );
   };
 
-  if (isFetching) return <span>Please wait</span>;
+  if (isLoading) return <span>Please wait</span>;
 
   const renderMainContent = () => {
     // if there's no relationship, then don't show messages, show "send request" button
@@ -274,6 +270,7 @@ export default function SelectedConversation() {
       action: "keyup",
     },
   };
+
   const handlers = {
     CLOSE_SELECTED_CONVO: handleClose,
     START_RECORDING: startRecording,

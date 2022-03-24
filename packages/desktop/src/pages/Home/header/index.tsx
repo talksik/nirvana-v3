@@ -6,6 +6,7 @@ import { useRecoilState, useSetRecoilState } from "recoil";
 import { GlobalHotKeys } from "react-hotkeys";
 import { STORE_ITEMS } from "../../../electron/constants";
 import UserAvatarWithStatus from "../../../components/User/userAvatarWithStatus";
+import { UserStatus } from "@nirvana/core/models";
 import { useGetUserDetails } from "../../../controller/index";
 import { useRef } from "react";
 
@@ -26,10 +27,20 @@ export default function Header() {
     setAuthTokens(null);
   };
 
+  const updateStatus = (newStatus: UserStatus) => {};
   const ProfileMenu = (
     <Menu>
       <Menu.Item key="0">
         <button onClick={logOut}>Log Out</button>
+        {user.status === UserStatus.online ? (
+          <button onClick={() => updateStatus(UserStatus.offline)}>
+            Set status as away
+          </button>
+        ) : (
+          <button onClick={() => updateStatus(UserStatus.offline)}>
+            Set status as away
+          </button>
+        )}
       </Menu.Item>
     </Menu>
   );

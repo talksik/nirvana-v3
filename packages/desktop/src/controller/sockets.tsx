@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import SocketChannels from "@nirvana/core/sockets/channels";
+import { UserStatus } from "../../../core/models/user.model";
 import { socket } from "../nirvanaApp";
 import { useGetAllContactBasicDetails } from "./index";
 
@@ -62,10 +63,18 @@ export default function useSocketData() {
       }
     );
 
+    socket.on(
+      SocketChannels.SEND_USER_STATUS_UPDATE,
+      (userGoogleId: string, newStatus: UserStatus) => {
+        console.log("someone updated their status...hmmm");
+      }
+    );
+
     return () => {
       socket.removeAllListeners(SocketChannels.SEND_STARTED_SPEAKING);
       socket.removeAllListeners(SocketChannels.SEND_STOPPED_SPEAKING);
       socket.removeAllListeners(SocketChannels.SEND_AUDIO_CLIP);
+      socket.removeAllListeners(SocketChannels.SEND_USER_STATUS_UPDATE);
     };
   }, []);
 

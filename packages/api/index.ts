@@ -2,6 +2,8 @@ import express, { Application, Request, Response } from "express";
 
 import { NextFunction } from "express";
 import SocketChannels from "@nirvana/core/sockets/channels";
+import { UserService } from "./services/user.service";
+import { UserStatus } from "@nirvana/core/models";
 import { connectToDatabase } from "./services/database.service";
 import cors from "cors";
 import getContactsRoutes from "./routes/contacts";
@@ -100,6 +102,31 @@ io.on("connection", function (socket: any) {
       relationshipId
     );
   });
+
+  // change of user status to all of users' rooms and db update
+  socket.on(
+    SocketChannels.SEND_USER_STATUS_UPDATE,
+    async (userGoogleId: string, newStatus: UserStatus) => {
+      console.log("new status for user");
+
+      const resultUpdate = await UserService.updateUserStatus(
+        userGoogleId,
+        newStatus
+      );
+
+      // tell all rooms that the user is part of
+      // that this user has updated their status
+      if (resultUpdate?.modifiedCount) {
+        socket.rooms.forEach((roomId: string) => {
+          io.in(roomId).emit(
+            SocketChannels.SEND_USER_STATUS_UPDATE,
+            userGoogleId,
+            newStatus
+          );
+        });
+      }
+    }
+  );
 
   // ==== DISCONNECT ====
   socket.on("disconnect", () => {

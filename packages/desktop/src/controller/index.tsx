@@ -107,6 +107,9 @@ export function useGetUserDetails() {
     {
       retry: false,
       refetchOnWindowFocus: false,
+      onError: (err) => {
+        console.log(err);
+      },
     }
   );
 }
