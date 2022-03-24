@@ -5,8 +5,10 @@ import { useRecoilState, useSetRecoilState } from "recoil";
 
 import { GlobalHotKeys } from "react-hotkeys";
 import { STORE_ITEMS } from "../../../electron/constants";
+import SocketChannels from "@nirvana/core/sockets/channels";
 import UserAvatarWithStatus from "../../../components/User/userAvatarWithStatus";
 import { UserStatus } from "@nirvana/core/models";
+import { socket } from "../../../nirvanaApp";
 import { useGetUserDetails } from "../../../controller/index";
 import { useRef } from "react";
 
@@ -27,18 +29,28 @@ export default function Header() {
     setAuthTokens(null);
   };
 
-  const updateStatus = (newStatus: UserStatus) => {};
+  const updateStatus = (newStatus: UserStatus) => {
+    // send update in socket
+    socket.emit(
+      SocketChannels.SEND_USER_STATUS_UPDATE,
+      user.googleId,
+      newStatus
+    );
+  };
+
   const ProfileMenu = (
     <Menu>
       <Menu.Item key="0">
         <button onClick={logOut}>Log Out</button>
-        {user.status === UserStatus.online ? (
-          <button onClick={() => updateStatus(UserStatus.offline)}>
+      </Menu.Item>
+      <Menu.Item key="1">
+        {user.status === UserStatus.ONLINE ? (
+          <button onClick={() => updateStatus(UserStatus.OFFLINE)}>
             Set status as away
           </button>
         ) : (
-          <button onClick={() => updateStatus(UserStatus.offline)}>
-            Set status as away
+          <button onClick={() => updateStatus(UserStatus.ONLINE)}>
+            Set status as online
           </button>
         )}
       </Menu.Item>
@@ -70,7 +82,10 @@ export default function Header() {
           onChange={(e) => setSearchQuery(e.target.value)}
         />
 
-        <button className="ml-auto mr-2 hover:scale-110 bg-slate-600 text-teal-500 py-1 px-2 rounded-lg text-sm">
+        <button
+          onClick={() => updateStatus(UserStatus.FLOW_STATE)}
+          className="ml-auto mr-2 hover:scale-110 bg-slate-600 text-teal-500 py-1 px-2 rounded-lg text-sm"
+        >
           flow state
         </button>
 

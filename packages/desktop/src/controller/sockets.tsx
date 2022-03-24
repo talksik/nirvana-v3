@@ -66,7 +66,7 @@ export default function useSocketData() {
     socket.on(
       SocketChannels.SEND_USER_STATUS_UPDATE,
       (userGoogleId: string, newStatus: UserStatus) => {
-        console.log("someone updated their status...hmmm");
+        console.log(`${userGoogleId} updated their status...hmmm`);
       }
     );
 
