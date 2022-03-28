@@ -13,11 +13,11 @@ export enum STORE_ITEMS {
 
 export const Dimensions = {
   default: {
-    height: 1000,
+    height: 700,
     width: 500,
   },
   selectedConvo: {
-    height: 1000,
+    height: 700,
     width: 900,
   },
 };

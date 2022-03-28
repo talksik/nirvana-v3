@@ -5,7 +5,7 @@
   "description": "Walkie Talkie for Remote Teams",
   "main": ".webpack/main",
   "scripts": {
-    "start": "electron-forge start",
+    "dev": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
@@ -46,8 +46,8 @@
         [
           "@electron-forge/plugin-webpack",
           {
-            "port": "3000",
-            "loggerPort": "9000",
+            "port": "3001",
+            "loggerPort": "9001",
             "mainConfig": "./webpack.main.config.js",
             "devContentSecurityPolicy": "connect-src 'self' http://localhost:5000 ws://localhost:5000 'unsafe-eval'",
             "renderer": {
