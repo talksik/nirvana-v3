@@ -29,7 +29,7 @@ const createWindow = (): void => {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
       sandbox: true,
     },
-    icon: "./src/assets/1024x1024",
+    icon: path.join(__dirname, "src/assets/1024x1024.icns"),
   });
 
   // and load the index.html of the app.
