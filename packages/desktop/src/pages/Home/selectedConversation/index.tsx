@@ -21,9 +21,9 @@ import { socket } from "../../../nirvanaApp";
 import toast from "react-hot-toast";
 import { useRecoilState } from "recoil";
 
-var audioChunks: any = [];
+let audioChunks: any = [];
 
-var constraints = {
+const constraints = {
   audio: true,
   // {
   //   // mandatory: {
