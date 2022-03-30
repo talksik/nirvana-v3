@@ -18,19 +18,19 @@ export function UserStatusBubble(props: { status: UserStatus }) {
   switch (props.status) {
     case UserStatus.ONLINE:
       return (
-        <span className="absolute bottom-0 -right-1.5 rounded-full bg-emerald-600 h-3 w-3"></span>
+        <span className="absolute -bottom-1 -right-1 rounded-full bg-emerald-600 h-3 w-3 border border-slate-300"></span>
       );
     case UserStatus.OFFLINE:
       return (
-        <span className="absolute bottom-0 -right-1.5 rounded-full bg-slate-400 h-3 w-3"></span>
+        <span className="absolute -bottom-1 -right-1 rounded-full bg-slate-400 h-3 w-3 border border-slate-300"></span>
       );
     case UserStatus.FLOW_STATE:
       return (
-        <span className="absolute bottom-0 -right-1.5 rounded-full bg-pink-400 h-3 w-3"></span>
+        <span className="absolute -bottom-1 -right-1 rounded-full bg-pink-400 h-3 w-3 border border-slate-300"></span>
       );
     default:
       return (
-        <span className="absolute bottom-0 -right-1.5 rounded-full bg-pink-400 h-3 w-3"></span>
+        <span className="absolute -bottom-1 -right-1 rounded-full bg-pink-400 h-3 w-3 border border-slate-300"></span>
       );
   }
 }
