@@ -1,3 +1,6 @@
+import { BsApple, BsWindows } from "react-icons/bs";
+
+import FullMottoLogo from "../../components/logo/fullMotto";
 import Head from "next/head";
 import HorizontalLogo from "../../components/logo/horizontal";
 import Image from "next/image";
@@ -14,16 +17,16 @@ const Home: NextPage = () => {
         <link rel="icon" href="/logos/1024x1024.ico" />
       </Head>
 
-      <main className="h-screen w-screen bg-zinc-700">
+      <main className="min-h-screen min-w-screen bg-zinc-700 flex flex-col">
         {/* header */}
         <div className="container mx-auto p-0 flex flex-row justify-start">
           {/* <img className="text-md" src={"/logos/horizontal.svg"} /> */}
           <HorizontalLogo className="scale-[0.5]" />
         </div>
 
-        {/* above fold experience */}
-        <div className="container mx-auto px-20 mt-10">
-          <div className="flex flex-row items-center space-x-10">
+        <div className="container mx-auto px-20">
+          {/* above fold experience */}
+          <div className="flex flex-row items-center space-x-10 mt-10">
             <div className="flex flex-col items-start">
               <span className="text-white text-6xl leading-[1.2] font-extrabold">
                 The <span className="text-nirvanaTeal">walkie-talkie</span>{" "}
@@ -35,6 +38,23 @@ const Home: NextPage = () => {
                 approach. Skip zoom scheduling, <br></br> slack notifications,
                 and email threads. <br /> Just talk to your team.
               </span>
+
+              {/* download */}
+              <span className="flex flex-col justify-start mt-20">
+                <span className="text-white font-bold text-md mb-2">
+                  Download the desktop app
+                </span>
+
+                <span className="flex flex-row space-x-2">
+                  <span className="p-2 rounded bg-zinc-500 cursor-pointer">
+                    <BsWindows className="text-white text-xl" />
+                  </span>
+
+                  <span className="p-2 rounded bg-zinc-500 cursor-pointer">
+                    <BsApple className="text-white text-xl" />
+                  </span>
+                </span>
+              </span>
             </div>
 
             <img
@@ -42,6 +62,13 @@ const Home: NextPage = () => {
               className="h-[30em]"
             />
           </div>
+
+          {/* value points */}
+        </div>
+
+        {/* footer */}
+        <div className="container mx-auto flex justify-center mt-auto">
+          <FullMottoLogo className="mx-auto text-center scale-50" />
         </div>
       </main>
     </>
