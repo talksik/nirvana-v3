@@ -98,6 +98,7 @@ export enum Querytypes {
   GET_CONVERSATION_DETAILS = "GET_CONVERSATION_DETAILS",
   GET_CONTACTS_RELATIONSHIPS = "GET_CONTACTS_RELATIONSHIPS",
 }
+
 export function useGetUserDetails() {
   const authTokens = useRecoilValue($authTokens);
 
