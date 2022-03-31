@@ -34,11 +34,11 @@ export default function Conversations() {
   return (
     <>
       {/* pinned conversations */}
-      <div className="m-5 p-4 bg-slate-500 shadow-lg rounded">
+      <div className="m-5 p-4 bg-zinc-500 shadow-lg rounded">
         <Tooltip title="Listen in like a walkie-talkie.">
           <span className="flex flex-row justify-start items-center cursor-pointer">
             <FaVolumeUp className="text-red-500" />
-            <span className="ml-2 tracking-wider text-slate-100 uppercase text-sm font-semibold">
+            <span className="ml-2 tracking-wider text-zinc-100 uppercase text-sm font-semibold">
               Live
             </span>
           </span>
@@ -60,8 +60,8 @@ export default function Conversations() {
                   onClick={() =>
                     selectContact(contactDetail.otherUser.googleId)
                   }
-                  className={`flex flex-row items-center hover:bg-slate-600 group py-4 px-2 cursor-pointer ${
-                    isSelected ? "bg-slate-600" : ""
+                  className={`flex flex-row items-center hover:bg-zinc-600 group py-4 px-2 cursor-pointer ${
+                    isSelected ? "bg-zinc-600" : ""
                   } rounded`}
                 >
                   <UserAvatarWithStatus user={contactDetail.otherUser} />

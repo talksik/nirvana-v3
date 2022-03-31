@@ -281,11 +281,11 @@ export default function SelectedConversation() {
     <>
       <GlobalHotKeys handlers={handlers} keyMap={keyMap} />
 
-      <div className="bg-slate-800 flex-1 flex flex-col relative">
+      <div className="bg-zinc-800 flex-1 flex flex-col relative">
         {/* close marker */}
         <FaWindowClose
           onClick={handleClose}
-          className="text-slate-400 text-xl hover:text-slate-200 hover:scale-110 absolute top-0 right-0 m-1 cursor-pointer"
+          className="text-zinc-400 text-xl hover:text-zinc-200 hover:scale-110 absolute top-0 right-0 m-1 cursor-pointer"
         />
 
         {/* top header/profile information */}
@@ -304,7 +304,7 @@ export default function SelectedConversation() {
               />
             </span>
 
-            <span className="text-slate-300 text-sm">{`joined ${moment(
+            <span className="text-zinc-300 text-sm">{`joined ${moment(
               convoDetailsResponse.contactUser.createdDate
             ).fromNow()}`}</span>
           </span>
@@ -313,7 +313,7 @@ export default function SelectedConversation() {
         {renderMainContent()}
 
         <span className="flex flex-row my-5 items-center justify-center space-x-5">
-          <span className="flex flex-row justify-center items-center p-1 rounded shadow-lg h-10 w-10 bg-slate-500 cursor-pointer">
+          <span className="flex flex-row justify-center items-center p-1 rounded shadow-lg h-10 w-10 bg-zinc-500 cursor-pointer">
             {isRecording ? (
               <FaMicrophone className="text-red-600 text-xl animate-pulse" />
             ) : (
@@ -321,7 +321,7 @@ export default function SelectedConversation() {
             )}
           </span>
 
-          <span className="flex flex-row justify-center items-center p-1 rounded shadow-lg h-10 w-10 bg-slate-500 cursor-pointer">
+          <span className="flex flex-row justify-center items-center p-1 rounded shadow-lg h-10 w-10 bg-zinc-500 cursor-pointer">
             <FaPlay className="text-blue-600 text-lg" />
           </span>
         </span>

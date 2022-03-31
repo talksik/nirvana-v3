@@ -72,19 +72,19 @@ export default function Header() {
     <>
       <GlobalHotKeys handlers={handlers} keyMap={keyMap}></GlobalHotKeys>
 
-      <div className="flex flex-row items-center bg-slate-800 h-20 px-5">
+      <div className="flex flex-row items-center bg-zinc-800 h-20 px-5">
         <Logo type={LogoType.small} className="scale-[0.4]" />
         <input
           ref={inputRef}
           placeholder="type / to search"
-          className="placeholder:text-slate-400 bg-transparent outline-none text-slate-100"
+          className="placeholder:text-zinc-400 bg-transparent outline-none text-zinc-100"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
 
         <button
           onClick={() => updateStatus(UserStatus.FLOW_STATE)}
-          className="ml-auto mr-2 hover:scale-110 bg-slate-600 text-teal-500 py-1 px-2 rounded-lg text-sm"
+          className="ml-auto mr-2 hover:scale-110 bg-zinc-600 text-teal-500 py-1 px-2 rounded-lg text-sm"
         >
           flow state
         </button>

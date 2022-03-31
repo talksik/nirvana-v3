@@ -22,7 +22,7 @@ export default function ProtectedRoute({
 
   if (isLoading)
     return (
-      <div className="container h-screen w-screen">
+      <div className="container h-screen w-screen flex flex-col justify-center mx-10">
         <SkeletonLoader />
       </div>
     );

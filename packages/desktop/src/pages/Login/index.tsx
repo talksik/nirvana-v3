@@ -7,7 +7,7 @@ import { CircularProgress } from "@mui/material";
 import { FcGoogle } from "react-icons/fc";
 import Logo from "../../components/Logo";
 
-export default function Login({ onReady }: { onReady: Function }) {
+export default function Login({ onReady }: { onReady: () => void }) {
   const setAuthTokens = useSetRecoilState($authTokens);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [authFailureCount, setAuthFailureCount] =
@@ -85,7 +85,7 @@ export default function Login({ onReady }: { onReady: Function }) {
   }, []);
 
   return (
-    <div className="container flex flex-col space-y-5 justify-center items-center h-screen bg-slate-900">
+    <div className="container flex flex-col space-y-5 justify-center items-center h-screen bg-zinc-700">
       <Logo className="scale-50" />
 
       {isLoading ? (
@@ -96,7 +96,7 @@ export default function Login({ onReady }: { onReady: Function }) {
       ) : (
         <button
           onClick={continueAuth}
-          className=" text-md text-slate-200 py-2 px-5 border border-gray-200 transition-all hover:bg-gray-200 hover:text-teal-500 rounded flex flex-row items-center space-x-2"
+          className=" text-md text-zinc-200 py-2 px-5 border border-gray-200 transition-all hover:bg-gray-200 hover:text-teal-500 rounded flex flex-row items-center space-x-2"
         >
           <FcGoogle className="text-lg" />
           <span>Continue with Google</span>

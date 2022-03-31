@@ -14,7 +14,7 @@ export default function Home() {
   const searchQuery = useRecoilValue($searchQuery);
 
   return (
-    <div className="h-screen bg-slate-700 flex flex-row">
+    <div className="h-screen bg-zinc-700 flex flex-row">
       <div className="flex-1">
         {/* header */}
         <Header />
