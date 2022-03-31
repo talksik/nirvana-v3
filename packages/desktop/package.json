@@ -20,7 +20,14 @@
   "config": {
     "forge": {
       "packagerConfig": {
-        "icon": "./src/assets/1024x1024"
+        "icon": "./src/assets/1024x1024",
+        "protocols": [
+          {
+            "protocol": "nirvana-desktop",
+            "name": "nirvana-desktop",
+            "schemes": "nirvana-desktop"
+          }
+        ]
       },
       "makers": [
         {

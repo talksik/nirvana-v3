@@ -1,8 +1,13 @@
 import { FcGoogle } from "react-icons/fc";
 import Footer from "../../components/footer";
 import Header from "../../components/header";
+import { useEffect } from "react";
 
 export default function AuthSuccess() {
+  useEffect(() => {
+    window.open("nirvana-desktop://login", "_self");
+  }, []);
+
   return (
     <>
       <Header />
