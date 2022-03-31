@@ -1,5 +1,6 @@
 import { BsApple, BsWindows } from "react-icons/bs";
 
+import { FaRunning } from "react-icons/fa";
 import FullMottoLogo from "../../components/logo/fullMotto";
 import Head from "next/head";
 import HorizontalLogo from "../../components/logo/horizontal";
@@ -62,13 +63,60 @@ const Home: NextPage = () => {
               className="h-[30em]"
             />
           </div>
+        </div>
 
-          {/* value points */}
+        {/* value points */}
+        <div className="flex flex-row w-full mx-auto px-20 py-10 bg-zinc-500 my-10 space-x-5">
+          <span className="p-5 bg-zinc-600 flex flex-col items-start flex-1 shadow">
+            <span className="flex flex-row items-center space-x-2">
+              <FaRunning className="text-white text-lg" />
+              <span className="text-white font-semibold text-lg">
+                Move Faster
+              </span>
+            </span>
+
+            <span className="text-zinc-300 text-sm">
+              No more back and forth chatter. Resolve issues in seconds with
+              spontaneous conversations.
+            </span>
+          </span>
+
+          <span className="p-5 bg-zinc-600 flex flex-col items-start flex-1 shadow">
+            <span className="flex flex-row items-center space-x-2">
+              <FaRunning className="text-white text-lg" />
+              <span className="text-white font-semibold text-lg">Minimal</span>
+            </span>
+
+            <span className="text-zinc-300 text-sm">
+              All of your team’s converstions in one place. Nirvana’s built for
+              flow state. Communication as simple and human as possible.
+            </span>
+          </span>
+
+          <span className="p-5 bg-zinc-600 flex flex-col items-start flex-1 shadow">
+            <span className="flex flex-row items-center space-x-2">
+              <FaRunning className="text-white text-lg" />
+              <span className="text-white font-semibold text-lg">
+                Build Culture
+              </span>
+            </span>
+
+            <span className="text-zinc-300 text-sm">
+              Close-knit culture and increased serendipity by knowing your
+              team’s right there with you.
+            </span>
+          </span>
         </div>
 
         {/* footer */}
-        <div className="container mx-auto flex justify-center mt-auto">
-          <FullMottoLogo className="mx-auto text-center scale-50" />
+        <div className="container mx-auto flex justify-between mt-auto items-center">
+          <span>
+            <span className="text-zinc-400 text-sm">Wanna chat? </span>
+            <span className="font-bold text-white">
+              arjunpatel@berkeley.edu
+            </span>
+          </span>
+          <FullMottoLogo className="text-center scale-50" />
         </div>
       </main>
     </>
