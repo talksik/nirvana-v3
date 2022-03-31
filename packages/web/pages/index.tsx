@@ -1,11 +1,12 @@
 import { BsApple, BsWindows } from "react-icons/bs";
+import { FaPeopleCarry, FaRunning } from "react-icons/fa";
 
-import { FaRunning } from "react-icons/fa";
 import FullMottoLogo from "../../components/logo/fullMotto";
 import Head from "next/head";
 import HorizontalLogo from "../../components/logo/horizontal";
 import Image from "next/image";
 import { LogoType } from "../../components/logo/full";
+import { MdOutlineNaturePeople } from "react-icons/md";
 import type { NextPage } from "next";
 import styles from "../styles/Home.module.css";
 
@@ -69,7 +70,7 @@ const Home: NextPage = () => {
         <div className="flex flex-row w-full mx-auto px-20 py-10 bg-zinc-500 my-10 space-x-5">
           <span className="p-5 bg-zinc-600 flex flex-col items-start flex-1 shadow">
             <span className="flex flex-row items-center space-x-2">
-              <FaRunning className="text-white text-lg" />
+              <FaRunning className="text-white text-xl" />
               <span className="text-white font-semibold text-lg">
                 Move Faster
               </span>
@@ -83,7 +84,7 @@ const Home: NextPage = () => {
 
           <span className="p-5 bg-zinc-600 flex flex-col items-start flex-1 shadow">
             <span className="flex flex-row items-center space-x-2">
-              <FaRunning className="text-white text-lg" />
+              <MdOutlineNaturePeople className="text-white text-xl" />
               <span className="text-white font-semibold text-lg">Minimal</span>
             </span>
 
@@ -95,7 +96,7 @@ const Home: NextPage = () => {
 
           <span className="p-5 bg-zinc-600 flex flex-col items-start flex-1 shadow">
             <span className="flex flex-row items-center space-x-2">
-              <FaRunning className="text-white text-lg" />
+              <FaPeopleCarry className="text-white text-lg" />
               <span className="text-white font-semibold text-lg">
                 Build Culture
               </span>
