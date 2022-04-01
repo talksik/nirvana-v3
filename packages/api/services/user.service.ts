@@ -59,11 +59,9 @@ export class UserService {
   }
 
   static async createUserIfNotExists(newUser: User) {
-    const exists = (
-      await collections.users?.findOne({ googleId: newUser.googleId })
-    )?._id;
+    const getUser = await this.getUserByEmail(newUser.email);
 
-    if (!exists) {
+    if (!getUser) {
       return await collections.users?.insertOne(newUser);
     }
 

@@ -1,10 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 
-import { OAuth2Client } from "google-auth-library";
+import { loadConfig } from "../config";
 
-const client = new OAuth2Client(
-  "423533244953-banligobgbof8hg89i6cr1l7u0p7c2pk.apps.googleusercontent.com"
-);
+const config = loadConfig();
 
 // used by specific routes that need to authentication
 export const authCheck = async (
@@ -12,25 +10,15 @@ export const authCheck = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { authorization } = req.headers;
-
-  // verify jwt token
-
   try {
-    // const ticket = await client.verifyIdToken({
-    //   idToken: authorization ?? "",
-    //   audience:
-    //     "423533244953-banligobgbof8hg89i6cr1l7u0p7c2pk.apps.googleusercontent.com", // Specify the CLIENT_ID of the app that accesses the backend
-    // });
-    // const userId = ticket.getPayload()?.sub;
-    // const email = ticket.getPayload()?.email;
+    const { authorization } = req.headers;
 
-    // if (!userId) throw new Error("No google user Id found");
+    // verify jwt token
+    const jwtSecret = config.JWT_TOKEN_SECRET;
 
-    // // used in subsequent handlers
-    // // todo: have to get our database id for the user instead of google's id
-    // res.locals.userId = userId;
-    // res.locals.email = email;
+    if (!authorization) {
+      throw Error("No provided header");
+    }
 
     next();
   } catch (error) {

@@ -1,6 +1,7 @@
 import { GoogleUserInfo, User } from "@nirvana/core/models";
 import express, { Application, Request, Response } from "express";
 
+import LoginResponse from "../../core/responses/login.response";
 import { OAuth2Client } from "google-auth-library";
 import { ObjectID } from "bson";
 import { ObjectId } from "mongodb";
@@ -8,10 +9,13 @@ import { UserService } from "../services/user.service";
 import { UserStatus } from "../../core/models/user.model";
 import { authCheck } from "../middleware/auth";
 import { collections } from "../services/database.service";
+import { loadConfig } from "../config";
 
-const client = new OAuth2Client(
-  "423533244953-banligobgbof8hg89i6cr1l7u0p7c2pk.apps.googleusercontent.com"
-);
+const jwt = require("jsonwebtoken");
+
+const config = loadConfig();
+
+const client = new OAuth2Client(config.GOOGLE_AUTH_CLIENT_ID);
 
 export default function getUserRoutes() {
   const router = express.Router();
@@ -38,8 +42,7 @@ async function login(req: Request, res: Response) {
   try {
     const ticket = await client.verifyIdToken({
       idToken: (id_token as string) ?? "",
-      audience:
-        "423533244953-banligobgbof8hg89i6cr1l7u0p7c2pk.apps.googleusercontent.com", // Specify the CLIENT_ID of the app that accesses the backend
+      audience: config.GOOGLE_AUTH_CLIENT_ID, // Specify the CLIENT_ID of the app that accesses the backend
     });
     const googleUserId = ticket.getPayload()?.sub as string;
     const email = ticket.getPayload()?.email as string;
@@ -50,7 +53,7 @@ async function login(req: Request, res: Response) {
     }
 
     // return user details if it passed auth middleware
-    const user = await UserService.getUserByEmail(email);
+    let user = await UserService.getUserByEmail(email);
 
     // if no user found, then go ahead and create user
     if (!user) {
@@ -86,17 +89,37 @@ async function login(req: Request, res: Response) {
       newUser._id = insertResult?.insertedId;
 
       // create jwt token with new user info
+      const jwtToken = jwt.sign(
+        {
+          userId: newUser._id,
+          googleUserId: newUser.googleId,
+          picture: newUser.picture,
+          email: newUser.email,
+          name: newUser.name,
+        },
+        config.JWT_TOKEN_SECRET
+      );
 
       insertResult
-        ? res.status(200).send(newUser)
+        ? res.status(200).send(new LoginResponse(jwtToken, newUser))
         : res.status(500).send("Failed to create account, already exists");
 
       return;
     }
 
-    // create jwt token with existing user info
+    // create jwt token with new user info
+    const jwtToken = jwt.sign(
+      {
+        userId: user._id,
+        googleUserId: user.googleId,
+        picture: user.picture,
+        email: user.email,
+        name: user.name,
+      },
+      config.JWT_TOKEN_SECRET
+    );
 
-    res.status(200).send(user);
+    res.status(200).send(new LoginResponse(jwtToken, user));
   } catch (error) {
     console.log(error);
     res.status(500).send(`Problem with signing user up or logging in`);
