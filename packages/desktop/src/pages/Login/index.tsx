@@ -41,6 +41,8 @@ export default function Login() {
         const { jwtToken, userDetails } = loginResponse;
 
         window.electronAPI.store.set(STORE_ITEMS.AUTH_SESSION_JWT, jwtToken);
+
+        window.location.reload();
       }
     );
 

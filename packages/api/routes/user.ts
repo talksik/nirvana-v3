@@ -27,9 +27,17 @@ export default function getUserRoutes() {
 
   router.get("/login", login);
 
-  router.get("/authCheck", authCheck);
+  router.get("/authcheck", authCheck, handleAuthCheck);
 
   return router;
+}
+
+async function handleAuthCheck(req: Request, res: Response) {
+  try {
+    res.status(200).send();
+  } catch (error) {
+    res.status(401).send();
+  }
 }
 
 /** Create user if doesn't exist

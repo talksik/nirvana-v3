@@ -20,6 +20,9 @@ export default class NirvanaApi {
       const fullUrl = localHost + url;
 
       let res;
+      if (privateRoute && !this._jwtToken)
+        throw Error("No jwt token available!");
+
       if (privateRoute && this._jwtToken) {
         res = await fetch(fullUrl, {
           method: method,
@@ -36,10 +39,8 @@ export default class NirvanaApi {
       }
 
       return await res.json();
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
-
-      throw Error(error);
     }
   }
 }
@@ -55,6 +56,6 @@ export async function login(reqLoginTokens: {
   );
 }
 
-export async function authCheck(jwtToken: string) {
-  return await NirvanaApi.fetch(`/user/authCheck`, "GET", true);
+export async function authCheck(): Promise<void> {
+  return await NirvanaApi.fetch(`/user/authcheck`, "GET", true);
 }

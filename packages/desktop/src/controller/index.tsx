@@ -1,10 +1,12 @@
-import NirvanaApi, { login } from "./nirvanaApi";
+import NirvanaApi, { authCheck, login } from "./nirvanaApi";
 import { useMutation, useQuery } from "react-query";
 
-import { $authTokens } from "./recoil";
-import { useRecoilValue } from "recoil";
-
 // ====== QUERIES
+export function useAuthCheck() {
+  return useQuery("AUTH_CHECK", authCheck, {
+    retry: false,
+  });
+}
 
 export function useLogin() {
   return useMutation("LOGIN", login, {});
