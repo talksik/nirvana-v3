@@ -6,7 +6,6 @@ export function useAuthCheck() {
   return useQuery("AUTH_CHECK", ApiCalls.authCheck, {
     retry: false,
     refetchOnWindowFocus: false,
-    enabled: NirvanaApi._jwtToken ? true : false,
   });
 }
 

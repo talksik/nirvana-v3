@@ -8,7 +8,6 @@ enum Channels {
 }
 
 export enum STORE_ITEMS {
-  GOOGLE_AUTH_TOKENS = "GOOGLE_AUTH_TOKENS",
   AUTH_SESSION_JWT = "AUTH_SESSION_JWT",
 }
 

@@ -16,7 +16,5 @@ const myApiOauth = new ElectronGoogleOAuth2(
 export async function handleGoogleLogin() {
   const tokens = await myApiOauth.openAuthWindowAndGetTokens();
 
-  store.set(STORE_ITEMS.GOOGLE_AUTH_TOKENS, tokens);
-
   browserWindow.webContents.send(Channels.GOOGLE_AUTH_TOKENS, tokens);
 }

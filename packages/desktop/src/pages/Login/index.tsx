@@ -2,23 +2,17 @@ import Channels, { STORE_ITEMS } from "../../electron/constants";
 import { useEffect, useState } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
 
-import { $authTokens } from "../../controller/recoil";
+import { $jwtToken } from "../../controller/recoil";
 import { CircularProgress } from "@mui/material";
 import { FcGoogle } from "react-icons/fc";
 import Logo from "../../components/Logo";
-import NirvanaApi from "../../controller/nirvanaApi";
 import { useLogin } from "../../controller/index";
 
 export default function Login() {
   const { mutateAsync } = useLogin();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const continueAuth = () => {
-    setIsLoading(true);
-
-    // send to main process
-    window.electronAPI.auth.initiateLogin();
-  };
+  const setJwtToken = useSetRecoilState($jwtToken);
 
   useEffect(() => {
     window.electronAPI.once(
@@ -39,12 +33,7 @@ export default function Login() {
         });
 
         const { jwtToken, userDetails } = loginResponse;
-
-        window.electronAPI.store.set(STORE_ITEMS.AUTH_SESSION_JWT, jwtToken);
-
-        console.log(loginResponse);
-
-        // window.location.reload();
+        setJwtToken(jwtToken);
       }
     );
 
@@ -53,6 +42,13 @@ export default function Login() {
     //   window.electronAPI.removeAllListeners(Channels.GOOGLE_AUTH_TOKENS);
     // };
   }, []);
+
+  const continueAuth = () => {
+    setIsLoading(true);
+
+    // send to main process
+    window.electronAPI.auth.initiateLogin();
+  };
 
   return (
     <div className="container flex flex-col space-y-5 justify-center items-center h-screen bg-zinc-700">

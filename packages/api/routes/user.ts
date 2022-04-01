@@ -43,8 +43,6 @@ async function handleAuthCheck(req: Request, res: Response) {
 
 async function getUserDetails(req: Request, res: Response) {
   try {
-    console.log(res.locals.userInfo as JwtClaims);
-
     const userInfo = res.locals.userInfo as JwtClaims;
 
     const user = await UserService.getUserById(userInfo.userId);

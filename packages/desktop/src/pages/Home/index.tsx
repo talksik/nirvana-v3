@@ -17,7 +17,7 @@ export default function Home() {
     <div className="h-screen bg-zinc-700 flex flex-row">
       <div className="flex-1">
         {/* header */}
-        {/* <Header /> */}
+        <Header />
 
         {/*  main content */}
 

@@ -1,11 +1,12 @@
 import { useAuthCheck, useLogin } from "../../controller/index";
 
-import { $authTokens } from "../../controller/recoil";
+import { $jwtToken } from "../../controller/recoil";
 import Login from "../../pages/Login";
 import NirvanaApi from "../../controller/nirvanaApi";
 import { STORE_ITEMS } from "../../electron/constants";
 import SkeletonLoader from "../loading/skeleton";
 import { useEffect } from "react";
+import { useRecoilState } from "recoil";
 
 export default function ProtectedRoute({
   children,
@@ -13,6 +14,8 @@ export default function ProtectedRoute({
   children?: React.ReactNode;
 }) {
   const { isLoading, isError, isSuccess, refetch } = useAuthCheck();
+
+  const [jwtToken, setJwtToken] = useRecoilState($jwtToken);
 
   useEffect(() => {
     // on load of this, if we already have jwt tokens in store,
@@ -26,6 +29,17 @@ export default function ProtectedRoute({
         }
       });
   }, []);
+
+  useEffect(() => {
+    if (jwtToken) {
+      window.electronAPI.store.set(STORE_ITEMS.AUTH_SESSION_JWT, jwtToken);
+    } else {
+      window.electronAPI.store.set(STORE_ITEMS.AUTH_SESSION_JWT, null);
+    }
+
+    NirvanaApi._jwtToken = jwtToken;
+    refetch();
+  }, [jwtToken]);
 
   if (isLoading) {
     return (

@@ -1,9 +1,10 @@
-import { $authTokens, $searchQuery } from "../../../controller/recoil";
+import { $jwtToken, $searchQuery } from "../../../controller/recoil";
 import { Dropdown, Menu } from "antd";
 import Logo, { LogoType } from "../../../components/Logo";
 import { useRecoilState, useSetRecoilState } from "recoil";
 
 import { GlobalHotKeys } from "react-hotkeys";
+import NirvanaApi from "../../../controller/nirvanaApi";
 import { STORE_ITEMS } from "../../../electron/constants";
 import SocketChannels from "@nirvana/core/sockets/channels";
 import UserAvatarWithStatus from "../../../components/User/userAvatarWithStatus";
@@ -16,17 +17,16 @@ export default function Header() {
   const { data: userDetailsResponse, isLoading } = useGetUserDetails();
   const [searchQuery, setSearchQuery] = useRecoilState($searchQuery);
 
-  const inputRef = useRef(null);
+  const setJwtToken = useSetRecoilState($jwtToken);
 
-  const setAuthTokens = useSetRecoilState($authTokens);
+  const inputRef = useRef(null);
 
   if (isLoading) {
     return <span>getting data</span>;
   }
 
   const logOut = () => {
-    window.electronAPI.store.set(STORE_ITEMS.GOOGLE_AUTH_TOKENS, null);
-    setAuthTokens(null);
+    setJwtToken(undefined);
   };
 
   const updateStatus = (newStatus: UserStatus) => {

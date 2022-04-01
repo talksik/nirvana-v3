@@ -26,7 +26,6 @@ export const authCheck = async (
 
     next();
   } catch (error) {
-    console.log(error);
     res.status(401).send("unauthorized");
   }
 };

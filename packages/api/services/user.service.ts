@@ -7,7 +7,7 @@ import { collections } from "./database.service";
 
 export class UserService {
   static async getUserById(userId: string) {
-    const query = { _id: userId };
+    const query = { _id: new ObjectId(userId) };
 
     const res = await collections.users?.findOne(query);
 

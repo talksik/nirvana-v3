@@ -19,31 +19,25 @@ export default class NirvanaApi {
 
     const fullUrl = localHost + url;
 
-    try {
-      let res;
-      if (privateRoute && !this._jwtToken)
-        throw Error("No jwt token available!");
+    let res;
+    if (privateRoute && !this._jwtToken) throw Error("No jwt token available!");
 
-      if (privateRoute && this._jwtToken) {
-        res = await fetch(fullUrl, {
-          method: method,
-          headers: { Authorization: this._jwtToken },
-        });
-      } else {
-        res = await fetch(fullUrl);
-      }
-
-      if (!res.ok) {
-        if (res.status === 401) throw new Error("You are not authorized here");
-
-        throw new Error("Something went wrong");
-      }
-
-      return await res.json();
-    } catch (error) {
-      console.log(error);
-      throw error;
+    if (privateRoute && this._jwtToken) {
+      res = await fetch(fullUrl, {
+        method: method,
+        headers: { Authorization: this._jwtToken },
+      });
+    } else {
+      res = await fetch(fullUrl);
     }
+
+    if (!res.ok) {
+      if (res.status === 401) throw new Error("You are not authorized here");
+
+      throw new Error("Something went wrong");
+    }
+
+    return await res.json();
   }
 }
 
