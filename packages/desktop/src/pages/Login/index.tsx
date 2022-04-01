@@ -1,86 +1,52 @@
-import { $authFailureCount, $authTokens } from "../../controller/recoil";
 import Channels, { STORE_ITEMS } from "../../electron/constants";
 import { useEffect, useState } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
 
+import { $authTokens } from "../../controller/recoil";
 import { CircularProgress } from "@mui/material";
 import { FcGoogle } from "react-icons/fc";
 import Logo from "../../components/Logo";
+import NirvanaApi from "../../controller/nirvanaApi";
+import { useLogin } from "../../controller/index";
 
-export default function Login({ onReady }: { onReady: () => void }) {
-  const setAuthTokens = useSetRecoilState($authTokens);
+export default function Login() {
+  const { mutateAsync } = useLogin();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [authFailureCount, setAuthFailureCount] =
-    useRecoilState($authFailureCount);
 
   const continueAuth = () => {
     setIsLoading(true);
+
     // send to main process
-    // ipcRenderer.send(Channels.ACTIVATE_LOG_IN);
     window.electronAPI.auth.initiateLogin();
   };
 
-  const logOut = () => {
-    window.electronAPI.store.set(STORE_ITEMS.AUTH_TOKENS, null);
-  };
-
-  const setAccessTokensAndContinue = (tokens: {
-    accessToken: string;
-    idToken: string;
-    refreshToken: string;
-  }) => {
-    setAuthTokens(tokens);
-
-    console.log(tokens.idToken);
-
-    onReady();
-  };
-
   useEffect(() => {
-    // todo solve this better by just using refresh token in the backend
+    window.electronAPI.once(
+      Channels.GOOGLE_AUTH_TOKENS,
+      async (tokens: {
+        access_token: string;
+        id_token: string;
+        refresh_token: string;
+      }) => {
+        console.log("got tokens", tokens);
 
-    setAuthFailureCount((prevVal) => prevVal + 1);
+        setIsLoading(true);
+        // todo: implement refresh token procedure in api layer by sending refresh_token and such
 
-    // if failure count is 2, then just log the user out
-    if (authFailureCount >= 2) {
-      logOut();
-    } else {
-      // todo: comment all of this else when trying to test with two users/instances
-
-      // see if we have tokens in localstorage in which case we can continue on
-      window.electronAPI.store
-        .get(STORE_ITEMS.AUTH_TOKENS)
-        .then((tokensFromStore: any) => {
-          if (tokensFromStore) {
-            setIsLoading(true);
-
-            const { access_token, id_token, refresh_token } = tokensFromStore;
-
-            setAccessTokensAndContinue({
-              accessToken: access_token,
-              idToken: id_token,
-              refreshToken: refresh_token,
-            });
-          }
+        const loginResponse = await mutateAsync({
+          accessToken: tokens.access_token,
+          idToken: tokens.id_token,
         });
-    }
 
-    window.electronAPI.once(Channels.AUTH_TOKENS, (tokens: any) => {
-      setIsLoading(true);
+        const { jwtToken, userDetails } = loginResponse;
 
-      // todo: implement refresh token procedure in api layer by sending refresh_token and such
-      const { access_token, id_token, refresh_token } = tokens;
-
-      setAccessTokensAndContinue({
-        accessToken: access_token,
-        idToken: id_token,
-        refreshToken: refresh_token,
-      });
-    });
+        window.electronAPI.store.set(STORE_ITEMS.AUTH_SESSION_JWT, jwtToken);
+      }
+    );
 
     // todo: figure out how to clean up with the preload api
     // return () => {
-    //   window.electronAPI.removeAllListeners(Channels.AUTH_TOKENS);
+    //   window.electronAPI.removeAllListeners(Channels.GOOGLE_AUTH_TOKENS);
     // };
   }, []);
 
