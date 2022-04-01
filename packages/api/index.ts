@@ -6,11 +6,9 @@ import { UserService } from "./services/user.service";
 import { UserStatus } from "@nirvana/core/models";
 import { connectToDatabase } from "./services/database.service";
 import cors from "cors";
-import getContactsRoutes from "./routes/contacts";
 import getConversationRoutes from "./routes/conversation";
 import getSearchRoutes from "./routes/search";
 import getUserRoutes from "./routes/user";
-import http from "http";
 
 const app = express();
 
@@ -28,7 +26,6 @@ app.get("/", (req: Request, res: Response) => {
 app.use("/api/user", getUserRoutes());
 app.use("/api/search", getSearchRoutes());
 app.use("/api/conversations", getConversationRoutes());
-app.use("/api/contacts", getContactsRoutes());
 
 const PORT = 5000;
 var server = app.listen(PORT, () => console.log("express running"));
