@@ -42,7 +42,9 @@ export default function Login() {
 
         window.electronAPI.store.set(STORE_ITEMS.AUTH_SESSION_JWT, jwtToken);
 
-        window.location.reload();
+        console.log(loginResponse);
+
+        // window.location.reload();
       }
     );
 

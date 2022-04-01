@@ -2,6 +2,7 @@ import axios, { AxiosRequestConfig, AxiosResponse, Method } from "axios";
 
 import LoginResponse from "../../../core/responses/login.response";
 import { User } from "@nirvana/core/models";
+import UserDetailsResponse from "../../../core/responses/userDetails.response";
 
 // export const localHost = process.env.REACT_APP_API_DOMAIN;
 
@@ -16,9 +17,9 @@ export default class NirvanaApi {
     // error if no auth token and it's a private route
     // throw error and show message on anything that is an error from the backend
 
-    try {
-      const fullUrl = localHost + url;
+    const fullUrl = localHost + url;
 
+    try {
       let res;
       if (privateRoute && !this._jwtToken)
         throw Error("No jwt token available!");
@@ -33,19 +34,20 @@ export default class NirvanaApi {
       }
 
       if (!res.ok) {
-        if (res.status === 401) throw Error("You are not authorized here");
+        if (res.status === 401) throw new Error("You are not authorized here");
 
-        throw Error("Something went wrong");
+        throw new Error("Something went wrong");
       }
 
       return await res.json();
-    } catch (error: any) {
+    } catch (error) {
       console.log(error);
+      throw error;
     }
   }
 }
 
-export async function login(reqLoginTokens: {
+async function login(reqLoginTokens: {
   accessToken: string;
   idToken: string;
 }): Promise<LoginResponse> {
@@ -56,6 +58,16 @@ export async function login(reqLoginTokens: {
   );
 }
 
-export async function authCheck(): Promise<void> {
+async function authCheck(): Promise<void> {
   return await NirvanaApi.fetch(`/user/authcheck`, "GET", true);
 }
+
+async function getUserDetails(): Promise<UserDetailsResponse> {
+  return await NirvanaApi.fetch(`/user`, "GET", true);
+}
+
+export const ApiCalls = {
+  login,
+  authCheck,
+  getUserDetails,
+};

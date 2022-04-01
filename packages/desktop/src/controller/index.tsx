@@ -1,32 +1,28 @@
-import NirvanaApi, { authCheck, login } from "./nirvanaApi";
+import NirvanaApi, { ApiCalls } from "./nirvanaApi";
 import { useMutation, useQuery } from "react-query";
 
 // ====== QUERIES
 export function useAuthCheck() {
-  return useQuery("AUTH_CHECK", authCheck, {
+  return useQuery("AUTH_CHECK", ApiCalls.authCheck, {
     retry: false,
+    refetchOnWindowFocus: false,
+    enabled: NirvanaApi._jwtToken ? true : false,
   });
 }
 
 export function useLogin() {
-  return useMutation("LOGIN", login, {});
+  return useMutation("LOGIN", ApiCalls.login, {});
 }
 
-// export function useGetUserDetails() {
-//   const authTokens = useRecoilValue($authTokens);
-
-//   return useQuery(
-//     Querytypes.GET_USER_DETAILS,
-//     () => getUserDetails(authTokens?.accessToken, authTokens?.idToken),
-//     {
-//       retry: false,
-//       refetchOnWindowFocus: false,
-//       onError: (err) => {
-//         console.log(err);
-//       },
-//     }
-//   );
-// }
+export function useGetUserDetails() {
+  return useQuery("USER_DETAILS", ApiCalls.getUserDetails, {
+    retry: false,
+    refetchOnWindowFocus: false,
+    onError: (err) => {
+      console.log(err);
+    },
+  });
+}
 
 // export function useSearch() {
 //   const authTokens = useRecoilValue($authTokens);

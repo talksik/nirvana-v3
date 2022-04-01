@@ -1,13 +1,14 @@
 import { GoogleUserInfo, User } from "@nirvana/core/models";
+import { JwtClaims, authCheck } from "../middleware/auth";
 import express, { Application, Request, Response } from "express";
 
 import LoginResponse from "../../core/responses/login.response";
 import { OAuth2Client } from "google-auth-library";
 import { ObjectID } from "bson";
 import { ObjectId } from "mongodb";
+import UserDetailsResponse from "../../core/responses/userDetails.response";
 import { UserService } from "../services/user.service";
 import { UserStatus } from "../../core/models/user.model";
-import { authCheck } from "../middleware/auth";
 import { collections } from "../services/database.service";
 import { loadConfig } from "../config";
 
@@ -23,7 +24,7 @@ export default function getUserRoutes() {
   router.use(express.json());
 
   // get user details based on id token
-  // router.get("/", authCheck, getUserDetails);
+  router.get("/", authCheck, getUserDetails);
 
   router.get("/login", login);
 
@@ -34,9 +35,26 @@ export default function getUserRoutes() {
 
 async function handleAuthCheck(req: Request, res: Response) {
   try {
-    res.status(200).send();
+    res.status(200).json("You are good to go!");
   } catch (error) {
-    res.status(401).send();
+    res.status(401).json("Unauthorized");
+  }
+}
+
+async function getUserDetails(req: Request, res: Response) {
+  try {
+    console.log(res.locals.userInfo as JwtClaims);
+
+    const userInfo = res.locals.userInfo as JwtClaims;
+
+    const user = await UserService.getUserById(userInfo.userId);
+
+    user
+      ? res.status(200).json(new UserDetailsResponse(user))
+      : res.status(404).json("No such user");
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(`Problem with signing user up or logging in`);
   }
 }
 
@@ -56,7 +74,7 @@ async function login(req: Request, res: Response) {
     const email = ticket.getPayload()?.email as string;
 
     if (!googleUserId || !email) {
-      res.status(401).send("no google account found");
+      res.status(401).json("no google account found");
       return;
     }
 
@@ -66,7 +84,7 @@ async function login(req: Request, res: Response) {
     // if no user found, then go ahead and create user
     if (!user) {
       if (!access_token) {
-        res.status(400).send("No access token provided");
+        res.status(400).json("No access token provided");
         return;
       }
 
@@ -109,8 +127,8 @@ async function login(req: Request, res: Response) {
       );
 
       insertResult
-        ? res.status(200).send(new LoginResponse(jwtToken, newUser))
-        : res.status(500).send("Failed to create account, already exists");
+        ? res.status(200).json(new LoginResponse(jwtToken, newUser))
+        : res.status(500).json("Failed to create account, already exists");
 
       return;
     }
@@ -127,9 +145,9 @@ async function login(req: Request, res: Response) {
       config.JWT_TOKEN_SECRET
     );
 
-    res.status(200).send(new LoginResponse(jwtToken, user));
+    res.status(200).json(new LoginResponse(jwtToken, user));
   } catch (error) {
     console.log(error);
-    res.status(500).send(`Problem with signing user up or logging in`);
+    res.status(500).json(`Problem with signing user up or logging in`);
   }
 }

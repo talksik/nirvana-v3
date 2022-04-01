@@ -2,6 +2,7 @@ import Logo, { LogoType } from "../../components/Logo";
 
 import { $searchQuery } from "../../controller/recoil";
 import Conversations from "./conversations";
+import Header from "./header";
 // import Header from "./header";
 import Search from "./search";
 // import SelectedConversation from "./selectedConversation";

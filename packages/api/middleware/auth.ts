@@ -22,7 +22,7 @@ export const authCheck = async (
     // verify jwt token with our api secret
     var decoded: JwtClaims = jwt.verify(authorization, config.JWT_TOKEN_SECRET);
 
-    res.locals.jwtClaims = decoded;
+    res.locals.userInfo = decoded;
 
     next();
   } catch (error) {
