@@ -6,8 +6,8 @@ export class User {
     public email: string,
     public verifiedEmail: boolean,
     public name: string,
-    public given_name: string,
-    public family_name: string,
+    public givenName: string,
+    public familyName: string,
     public picture: string,
     public locale: string,
 

@@ -25,7 +25,7 @@ app.get("/", (req: Request, res: Response) => {
   res.send("hello world.");
 });
 
-app.use("/api/users", getUserRoutes());
+app.use("/api/user", getUserRoutes());
 app.use("/api/search", getSearchRoutes());
 app.use("/api/conversations", getConversationRoutes());
 app.use("/api/contacts", getContactsRoutes());

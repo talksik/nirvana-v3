@@ -1,20 +1,17 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
+import axios, { AxiosRequestConfig, AxiosResponse, Method } from "axios";
 
+import LoginResponse from "../../../core/responses/login.response";
 import { User } from "@nirvana/core/models";
 
 // export const localHost = process.env.REACT_APP_API_DOMAIN;
 
 export const localHost = "http://localhost:5000/api";
 
-class NirvanaApi {
+export default class NirvanaApi {
   // auth token from google that our backend will use
-  private _authToken?: string;
+  static _jwtToken?: string;
 
-  setGoogleIdToken(_googleIdToken: string) {
-    this._authToken = _googleIdToken;
-  }
-
-  async fetch(url: string, method: string, privateRoute = false) {
+  static async fetch(url: string, method: Method, privateRoute = false) {
     // use the auth token if it's a private route
     // error if no auth token and it's a private route
     // throw error and show message on anything that is an error from the backend
@@ -22,14 +19,20 @@ class NirvanaApi {
     try {
       const fullUrl = localHost + url;
 
-      var res;
-      if (privateRoute && this._authToken) {
+      let res;
+      if (privateRoute && this._jwtToken) {
         res = await fetch(fullUrl, {
           method: method,
-          headers: { Authorization: this._authToken },
+          headers: { Authorization: this._jwtToken },
         });
       } else {
         res = await fetch(fullUrl);
+      }
+
+      if (!res.ok) {
+        if (res.status === 401) throw Error("You are not authorized here");
+
+        throw Error("Something went wrong");
       }
 
       return await res.json();
@@ -39,19 +42,19 @@ class NirvanaApi {
       throw Error(error);
     }
   }
-
-  user = {
-    async getUserDetails(accessToken: string): Promise<User> {
-      return await axios.get(localHost + `/users?access_token=${accessToken}`, {
-        headers: { Authorization: this._authToken },
-      });
-    },
-    async createUser(accessToken: string) {
-      return await axios.post(
-        localHost + `/users/create?access_token=${accessToken}`
-      );
-    },
-  };
 }
 
-export const nirvanaApi = new NirvanaApi();
+export async function login(reqLoginTokens: {
+  accessToken: string;
+  idToken: string;
+}): Promise<LoginResponse> {
+  return await NirvanaApi.fetch(
+    `/user/login?access_token=${reqLoginTokens.accessToken}&id_token=${reqLoginTokens.idToken}`,
+    "GET",
+    false
+  );
+}
+
+export async function authCheck(jwtToken: string) {
+  return await NirvanaApi.fetch(`/user/authCheck`, "GET", true);
+}

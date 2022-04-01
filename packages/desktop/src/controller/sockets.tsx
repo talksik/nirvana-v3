@@ -3,26 +3,27 @@ import { useEffect, useState } from "react";
 import SocketChannels from "@nirvana/core/sockets/channels";
 import { UserStatus } from "../../../core/models/user.model";
 import { socket } from "../nirvanaApp";
-import { useGetAllContactBasicDetails } from "./index";
+
+// import { useGetAllContactBasicDetails } from "./index";
 
 export default function useSocketData() {
   // relationshipId's of the conversations where there is someone speaking
   const [speakingRooms, setSpeakingRooms] = useState<string[]>([]);
 
-  const { data: allConvosDetsResponse, isFetched } =
-    useGetAllContactBasicDetails();
+  // const { data: allConvosDetsResponse, isFetched } =
+  //   useGetAllContactBasicDetails();
 
-  useEffect(() => {
-    if (allConvosDetsResponse) {
-      allConvosDetsResponse.contactsDetails.map((contactDet) => {
-        // join the right rooms based on the relevant contacts/conversations returned here
-        socket.emit(
-          SocketChannels.JOIN_ROOM,
-          contactDet.relationship._id.toString()
-        );
-      });
-    }
-  }, [isFetched]);
+  // useEffect(() => {
+  //   if (allConvosDetsResponse) {
+  //     allConvosDetsResponse.contactsDetails.map((contactDet) => {
+  //       // join the right rooms based on the relevant contacts/conversations returned here
+  //       socket.emit(
+  //         SocketChannels.JOIN_ROOM,
+  //         contactDet.relationship._id.toString()
+  //       );
+  //     });
+  //   }
+  // }, [isFetched]);
 
   useEffect(() => {
     socket.on(

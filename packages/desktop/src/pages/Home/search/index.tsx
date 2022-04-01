@@ -2,7 +2,6 @@ import {
   $searchQuery,
   $selectedConversation,
 } from "../../../controller/recoil";
-import { useGetUserDetails, useSearch } from "../../../controller";
 
 import { FaAngleRight } from "react-icons/fa";
 import { Tooltip } from "@mui/material";
@@ -22,21 +21,22 @@ export default function Search() {
     $selectedConversation
   );
 
-  const { data: userDetails } = useGetUserDetails();
+  // const { data: userDetails } = useGetUserDetails();
 
-  const { data, isLoading, isError, refetch } = useSearch();
+  // const { data, isLoading, isError, refetch } = useSearch();
 
   useEffect(() => {
-    refetch();
+    // todo debounce after three seconds and show debounce loading while
+    // refetch();
   }, [searchQuery]);
 
-  if (!data?.users) {
-    return (
-      <span className="text-white">
-        no results. please try someone's email or name.
-      </span>
-    );
-  }
+  // if (!data?.users) {
+  //   return (
+  //     <span className="text-white">
+  //       no results. please try someone's email or name.
+  //     </span>
+  //   );
+  // }
 
   const goBack = () => {
     // implicity takes user back
@@ -97,10 +97,10 @@ export default function Search() {
         Go back
       </button>
 
-      {data?.users?.map((user) => {
+      {/* {data?.users?.map((user) => {
         if (user.googleId === userDetails.googleId) return <></>;
         return renderUserRow(user);
-      })}
+      })} */}
     </div>
   );
 }

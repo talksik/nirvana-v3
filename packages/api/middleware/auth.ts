@@ -14,21 +14,23 @@ export const authCheck = async (
 ) => {
   const { authorization } = req.headers;
 
+  // verify jwt token
+
   try {
-    const ticket = await client.verifyIdToken({
-      idToken: authorization ?? "",
-      audience:
-        "423533244953-banligobgbof8hg89i6cr1l7u0p7c2pk.apps.googleusercontent.com", // Specify the CLIENT_ID of the app that accesses the backend
-    });
-    const userId = ticket.getPayload()?.sub;
-    const email = ticket.getPayload()?.email;
+    // const ticket = await client.verifyIdToken({
+    //   idToken: authorization ?? "",
+    //   audience:
+    //     "423533244953-banligobgbof8hg89i6cr1l7u0p7c2pk.apps.googleusercontent.com", // Specify the CLIENT_ID of the app that accesses the backend
+    // });
+    // const userId = ticket.getPayload()?.sub;
+    // const email = ticket.getPayload()?.email;
 
-    if (!userId) throw new Error("No google user Id found");
+    // if (!userId) throw new Error("No google user Id found");
 
-    // used in subsequent handlers
-    // todo: have to get our database id for the user instead of google's id
-    res.locals.userId = userId;
-    res.locals.email = email;
+    // // used in subsequent handlers
+    // // todo: have to get our database id for the user instead of google's id
+    // res.locals.userId = userId;
+    // res.locals.email = email;
 
     next();
   } catch (error) {

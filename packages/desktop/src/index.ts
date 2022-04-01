@@ -1,7 +1,7 @@
 import { BrowserWindow, app, dialog, ipcMain } from "electron";
 import Channels, { Dimensions } from "./electron/constants";
 
-import { handleLogin } from "./electron/handleLogin";
+import { handleGoogleLogin } from "./electron/handleLogin";
 import path from "path";
 import store from "./electron/store";
 
@@ -49,7 +49,7 @@ app
     // activate login
     ipcMain.on(Channels.ACTIVATE_LOG_IN, async (event, arg) => {
       console.log("initiating log in");
-      await handleLogin();
+      await handleGoogleLogin();
     });
 
     // access storage/cookies

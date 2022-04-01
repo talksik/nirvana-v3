@@ -7,13 +7,12 @@ import { FaVolumeUp } from "react-icons/fa";
 import SkeletonLoader from "../../../components/loading/skeleton";
 import UserAvatarWithStatus from "../../../components/User/userAvatarWithStatus";
 import UserStatusText from "../../../components/User/userStatusText";
-import { useGetAllContactBasicDetails } from "../../../controller";
 import { useRecoilState } from "recoil";
 import useSocketData from "../../../controller/sockets";
 
 export default function Conversations() {
-  const { data: contactDetailsListResponse, isLoading } =
-    useGetAllContactBasicDetails();
+  // const { data: contactDetailsListResponse, isLoading } =
+  //   useGetAllContactBasicDetails();
   const { speakingRooms } = useSocketData();
   const [selectedConvo, setSelectedConvo] = useRecoilState(
     $selectedConversation
@@ -45,7 +44,7 @@ export default function Conversations() {
         </Tooltip>
       </div>
 
-      {isLoading ? (
+      {/* {isLoading ? (
         <SkeletonLoader />
       ) : (
         <div className="flex flex-col m-5 p-4">
@@ -84,7 +83,7 @@ export default function Conversations() {
             }
           )}
         </div>
-      )}
+      )} */}
     </>
   );
 }
