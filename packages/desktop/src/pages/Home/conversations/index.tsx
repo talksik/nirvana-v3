@@ -1,6 +1,6 @@
-import { Add, LinkRounded } from "@mui/icons-material";
+import { Add, LinkRounded, RecordVoiceOverTwoTone } from "@mui/icons-material";
 import { Avatar, Tooltip } from "antd";
-import { Tab, Tabs } from "@mui/material";
+import { Button, Tab, Tabs } from "@mui/material";
 
 import { $selectedConversation } from "../../../controller/recoil";
 import { ContactDetails } from "@nirvana/core/responses/getContacts.response";
@@ -46,31 +46,29 @@ export default function Conversations() {
 
   return (
     <>
-      <div className="flex flex-row justify-between">
+      <div className="flex flex-row justify-between p-2">
         <Tabs
           value={selectedTab}
           onChange={handleChangeTab}
           textColor="secondary"
           indicatorColor="secondary"
           aria-label="secondary tabs example"
+          sx={{ textTransform: "none" }}
         >
-          <Tab value={ConvoTab.LIVE} label="LIVE" />
+          <Tab value={ConvoTab.LIVE} label="LIVE" sx={{ fontSize: "1em" }} />
           <Tab value={ConvoTab.TUNED} label="TUNED IN" />
           <Tab value={ConvoTab.INBOX} label="INBOX" />
           <Tab value={ConvoTab.REQUESTS} label="REQUESTS" />
         </Tabs>
-      </div>
 
-      {/* pinned conversations */}
-      <div className="m-5 p-4 bg-zinc-500 shadow-lg rounded">
-        <Tooltip title="Listen in like a walkie-talkie.">
-          <span className="flex flex-row justify-start items-center cursor-pointer">
-            <FaVolumeUp className="text-red-500" />
-            <span className="ml-2 tracking-wider text-zinc-100 uppercase text-sm font-semibold">
-              Live
-            </span>
-          </span>
-        </Tooltip>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<RecordVoiceOverTwoTone />}
+          size="small"
+        >
+          New
+        </Button>
       </div>
 
       {/* {isLoading ? (

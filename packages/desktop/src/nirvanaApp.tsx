@@ -20,6 +20,13 @@ export const socket = io("http://localhost:5000");
 const darkTheme = createTheme({
   palette: {
     mode: "dark",
+
+    primary: {
+      main: "#438E86",
+    },
+    secondary: {
+      main: "#FFB6B6",
+    },
   },
 });
 

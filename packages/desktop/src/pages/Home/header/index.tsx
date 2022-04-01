@@ -1,6 +1,7 @@
 import { $jwtToken, $searchQuery } from "../../../controller/recoil";
 import {
   Avatar,
+  Button,
   Divider,
   ListItemIcon,
   Menu,
@@ -73,17 +74,19 @@ export default function Header() {
         <input
           ref={inputRef}
           placeholder="type / to search"
-          className="placeholder:text-zinc-400 bg-transparent outline-none text-zinc-100"
+          className="placeholder:text-zinc-400 bg-transparent outline-none text-zinc-100 mr-auto flex-1"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
 
-        <button
+        <Button
           onClick={() => updateStatus(UserStatus.FLOW_STATE)}
-          className="ml-auto mr-2 hover:scale-110 bg-zinc-600 text-teal-500 py-1 px-2 rounded-lg text-sm"
+          color="secondary"
+          size="small"
+          style={{ textTransform: "none" }}
         >
           flow state
-        </button>
+        </Button>
 
         <span className="px-5" onClick={handleClick}>
           {userDetailsResponse?.user && (
