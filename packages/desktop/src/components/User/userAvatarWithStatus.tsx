@@ -2,7 +2,7 @@ import { User, UserStatus } from "@nirvana/core/models";
 
 export default function UserAvatarWithStatus(props: { user: User }) {
   return (
-    <span className="relative">
+    <div className="relative">
       <img
         src={props.user.picture}
         className="rounded-lg h-8 hover:bg-zinc-200 hover:cursor-pointer hover:scale-110"
@@ -10,7 +10,7 @@ export default function UserAvatarWithStatus(props: { user: User }) {
       />
 
       <UserStatusBubble status={props.user.status} />
-    </span>
+    </div>
   );
 }
 
