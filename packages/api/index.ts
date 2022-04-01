@@ -3,8 +3,7 @@ import express, { Application, Request, Response } from "express";
 import { NextFunction } from "express";
 import SocketChannels from "@nirvana/core/sockets/channels";
 import { UserService } from "./services/user.service";
-import { UserStatus } from "@nirvana/core/models";
-import { connectToDatabase } from "./services/database.service";
+import { UserStatus } from "@nirvana/core/models/user.model";
 import cors from "cors";
 import getConversationRoutes from "./routes/conversation";
 import getSearchRoutes from "./routes/search";
@@ -29,7 +28,6 @@ app.use("/api/conversations", getConversationRoutes());
 
 const PORT = 5000;
 var server = app.listen(PORT, () => console.log("express running"));
-connectToDatabase();
 
 // socket IO stuff
 
@@ -106,22 +104,25 @@ io.on("connection", function (socket: any) {
     async (userGoogleId: string, newStatus: UserStatus) => {
       console.log("new status for user");
 
-      const resultUpdate = await UserService.updateUserStatus(
-        userGoogleId,
-        newStatus
-      );
+      // todo persist status changes
+      // const resultUpdate = await UserService.updateUserStatus(
+      //   userGoogleId,
+      //   newStatus
+      // );
 
       // tell all rooms that the user is part of
       // that this user has updated their status
-      if (resultUpdate?.modifiedCount) {
-        socket.rooms.forEach((roomId: string) => {
-          io.in(roomId).emit(
-            SocketChannels.SEND_USER_STATUS_UPDATE,
-            userGoogleId,
-            newStatus
-          );
-        });
-      }
+      // if (resultUpdate?.modifiedCount) {
+
+      // }
+
+      socket.rooms.forEach((roomId: string) => {
+        io.in(roomId).emit(
+          SocketChannels.SEND_USER_STATUS_UPDATE,
+          userGoogleId,
+          newStatus
+        );
+      });
     }
   );
 

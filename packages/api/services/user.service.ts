@@ -1,70 +1,56 @@
-import { GoogleUserInfo, User } from "@nirvana/core/models";
-
+import GoogleUserInfo from "../../core/models/googleUserInfo.model";
 import { ObjectId } from "mongodb";
+import { User } from "@nirvana/core/models/user.model";
+import { UserModel } from "./database.service";
 import { UserStatus } from "../../core/models/user.model";
 import axios from "axios";
-import { collections } from "./database.service";
 
 export class UserService {
-  static async getUserByGoogleId(userId: string) {
-    const query = { googleId: userId };
-
-    const res = await collections.users?.findOne(query);
-
-    // exists
-    if (res?._id) {
-      return res as User;
-    }
-
-    return null;
-  }
-
   static async getUserByEmail(email: string) {
-    const query = { email };
-
-    const res = await collections.users?.findOne(query);
+    const res = await UserModel.findOne({ email });
 
     // exists
-    if (res?._id) {
-      return res as User;
+    if (!res?.$isEmpty) {
+      return res;
     }
 
     return null;
   }
 
-  static async getUsersLikeEmailAndName(searchQuery: string) {
-    // based on index defined in Mongo atlas
-    const query = {
-      $search: {
-        index: "default",
-        text: {
-          query: searchQuery,
-          path: {
-            wildcard: "*",
-          },
-        },
-      },
-    };
+  // static async getUsersLikeEmailAndName(searchQuery: string) {
+  //   // based on index defined in Mongo atlas
+  //   const query = {
+  //     $search: {
+  //       index: "default",
+  //       text: {
+  //         query: searchQuery,
+  //         path: {
+  //           wildcard: "*",
+  //         },
+  //       },
+  //     },
+  //   };
 
-    // const res = await collections.users?.find(query).toArray();
+  //   // const res = await collections.users?.find(query).toArray();
 
-    const res = await collections.users?.aggregate([query]).toArray();
+  //   const res = await collections.users?.aggregate([query]).toArray();
 
-    // exists
-    if (res?.length) {
-      return res as User[];
-    }
+  //   // exists
+  //   if (res?.length) {
+  //     return res as User[];
+  //   }
 
-    return null;
-  }
+  //   return null;
+  // }
 
   static async createUserIfNotExists(newUser: User) {
-    const exists = (
-      await collections.users?.findOne({ googleId: newUser.googleId })
-    )?._id;
+    const getUser = await this.getUserByEmail(newUser.email);
 
-    if (!exists) {
-      return await collections.users?.insertOne(newUser);
+    if (!getUser) {
+      const newUser = new UserModel(User);
+      newUser.isNew = true;
+
+      return newUser.save();
     }
 
     // user with email exists already, don't create
@@ -81,14 +67,14 @@ export class UserService {
     ).data;
   }
 
-  static async updateUserStatus(userGoogleId: string, newStatus: UserStatus) {
-    const query = { googleId: userGoogleId };
-    const updateDoc = {
-      $set: { status: newStatus, lastUpdatedDate: new Date() },
-    };
+  // static async updateUserStatus(userId: string, newStatus: UserStatus) {
+  //   const query = { googleId: userGoogleId };
+  //   const updateDoc = {
+  //     $set: { status: newStatus, lastUpdatedDate: new Date() },
+  //   };
 
-    const resultUpdate = await collections.users?.updateOne(query, updateDoc);
+  //   const resultUpdate = UserModel.findByIdAndUpdate
 
-    return resultUpdate;
-  }
+  //   return resultUpdate;
+  // }
 }

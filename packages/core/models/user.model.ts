@@ -1,6 +1,24 @@
 import { ObjectId } from "mongodb";
 
-export class User {
+export interface IUser {
+  googleId: string; // our Google id that every google user has unique that we are going to use for now
+  email: string;
+  verifiedEmail: boolean;
+  name: string;
+  givenName: string;
+  familyName: string;
+  picture: string;
+  locale: string;
+
+  // additional properties specific to our users collection
+
+  createdDate: Date;
+  status: UserStatus;
+  lastUpdatedDate?: Date;
+  _id?: ObjectId;
+}
+
+export class User implements IUser {
   constructor(
     public googleId: string, // our Google id that every google user has unique that we are going to use for now
     public email: string,

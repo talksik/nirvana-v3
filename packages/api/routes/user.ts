@@ -1,13 +1,13 @@
-import { GoogleUserInfo, User } from "@nirvana/core/models";
 import express, { Application, Request, Response } from "express";
 
+import GoogleUserInfo from "@nirvana/core/models/googleUserInfo.model";
 import { OAuth2Client } from "google-auth-library";
 import { ObjectID } from "bson";
 import { ObjectId } from "mongodb";
+import { User } from "@nirvana/core/models/user.model";
 import { UserService } from "../services/user.service";
 import { UserStatus } from "../../core/models/user.model";
 import { authCheck } from "../middleware/auth";
-import { collections } from "../services/database.service";
 
 const client = new OAuth2Client(
   "423533244953-banligobgbof8hg89i6cr1l7u0p7c2pk.apps.googleusercontent.com"
@@ -82,8 +82,6 @@ async function login(req: Request, res: Response) {
 
       // create user if not exists
       const insertResult = await UserService.createUserIfNotExists(newUser);
-
-      newUser._id = insertResult?.insertedId;
 
       // create jwt token with new user info
 

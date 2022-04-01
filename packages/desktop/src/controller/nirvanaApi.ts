@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig, AxiosResponse, Method } from "axios";
 
 import LoginResponse from "../../../core/responses/login.response";
-import { User } from "@nirvana/core/models";
+import { User } from "@nirvana/core/models/user.model";
 
 // export const localHost = process.env.REACT_APP_API_DOMAIN;
 
