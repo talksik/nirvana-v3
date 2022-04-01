@@ -55,10 +55,22 @@ export default function Conversations() {
           aria-label="secondary tabs example"
           sx={{ textTransform: "none" }}
         >
-          <Tab value={ConvoTab.LIVE} label="LIVE" sx={{ fontSize: "1em" }} />
-          <Tab value={ConvoTab.TUNED} label="TUNED IN" />
-          <Tab value={ConvoTab.INBOX} label="INBOX" />
-          <Tab value={ConvoTab.REQUESTS} label="REQUESTS" />
+          <Tab value={ConvoTab.LIVE} label="LIVE" sx={{ fontSize: "0.75em" }} />
+          <Tab
+            value={ConvoTab.TUNED}
+            label="TUNED IN"
+            sx={{ fontSize: "0.75em" }}
+          />
+          <Tab
+            value={ConvoTab.INBOX}
+            label="INBOX"
+            sx={{ fontSize: "0.75em" }}
+          />
+          <Tab
+            value={ConvoTab.REQUESTS}
+            label="REQUESTS"
+            sx={{ fontSize: "0.75em" }}
+          />
         </Tabs>
 
         <Button
@@ -66,6 +78,7 @@ export default function Conversations() {
           color="primary"
           startIcon={<RecordVoiceOverTwoTone />}
           size="small"
+          style={{ textTransform: "none" }}
         >
           New
         </Button>
