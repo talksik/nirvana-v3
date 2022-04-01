@@ -13,7 +13,7 @@ export default function ProtectedRoute({
 }: {
   children?: React.ReactNode;
 }) {
-  const { isLoading, isError, isSuccess, refetch } = useAuthCheck();
+  const { isLoading, isError, isFetching, isSuccess, refetch } = useAuthCheck();
 
   const [jwtToken, setJwtToken] = useRecoilState($jwtToken);
 
@@ -31,6 +31,8 @@ export default function ProtectedRoute({
   }, []);
 
   useEffect(() => {
+    console.log("change in jwt token");
+
     if (jwtToken) {
       window.electronAPI.store.set(STORE_ITEMS.AUTH_SESSION_JWT, jwtToken);
     } else {
@@ -41,7 +43,7 @@ export default function ProtectedRoute({
     refetch();
   }, [jwtToken]);
 
-  if (isLoading) {
+  if (isLoading || isFetching) {
     return (
       <div className="container h-screen w-screen flex flex-col justify-center mx-10">
         <SkeletonLoader />

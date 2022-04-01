@@ -1,17 +1,23 @@
 import { $jwtToken, $searchQuery } from "../../../controller/recoil";
-import { Dropdown, Menu } from "antd";
+import {
+  Avatar,
+  Divider,
+  ListItemIcon,
+  Menu,
+  MenuItem,
+  MenuProps,
+} from "@mui/material";
+import { Check, Logout } from "@mui/icons-material";
 import Logo, { LogoType } from "../../../components/Logo";
 import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRef, useState } from "react";
 
 import { GlobalHotKeys } from "react-hotkeys";
-import NirvanaApi from "../../../controller/nirvanaApi";
-import { STORE_ITEMS } from "../../../electron/constants";
 import SocketChannels from "@nirvana/core/sockets/channels";
 import UserAvatarWithStatus from "../../../components/User/userAvatarWithStatus";
 import { UserStatus } from "@nirvana/core/models";
 import { socket } from "../../../nirvanaApp";
 import { useGetUserDetails } from "../../../controller/index";
-import { useRef } from "react";
 
 export default function Header() {
   const { data: userDetailsResponse, isLoading } = useGetUserDetails();
@@ -21,11 +27,23 @@ export default function Header() {
 
   const inputRef = useRef(null);
 
+  const [anchorEl, setAnchorEl] = useState(null);
+  const openAvatarMenu = Boolean(anchorEl);
+
+  const handleClick = (event: any) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   if (isLoading) {
     return <span>getting data</span>;
   }
 
   const logOut = () => {
+    console.log("logging out!");
     setJwtToken(undefined);
   };
 
@@ -37,25 +55,6 @@ export default function Header() {
       newStatus
     );
   };
-
-  const ProfileMenu = (
-    <Menu>
-      <Menu.Item key="0">
-        <button onClick={logOut}>Log Out</button>
-      </Menu.Item>
-      <Menu.Item key="1">
-        {userDetailsResponse.user.status === UserStatus.ONLINE ? (
-          <button onClick={() => updateStatus(UserStatus.OFFLINE)}>
-            Set status as away
-          </button>
-        ) : (
-          <button onClick={() => updateStatus(UserStatus.ONLINE)}>
-            Set status as online
-          </button>
-        )}
-      </Menu.Item>
-    </Menu>
-  );
 
   // hot keys for selecting search
   const handleSearch = () => {
@@ -89,14 +88,76 @@ export default function Header() {
           flow state
         </button>
 
-        <Dropdown overlay={ProfileMenu} trigger={["click"]}>
-          <span className="px-5">
-            {userDetailsResponse?.user && (
-              <UserAvatarWithStatus user={userDetailsResponse?.user} />
-            )}
-          </span>
-        </Dropdown>
+        <span className="px-5" onClick={handleClick}>
+          {userDetailsResponse?.user && (
+            <UserAvatarWithStatus user={userDetailsResponse?.user} />
+          )}
+        </span>
       </div>
+
+      <Menu
+        anchorEl={anchorEl as Element}
+        id="account-menu"
+        open={openAvatarMenu}
+        onClose={handleClose}
+        onClick={handleClose}
+        PaperProps={{
+          elevation: 0,
+          sx: {
+            overflow: "visible",
+            filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+            mt: 1.5,
+            "& .MuiAvatar-root": {
+              width: 32,
+              height: 32,
+              ml: -0.5,
+              mr: 1,
+            },
+            "&:before": {
+              content: '""',
+              display: "block",
+              position: "absolute",
+              top: 0,
+              right: 14,
+              width: 10,
+              height: 10,
+              bgcolor: "background.paper",
+              transform: "translateY(-50%) rotate(45deg)",
+              zIndex: 0,
+            },
+          },
+        }}
+        transformOrigin={{ horizontal: "right", vertical: "top" }}
+        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+      >
+        <MenuItem onClick={() => updateStatus(UserStatus.ONLINE)}>
+          <ListItemIcon>
+            <Check fontSize="small" />
+          </ListItemIcon>
+          Online
+        </MenuItem>
+        <MenuItem onClick={() => updateStatus(UserStatus.OFFLINE)}>
+          <ListItemIcon>
+            <Check fontSize="small" />
+          </ListItemIcon>
+          Away
+        </MenuItem>
+        <MenuItem onClick={() => updateStatus(UserStatus.FLOW_STATE)}>
+          <ListItemIcon>
+            <Check fontSize="small" />
+          </ListItemIcon>
+          Flow State
+        </MenuItem>
+
+        <Divider />
+
+        <MenuItem onClick={logOut}>
+          <ListItemIcon>
+            <Logout fontSize="small" />
+          </ListItemIcon>
+          Sign Out
+        </MenuItem>
+      </Menu>
     </>
   );
 }
