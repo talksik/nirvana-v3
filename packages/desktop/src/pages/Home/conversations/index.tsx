@@ -1,5 +1,6 @@
 import { Add, LinkRounded } from "@mui/icons-material";
 import { Avatar, Tooltip } from "antd";
+import { Tab, Tabs } from "@mui/material";
 
 import { $selectedConversation } from "../../../controller/recoil";
 import { ContactDetails } from "@nirvana/core/responses/getContacts.response";
@@ -9,7 +10,14 @@ import UserAvatarWithStatus from "../../../components/User/userAvatarWithStatus"
 import UserStatusText from "../../../components/User/userStatusText";
 import { useRecoilState } from "recoil";
 import useSocketData from "../../../controller/sockets";
+import { useState } from "react";
 
+enum ConvoTab {
+  LIVE = "LIVE",
+  TUNED = "TUNED",
+  INBOX = "INBOX",
+  REQUESTS = "REQUESTS",
+}
 export default function Conversations() {
   // const { data: contactDetailsListResponse, isLoading } =
   //   useGetAllContactBasicDetails();
@@ -17,6 +25,12 @@ export default function Conversations() {
   const [selectedConvo, setSelectedConvo] = useRecoilState(
     $selectedConversation
   );
+
+  const [selectedTab, setSelectedTab] = useState<ConvoTab>(ConvoTab.INBOX);
+
+  const handleChangeTab = (event: any, newTab: ConvoTab) => {
+    setSelectedTab(newTab);
+  };
 
   // todo: show conversations with activity/new content for me first...then the rest of the contacts
 
@@ -32,6 +46,21 @@ export default function Conversations() {
 
   return (
     <>
+      <div className="flex flex-row justify-between">
+        <Tabs
+          value={selectedTab}
+          onChange={handleChangeTab}
+          textColor="secondary"
+          indicatorColor="secondary"
+          aria-label="secondary tabs example"
+        >
+          <Tab value={ConvoTab.LIVE} label="LIVE" />
+          <Tab value={ConvoTab.TUNED} label="TUNED IN" />
+          <Tab value={ConvoTab.INBOX} label="INBOX" />
+          <Tab value={ConvoTab.REQUESTS} label="REQUESTS" />
+        </Tabs>
+      </div>
+
       {/* pinned conversations */}
       <div className="m-5 p-4 bg-zinc-500 shadow-lg rounded">
         <Tooltip title="Listen in like a walkie-talkie.">

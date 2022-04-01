@@ -25,13 +25,18 @@ export default function ProtectedRoute({
       .then((jwtToken: string) => {
         if (jwtToken) {
           NirvanaApi._jwtToken = jwtToken;
+          setJwtToken(jwtToken);
           refetch();
+
+          console.log("retrieved jwtToken from storage", jwtToken);
+        } else {
+          console.log("no jwt token in store");
         }
       });
   }, []);
 
   useEffect(() => {
-    console.log("change in jwt token");
+    console.log("change in jwt token", jwtToken);
 
     if (jwtToken) {
       window.electronAPI.store.set(STORE_ITEMS.AUTH_SESSION_JWT, jwtToken);

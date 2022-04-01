@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from "react-query";
+import { ThemeProvider, createTheme } from "@mui/material";
 
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -16,18 +17,26 @@ export const queryClient = new QueryClient();
 
 export const socket = io("http://localhost:5000");
 
+const darkTheme = createTheme({
+  palette: {
+    mode: "dark",
+  },
+});
+
 function NirvanaApp() {
   return (
     <>
       <QueryClientProvider client={queryClient}>
-        <RecoilRoot>
-          <ProtectedRoute>
-            <Home />
-          </ProtectedRoute>
-          <ReactQueryDevtools initialIsOpen={true} position={"bottom-left"} />
-        </RecoilRoot>
+        <ThemeProvider theme={darkTheme}>
+          <RecoilRoot>
+            <ProtectedRoute>
+              <Home />
+            </ProtectedRoute>
+            <ReactQueryDevtools initialIsOpen={true} position={"bottom-left"} />
+          </RecoilRoot>
 
-        <Toaster />
+          <Toaster />
+        </ThemeProvider>
       </QueryClientProvider>
     </>
   );
