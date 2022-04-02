@@ -6,11 +6,12 @@ import {
   InputLabel,
   TextField,
 } from "@mui/material";
+import { Check, Search } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 
 import { $newConvoPage } from "../../../controller/recoil";
-import { Search } from "@mui/icons-material";
-import renderUserRow from "../../../components/User/basicUserDetailsRow";
+import { User } from "@nirvana/core/models/user.model";
+import UserRow from "../../../components/User/basicUserDetailsRow";
 import { useSetRecoilState } from "recoil";
 import { useUserSearch } from "../../../controller/index";
 
@@ -18,6 +19,7 @@ export default function NewConvo() {
   const setNewPageConvo = useSetRecoilState($newConvoPage);
   const [userSearchQuery, setuserSearchQuery] = useState<string>("");
   const [debUserSearchQ, setDebUserSearchQ] = useState<string>("");
+  const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
 
   const {
     data,
@@ -64,6 +66,41 @@ export default function NewConvo() {
     setuserSearchQuery(newSearchQuery);
   };
 
+  // select or unselect
+  const selectOrUnselectUser = (user: User) => {
+    // remove from list/unselect
+    if (
+      selectedUsers.find(
+        (selectedUser) => selectedUser.googleId === user.googleId
+      )
+    ) {
+      console.log("unselecting user");
+      setSelectedUsers((prevUsers) =>
+        prevUsers.filter(
+          (prevUser) => prevUser._id.toString() !== user._id.toString()
+        )
+      );
+
+      return;
+    }
+
+    console.log("selecting user");
+
+    // add to the list of selected
+    setSelectedUsers((prevUsers) => [...prevUsers, user]);
+  };
+
+  let nonSelectedUsers = [] as User[];
+  // remove the user from the list of search results
+  if (data?.users) {
+    nonSelectedUsers = data?.users.filter(
+      (user) =>
+        !selectedUsers.find(
+          (selectedUser) => selectedUser._id.toString() === user._id.toString()
+        )
+    );
+  }
+
   return (
     <div className="flex flex-col">
       <div className="flex flex-row">
@@ -82,11 +119,24 @@ export default function NewConvo() {
         />
       </div>
 
-      {isSearching ? <span>loading</span> : <></>}
+      <span className="mx-auto">{data?.users.length ?? 0} results</span>
+
+      {isSearching ? <span className="mx-auto">loading</span> : <></>}
+
+      {/* selected people  */}
+      {selectedUsers?.map((user) => (
+        <div onClick={() => selectOrUnselectUser(user)}>
+          <UserRow user={user} rightJsx={<Check />} />
+        </div>
+      ))}
 
       {/* search results list */}
       <div className="flex flex-col">
-        {data?.users?.map((user) => renderUserRow(user))}
+        {nonSelectedUsers?.map((user) => (
+          <div onClick={() => selectOrUnselectUser(user)}>
+            <UserRow user={user} />
+          </div>
+        ))}
       </div>
     </div>
   );

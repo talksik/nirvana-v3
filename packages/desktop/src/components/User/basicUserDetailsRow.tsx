@@ -1,11 +1,18 @@
 import { FaAngleRight } from "react-icons/fa";
+import { ReactElement } from "react";
 import { Tooltip } from "antd";
 import { User } from "@nirvana/core/models/user.model";
 
-export default function renderUserRow(user: User) {
+export default function UserRow({
+  user,
+  rightJsx,
+}: {
+  user: User;
+  rightJsx?: ReactElement;
+}) {
   return (
     <span
-      key={user._id.toString()}
+      key={user._id.toString() + new Date().toDateString()}
       className="border-t border-t-zinc-500 py-5 flex flex-row justify-start 
     items-center w-full hover:bg-zinc-600 cursor-pointer group"
     >
@@ -24,12 +31,7 @@ export default function renderUserRow(user: User) {
         <span className="text-zinc-300">{user.email}</span>
       </span>
 
-      {/* actions */}
-      <Tooltip title="Request connect">
-        <button className="hover:bg-zinc-300 p-1 flex flex-row items-center justify-center ml-auto">
-          <FaAngleRight className="group-hover:text-zinc-300 text-lg" />
-        </button>
-      </Tooltip>
+      <div className="ml-auto">{rightJsx}</div>
     </span>
   );
 }
