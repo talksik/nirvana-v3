@@ -49,7 +49,7 @@ export class UserService {
     // based on index defined in Mongo atlas
     const query = {
       $search: {
-        index: "default",
+        index: "basic user search",
         text: {
           query: searchQuery,
           path: {
