@@ -13,7 +13,7 @@ export default function UserRow({
   return (
     <span
       key={user._id.toString() + new Date().toDateString()}
-      className="border-t border-t-zinc-500 py-5 flex flex-row justify-start 
+      className="border-t border-t-zinc-500 py-3 px-2 flex flex-row justify-start 
     items-center w-full hover:bg-zinc-600 cursor-pointer group"
     >
       <span className="relative mx-5">
