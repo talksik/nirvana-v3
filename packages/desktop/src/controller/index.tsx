@@ -23,15 +23,11 @@ export function useGetUserDetails() {
   });
 }
 
-// export function useSearch() {
-//   const authTokens = useRecoilValue($authTokens);
-//   const searchQuery = useRecoilValue($searchQuery);
-
-//   return useQuery(
-//     Querytypes.GET_SEARCH_RESULTS,
-//     () => search(authTokens.idToken, searchQuery),
-//     { enabled: searchQuery ? true : false, refetchOnWindowFocus: false }
-//   );
-// }
+export function useUserSearch(searchQuery: string) {
+  return useQuery("USER_SEARCH", () => ApiCalls.userSearch(searchQuery), {
+    enabled: searchQuery ? true : false,
+    refetchOnWindowFocus: false,
+  });
+}
 
 // =========== MUTATIONS

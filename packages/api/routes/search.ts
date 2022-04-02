@@ -1,7 +1,7 @@
 import express, { Application, Request, Response } from "express";
 
-import SearchResponse from "@nirvana/core/responses/search.response";
 import { User } from "@nirvana/core/models";
+import UserSearchResponse from "../../core/responses/userSearch.response";
 import { UserService } from "../services/user.service";
 import { authCheck } from "../middleware/auth";
 
@@ -11,12 +11,12 @@ export default function getSearchRoutes() {
   router.use(express.json());
 
   // get user details based on id token
-  router.get("/", authCheck, handleSearch);
+  router.get("/users", authCheck, handleUserSearch);
 
   return router;
 }
 
-async function handleSearch(req: Request, res: Response) {
+async function handleUserSearch(req: Request, res: Response) {
   try {
     const { query } = req.query;
 
@@ -30,7 +30,7 @@ async function handleSearch(req: Request, res: Response) {
       query as string
     );
 
-    const resObj = new SearchResponse(users ?? []);
+    const resObj = new UserSearchResponse(users ?? []);
 
     res.send(resObj);
   } catch (error) {

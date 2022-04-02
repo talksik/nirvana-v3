@@ -3,6 +3,7 @@ import axios, { AxiosRequestConfig, AxiosResponse, Method } from "axios";
 import LoginResponse from "../../../core/responses/login.response";
 import { User } from "@nirvana/core/models";
 import UserDetailsResponse from "../../../core/responses/userDetails.response";
+import UserSearchResponse from "../../../core/responses/userSearch.response";
 
 // export const localHost = process.env.REACT_APP_API_DOMAIN;
 
@@ -60,8 +61,17 @@ async function getUserDetails(): Promise<UserDetailsResponse> {
   return await NirvanaApi.fetch(`/user`, "GET", true);
 }
 
+async function userSearch(searchQuery: string): Promise<UserSearchResponse> {
+  return await NirvanaApi.fetch(
+    `/search/users?query=${searchQuery}`,
+    "GET",
+    true
+  );
+}
+
 export const ApiCalls = {
   login,
   authCheck,
   getUserDetails,
+  userSearch,
 };
