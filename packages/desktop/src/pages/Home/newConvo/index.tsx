@@ -19,7 +19,12 @@ export default function NewConvo() {
   const [userSearchQuery, setuserSearchQuery] = useState<string>("");
   const [debUserSearchQ, setDebUserSearchQ] = useState<string>("");
 
-  const { data, isLoading, isError, refetch } = useUserSearch(debUserSearchQ);
+  const {
+    data,
+    isLoading: isSearching,
+    isError,
+    refetch,
+  } = useUserSearch(debUserSearchQ);
 
   const [debTimeout, setdebTimeout] = useState<any>();
 
@@ -60,8 +65,8 @@ export default function NewConvo() {
   };
 
   return (
-    <div className="flex flex-col items-start">
-      <div className="flex flex-row w-full">
+    <div className="flex flex-col">
+      <div className="flex flex-row">
         <Button onClick={handleGoBack} size="small">
           back
         </Button>
@@ -76,6 +81,8 @@ export default function NewConvo() {
           onChange={handleUpdateSearchInput}
         />
       </div>
+
+      {isSearching ? <span>loading</span> : <></>}
 
       {/* search results list */}
       <div className="flex flex-col">
