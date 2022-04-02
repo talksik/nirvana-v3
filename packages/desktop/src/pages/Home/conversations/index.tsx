@@ -1,14 +1,17 @@
+import {
+  $newConvoPage,
+  $selectedConversation,
+} from "../../../controller/recoil";
 import { Add, LinkRounded, RecordVoiceOverTwoTone } from "@mui/icons-material";
 import { Avatar, Tooltip } from "antd";
 import { Button, Tab, Tabs } from "@mui/material";
+import { useRecoilState, useSetRecoilState } from "recoil";
 
-import { $selectedConversation } from "../../../controller/recoil";
 import { ContactDetails } from "@nirvana/core/responses/getContacts.response";
 import { FaVolumeUp } from "react-icons/fa";
 import SkeletonLoader from "../../../components/loading/skeleton";
 import UserAvatarWithStatus from "../../../components/User/userAvatarWithStatus";
 import UserStatusText from "../../../components/User/userStatusText";
-import { useRecoilState } from "recoil";
 import useSocketData from "../../../controller/sockets";
 import { useState } from "react";
 
@@ -25,11 +28,16 @@ export default function Conversations() {
   const [selectedConvo, setSelectedConvo] = useRecoilState(
     $selectedConversation
   );
+  const setNewConvoPageTrigger = useSetRecoilState($newConvoPage);
 
   const [selectedTab, setSelectedTab] = useState<ConvoTab>(ConvoTab.INBOX);
 
   const handleChangeTab = (event: any, newTab: ConvoTab) => {
     setSelectedTab(newTab);
+  };
+
+  const handleNewConvo = () => {
+    setNewConvoPageTrigger(true);
   };
 
   // todo: show conversations with activity/new content for me first...then the rest of the contacts
@@ -79,6 +87,7 @@ export default function Conversations() {
           startIcon={<RecordVoiceOverTwoTone />}
           size="small"
           style={{ textTransform: "none" }}
+          onClick={handleNewConvo}
         >
           New
         </Button>
