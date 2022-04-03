@@ -7,12 +7,13 @@ import {
   TextField,
 } from "@mui/material";
 import { Check, Search } from "@mui/icons-material";
-import { useEffect, useState } from "react";
 import {
+  useCreateConvo,
   useGetDmByUserId,
   useGetUserDetails,
   useUserSearch,
 } from "../../../controller/index";
+import { useEffect, useState } from "react";
 
 import { $newConvoPage } from "../../../controller/recoil";
 import { ApiCalls } from "../../../controller/nirvanaApi";
@@ -110,6 +111,7 @@ export default function NewConvo() {
   }
 
   const { mutateAsync } = useGetDmByUserId();
+  const { mutateAsync: createConvoMutateAsync } = useCreateConvo();
 
   const createConvo = async () => {
     if (!selectedUsers?.length) {
@@ -120,18 +122,24 @@ export default function NewConvo() {
 
     // consolidate the user Ids into an array
     // make sure that there are no duplicates
-    // const userIds = selectedUsers.map((selUser) => selUser._id.toString());
-    // userIds.push(userDetails.user._id.toString());
+    const otherMemberIds = selectedUsers.map((selUser) =>
+      selUser._id.toString()
+    );
 
     // IF it's a one on one chat
     // check backend with one route if there is an existing conversation
     if (selectedUsers?.length === 1) {
-      let existingConvo;
+      let existingConvoRes;
       try {
-        existingConvo = await mutateAsync(selectedUsers[0]._id.toString());
+        existingConvoRes = await mutateAsync(selectedUsers[0]._id.toString());
 
         console.log("there is an existing convo!");
-        console.log(existingConvo);
+        if (existingConvoRes) {
+          toast.error("already have a convo with this person");
+          console.log(existingConvoRes);
+
+          return;
+        }
       } catch (error) {
         console.error(error);
       } finally {
@@ -139,8 +147,18 @@ export default function NewConvo() {
       }
     }
 
-    // create a conversation object in db with two members, me and this other person
-    // IF it's a group convo/room/channel, create a channel with these people
+    // create a conversation object in db with convoMembers
+    try {
+      const createConvoRes = await createConvoMutateAsync(otherMemberIds);
+
+      toast.success("Successfully create conversation");
+    } catch (error) {
+      console.error(error);
+    } finally {
+      console.log("done creating convo");
+    }
+
+    // broadcast this to right sockets either here or serverside after convo creation
   };
 
   return (

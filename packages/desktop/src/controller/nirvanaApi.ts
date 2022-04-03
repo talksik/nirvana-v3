@@ -1,6 +1,7 @@
 import axios, { AxiosRequestConfig, AxiosResponse, Method } from "axios";
 
 import { Conversation } from "../../../core/models/conversation.model";
+import CreateConvoRequest from "../../../core/requests/createConvo.request";
 import LoginResponse from "../../../core/responses/login.response";
 import { User } from "@nirvana/core/models";
 import UserDetailsResponse from "../../../core/responses/userDetails.response";
@@ -14,7 +15,12 @@ export default class NirvanaApi {
   // auth token from google that our backend will use
   static _jwtToken?: string;
 
-  static async fetch(url: string, method: Method, privateRoute = false) {
+  static async fetch(
+    url: string,
+    method: Method,
+    privateRoute = false,
+    body: object = null
+  ) {
     // use the auth token if it's a private route
     // error if no auth token and it's a private route
     // throw error and show message on anything that is an error from the backend
@@ -27,7 +33,11 @@ export default class NirvanaApi {
     if (privateRoute && this._jwtToken) {
       res = await fetch(fullUrl, {
         method: method,
-        headers: { Authorization: this._jwtToken },
+        headers: {
+          Authorization: this._jwtToken,
+          "Content-Type": "application/json",
+        },
+        body: body ? JSON.stringify(body) : null,
       });
     } else {
       res = await fetch(fullUrl);
@@ -78,10 +88,20 @@ async function getDmByUserId(otherUserId: string): Promise<Conversation> {
   );
 }
 
+async function createConversation(otherMemberIds: string[]): Promise<void> {
+  return await NirvanaApi.fetch(
+    `/conversations`,
+    "POST",
+    true,
+    new CreateConvoRequest(otherMemberIds)
+  );
+}
+
 export const ApiCalls = {
   login,
   authCheck,
   getUserDetails,
   userSearch,
   getDmByUserId,
+  createConversation,
 };

@@ -34,3 +34,7 @@ export function useUserSearch(searchQuery: string) {
 export function useGetDmByUserId() {
   return useMutation(ApiCalls.getDmByUserId);
 }
+
+export function useCreateConvo() {
+  return useMutation(ApiCalls.createConversation);
+}

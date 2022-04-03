@@ -57,6 +57,7 @@ async function getDmByOtherUserId(req: Request, res: Response) {
 async function createConversation(req: Request, res: Response) {
   try {
     const reqObj: CreateConvoRequest = req.body as CreateConvoRequest;
+    console.log(req.body);
 
     if (!reqObj?.otherMemberIds.length) {
       res.status(400).json("must provide member Ids");
@@ -65,11 +66,11 @@ async function createConversation(req: Request, res: Response) {
 
     const userInfo = res.locals.userInfo as JwtClaims;
 
-    const newConvo = new Conversation();
+    const newConvo = new Conversation(new ObjectId());
     const convoMembers: ConversationMember[] =
       reqObj.otherMemberIds.map((memId) => {
         const newConvoMember = new ConversationMember(
-          newConvo._id,
+          newConvo._id!,
           new ObjectId(memId),
           ConversationMemberState.INVITED
         );
@@ -79,7 +80,7 @@ async function createConversation(req: Request, res: Response) {
 
     convoMembers.push(
       new ConversationMember(
-        newConvo._id,
+        newConvo._id!,
         new ObjectId(userInfo.userId),
         ConversationMemberState.INBOX
       )
