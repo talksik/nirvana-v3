@@ -31,3 +31,6 @@ export function useUserSearch(searchQuery: string) {
 }
 
 // =========== MUTATIONS
+export function useGetDmByUserId() {
+  return useMutation(ApiCalls.getDmByUserId);
+}

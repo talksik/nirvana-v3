@@ -8,18 +8,26 @@ import {
 } from "@mui/material";
 import { Check, Search } from "@mui/icons-material";
 import { useEffect, useState } from "react";
+import {
+  useGetDmByUserId,
+  useGetUserDetails,
+  useUserSearch,
+} from "../../../controller/index";
 
 import { $newConvoPage } from "../../../controller/recoil";
+import { ApiCalls } from "../../../controller/nirvanaApi";
 import { User } from "@nirvana/core/models/user.model";
 import UserRow from "../../../components/User/basicUserDetailsRow";
+import toast from "react-hot-toast";
 import { useSetRecoilState } from "recoil";
-import { useUserSearch } from "../../../controller/index";
 
 export default function NewConvo() {
   const setNewPageConvo = useSetRecoilState($newConvoPage);
   const [userSearchQuery, setuserSearchQuery] = useState<string>("");
   const [debUserSearchQ, setDebUserSearchQ] = useState<string>("");
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
+
+  const { data: userDetails } = useGetUserDetails();
 
   const {
     data,
@@ -101,13 +109,36 @@ export default function NewConvo() {
     );
   }
 
-  const createConvo = () => {
+  const { mutateAsync } = useGetDmByUserId();
+
+  const createConvo = async () => {
+    if (!selectedUsers?.length) {
+      toast.error("Must select at least one person");
+
+      return;
+    }
+
     // consolidate the user Ids into an array
     // make sure that there are no duplicates
-    console;
+    // const userIds = selectedUsers.map((selUser) => selUser._id.toString());
+    // userIds.push(userDetails.user._id.toString());
+
     // IF it's a one on one chat
     // check backend with one route if there is an existing conversation
-    console;
+    if (selectedUsers?.length === 1) {
+      let existingConvo;
+      try {
+        existingConvo = await mutateAsync(selectedUsers[0]._id.toString());
+
+        console.log("there is an existing convo!");
+        console.log(existingConvo);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        console.log("done");
+      }
+    }
+
     // create a conversation object in db with two members, me and this other person
     // IF it's a group convo/room/channel, create a channel with these people
   };

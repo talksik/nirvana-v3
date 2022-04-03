@@ -1,25 +1,26 @@
 import { ObjectId } from "mongodb";
 
 export class Conversation {
-  _id: ObjectId;
   name?: string;
 
-  createdDate: Date;
-  lastUpdatedDate: Date;
-
-  constructor() {}
+  constructor(
+    public _id?: ObjectId,
+    public createdDate: Date = new Date(),
+    public lastUpdatedDate: Date = new Date()
+  ) {}
 }
 
 export class ConversationMember {
-  _id: ObjectId;
+  constructor(
+    // unique constraint
+    public conversationId: ObjectId,
+    public userId: ObjectId,
 
-  // unique constraint
-  conversationId: ObjectId;
-  userId: ObjectId;
+    public state: ConversationMemberState = ConversationMemberState.INVITED,
 
-  state: ConversationMemberState;
-
-  createdDate: Date;
+    public createdDate: Date = new Date(),
+    public _id?: ObjectId
+  ) {}
 }
 
 export enum ConversationMemberState {

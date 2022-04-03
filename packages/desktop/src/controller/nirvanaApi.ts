@@ -1,5 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosResponse, Method } from "axios";
 
+import { Conversation } from "../../../core/models/conversation.model";
 import LoginResponse from "../../../core/responses/login.response";
 import { User } from "@nirvana/core/models";
 import UserDetailsResponse from "../../../core/responses/userDetails.response";
@@ -69,9 +70,18 @@ async function userSearch(searchQuery: string): Promise<UserSearchResponse> {
   );
 }
 
+async function getDmByUserId(otherUserId: string): Promise<Conversation> {
+  return await NirvanaApi.fetch(
+    `/conversations/dm/${otherUserId}`,
+    "GET",
+    true
+  );
+}
+
 export const ApiCalls = {
   login,
   authCheck,
   getUserDetails,
   userSearch,
+  getDmByUserId,
 };

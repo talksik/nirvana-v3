@@ -4,7 +4,6 @@ import { NextFunction } from "express";
 import SocketChannels from "@nirvana/core/sockets/channels";
 import { UserService } from "./services/user.service";
 import { UserStatus } from "@nirvana/core/models";
-import { connectToDatabase } from "./services/database.service";
 import cors from "cors";
 import getConversationRoutes from "./routes/conversation";
 import getSearchRoutes from "./routes/search";
@@ -29,7 +28,6 @@ app.use("/api/conversations", getConversationRoutes());
 
 const PORT = 5000;
 var server = app.listen(PORT, () => console.log("express running"));
-connectToDatabase();
 
 // socket IO stuff
 
