@@ -115,7 +115,11 @@ export default function NewConvo() {
   return (
     <div className="flex flex-col">
       <div className="flex flex-row">
-        <Button onClick={handleGoBack} size="small">
+        <Button
+          onClick={handleGoBack}
+          size="small"
+          style={{ textTransform: "none" }}
+        >
           back
         </Button>
 
@@ -148,6 +152,12 @@ export default function NewConvo() {
             <UserRow user={user} />
           </div>
         ))}
+      </div>
+
+      <div className="ml-auto">
+        <Button variant="contained" onClick={createConvo}>
+          Connect
+        </Button>
       </div>
     </div>
   );

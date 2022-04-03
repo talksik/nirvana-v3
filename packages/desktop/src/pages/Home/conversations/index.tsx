@@ -4,11 +4,16 @@ import {
 } from "../../../controller/recoil";
 import { Add, LinkRounded, RecordVoiceOverTwoTone } from "@mui/icons-material";
 import { Avatar, Tooltip } from "antd";
-import { Button, Tab, Tabs } from "@mui/material";
+import { Button, Fab, Tab, Tabs } from "@mui/material";
+import {
+  Conversation,
+  ConversationMemberState,
+} from "../../../../../core/models/conversation.model";
 import { useRecoilState, useSetRecoilState } from "recoil";
 
 import { ContactDetails } from "@nirvana/core/responses/getContacts.response";
 import { FaVolumeUp } from "react-icons/fa";
+import MasterConversation from "../../../../../core/models/masterConversation.model";
 import SkeletonLoader from "../../../components/loading/skeleton";
 import UserAvatarWithStatus from "../../../components/User/userAvatarWithStatus";
 import UserStatusText from "../../../components/User/userStatusText";
@@ -52,6 +57,58 @@ export default function Conversations() {
     setSelectedConvo(googleUserId);
   };
 
+  // fake data of conversations
+  const allMasterConvos = [] as MasterConversation[];
+
+  // render right content based on selected tab
+  const renderConversationContent = () => {
+    // if no content for a tab, then show stale text
+
+    const invitedConvos = allMasterConvos.filter(
+      (masterConvo) =>
+        masterConvo.currentUserMember.state === ConversationMemberState.INVITED
+    );
+    const inboxConvos = allMasterConvos.filter(
+      (masterConvo) =>
+        masterConvo.currentUserMember.state === ConversationMemberState.INBOX
+    );
+    const tunedConvos = allMasterConvos.filter(
+      (masterConvo) =>
+        masterConvo.currentUserMember.state === ConversationMemberState.TUNED
+    );
+
+    const liveConversations = [];
+
+    switch (selectedTab) {
+      case ConvoTab.LIVE:
+        return (
+          <span>
+            None of your channels are live. Join and chill in a room and it will
+            show up here!
+          </span>
+        );
+      case ConvoTab.TUNED:
+        if (tunedConvos?.length) {
+          return <span>displaying all tuned in convos</span>;
+        }
+        return <span>Pin a channel to turn it into a walkie talkie.</span>;
+      case ConvoTab.INBOX:
+        if (inboxConvos?.length) {
+          return <span>displaying all inbox convos</span>;
+        }
+        return <span>Connect with someone and start talking!</span>;
+      case ConvoTab.REQUESTS:
+        if (invitedConvos?.length) {
+          return <span>displaying all request convos</span>;
+        }
+        return (
+          <span>
+            No new conversations, connect with someone to get started.
+          </span>
+        );
+    }
+  };
+
   return (
     <>
       <div className="flex flex-row justify-between p-2">
@@ -81,16 +138,21 @@ export default function Conversations() {
           />
         </Tabs>
 
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<RecordVoiceOverTwoTone />}
+        <Fab
+          variant="extended"
           size="small"
-          style={{ textTransform: "none" }}
+          color="primary"
+          aria-label="add"
           onClick={handleNewConvo}
+          style={{ textTransform: "none" }}
         >
-          New
-        </Button>
+          <RecordVoiceOverTwoTone fontSize="small" sx={{ mr: 1 }} />
+          new
+        </Fab>
+      </div>
+
+      <div className="flex flex-col items-center">
+        {renderConversationContent()}
       </div>
 
       {/* {isLoading ? (
