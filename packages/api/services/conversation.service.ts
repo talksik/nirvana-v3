@@ -21,6 +21,34 @@ export class ConversationService {
     // return null;
   }
 
+  static async getConversationsByIds(convoIds: ObjectId[]) {
+    const query = { _id: { $in: convoIds } };
+
+    const convosRes = await collections.conversations?.find(query).toArray();
+
+    // exists
+    if (convosRes?.length) {
+      return convosRes as Conversation[];
+    }
+
+    return null;
+  }
+
+  static async getConversationsMembersByUserId(userId: string) {
+    const query = { userId: new ObjectId(userId) };
+
+    const convoMembersRes = await collections.conversationMembers
+      ?.find(query)
+      .toArray();
+
+    // exists
+    if (convoMembersRes?.length) {
+      return convoMembersRes as ConversationMember[];
+    }
+
+    return null;
+  }
+
   static async createConversation(
     convo: Conversation,
     convoMembers: ConversationMember[]

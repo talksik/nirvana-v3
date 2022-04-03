@@ -11,6 +11,7 @@ import { ConversationService } from "../services/conversation.service";
 import CreateConvoRequest from "../../core/requests/createConvo.request";
 import GetConversationDetailsResponse from "@nirvana/core/responses/getConversationDetails.response";
 import GetDmConversationByOtherUserIdResponse from "../../core/responses/getDmConversationByOtherUserId.response";
+import GetUserConversationsResponse from "../../core/responses/getUserConversations.response";
 import MasterConversation from "../../core/models/masterConversation.model";
 import { ObjectId } from "mongodb";
 import Relationship from "@nirvana/core/models/relationship.model";
@@ -27,6 +28,9 @@ export default function getConversationRoutes() {
 
   // create a convo
   router.post("/", authCheck, createConversation);
+
+  // get all of user's convos
+  router.get("/", authCheck, getUserConvos);
 
   // get conversation between user and other user
   router.get("/dm/:otherUserId", authCheck, getDmByOtherUserId);
@@ -96,6 +100,51 @@ async function createConversation(req: Request, res: Response) {
       : res.status(400).json("unable to create convo");
   } catch (error) {
     console.log(error);
+    res.status(500).json(error);
+  }
+}
+
+async function getUserConvos(req: Request, res: Response) {
+  try {
+    const userInfo = res.locals.userInfo as JwtClaims;
+
+    // get all of user's convoMember entries
+    const convoMembers =
+      await ConversationService.getConversationsMembersByUserId(
+        userInfo.userId
+      );
+
+    if (!convoMembers?.length) {
+      res.status(400).json();
+
+      return;
+    }
+
+    const convoIds =
+      convoMembers?.map((convoMem) => convoMem.conversationId) ?? [];
+
+    // get all convos from the list of relevant convos
+    const convos =
+      (await ConversationService.getConversationsByIds(convoIds)) ?? [];
+
+    const masterConvos =
+      convos.map((convo) => {
+        const assocConvoMember = convoMembers.find((convMem) =>
+          convMem.conversationId.equals(convo._id!)
+        );
+
+        return new MasterConversation(
+          convo._id!,
+          convo.createdDate,
+          convo.lastUpdatedDate,
+          assocConvoMember
+        );
+      }) ?? [];
+
+    const resObj = new GetUserConversationsResponse(convos);
+
+    res.json(masterConvos);
+  } catch (error) {
     res.status(500).json(error);
   }
 }

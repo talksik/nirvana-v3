@@ -3,15 +3,20 @@ import { ConversationMember } from "./conversation.model";
 import { ObjectId } from "mongodb";
 
 export default class MasterConversation {
-  // attributes of conversation
-  id: ObjectId; // id of the conversation
-  name?: string;
-  createdDate: Date;
-  lastUpdatedDate: Date;
+  constructor(
+    // attributes of conversation
+    public id: ObjectId, // id of the conversation
 
-  // compiled data for easy client read
-  currentUserMember: ConversationMember;
-  otherMembers: ConversationMember[];
+    public createdDate: Date,
+    public lastUpdatedDate: Date,
 
-  audioClips: AudioClip[];
+    // compiled data for easy client read
+    public currentUserMember?: ConversationMember,
+
+    public otherMembers?: ConversationMember[],
+
+    public audioClips: AudioClip[] = [],
+
+    public name?: string
+  ) {}
 }

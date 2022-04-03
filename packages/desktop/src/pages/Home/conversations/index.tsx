@@ -11,6 +11,7 @@ import {
 } from "../../../../../core/models/conversation.model";
 import { useRecoilState, useSetRecoilState } from "recoil";
 
+import BasicConversationRow from "../../../components/conversation/basicRow";
 import { ContactDetails } from "@nirvana/core/responses/getContacts.response";
 import { FaVolumeUp } from "react-icons/fa";
 import MasterConversation from "../../../../../core/models/masterConversation.model";
@@ -19,6 +20,7 @@ import UserAvatarWithStatus from "../../../components/User/userAvatarWithStatus"
 import UserStatusText from "../../../components/User/userStatusText";
 import useSocketData from "../../../controller/sockets";
 import { useState } from "react";
+import { useUserConvos } from "../../../controller/index";
 
 enum ConvoTab {
   LIVE = "LIVE",
@@ -57,22 +59,21 @@ export default function Conversations() {
     setSelectedConvo(googleUserId);
   };
 
-  // fake data of conversations
-  const allMasterConvos = [] as MasterConversation[];
+  const { data: userConverstionsData } = useUserConvos();
 
   // render right content based on selected tab
   const renderConversationContent = () => {
     // if no content for a tab, then show stale text
 
-    const invitedConvos = allMasterConvos.filter(
+    const invitedConvos = userConverstionsData?.filter(
       (masterConvo) =>
         masterConvo.currentUserMember.state === ConversationMemberState.INVITED
     );
-    const inboxConvos = allMasterConvos.filter(
+    const inboxConvos = userConverstionsData?.filter(
       (masterConvo) =>
         masterConvo.currentUserMember.state === ConversationMemberState.INBOX
     );
-    const tunedConvos = allMasterConvos.filter(
+    const tunedConvos = userConverstionsData?.filter(
       (masterConvo) =>
         masterConvo.currentUserMember.state === ConversationMemberState.TUNED
     );
@@ -94,7 +95,13 @@ export default function Conversations() {
         return <span>Pin a channel to turn it into a walkie talkie.</span>;
       case ConvoTab.INBOX:
         if (inboxConvos?.length) {
-          return <span>displaying all inbox convos</span>;
+          return (
+            <>
+              {inboxConvos.map((convo) => (
+                <BasicConversationRow masterConvo={convo} />
+              ))}
+            </>
+          );
         }
         return <span>Connect with someone and start talking!</span>;
       case ConvoTab.REQUESTS:

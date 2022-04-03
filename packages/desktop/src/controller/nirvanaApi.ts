@@ -3,6 +3,7 @@ import axios, { AxiosRequestConfig, AxiosResponse, Method } from "axios";
 import { Conversation } from "../../../core/models/conversation.model";
 import CreateConvoRequest from "../../../core/requests/createConvo.request";
 import LoginResponse from "../../../core/responses/login.response";
+import MasterConversation from "../../../core/models/masterConversation.model";
 import { User } from "@nirvana/core/models";
 import UserDetailsResponse from "../../../core/responses/userDetails.response";
 import UserSearchResponse from "../../../core/responses/userSearch.response";
@@ -80,6 +81,10 @@ async function userSearch(searchQuery: string): Promise<UserSearchResponse> {
   );
 }
 
+async function getUserConversations(): Promise<MasterConversation[]> {
+  return await NirvanaApi.fetch(`/conversations`, "GET", true);
+}
+
 async function getDmByUserId(otherUserId: string): Promise<Conversation> {
   return await NirvanaApi.fetch(
     `/conversations/dm/${otherUserId}`,
@@ -102,6 +107,7 @@ export const ApiCalls = {
   authCheck,
   getUserDetails,
   userSearch,
+  getUserConversations,
   getDmByUserId,
   createConversation,
 };

@@ -30,6 +30,12 @@ export function useUserSearch(searchQuery: string) {
   });
 }
 
+export function useUserConvos() {
+  // todo: merge with sockets + audio clip data + master data + convomember data
+
+  return useQuery("USER_CONVERSATIONS", ApiCalls.getUserConversations);
+}
+
 // =========== MUTATIONS
 export function useGetDmByUserId() {
   return useMutation(ApiCalls.getDmByUserId);
