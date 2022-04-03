@@ -101,6 +101,17 @@ export default function NewConvo() {
     );
   }
 
+  const createConvo = () => {
+    // consolidate the user Ids into an array
+    // make sure that there are no duplicates
+    console;
+    // IF it's a one on one chat
+    // check backend with one route if there is an existing conversation
+    console;
+    // create a conversation object in db with two members, me and this other person
+    // IF it's a group convo/room/channel, create a channel with these people
+  };
+
   return (
     <div className="flex flex-col">
       <div className="flex flex-row">

@@ -32,8 +32,7 @@ export default function Home() {
 
         {/*  main content */}
 
-        {/* {renderMainContent()} */}
-        <NewConvo />
+        {renderMainContent()}
       </div>
 
       {/* <SelectedConversation /> */}
