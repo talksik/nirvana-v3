@@ -111,7 +111,7 @@ export default function Conversations() {
 
   return (
     <>
-      <div className="flex flex-row justify-between p-2">
+      <div className="flex flex-row justify-between items-center p-2">
         <Tabs
           value={selectedTab}
           onChange={handleChangeTab}
