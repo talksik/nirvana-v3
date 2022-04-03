@@ -82,7 +82,7 @@ export default function Conversations() {
     switch (selectedTab) {
       case ConvoTab.LIVE:
         return (
-          <span>
+          <span className="text-center">
             None of your channels are live. Join and chill in a room and it will
             show up here!
           </span>
