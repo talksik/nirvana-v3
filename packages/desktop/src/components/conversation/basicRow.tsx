@@ -5,6 +5,10 @@ export default function BasicConversationRow({
 }: {
   masterConvo: MasterConversation;
 }) {
+  // fetch more data for this conversation like all of the members for it
+  // if there is new content for current user
+  // lastActiveDate
+
   const isSelected = false;
 
   return (
