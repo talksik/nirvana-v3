@@ -20,7 +20,7 @@ const Home: NextPage = () => {
 
       <div className="container mx-auto px-20">
         {/* above fold experience */}
-        <div className="flex flex-row items-center space-x-10 mt-10">
+        <div className="flex flex-row items-center my-10">
           <div className="flex flex-col items-start">
             <span className="text-white text-6xl leading-[1.2] font-extrabold">
               The <span className="text-nirvanaTeal">walkie-talkie</span> <br />{" "}
@@ -35,16 +35,16 @@ const Home: NextPage = () => {
 
             {/* download */}
             <span className="flex flex-col justify-start mt-20">
-              <span className="text-white font-bold text-md mb-2">
-                Download the desktop app
+              <span className="text-white text-md mb-2">
+                Download the desktop app (coming soon)
               </span>
 
               <span className="flex flex-row space-x-2">
-                <span className="p-2 rounded bg-zinc-500 cursor-pointer">
+                <span className="p-2 rounded bg-zinc-500 cursor-pointer blur-[2px]">
                   <BsWindows className="text-white text-xl" />
                 </span>
 
-                <span className="p-2 rounded bg-zinc-500 cursor-pointer">
+                <span className="p-2 rounded bg-zinc-500 cursor-pointer blur-[2px]">
                   <BsApple className="text-white text-xl" />
                 </span>
               </span>
@@ -53,14 +53,14 @@ const Home: NextPage = () => {
 
           <img
             src="/illustrations/undraw_co-working_re_w93t.svg"
-            className="h-[30em]"
+            className="h-[30em] ml-auto"
           />
         </div>
       </div>
 
       {/* value points */}
-      <div className="flex flex-row w-full mx-auto px-20 py-10 bg-zinc-500 my-10 space-x-5">
-        <span className="p-5 bg-zinc-600 flex flex-col items-start flex-1 shadow">
+      <div className="flex flex-row w-full mx-auto px-20 py-10 bg-zinc-500 my-10 space-x-5 justify-center">
+        <span className="p-5 bg-zinc-600 max-w-md flex flex-col items-start flex-1 shadow">
           <span className="flex flex-row items-center space-x-2">
             <FaRunning className="text-white text-xl" />
             <span className="text-white font-semibold text-lg">
@@ -70,11 +70,11 @@ const Home: NextPage = () => {
 
           <span className="text-zinc-300 text-sm">
             No more back and forth chatter. Resolve issues in seconds with
-            spontaneous conversations.
+            spontaneous and natural conversations.
           </span>
         </span>
 
-        <span className="p-5 bg-zinc-600 flex flex-col items-start flex-1 shadow">
+        <span className="p-5 bg-zinc-600 max-w-md flex flex-col items-start flex-1 shadow">
           <span className="flex flex-row items-center space-x-2">
             <MdOutlineNaturePeople className="text-white text-xl" />
             <span className="text-white font-semibold text-lg">Minimal</span>
@@ -86,7 +86,7 @@ const Home: NextPage = () => {
           </span>
         </span>
 
-        <span className="p-5 bg-zinc-600 flex flex-col items-start flex-1 shadow">
+        <span className="p-5 bg-zinc-600 max-w-md flex flex-col items-start flex-1 shadow">
           <span className="flex flex-row items-center space-x-2">
             <FaPeopleCarry className="text-white text-lg" />
             <span className="text-white font-semibold text-lg">
