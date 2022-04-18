@@ -4,14 +4,14 @@ export default function HorizontalLogo({
   className,
   type,
 }: {
-  className: string;
+  className?: string;
   type?: LogoType;
 }) {
   if (type === LogoType.small) {
     return (
       <svg
-        width="333"
-        height="108"
+        width="150"
+        height="55"
         viewBox="0 0 333 108"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"

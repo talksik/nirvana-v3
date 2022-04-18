@@ -18,28 +18,28 @@ const Home: NextPage = () => {
       {/* header */}
       <Header />
 
-      <div className="container mx-auto px-20">
-        {/* above fold experience */}
-        <div className="flex flex-row items-center my-10">
+      {/* above fold experience */}
+      <div className="container mx-auto md:px-20 px-10">
+        <div className="flex md:flex-row flex-col items-center my-10">
           <div className="flex flex-col items-start">
-            <span className="text-white text-6xl leading-[1.2] font-extrabold">
+            <span className="text-white text-5xl md:text-6xl leading-[1.2] font-extrabold text-center md:text-left">
               The <span className="text-nirvanaTeal">walkie-talkie</span> <br />{" "}
               for remote teams.
             </span>
 
-            <span className="text-zinc-400 text-xl mt-5">
+            <span className="text-zinc-400 text-lg md:text-xl mt-5 text-center md:text-left">
               The <span className="text-nirvanaTeal">{"'less is more'"}</span>{" "}
               approach. Skip zoom scheduling, <br></br> slack notifications, and
               email threads. <br /> Just talk to your team.
             </span>
 
             {/* download */}
-            <span className="flex flex-col justify-start mt-20">
+            <div className="flex flex-col justify-start mt-20 text-center md:text-left w-full items-center md:items-start">
               <span className="text-white text-md mb-2">
-                Download the desktop app (coming soon)
+                Download the desktop app <br></br> (coming soon)
               </span>
 
-              <span className="flex flex-row space-x-2">
+              <span className="flex flex-row space-x-2 justify-center">
                 <span className="p-2 rounded bg-zinc-500 cursor-pointer blur-[2px]">
                   <BsWindows className="text-white text-xl" />
                 </span>
@@ -48,18 +48,18 @@ const Home: NextPage = () => {
                   <BsApple className="text-white text-xl" />
                 </span>
               </span>
-            </span>
+            </div>
           </div>
 
           <img
             src="/illustrations/undraw_co-working_re_w93t.svg"
-            className="h-[30em] ml-auto"
+            className="h-[30em] ml-auto md:block hidden"
           />
         </div>
       </div>
 
       {/* value points */}
-      <div className="flex flex-row w-full mx-auto px-20 py-10 bg-zinc-500 my-10 space-x-5 justify-center">
+      <div className="flex flex-col md:flex-row w-full mx-auto px-20 py-10 bg-zinc-500 my-10 gap-5 justify-center">
         <span className="p-5 bg-zinc-600 max-w-md flex flex-col items-start flex-1 shadow">
           <span className="flex flex-row items-center space-x-2">
             <FaRunning className="text-white text-xl" />
