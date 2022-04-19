@@ -1,14 +1,16 @@
 import FullMottoLogo from "../../../components/logo/fullMotto";
-import toast from "react-hot-toast";
 import { useCallback } from "react";
+import useNirvanaToast from "../providers/toastProvider";
 
 const contactEmailAddress = "arjunpatel@berkeley.edu";
 
 export default function Footer() {
+  const toast = useNirvanaToast();
+
   const copyToClipboard = useCallback(() => {
     navigator.clipboard.writeText(contactEmailAddress);
 
-    toast.success("copied to clipboard");
+    toast.handleOpen("success", "copied to clipboard");
   }, []);
 
   return (
