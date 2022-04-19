@@ -2,6 +2,8 @@ import "../styles/globals.css";
 
 import type { AppProps } from "next/app";
 import Head from "next/head";
+import React from "react";
+import { Toaster } from "react-hot-toast";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -12,7 +14,11 @@ function MyApp({ Component, pageProps }: AppProps) {
         <link rel="icon" href="/logos/1024x1024.ico" />
 
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin={"true"}
+        />
         <link
           href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;400;600&display=swap"
           rel="stylesheet"

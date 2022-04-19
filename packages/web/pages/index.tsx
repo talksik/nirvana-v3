@@ -2,15 +2,9 @@ import { BsApple, BsWindows } from "react-icons/bs";
 import { FaPeopleCarry, FaRunning } from "react-icons/fa";
 
 import Footer from "../components/footer";
-import FullMottoLogo from "../../components/logo/fullMotto";
-import Head from "next/head";
 import Header from "../components/header";
-import HorizontalLogo from "../../components/logo/horizontal";
-import Image from "next/image";
-import { LogoType } from "../../components/logo/full";
 import { MdOutlineNaturePeople } from "react-icons/md";
 import type { NextPage } from "next";
-import styles from "../styles/Home.module.css";
 
 const Home: NextPage = () => {
   return (
@@ -19,7 +13,7 @@ const Home: NextPage = () => {
       <Header />
 
       {/* above fold experience */}
-      <div className="container mx-auto md:px-20 px-10">
+      <div className="container mx-auto max-w-screen-lg px-10">
         <div className="flex md:flex-row flex-col items-center my-10">
           <div className="flex flex-col items-start">
             <span className="text-white text-5xl md:text-6xl leading-[1.2] font-extrabold text-center md:text-left">
@@ -53,7 +47,7 @@ const Home: NextPage = () => {
 
           <img
             src="/illustrations/undraw_co-working_re_w93t.svg"
-            className="h-[30em] ml-auto md:block hidden"
+            className="h-[25em] ml-auto md:block hidden"
           />
         </div>
       </div>
@@ -102,6 +96,7 @@ const Home: NextPage = () => {
       </div>
 
       {/* footer */}
+
       <Footer />
     </>
   );
