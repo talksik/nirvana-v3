@@ -1,9 +1,10 @@
 import "../styles/globals.css";
+import "react-toastify/dist/ReactToastify.css";
 
 import type { AppProps } from "next/app";
 import Head from "next/head";
-import { NirvanaToastProvider } from "../components/providers/toastProvider";
 import React from "react";
+import { ToastContainer } from "react-toastify";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -25,11 +26,21 @@ function MyApp({ Component, pageProps }: AppProps) {
         />
       </Head>
 
-      <NirvanaToastProvider>
-        <main className="min-h-screen min-w-screen bg-zinc-700 flex flex-col">
-          <Component {...pageProps} />
-        </main>
-      </NirvanaToastProvider>
+      <main className="min-h-screen min-w-screen bg-zinc-700 flex flex-col">
+        <Component {...pageProps} />
+      </main>
+
+      <ToastContainer
+        position="bottom-left"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </>
   );
 }
