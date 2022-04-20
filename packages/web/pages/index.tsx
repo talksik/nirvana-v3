@@ -63,8 +63,8 @@ const Home: NextPage = () => {
           </span>
 
           <span className="text-zinc-300 text-sm">
-            No more back and forth chatter. Resolve issues in seconds with
-            spontaneous and natural conversations.
+            No more back and forth chatter. Push to talk. Resolve issues in
+            seconds with your voice as if your team was around the table.
           </span>
         </span>
 
@@ -76,7 +76,8 @@ const Home: NextPage = () => {
 
           <span className="text-zinc-300 text-sm">
             All of your team’s converstions in one place. Nirvana’s built for
-            flow state. Communication as simple and human as possible.
+            flow state and clarity. Communication as natural and human as
+            possible.
           </span>
         </span>
 
