@@ -13,7 +13,7 @@ const Home: NextPage = () => {
       <Header />
 
       {/* above fold experience */}
-      <div className="container mx-auto max-w-screen-lg px-10">
+      <div className="container mx-auto max-w-screen-xl px-10">
         <div className="flex md:flex-row flex-col items-center my-10">
           <div className="flex flex-col items-start">
             <span className="text-white text-5xl md:text-6xl leading-[1.2] font-extrabold text-center md:text-left">
@@ -47,7 +47,7 @@ const Home: NextPage = () => {
 
           <img
             src="/illustrations/undraw_co-working_re_w93t.svg"
-            className="h-[25em] ml-auto md:block hidden"
+            className="h-[25em] ml-auto"
           />
         </div>
       </div>

@@ -26,7 +26,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         />
       </Head>
 
-      <main className="min-h-screen min-w-screen bg-zinc-700 flex flex-col">
+      <main className="min-h-screen bg-zinc-700 flex flex-col">
         <Component {...pageProps} />
       </main>
 
