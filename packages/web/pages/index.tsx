@@ -18,7 +18,7 @@ const Home: NextPage = () => {
           <div className="flex flex-col items-start">
             <span className="text-white text-5xl md:text-6xl leading-[1.2] font-extrabold text-center md:text-left">
               The <span className="text-nirvanaTeal">walkie-talkie</span> <br />{" "}
-              for remote teams.
+              for remote startups.
             </span>
 
             <span className="text-zinc-400 text-lg md:text-xl mt-5 text-center md:text-left">
