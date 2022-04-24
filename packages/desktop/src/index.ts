@@ -30,6 +30,7 @@ const createWindow = (): void => {
       sandbox: true,
     },
     icon: "./assets/1024x1024.icns",
+    alwaysOnTop: true,
   });
 
   // and load the index.html of the app.
