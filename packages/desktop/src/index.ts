@@ -1,4 +1,4 @@
-import { BrowserWindow, app, dialog, ipcMain } from "electron";
+import { BrowserWindow, app, dialog, globalShortcut, ipcMain } from "electron";
 import Channels, { Dimensions } from "./electron/constants";
 
 import { handleGoogleLogin } from "./electron/handleLogin";
@@ -67,6 +67,11 @@ app
       const { width, height } = arg;
 
       browserWindow.setSize(width, height, false);
+    });
+  })
+  .then(() => {
+    globalShortcut.register("`", () => {
+      console.log("Electron loves global shortcuts!");
     });
   });
 
