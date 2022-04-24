@@ -10,8 +10,8 @@ import {
 } from "@mui/material";
 import { Check, Logout } from "@mui/icons-material";
 import Logo, { LogoType } from "../../../components/Logo";
+import { useEffect, useRef, useState } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
-import { useRef, useState } from "react";
 
 import { GlobalHotKeys } from "react-hotkeys";
 import SocketChannels from "@nirvana/core/sockets/channels";
@@ -27,6 +27,24 @@ export default function Header() {
   const inputRef = useRef(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const openAvatarMenu = Boolean(anchorEl);
+
+  const [userVideo, setUserVideo] = useState<any>(null);
+
+  useEffect(() => {
+    navigator.mediaDevices
+      .getUserMedia({ video: true, audio: false })
+      .then((localMediaStream: any) => {
+        console.log(localMediaStream);
+
+        setUserVideo(localMediaStream);
+
+        var video = document.querySelector("video");
+        video.srcObject = localMediaStream;
+        video.onloadedmetadata = function (e) {
+          video.play();
+        };
+      });
+  }, []);
 
   const handleClick = (event: any) => {
     setAnchorEl(event.currentTarget);
@@ -68,6 +86,8 @@ export default function Header() {
   return (
     <>
       <GlobalHotKeys handlers={handlers} keyMap={keyMap}></GlobalHotKeys>
+
+      <video height="400" width="430" autoPlay />
 
       <div className="flex flex-row items-center bg-zinc-800 h-20 px-5">
         <Logo type={LogoType.small} className="scale-[0.4]" />
