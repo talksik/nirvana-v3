@@ -70,8 +70,12 @@ app
     });
   })
   .then(() => {
-    globalShortcut.register("`", () => {
-      console.log("Electron loves global shortcuts!");
+    globalShortcut.register("`+R", () => {
+      console.log("Recording audio!");
+    });
+
+    globalShortcut.register("`+P", () => {
+      console.log("Recording audio!");
     });
   });
 

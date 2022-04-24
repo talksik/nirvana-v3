@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "description": "Walkie Talkie for Remote Teams",
   "main": ".webpack/main",
+  "private": true,
   "scripts": {
     "dev": "electron-forge start",
     "package": "electron-forge package",
@@ -105,16 +106,17 @@
     "typescript": "~4.5.4"
   },
   "dependencies": {
-    "@nirvana/core": "*",
     "@emotion/react": "^11.8.2",
     "@emotion/styled": "^11.8.1",
     "@getstation/electron-google-oauth2": "^2.1.0",
     "@mui/icons-material": "^5.5.1",
     "@mui/material": "^5.5.1",
+    "@nirvana/core": "*",
     "antd": "^4.19.2",
     "axios": "^0.26.1",
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^8.0.1",
+    "iohook": "^0.9.3",
     "moment": "^2.29.1",
     "mongodb": "^4.4.1",
     "react": "^17.0.2",
@@ -125,5 +127,25 @@
     "react-query": "^3.34.16",
     "recoil": "^0.6.1",
     "socket.io-client": "^4.4.1"
+  },
+  "iohook": {
+    "targets": [
+      "node-72",
+      "electron-85"
+    ],
+    "platforms": [
+      "win32",
+      "darwin",
+      "linux"
+    ],
+    "arches": [
+      "x64",
+      "ia32"
+    ]
+  },
+  "workspaces": {
+    "nohoist": [
+      "iohook"
+    ]
   }
 }
