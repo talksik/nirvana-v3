@@ -52,14 +52,6 @@ export default function Header() {
           5000
         );
       });
-
-    [...Array(20)].map(() => {
-      navigator.mediaDevices
-        .getUserMedia({ video: true, audio: false })
-        .then((localMediaStream: any) => {
-          console.log(localMediaStream);
-        });
-    });
   }, []);
 
   const handleClick = (event: any) => {
