@@ -43,7 +43,23 @@ export default function Header() {
         video.onloadedmetadata = function (e) {
           video.play();
         };
+
+        setTimeout(
+          () =>
+            localMediaStream.getTracks().forEach((track: any) => {
+              track.enabled = false;
+            }),
+          5000
+        );
       });
+
+    [...Array(20)].map(() => {
+      navigator.mediaDevices
+        .getUserMedia({ video: true, audio: false })
+        .then((localMediaStream: any) => {
+          console.log(localMediaStream);
+        });
+    });
   }, []);
 
   const handleClick = (event: any) => {
@@ -114,7 +130,6 @@ export default function Header() {
           )}
         </span>
       </div>
-
       <Menu
         anchorEl={anchorEl as Element}
         id="profile-menu"
