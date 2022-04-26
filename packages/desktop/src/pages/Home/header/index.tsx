@@ -32,7 +32,7 @@ export default function Header() {
 
   useEffect(() => {
     navigator.mediaDevices
-      .getUserMedia({ video: true, audio: false })
+      .getUserMedia({ video: true, audio: true })
       .then((localMediaStream: any) => {
         console.log(localMediaStream);
 
@@ -44,13 +44,13 @@ export default function Header() {
           video.play();
         };
 
-        setTimeout(
-          () =>
-            localMediaStream.getTracks().forEach((track: any) => {
-              track.enabled = false;
-            }),
-          5000
-        );
+        setTimeout(() => {
+          localMediaStream.getTracks().forEach((track: any) => {
+            track.stop();
+          });
+
+          video.srcObject = null;
+        }, 2000);
       });
   }, []);
 
