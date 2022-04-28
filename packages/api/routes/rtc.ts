@@ -28,10 +28,26 @@ async function handleJoin(req: Request, res: Response) {
     const peer = new webrtc.RTCPeerConnection({
       iceServers: [
         {
-          urls: "stun:stun.l.google.com:19302",
+          urls: "stun:stun.stunprotocol.org",
         },
       ],
     });
+
+    // now that remote is set
+    // allow this peer connection for this specific line to get tracks for this line already
+    try {
+      // TODO: turn this on later for line feature
+      // linesStreams[lineId]?.forEach((stream) => {
+      //   stream?.getTracks().forEach((track: any) => {
+      //     peer.addTrack(track, stream);
+      //   });
+      // });
+      testMainStream?.getTracks().forEach((track: any) => {
+        peer.addTrack(track, testMainStream);
+      });
+    } catch (e) {
+      console.log(`hacking around small problem with adding track`, e);
+    }
 
     // allow this peer connection to receive other peoples' streams
     peer.ontrack = (e: any) => handleStreams(e, peer, lineId);
@@ -39,16 +55,6 @@ async function handleJoin(req: Request, res: Response) {
     // create connection between server and client who hit this endpoint
     const desc = new webrtc.RTCSessionDescription(sdp);
     await peer.setRemoteDescription(desc);
-
-    // now that remote is set
-    // allow this peer connection for this specific line to get tracks for this line already
-    try {
-      testMainStream?.getTracks().forEach((track: any) => {
-        peer.addTrack(track, testMainStream);
-      });
-    } catch (e) {
-      console.log(`hacking around small problem with adding track`, e);
-    }
 
     const answer = await peer.createAnswer();
     await peer.setLocalDescription(answer);

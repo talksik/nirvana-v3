@@ -12,56 +12,66 @@ export default function VideoChat() {
   const [selectedLine, setSelectedLine] = useState<string>(lines[0]);
   const videoRef = useRef<HTMLVideoElement>();
   const incomingVideoRef = useRef<HTMLVideoElement>();
-  const [localMediaStream, setLocalMediaStream] = useState();
+  const [localMediaStream, setLocalMediaStream] = useState<MediaStream>();
 
   // connect to media server for line connections as a broadcaster and consumer
   useEffect(() => {
-    navigator.mediaDevices
-      .getUserMedia({ video: true, audio: false })
-      .then((localMediaStream: any) => {
-        console.log("localMediaStream", localMediaStream);
-        console.log(`tracks: `, localMediaStream.getTracks());
-        setLocalMediaStream(localMediaStream);
+    (async () => {
+      // note: [later] create a unique peer connection to server for each line
+      // lines.forEach((lineId) => {
 
-        if (videoRef.current) {
-          toast("got local user video stream");
-          videoRef.current.srcObject = localMediaStream;
+      // });
 
-          // create a unique peer connection to server for each line
-          lines.forEach((lineId) => {
-            // create the peer and add the tranceiver
-            const peer = createPeer(lineId);
+      // create the peer and add the tranceiver
+      const peer = await createPeer("line1");
 
-            // peer.onconnectionstatechange = console.log;
-            // console.log(`peer connection for ${lineId}`, peer);
-
-            // todo: understand this better
-            peer.addTransceiver("video");
-            // peer.addTransceiver("video", { streams: [localMediaStream] });
-
-            // todo: add other tracks like screenshare and such
-            localMediaStream.getTracks().forEach((track: any) => {
-              console.log(
-                `adding track to peer connection: different mediums | audio, video, screen based on selection`
-              );
-              peer.addTrack(track, localMediaStream);
-            });
-          });
-        }
-      });
+      // console.log(`peer connection for ${lineId}`, peer);
+    })();
   }, [lines]);
 
-  const createPeer = (lineId: string) => {
+  const createPeer = async (lineId: string) => {
     const peer = new RTCPeerConnection({
       iceServers: [
         {
-          urls: "stun:stun.l.google.com:19302",
+          urls: "stun:stun.stunprotocol.org",
         },
       ],
     });
 
+    peer.onconnectionstatechange = console.log;
+
+    // todo: understand this better
+    peer.addTransceiver("video");
+    // peer.addTransceiver("video", { streams: [localMediaStream] });
+
+    const localMediaStream = await navigator.mediaDevices.getUserMedia({
+      video: true,
+      audio: false,
+    });
+
+    console.log("localMediaStream", localMediaStream);
+    console.log(`tracks: `, localMediaStream.getTracks());
+    setLocalMediaStream(localMediaStream);
+
+    if (videoRef.current) {
+      toast("got local user video stream");
+      videoRef.current.srcObject = localMediaStream;
+
+      // todo: add other tracks like screenshare and such
+      localMediaStream.getTracks().forEach((track: MediaStreamTrack) => {
+        console.log(
+          `adding track to peer connection: different mediums | audio, video, screen based on selection`
+        );
+        peer.addTrack(track, localMediaStream);
+      });
+    }
+
+    console.log(peer.connectionState);
+
     peer.ontrack = handleTrackEvent;
     peer.onnegotiationneeded = () => handleNegotiationNeededEvent(peer, lineId);
+
+    console.log(peer);
 
     return peer;
   };
@@ -102,7 +112,7 @@ export default function VideoChat() {
 
     if (incomingVideoRef.current) {
       toast(`setting incoming stream ref`);
-      incomingVideoRef.current.srcObject = incomingStream;
+      incomingVideoRef.current.srcObject = new MediaStream(incomingStream);
 
       setInterval(() => {
         incomingVideoRef!.current!.play().then(console.log).catch(console.log);
@@ -150,6 +160,7 @@ export default function VideoChat() {
         height={"500"}
         width={"700"}
         autoPlay
+        muted
         controls
       />
 
