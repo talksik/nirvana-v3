@@ -32,6 +32,7 @@ export default function VideoChat() {
             // create the peer and add the tranceiver
             const peer = createPeer(lineId);
 
+            // peer.onconnectionstatechange = console.log;
             // console.log(`peer connection for ${lineId}`, peer);
 
             // todo: understand this better
@@ -59,13 +60,8 @@ export default function VideoChat() {
       ],
     });
 
-    peer.onconnectionstatechange = console.log;
     peer.ontrack = handleTrackEvent;
     peer.onnegotiationneeded = () => handleNegotiationNeededEvent(peer, lineId);
-
-    setInterval(() => {
-      console.log(peer);
-    }, 2000);
 
     return peer;
   };
@@ -102,12 +98,19 @@ export default function VideoChat() {
   const handleTrackEvent = (e: any) => {
     const incomingStream = e.streams[0];
 
-    console.log("incoming stream", incomingStream);
+    console.log("incoming stream", incomingStream.getTracks());
 
     if (incomingVideoRef.current) {
       toast(`setting incoming stream ref`);
       incomingVideoRef.current.srcObject = incomingStream;
-      incomingVideoRef.current.play();
+
+      setInterval(() => {
+        incomingVideoRef!.current!.play().then(console.log).catch(console.log);
+      }, 2000);
+
+      incomingVideoRef.current.oncanplay = () =>
+        console.log("cannn PLLLAYY VID!!!!");
+      incomingVideoRef.current.play().then(console.log).catch(console.log);
     }
   };
 

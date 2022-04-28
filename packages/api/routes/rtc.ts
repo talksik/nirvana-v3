@@ -41,18 +41,13 @@ async function handleJoin(req: Request, res: Response) {
     // now that remote is set
     // allow this peer connection for this specific line to get tracks for this line already
     try {
-      const firstStream = linesStreams[lineId] ? linesStreams[lineId][0] : null;
-      firstStream?.getTracks().forEach((track: any) => {
-        peer.addTrack(track, firstStream);
+      linesStreams[lineId]?.forEach((stream: any) => {
+        console.log(`have streams in this line`, stream);
+
+        stream.getTracks().forEach((track: any) => {
+          peer.addTrack(track, stream);
+        });
       });
-
-      // linesStreams[lineId]?.forEach((stream: any) => {
-      //   console.log(`have streams in this line`, stream);
-
-      //   stream.getTracks().forEach((track: any) => {
-      //     peer.addTrack(track, stream);
-      //   });
-      // });
     } catch (e) {
       console.log(`hacking around small problem with adding track`, e);
     }
