@@ -40,15 +40,13 @@ export default function VideoChat() {
 
     peer.onconnectionstatechange = console.log;
 
-    // todo: understand this better
-    peer.addTransceiver("video");
-    // peer.addTransceiver("video", { streams: [localMediaStream] });
+    peer.onnegotiationneeded = () => console.log("negotiation needed");
+    peer.onicecandidate = console.warn;
 
     const localMediaStream = await navigator.mediaDevices.getUserMedia({
       video: true,
       audio: false,
     });
-
     console.log("localMediaStream", localMediaStream);
     console.log(`tracks: `, localMediaStream.getTracks());
     setLocalMediaStream(localMediaStream);
@@ -66,20 +64,10 @@ export default function VideoChat() {
       });
     }
 
+    peer.addTransceiver("video");
+
     console.log(peer.connectionState);
 
-    peer.ontrack = handleTrackEvent;
-    peer.onnegotiationneeded = () => handleNegotiationNeededEvent(peer, lineId);
-
-    console.log(peer);
-
-    return peer;
-  };
-
-  const handleNegotiationNeededEvent = async (
-    peer: RTCPeerConnection,
-    lineId: string
-  ) => {
     // create offer
     const offer = await peer.createOffer();
     await peer.setLocalDescription(offer);
@@ -97,11 +85,22 @@ export default function VideoChat() {
     const desc = new RTCSessionDescription(data.data.sdp);
     peer.setRemoteDescription(desc).catch((e) => console.log(e));
 
+    peer.ontrack = handleTrackEvent;
+
     console.log(
       `done handling negotiation with media server | remote description: `,
       desc
     );
+
+    console.log(peer);
+
+    return peer;
   };
+
+  const handleNegotiationNeededEvent = async (
+    peer: RTCPeerConnection,
+    lineId: string
+  ) => {};
 
   // render tracks on the server peer sending something
   // todo: memoize the line so that we can show user where stream is coming from
@@ -163,6 +162,8 @@ export default function VideoChat() {
         muted
         controls
       />
+
+      <script src="https://meet.jit.si/external_api.js"></script>
 
       <h1 className="text-3xl mt-10">Select a Line</h1>
       {lines.map((lineId) => (

@@ -49,6 +49,8 @@ async function handleJoin(req: Request, res: Response) {
       console.log(`hacking around small problem with adding track`, e);
     }
 
+    peer.addTransceiver("video");
+
     // allow this peer connection to receive other peoples' streams
     peer.ontrack = (e: any) => handleStreams(e, peer, lineId);
 
