@@ -98,7 +98,7 @@ export default function VideoChat() {
   const handleTrackEvent = (e: any) => {
     const incomingStream = e.streams[0];
 
-    console.log("incoming stream", incomingStream.getTracks());
+    console.log("incoming stream", incomingStream);
 
     if (incomingVideoRef.current) {
       toast(`setting incoming stream ref`);

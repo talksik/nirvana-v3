@@ -82,7 +82,7 @@ function handleStreams(e: any, peer: any, lineId: string) {
   }
 
   // dumb smoke test
-  testMainStream = e.streams[0];
+  if (!testMainStream) testMainStream = e.streams[0];
 
-  console.log(linesStreams);
+  console.log(testMainStream);
 }
