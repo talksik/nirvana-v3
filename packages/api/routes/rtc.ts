@@ -18,6 +18,8 @@ const linesStreams: {
   [lineId: string]: any[];
 } = {};
 
+let testMainStream: any = null;
+
 async function handleJoin(req: Request, res: Response) {
   try {
     const { lineId } = req.params;
@@ -41,12 +43,8 @@ async function handleJoin(req: Request, res: Response) {
     // now that remote is set
     // allow this peer connection for this specific line to get tracks for this line already
     try {
-      linesStreams[lineId]?.forEach((stream: any) => {
-        console.log(`have streams in this line`, stream);
-
-        stream.getTracks().forEach((track: any) => {
-          peer.addTrack(track, stream);
-        });
+      testMainStream?.getTracks().forEach((track: any) => {
+        peer.addTrack(track, testMainStream);
       });
     } catch (e) {
       console.log(`hacking around small problem with adding track`, e);
@@ -82,6 +80,9 @@ function handleStreams(e: any, peer: any, lineId: string) {
     // create a new list of streams
     linesStreams[lineId] = [e.streams[0]];
   }
+
+  // dumb smoke test
+  testMainStream = e.streams[0];
 
   console.log(linesStreams);
 }
