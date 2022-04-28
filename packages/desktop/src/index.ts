@@ -49,8 +49,8 @@ const createWindow = (): void => {
   overlayWindow.loadURL(SECOND_WINDOW_WEBPACK_ENTRY);
 
   // Open the DevTools.
-  browserWindow.webContents.openDevTools({ mode: "right" });
-  overlayWindow.webContents.openDevTools({ mode: "left" });
+  browserWindow.webContents.openDevTools({ mode: "detach" });
+  overlayWindow.webContents.openDevTools({ mode: "detach" });
 };
 
 // This method will be called when Electron has finished
