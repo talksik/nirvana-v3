@@ -40,7 +40,7 @@ export default function VideoChat() {
 
     peer.onconnectionstatechange = console.log;
 
-    peer.onnegotiationneeded = () => console.log("negotiation needed");
+    peer.onnegotiationneeded = () => handleNegotiationNeededEvent(peer, lineId);
     peer.onicecandidate = console.warn;
 
     const localMediaStream = await navigator.mediaDevices.getUserMedia({
@@ -68,6 +68,17 @@ export default function VideoChat() {
 
     console.log(peer.connectionState);
 
+    console.log(peer);
+
+    peer.ontrack = handleTrackEvent;
+
+    return peer;
+  };
+
+  const handleNegotiationNeededEvent = async (
+    peer: RTCPeerConnection,
+    lineId: string
+  ) => {
     // create offer
     const offer = await peer.createOffer();
     await peer.setLocalDescription(offer);
@@ -83,24 +94,13 @@ export default function VideoChat() {
 
     // receive server acceptance and set remote configs
     const desc = new RTCSessionDescription(data.data.sdp);
-    peer.setRemoteDescription(desc).catch((e) => console.log(e));
-
-    peer.ontrack = handleTrackEvent;
+    await peer.setRemoteDescription(desc);
 
     console.log(
       `done handling negotiation with media server | remote description: `,
       desc
     );
-
-    console.log(peer);
-
-    return peer;
   };
-
-  const handleNegotiationNeededEvent = async (
-    peer: RTCPeerConnection,
-    lineId: string
-  ) => {};
 
   // render tracks on the server peer sending something
   // todo: memoize the line so that we can show user where stream is coming from
