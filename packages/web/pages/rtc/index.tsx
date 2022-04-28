@@ -66,6 +66,12 @@ export default function VideoChat() {
 
     peer.addTransceiver("video");
 
+    console.log(peer.getSenders());
+
+    const remoteStream = new MediaStream([peer.getSenders()[0].track!]);
+
+    incomingVideoRef.current!.srcObject = remoteStream;
+
     console.log(peer.connectionState);
 
     console.log(peer);
@@ -109,18 +115,18 @@ export default function VideoChat() {
 
     console.log("incoming stream", incomingStream);
 
-    if (incomingVideoRef.current) {
-      toast(`setting incoming stream ref`);
-      incomingVideoRef.current.srcObject = new MediaStream(incomingStream);
+    // if (incomingVideoRef.current) {
+    //   toast(`setting incoming stream ref`);
+    //   incomingVideoRef.current.srcObject = new MediaStream(incomingStream);
 
-      setInterval(() => {
-        incomingVideoRef!.current!.play().then(console.log).catch(console.log);
-      }, 2000);
+    //   setInterval(() => {
+    //     incomingVideoRef!.current!.play().then(console.log).catch(console.log);
+    //   }, 2000);
 
-      incomingVideoRef.current.oncanplay = () =>
-        console.log("cannn PLLLAYY VID!!!!");
-      incomingVideoRef.current.play().then(console.log).catch(console.log);
-    }
+    //   incomingVideoRef.current.oncanplay = () =>
+    //     console.log("cannn PLLLAYY VID!!!!");
+    //   incomingVideoRef.current.play().then(console.log).catch(console.log);
+    // }
   };
 
   return (
