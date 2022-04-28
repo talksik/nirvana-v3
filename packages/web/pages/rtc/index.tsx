@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const lines = ["line1", "line2", "line3", "line4", "line5"];
+const lines = ["line1"];
 
 // todo: join different combinations of lines based on page params
 // for now, every browser tab/client joins all 5 lines and streams to one specific one
@@ -12,6 +12,7 @@ export default function VideoChat() {
   const [selectedLine, setSelectedLine] = useState<string>(lines[0]);
   const videoRef = useRef<HTMLVideoElement>();
   const incomingVideoRef = useRef<HTMLVideoElement>();
+  const [localMediaStream, setLocalMediaStream] = useState();
 
   // connect to media server for line connections as a broadcaster and consumer
   useEffect(() => {
@@ -20,11 +21,11 @@ export default function VideoChat() {
       .then((localMediaStream: any) => {
         console.log("localMediaStream", localMediaStream);
         console.log(`tracks: `, localMediaStream.getTracks());
+        setLocalMediaStream(localMediaStream);
 
         if (videoRef.current) {
           toast("got local user video stream");
           videoRef.current.srcObject = localMediaStream;
-          videoRef.current.play();
 
           // create a unique peer connection to server for each line
           lines.forEach((lineId) => {
@@ -34,15 +35,15 @@ export default function VideoChat() {
             // console.log(`peer connection for ${lineId}`, peer);
 
             // todo: understand this better
-            // peer.addTransceiver();
-            peer.addTransceiver("video", { streams: [localMediaStream] });
+            peer.addTransceiver("video");
+            // peer.addTransceiver("video", { streams: [localMediaStream] });
 
             // todo: add other tracks like screenshare and such
             localMediaStream.getTracks().forEach((track: any) => {
               console.log(
                 `adding track to peer connection: different mediums | audio, video, screen based on selection`
               );
-              // peer.addTrack(track, localMediaStream);
+              peer.addTrack(track, localMediaStream);
             });
           });
         }
@@ -53,12 +54,18 @@ export default function VideoChat() {
     const peer = new RTCPeerConnection({
       iceServers: [
         {
-          urls: "stun:stun.stunprotocol.org",
+          urls: "stun:stun.l.google.com:19302",
         },
       ],
     });
+
+    peer.onconnectionstatechange = console.log;
     peer.ontrack = handleTrackEvent;
     peer.onnegotiationneeded = () => handleNegotiationNeededEvent(peer, lineId);
+
+    setInterval(() => {
+      console.log(peer);
+    }, 2000);
 
     return peer;
   };
@@ -67,8 +74,6 @@ export default function VideoChat() {
     peer: RTCPeerConnection,
     lineId: string
   ) => {
-    console.log("test");
-
     // create offer
     const offer = await peer.createOffer();
     await peer.setLocalDescription(offer);
@@ -81,8 +86,6 @@ export default function VideoChat() {
       `http://localhost:5000/api/rtc/join/${lineId}`,
       payload
     );
-
-    console.log(`got sdp from backend | `, data.data.sdp);
 
     // receive server acceptance and set remote configs
     const desc = new RTCSessionDescription(data.data.sdp);
@@ -101,18 +104,11 @@ export default function VideoChat() {
 
     console.log("incoming stream", incomingStream);
 
-    // if (incomingVideoRef.current) {
-    //   console.log(`setting incoming stream ref`);
-    //   incomingVideoRef.current.srcObject = incomingStream;
-    //   incomingVideoRef.current.load();
-    //   incomingVideoRef.current.play();
-    // }
-
-    var video = document.getElementById("incomingVideoRef");
-    video.srcObject = incomingStream;
-    video.onloadedmetadata = function (e) {
-      video.play();
-    };
+    if (incomingVideoRef.current) {
+      toast(`setting incoming stream ref`);
+      incomingVideoRef.current.srcObject = incomingStream;
+      incomingVideoRef.current.play();
+    }
   };
 
   return (
@@ -142,6 +138,7 @@ export default function VideoChat() {
         muted
         height={"300"}
         width={"300"}
+        autoPlay
       />
 
       <video
@@ -149,6 +146,8 @@ export default function VideoChat() {
         id="incomingVideoRef"
         height={"500"}
         width={"700"}
+        autoPlay
+        controls
       />
 
       <h1 className="text-3xl mt-10">Select a Line</h1>

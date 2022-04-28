@@ -26,23 +26,10 @@ async function handleJoin(req: Request, res: Response) {
     const peer = new webrtc.RTCPeerConnection({
       iceServers: [
         {
-          urls: "stun:stun.stunprotocol.org",
+          urls: "stun:stun.l.google.com:19302",
         },
       ],
     });
-
-    // now that remote is set
-    // allow this peer connection for this specific line to get tracks for this line already
-    try {
-      linesStreams[lineId]?.forEach((stream: any) => {
-        stream.getTracks().forEach((track: any) => {
-          console.log(`have tracks in this line`, track, stream);
-          peer.addTrack(track, stream);
-        });
-      });
-    } catch (e) {
-      console.log(`hacking around small problem with adding track`, e);
-    }
 
     // allow this peer connection to receive other peoples' streams
     peer.ontrack = (e: any) => handleStreams(e, peer, lineId);
@@ -50,6 +37,25 @@ async function handleJoin(req: Request, res: Response) {
     // create connection between server and client who hit this endpoint
     const desc = new webrtc.RTCSessionDescription(sdp);
     await peer.setRemoteDescription(desc);
+
+    // now that remote is set
+    // allow this peer connection for this specific line to get tracks for this line already
+    try {
+      const firstStream = linesStreams[lineId] ? linesStreams[lineId][0] : null;
+      firstStream?.getTracks().forEach((track: any) => {
+        peer.addTrack(track, firstStream);
+      });
+
+      // linesStreams[lineId]?.forEach((stream: any) => {
+      //   console.log(`have streams in this line`, stream);
+
+      //   stream.getTracks().forEach((track: any) => {
+      //     peer.addTrack(track, stream);
+      //   });
+      // });
+    } catch (e) {
+      console.log(`hacking around small problem with adding track`, e);
+    }
 
     const answer = await peer.createAnswer();
     await peer.setLocalDescription(answer);
