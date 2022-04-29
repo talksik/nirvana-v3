@@ -32,9 +32,8 @@ export default function VideoChat() {
   const createPeer = async (lineId: string) => {
     const peer = new RTCPeerConnection({
       iceServers: [
-        {
-          urls: "stun:stun.stunprotocol.org",
-        },
+        { urls: "stun:stun.stunprotocol.org:3478" },
+        { urls: "stun:stun.l.google.com:19302" },
       ],
     });
 
@@ -45,7 +44,7 @@ export default function VideoChat() {
 
     const localMediaStream = await navigator.mediaDevices.getUserMedia({
       video: true,
-      audio: false,
+      audio: true,
     });
     console.log("localMediaStream", localMediaStream);
     console.log(`tracks: `, localMediaStream.getTracks());
@@ -65,12 +64,17 @@ export default function VideoChat() {
     }
 
     peer.addTransceiver("video");
+    peer.addTransceiver("audio");
 
+    console.log(peer.getReceivers());
     console.log(peer.getSenders());
 
-    const remoteStream = new MediaStream([peer.getSenders()[0].track!]);
+    const remoteStream = new MediaStream([
+      peer.getSenders()[0].track!,
+      peer.getSenders()[1].track!,
+    ]);
 
-    incomingVideoRef.current!.srcObject = remoteStream;
+    // incomingVideoRef.current!.srcObject = remoteStream;
 
     console.log(peer.connectionState);
 
@@ -111,22 +115,26 @@ export default function VideoChat() {
   // render tracks on the server peer sending something
   // todo: memoize the line so that we can show user where stream is coming from
   const handleTrackEvent = (e: any) => {
-    const incomingStream = e.streams[0];
+    console.log(e);
 
-    console.log("incoming stream", incomingStream);
+    const incomingStream = e.streams[0] as MediaStream;
 
-    // if (incomingVideoRef.current) {
-    //   toast(`setting incoming stream ref`);
-    //   incomingVideoRef.current.srcObject = new MediaStream(incomingStream);
+    console.log("incoming stream", incomingStream.getTracks());
 
-    //   setInterval(() => {
-    //     incomingVideoRef!.current!.play().then(console.log).catch(console.log);
-    //   }, 2000);
+    if (incomingVideoRef.current) {
+      toast(`setting incoming stream ref`);
+      incomingVideoRef.current.srcObject = new MediaStream([
+        e.transceiver.sender.track,
+      ]);
 
-    //   incomingVideoRef.current.oncanplay = () =>
-    //     console.log("cannn PLLLAYY VID!!!!");
-    //   incomingVideoRef.current.play().then(console.log).catch(console.log);
-    // }
+      incomingVideoRef.current.oncanplay = () => {
+        console.log("cannn PLLLAYY VID!!!!");
+
+        incomingVideoRef.current.play().then(console.log).catch(console.error);
+      };
+
+      incomingVideoRef.current.play().then(console.log).catch(console.error);
+    }
   };
 
   return (
@@ -153,9 +161,9 @@ export default function VideoChat() {
       <video
         ref={videoRef}
         id={"userVideo"}
+        height={"500"}
+        width={"700"}
         muted
-        height={"300"}
-        width={"300"}
         autoPlay
       />
 
@@ -165,7 +173,6 @@ export default function VideoChat() {
         height={"500"}
         width={"700"}
         autoPlay
-        muted
         controls
       />
 

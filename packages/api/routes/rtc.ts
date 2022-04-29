@@ -27,11 +27,13 @@ async function handleJoin(req: Request, res: Response) {
 
     const peer = new webrtc.RTCPeerConnection({
       iceServers: [
-        {
-          urls: "stun:stun.stunprotocol.org",
-        },
+        { urls: "stun:stun.stunprotocol.org:3478" },
+        { urls: "stun:stun.l.google.com:19302" },
       ],
     });
+
+    // allow this peer connection to receive other peoples' streams
+    peer.ontrack = (e: any) => handleStreams(e, peer, lineId);
 
     // now that remote is set
     // allow this peer connection for this specific line to get tracks for this line already
@@ -50,9 +52,7 @@ async function handleJoin(req: Request, res: Response) {
     }
 
     peer.addTransceiver("video");
-
-    // allow this peer connection to receive other peoples' streams
-    peer.ontrack = (e: any) => handleStreams(e, peer, lineId);
+    peer.addTransceiver("audio");
 
     // create connection between server and client who hit this endpoint
     const desc = new webrtc.RTCSessionDescription(sdp);
