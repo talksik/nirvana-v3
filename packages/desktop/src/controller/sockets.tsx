@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import SocketChannels from "@nirvana/core/sockets/channels";
 import { UserStatus } from "../../../core/models/user.model";
-import { socket } from "../nirvanaApp";
+import { socket } from "../pages/nirvanaApp";
 
 // import { useGetAllContactBasicDetails } from "./index";
 

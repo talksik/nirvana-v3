@@ -69,14 +69,6 @@
                   "preload": {
                     "js": "./src/electron/preload.ts"
                   }
-                },
-                {
-                  "html": "./src/index.html",
-                  "js": "./src/rendererTwo.ts",
-                  "name": "second_window",
-                  "preload": {
-                    "js": "./src/electron/preload.ts"
-                  }
                 }
               ]
             }

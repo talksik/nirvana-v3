@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from "react-query";
 
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import ProtectedRoute from "./components/ProtectedRoute";
+import Login from "./Login";
+import NirvanaRouter from "./router";
+import ProtectedRoute from "../components/ProtectedRoute";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { RecoilRoot } from "recoil";
 import { Toaster } from "react-hot-toast";
@@ -22,7 +22,7 @@ function NirvanaApp() {
       <QueryClientProvider client={queryClient}>
         <RecoilRoot>
           <ProtectedRoute>
-            <Home />
+            <NirvanaRouter />
           </ProtectedRoute>
           <ReactQueryDevtools initialIsOpen={true} position={"bottom-left"} />
         </RecoilRoot>
