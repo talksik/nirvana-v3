@@ -30,29 +30,29 @@ export default function Header() {
 
   const [userVideo, setUserVideo] = useState<any>(null);
 
-  useEffect(() => {
-    navigator.mediaDevices
-      .getUserMedia({ video: true, audio: true })
-      .then((localMediaStream: any) => {
-        console.log(localMediaStream);
+  // useEffect(() => {
+  //   navigator.mediaDevices
+  //     .getUserMedia({ video: true, audio: true })
+  //     .then((localMediaStream: any) => {
+  //       console.log(localMediaStream);
 
-        setUserVideo(localMediaStream);
+  //       setUserVideo(localMediaStream);
 
-        var video = document.querySelector("video");
-        video.srcObject = localMediaStream;
-        video.onloadedmetadata = function (e) {
-          video.play();
-        };
+  //       var video = document.querySelector("video");
+  //       video.srcObject = localMediaStream;
+  //       video.onloadedmetadata = function (e) {
+  //         video.play();
+  //       };
 
-        setTimeout(() => {
-          localMediaStream.getTracks().forEach((track: any) => {
-            track.stop();
-          });
+  //       setTimeout(() => {
+  //         localMediaStream.getTracks().forEach((track: any) => {
+  //           track.stop();
+  //         });
 
-          video.srcObject = null;
-        }, 2000);
-      });
-  }, []);
+  //         video.srcObject = null;
+  //       }, 2000);
+  //     });
+  // }, []);
 
   const handleClick = (event: any) => {
     setAnchorEl(event.currentTarget);
@@ -95,7 +95,7 @@ export default function Header() {
     <>
       <GlobalHotKeys handlers={handlers} keyMap={keyMap}></GlobalHotKeys>
 
-      <video height="400" width="430" autoPlay />
+      <video height="400" width="430" autoPlay muted />
 
       <div className="flex flex-row items-center bg-zinc-800 h-20 px-5">
         <Logo type={LogoType.small} className="scale-[0.4]" />

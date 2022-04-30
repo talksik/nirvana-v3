@@ -1,0 +1,8 @@
+@import "carbon-components/scss/globals/scss/styles.scss";
+
+// TODO: important, note that if current version of sass in package.json is causing issues, install ^1.29.0
+$body-color: red;
+
+body {
+  color: $body-color !important;
+}
