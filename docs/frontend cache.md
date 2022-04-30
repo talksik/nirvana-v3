@@ -41,3 +41,10 @@ sent down automatically -> has useEffect for socket data -> has
   details page as it was pass through props, but still can fetch from here and
   add it to the big tree and thus will be passed down appropriately and re-order
   it in the list of lines
+
+### Update the fetch to include mofidicatios
+
+- use react query to make the basic fetch of lineIds
+- have a function within the line list component which takes in new values so
+  that the child can send data up whenever data within it changes with react
+  query

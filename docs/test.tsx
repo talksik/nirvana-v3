@@ -59,6 +59,8 @@ export default function useLinesData() {
 // need to figure out how to use this hook in line details
 // and at the same time, update the useLinesData hook...need to send it up there or something
 function useDetailedLineData(lineId: string) {
+  // set initial data as a prop for this query using the data from the above
+  // main hook
   // const x = useQuery(api.getLineData(pagination, etc..))
 
   // return the react query query itself
