@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
 
 import { $jwtToken } from "../../controller/recoil";
-import { CircularProgress } from "@mui/material";
 import { FcGoogle } from "react-icons/fc";
 import Logo from "../../components/Logo";
 import { useLogin } from "../../controller/index";
@@ -56,7 +55,6 @@ export default function Login() {
 
       {isLoading ? (
         <>
-          <CircularProgress />
           <span className="text-white">Attempting to log you in</span>
         </>
       ) : (

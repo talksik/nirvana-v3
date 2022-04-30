@@ -1,13 +1,4 @@
 import {
-  Button,
-  FormControl,
-  Input,
-  InputAdornment,
-  InputLabel,
-  TextField,
-} from "@mui/material";
-import { Check, Search } from "@mui/icons-material";
-import {
   useCreateConvo,
   useGetDmByUserId,
   useGetUserDetails,
@@ -163,25 +154,7 @@ export default function NewConvo() {
 
   return (
     <div className="flex flex-col">
-      <div className="flex flex-row">
-        <Button
-          onClick={handleGoBack}
-          size="small"
-          style={{ textTransform: "none" }}
-        >
-          back
-        </Button>
-
-        <TextField
-          value={userSearchQuery}
-          autoFocus
-          color="secondary"
-          label="Search by name or email"
-          variant="filled"
-          fullWidth
-          onChange={handleUpdateSearchInput}
-        />
-      </div>
+      <div className="flex flex-row"></div>
 
       <span className="mx-auto">{data?.users.length ?? 0} results</span>
 
@@ -190,7 +163,7 @@ export default function NewConvo() {
       {/* selected people  */}
       {selectedUsers?.map((user) => (
         <div onClick={() => selectOrUnselectUser(user)}>
-          <UserRow user={user} rightJsx={<Check />} />
+          <UserRow user={user} />
         </div>
       ))}
 
@@ -203,11 +176,7 @@ export default function NewConvo() {
         ))}
       </div>
 
-      <div className="ml-auto">
-        <Button variant="contained" onClick={createConvo}>
-          Connect
-        </Button>
-      </div>
+      <div className="ml-auto"></div>
     </div>
   );
 }

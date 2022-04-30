@@ -1,14 +1,4 @@
 import { $jwtToken, $searchQuery } from "../../../controller/recoil";
-import {
-  Avatar,
-  Button,
-  Divider,
-  ListItemIcon,
-  Menu,
-  MenuItem,
-  MenuProps,
-} from "@mui/material";
-import { Check, Logout } from "@mui/icons-material";
 import Logo, { LogoType } from "../../../components/Logo";
 import { useEffect, useRef, useState } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
@@ -99,70 +89,7 @@ export default function Header() {
 
       <div className="flex flex-row items-center bg-zinc-800 h-20 px-5">
         <Logo type={LogoType.small} className="scale-[0.4]" />
-        <input
-          ref={inputRef}
-          placeholder="type / to search"
-          className="placeholder:text-zinc-400 bg-transparent outline-none text-zinc-100 mr-auto flex-1"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-
-        <Button
-          onClick={() => updateStatus(UserStatus.FLOW_STATE)}
-          color="secondary"
-          size="small"
-          style={{ textTransform: "none" }}
-        >
-          flow state
-        </Button>
-
-        <span className="px-5" onClick={handleClick}>
-          {userDetailsResponse?.user && (
-            <UserAvatarWithStatus user={userDetailsResponse?.user} />
-          )}
-        </span>
       </div>
-      <Menu
-        anchorEl={anchorEl as Element}
-        id="profile-menu"
-        open={openAvatarMenu}
-        onClose={handleClose}
-        onClick={handleClose}
-      >
-        <MenuItem onClick={() => updateStatus(UserStatus.ONLINE)}>
-          <ListItemIcon>
-            {userDetailsResponse?.user.status === UserStatus.ONLINE && (
-              <Check fontSize="small" />
-            )}
-          </ListItemIcon>
-          Online
-        </MenuItem>
-        <MenuItem onClick={() => updateStatus(UserStatus.OFFLINE)}>
-          <ListItemIcon>
-            {userDetailsResponse?.user.status === UserStatus.OFFLINE && (
-              <Check fontSize="small" />
-            )}
-          </ListItemIcon>
-          Away
-        </MenuItem>
-        <MenuItem onClick={() => updateStatus(UserStatus.FLOW_STATE)}>
-          <ListItemIcon>
-            {userDetailsResponse?.user.status === UserStatus.OFFLINE && (
-              <Check fontSize="small" />
-            )}
-          </ListItemIcon>
-          Flow State
-        </MenuItem>
-
-        <Divider />
-
-        <MenuItem onClick={logOut}>
-          <ListItemIcon>
-            <Logout fontSize="small" />
-          </ListItemIcon>
-          Sign Out
-        </MenuItem>
-      </Menu>
     </>
   );
 }

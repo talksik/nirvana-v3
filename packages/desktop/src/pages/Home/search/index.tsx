@@ -4,7 +4,6 @@ import {
 } from "../../../controller/recoil";
 
 import { FaAngleRight } from "react-icons/fa";
-import { Tooltip } from "@mui/material";
 import { User } from "@nirvana/core/models";
 import { useEffect } from "react";
 import { useRecoilState } from "recoil";

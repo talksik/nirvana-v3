@@ -2,9 +2,7 @@ import {
   $newConvoPage,
   $selectedConversation,
 } from "../../../controller/recoil";
-import { Add, LinkRounded, RecordVoiceOverTwoTone } from "@mui/icons-material";
 import { Avatar, Tooltip } from "antd";
-import { Button, Fab, Tab, Tabs } from "@mui/material";
 import {
   Conversation,
   ConversationMemberState,
@@ -118,45 +116,7 @@ export default function Conversations() {
 
   return (
     <>
-      <div className="flex flex-row justify-between items-center p-2">
-        <Tabs
-          value={selectedTab}
-          onChange={handleChangeTab}
-          textColor="secondary"
-          indicatorColor="secondary"
-          aria-label="secondary tabs example"
-          sx={{ textTransform: "none" }}
-        >
-          <Tab value={ConvoTab.LIVE} label="LIVE" sx={{ fontSize: "0.75em" }} />
-          <Tab
-            value={ConvoTab.TUNED}
-            label="TUNED IN"
-            sx={{ fontSize: "0.75em" }}
-          />
-          <Tab
-            value={ConvoTab.INBOX}
-            label="INBOX"
-            sx={{ fontSize: "0.75em" }}
-          />
-          <Tab
-            value={ConvoTab.REQUESTS}
-            label="REQUESTS"
-            sx={{ fontSize: "0.75em" }}
-          />
-        </Tabs>
-
-        <Fab
-          variant="extended"
-          size="small"
-          color="primary"
-          aria-label="add"
-          onClick={handleNewConvo}
-          style={{ textTransform: "none" }}
-        >
-          <RecordVoiceOverTwoTone fontSize="small" sx={{ mr: 1 }} />
-          new
-        </Fab>
-      </div>
+      <div className="flex flex-row justify-between items-center p-2"></div>
 
       <div className="flex flex-col items-center">
         {renderConversationContent()}
