@@ -80,7 +80,7 @@ export default function LineRow({
     <div
       onClick={handleSelectLine}
       id={lineDetails.lineId}
-      className="flex flex-row items-center justify-start gap-2 p-2 px-4 h-14 hover:bg-gray-300 cursor-pointer transition-all
+      className="flex flex-row items-center justify-start gap-2 p-2 px-4 h-14 hover:bg-gray-200 cursor-pointer transition-all
   last:border-b-0 border-b border-b-gray-200"
     >
       {/* status dot */}

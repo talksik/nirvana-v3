@@ -1,4 +1,11 @@
-import { BrowserWindow, app, dialog, globalShortcut, ipcMain } from "electron";
+import {
+  BrowserWindow,
+  Menu,
+  app,
+  dialog,
+  globalShortcut,
+  ipcMain,
+} from "electron";
 import Channels, { Dimensions } from "./electron/constants";
 
 import { DimensionPresets } from "./electron/constants";
@@ -32,7 +39,9 @@ const createWindow = (): void => {
     },
     alwaysOnTop: true,
     icon: "./assets/1024x1024.icns",
-    autoHideMenuBar: true,
+
+    frame: false,
+    roundedCorners: false,
   });
 
   // and load the index.html of the app.

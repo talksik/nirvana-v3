@@ -33,7 +33,7 @@ export default function NirvanaTerminal({
       <NirvanaHeader />
 
       {/* tuned in lines block */}
-      <div className="bg-gray-200 flex flex-col">
+      <div className="bg-gray-100 flex flex-col">
         {/* tuned in header + general controls */}
         <div className="flex flex-row items-center p-3 pb-0">
           <span className="flex flex-row gap-2 items-center justify-start text-slate-800">

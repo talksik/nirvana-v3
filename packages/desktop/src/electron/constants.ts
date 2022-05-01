@@ -28,7 +28,7 @@ export const DimensionPresets = {
   },
   terminalDetailOverlay: {
     height: 675,
-    width: 1100,
+    width: 800,
   },
   // todo: typically just send whatever dimensions are needed
   overlayMode: {
