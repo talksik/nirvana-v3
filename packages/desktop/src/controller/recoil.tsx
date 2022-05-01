@@ -21,3 +21,11 @@ export const $newConvoPage = atom<boolean>({
   key: "NEW_CONVO_PAGE",
   default: false,
 });
+
+type outputMode = "audio" | "video" | "off";
+
+// selected output mode
+export const $selectedOutputMode = atom<outputMode>({
+  key: "OUTPUT_MODE",
+  default: "video",
+});

@@ -1,13 +1,25 @@
-import { Button, Drawer } from "@mui/material";
-import { Header, HeaderName } from "carbon-components-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  Button,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
+  MenuList,
+} from "@mui/material";
+import { HeadsetMicSharp, VideocamSharp } from "@mui/icons-material";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { $selectedOutputMode } from "../../controller/recoil";
 import { Avatar } from "antd";
 import Logo from "../Logo";
 import { useGetUserDetails } from "../../controller/index";
+import { useRecoilState } from "recoil";
 
 export default function NirvanaHeader() {
   const { data: userDetailsRes, isLoading } = useGetUserDetails();
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [outputMode, setOutputMode] = useRecoilState($selectedOutputMode);
 
   const userVideo = useRef<HTMLVideoElement>();
   const [userVideoStream, setUserVideoStream] =
@@ -23,13 +35,21 @@ export default function NirvanaHeader() {
       });
   }, []);
 
+  const handleOpenMenu = useCallback((event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  }, []);
+
+  const handleCloseMenu = useCallback(() => {
+    setAnchorEl(null);
+  }, []);
+
   if (isLoading) return <>loading</>;
+
+  const menuOpen = useMemo(() => Boolean(anchorEl), [anchorEl]);
 
   return (
     <div className="flex flex-row items-center h-12 bg-gray-100">
       <Logo type="small" className="scale-[0.2]" />
-
-      <UserOutputSelectionDrawer />
 
       <div className="ml-auto">
         <Button color="info" size="small">
@@ -37,39 +57,49 @@ export default function NirvanaHeader() {
         </Button>
       </div>
 
-      <video
-        className="ml-2"
-        ref={userVideo}
-        height={"50px"}
-        width={"50px"}
-        muted
-        autoPlay
-      />
+      <div onClick={handleOpenMenu}>
+        {outputMode === "video" && (
+          <video
+            className="ml-2"
+            ref={userVideo}
+            height={"50px"}
+            width={"50px"}
+            muted
+            autoPlay
+          />
+        )}
 
-      {!userVideoStream && userDetailsRes?.user?.picture && (
-        <Avatar src={userDetailsRes?.user?.picture} />
-      )}
+        {userDetailsRes?.user?.picture && outputMode === "audio" && (
+          <Avatar src={userDetailsRes?.user?.picture} />
+        )}
+      </div>
+
+      {/* menu for the output options */}
+      <Menu
+        open={menuOpen}
+        id="user-output-selection-menu"
+        anchorEl={anchorEl}
+        onClose={handleCloseMenu}
+        MenuListProps={{
+          "aria-labelledby": "basic-button",
+        }}
+      >
+        <MenuList>
+          <MenuItem onClick={() => setOutputMode("audio")}>
+            <ListItemIcon>
+              <HeadsetMicSharp fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Audio Only</ListItemText>
+          </MenuItem>
+
+          <MenuItem onClick={() => setOutputMode("video")}>
+            <ListItemIcon>
+              <VideocamSharp fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Video</ListItemText>
+          </MenuItem>
+        </MenuList>
+      </Menu>
     </div>
-  );
-}
-
-/**
- *
- * select between video, audio, and just profile picture
- */
-function UserOutputSelectionDrawer() {
-  const [open, setOpen] = useState<boolean>(false);
-
-  const toggleDrawer = (event: React.KeyboardEvent | React.MouseEvent) => {
-    setOpen((isCurrentlyOpen) => !isCurrentlyOpen);
-  };
-
-  return (
-    <>
-      <Button onClick={toggleDrawer}>open drawer</Button>
-      <Drawer anchor={"top"} open={open} onClose={toggleDrawer}>
-        Option one
-      </Drawer>
-    </>
   );
 }
