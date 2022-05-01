@@ -1,12 +1,15 @@
+import { useCallback, useMemo } from "react";
+
 import { Avatar } from "antd";
 import { FiSun } from "react-icons/fi";
-import { ILineDetails } from "../../../pages/terminal/index";
-import { useMemo } from "react";
+import { ILineDetails } from "../../../pages/router/index";
 
 export default function LineRow({
   lineDetails,
+  onClick,
 }: {
   lineDetails: ILineDetails;
+  onClick: (lineId: string) => void;
 }) {
   const renderActivityIcon = useMemo(() => {
     if (lineDetails.isUserBroadcastingHere)
@@ -68,10 +71,16 @@ export default function LineRow({
     );
   }, [lineDetails]);
 
+  const handleSelectLine = useCallback(
+    (e) => onClick(lineDetails.lineId),
+    [onClick, lineDetails]
+  );
+
   return (
     <div
+      onClick={handleSelectLine}
       id={lineDetails.lineId}
-      className="flex flex-row items-center justify-start gap-2 p-2 h-14 hover:bg-gray-300 cursor-pointer transition-all
+      className="flex flex-row items-center justify-start gap-2 p-2 px-4 h-14 hover:bg-gray-300 cursor-pointer transition-all
   last:border-b-0 border-b border-b-gray-200"
     >
       {/* status dot */}
