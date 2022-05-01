@@ -50,8 +50,8 @@ const createWindow = (): void => {
 
   browserWindow.setBackgroundColor("#00000000");
 
-  browserWindow.setIgnoreMouseEvents(true);
-  browserWindow.setFocusable(false);
+  // browserWindow.setIgnoreMouseEvents(true);
+  // browserWindow.setFocusable(true);
 
   // and load the index.html of the app.
   browserWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
