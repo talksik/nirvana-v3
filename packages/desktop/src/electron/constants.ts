@@ -30,7 +30,7 @@ export const DimensionPresets = {
   // todo: typically just send whatever dimensions are needed
   overlayOnlyMode: {
     height: 800,
-    width: 400,
+    width: 325,
   },
 };
 
