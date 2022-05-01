@@ -1,8 +1,8 @@
+import { Button, Drawer } from "@mui/material";
 import { Header, HeaderName } from "carbon-components-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { Avatar } from "antd";
-import Button from "@mui/material/Button";
 import Logo from "../Logo";
 import { useGetUserDetails } from "../../controller/index";
 
@@ -29,6 +29,8 @@ export default function NirvanaHeader() {
     <div className="flex flex-row items-center h-12 bg-gray-100">
       <Logo type="small" className="scale-[0.2]" />
 
+      <UserOutputSelectionDrawer />
+
       <div className="ml-auto">
         <Button color="info" size="small">
           flow state
@@ -48,5 +50,26 @@ export default function NirvanaHeader() {
         <Avatar src={userDetailsRes?.user?.picture} />
       )}
     </div>
+  );
+}
+
+/**
+ *
+ * select between video, audio, and just profile picture
+ */
+function UserOutputSelectionDrawer() {
+  const [open, setOpen] = useState<boolean>(false);
+
+  const toggleDrawer = (event: React.KeyboardEvent | React.MouseEvent) => {
+    setOpen((isCurrentlyOpen) => !isCurrentlyOpen);
+  };
+
+  return (
+    <>
+      <Button onClick={toggleDrawer}>open drawer</Button>
+      <Drawer anchor={"top"} open={open} onClose={toggleDrawer}>
+        Option one
+      </Drawer>
+    </>
   );
 }
