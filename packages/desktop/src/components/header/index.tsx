@@ -43,8 +43,9 @@ export default function NirvanaHeader({
   }, []);
 
   useEffect(() => {
-    if (userVideoStream && outputMode === "video")
-      document.querySelector("video").srcObject = userVideoStream;
+    const videoElem = document.querySelector("video");
+    if (userVideoStream && outputMode === "video" && videoElem)
+      videoElem.srcObject = userVideoStream;
   }, [userVideoStream, outputMode]);
 
   const menuOpen = useMemo(() => Boolean(anchorEl), [anchorEl]);

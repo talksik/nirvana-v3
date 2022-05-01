@@ -48,6 +48,11 @@ const createWindow = (): void => {
     roundedCorners: false,
   });
 
+  browserWindow.setBackgroundColor("#00000000");
+
+  browserWindow.setIgnoreMouseEvents(true);
+  browserWindow.setFocusable(false);
+
   // and load the index.html of the app.
   browserWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
@@ -91,7 +96,7 @@ app
 
         // move window/overlay to top right
 
-        browserWindow.setPosition(display.bounds.width - 300, 0, true);
+        browserWindow.setPosition(display.bounds.width - width, 0, true);
 
         browserWindow.setSize(width, height, true);
       } else {
