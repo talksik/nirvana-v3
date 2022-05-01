@@ -2,7 +2,7 @@ import { Header, HeaderName } from "carbon-components-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { Avatar } from "antd";
-import { Button } from "@carbon/react";
+import Button from "@mui/material/Button";
 import Logo from "../Logo";
 import { useGetUserDetails } from "../../controller/index";
 
@@ -30,9 +30,7 @@ export default function NirvanaHeader() {
       <Logo type="small" className="scale-[0.2]" />
 
       <div className="ml-auto">
-        <Button size="sm" kind="ghost">
-          flow state
-        </Button>
+        <Button>flow state</Button>
       </div>
 
       <video
