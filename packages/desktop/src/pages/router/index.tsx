@@ -273,9 +273,11 @@ export default function NirvanaRouter() {
 
   return (
     <div className="flex flex-col h-screen w-screen">
-      <NirvanaHeader />
+      <NirvanaHeader
+        onHeaderFocus={() => setDesktopMode(DimensionPresets.terminal)}
+      />
 
-      <div className="flex flex-row">
+      <div className="flex flex-row flex-1">
         {(desktopMode === DimensionPresets.terminal ||
           desktopMode === DimensionPresets.terminalAndDetails) && (
           <NirvanaTerminal

@@ -30,6 +30,8 @@ if (require("electron-squirrel-startup")) {
 // be closed automatically when the JavaScript object is garbage collected.
 export let browserWindow: BrowserWindow;
 
+let display;
+
 const createWindow = (): void => {
   // Create the browser window.
   browserWindow = new BrowserWindow({
@@ -40,9 +42,10 @@ const createWindow = (): void => {
     },
     icon: "./assets/1024x1024.icns",
 
+    transparent: true,
+
     frame: false,
     roundedCorners: false,
-    transparent: true,
   });
 
   // and load the index.html of the app.
@@ -50,6 +53,8 @@ const createWindow = (): void => {
 
   // Open the DevTools.
   browserWindow.webContents.openDevTools({ mode: "detach" });
+
+  display = screen.getPrimaryDisplay();
 };
 
 // This method will be called when Electron has finished
@@ -85,11 +90,16 @@ app
         browserWindow.setAlwaysOnTop(true, "floating");
 
         // move window/overlay to top right
-        let display = screen.getPrimaryDisplay();
-        browserWindow.setPosition(display.bounds.width, display.bounds.height);
-      } else browserWindow.setAlwaysOnTop(false);
 
-      browserWindow.setSize(width, height, true);
+        browserWindow.setPosition(display.bounds.width - 300, 0, true);
+
+        browserWindow.setSize(width, height, true);
+      } else {
+        browserWindow.setSize(width, height, true);
+
+        browserWindow.center();
+        browserWindow.setAlwaysOnTop(false);
+      }
     });
   })
   .then(() => {

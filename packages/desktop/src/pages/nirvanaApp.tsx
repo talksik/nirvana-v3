@@ -67,10 +67,10 @@ function NirvanaApp() {
               <NirvanaRouter />
             </ProtectedRoute>
 
-            <ReactQueryDevtools
+            {/* <ReactQueryDevtools
               initialIsOpen={false}
               position={"bottom-left"}
-            />
+            /> */}
           </RecoilRoot>
         </ThemeProvider>
         <Toaster />

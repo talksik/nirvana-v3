@@ -17,7 +17,11 @@ import Logo from "../Logo";
 import { useGetUserDetails } from "../../controller/index";
 import { useRecoilState } from "recoil";
 
-export default function NirvanaHeader() {
+export default function NirvanaHeader({
+  onHeaderFocus,
+}: {
+  onHeaderFocus: () => void;
+}) {
   const { data: userDetailsRes, isLoading } = useGetUserDetails();
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -81,6 +85,7 @@ export default function NirvanaHeader() {
       <div
         className="flex flex-row items-center bg-gray-100 pl-2 border-b border-b-gray-200"
         id="titlebar"
+        onFocus={onHeaderFocus}
       >
         <Logo type="small" />
 

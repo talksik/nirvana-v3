@@ -9,7 +9,7 @@ export default function LineDetailsTerminal({
   return (
     <div
       id={`${selectedLine.lineId}-lineDetailsTerminal`}
-      className="flex flex-col flex-1 bg-gray-100 h-full"
+      className="flex flex-col flex-1 bg-gray-100"
     >
       {/* line overview header */}
       <div className="flex flex-row p-3 items-center gap-1">
