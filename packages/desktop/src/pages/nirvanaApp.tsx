@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "react-query";
 
-import { GlobalTheme } from "@carbon/react";
+import { GlobalTheme } from "@carbon/react/lib/components/Theme";
 import Login from "./Login";
 import NirvanaRouter from "./router";
 import ProtectedRoute from "../components/ProtectedRoute";
