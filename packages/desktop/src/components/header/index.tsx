@@ -82,10 +82,10 @@ export default function NirvanaHeader() {
         <Logo type="small" />
 
         <div className="mx-auto flex flex-row items-center space-x-2">
-          <FaSearch className="text-sm text-gray-300" />
+          <FaSearch className="text-xs text-gray-300" />
           <input
             placeholder="Type / to search"
-            className="bg-transparent placeholder-gray-300 focus:outline-none"
+            className="bg-transparent placeholder-gray-300 placeholder:text-xs focus:outline-none"
             ref={inputRef}
             onChange={onSearchChange}
             value={searchInput}

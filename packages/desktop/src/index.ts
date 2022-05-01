@@ -32,6 +32,7 @@ const createWindow = (): void => {
     },
     alwaysOnTop: true,
     icon: "./assets/1024x1024.icns",
+    autoHideMenuBar: true,
   });
 
   // and load the index.html of the app.
@@ -71,9 +72,9 @@ app
     });
   })
   .then(() => {
-    globalShortcut.register("`", () => {
-      console.log("Electron loves global shortcuts!");
-    });
+    // globalShortcut.register("`", () => {
+    //   console.log("Electron loves global shortcuts!");
+    // });
   });
 
 // Quit when all windows are closed, except on macOS. There, it's common
