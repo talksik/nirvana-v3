@@ -12,14 +12,28 @@ export enum STORE_ITEMS {
   AUTH_SESSION_JWT = "AUTH_SESSION_JWT",
 }
 
-export const Dimensions = {
-  default: {
-    height: 700,
-    width: 500,
+export type Dimensions = {
+  height: number;
+  width: number;
+};
+
+export const DimensionPresets = {
+  terminal: {
+    height: 675,
+    width: 400,
   },
-  selectedConvo: {
-    height: 700,
-    width: 900,
+  terminalDetailOrOverlay: {
+    height: 675,
+    width: 800,
+  },
+  terminalDetailOverlay: {
+    height: 675,
+    width: 1100,
+  },
+  // todo: typically just send whatever dimensions are needed
+  overlayMode: {
+    height: -1,
+    width: 300,
   },
 };
 

@@ -1,6 +1,7 @@
 import { BrowserWindow, app, dialog, globalShortcut, ipcMain } from "electron";
 import Channels, { Dimensions } from "./electron/constants";
 
+import { DimensionPresets } from "./electron/constants";
 import { handleGoogleLogin } from "./electron/handleLogin";
 import path from "path";
 import store from "./electron/store";
@@ -24,11 +25,12 @@ export let browserWindow: BrowserWindow;
 const createWindow = (): void => {
   // Create the browser window.
   browserWindow = new BrowserWindow({
-    ...Dimensions.default,
+    ...DimensionPresets.terminal,
     webPreferences: {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
       sandbox: true,
     },
+    alwaysOnTop: true,
     icon: "./assets/1024x1024.icns",
   });
 

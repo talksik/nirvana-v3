@@ -2,10 +2,11 @@ import NirvanaApi, { ApiCalls } from "./nirvanaApi";
 import { useMutation, useQuery } from "react-query";
 
 // ====== QUERIES
-export function useAuthCheck() {
+export function useAuthCheck(jwtToken?: string) {
   return useQuery("AUTH_CHECK", ApiCalls.authCheck, {
     retry: false,
     refetchOnWindowFocus: false,
+    enabled: jwtToken ? true : false,
   });
 }
 

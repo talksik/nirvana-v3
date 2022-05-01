@@ -13,9 +13,10 @@ export default function ProtectedRoute({
 }: {
   children?: React.ReactNode;
 }) {
-  const { isLoading, isError, isFetching, isSuccess, refetch } = useAuthCheck();
-
   const [jwtToken, setJwtToken] = useRecoilState($jwtToken);
+
+  const { isLoading, isError, isFetching, isSuccess, refetch } =
+    useAuthCheck(jwtToken);
 
   useEffect(() => {
     // on load of this, if we already have jwt tokens in store,
@@ -40,11 +41,13 @@ export default function ProtectedRoute({
 
     if (jwtToken) {
       window.electronAPI.store.set(STORE_ITEMS.AUTH_SESSION_JWT, jwtToken);
+      setJwtToken(jwtToken);
     } else {
       window.electronAPI.store.set(STORE_ITEMS.AUTH_SESSION_JWT, null);
     }
 
     NirvanaApi._jwtToken = jwtToken;
+
     refetch();
   }, [jwtToken]);
 

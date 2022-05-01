@@ -1,7 +1,4 @@
-export enum LogoType {
-  primary = "primary",
-  small = "small",
-}
+export type LogoType = "primary" | "small";
 
 export default function Logo({
   className,
@@ -10,7 +7,7 @@ export default function Logo({
   className: string;
   type?: LogoType;
 }) {
-  if (type === LogoType.small) {
+  if (type === "small") {
     return (
       <svg
         width="85"

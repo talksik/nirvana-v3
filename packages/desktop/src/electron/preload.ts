@@ -1,6 +1,6 @@
+import Channels, { Dimensions } from "./constants";
 import { contextBridge, ipcRenderer } from "electron";
 
-import Channels from "./constants";
 import { STORE_ITEMS } from "./constants";
 
 const electronAPI = {
@@ -20,7 +20,7 @@ const electronAPI = {
   },
 
   window: {
-    resizeWindow(newDimensions: { width: number; height: number }) {
+    resizeWindow(newDimensions: Dimensions) {
       ipcRenderer.send(Channels.RESIZE_WINDOW, newDimensions);
     },
   },

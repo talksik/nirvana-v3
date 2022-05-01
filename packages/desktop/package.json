@@ -107,7 +107,12 @@
     "webpack": "^5.72.0"
   },
   "dependencies": {
+    "@carbon/colors": "^11.1.0",
     "@carbon/icons-react": "10.22.0",
+    "@carbon/motion": "^11.0.0",
+    "@carbon/react": "^1.2.0",
+    "@carbon/themes": "^11.2.0",
+    "@carbon/type": "^11.2.0",
     "@getstation/electron-google-oauth2": "^2.1.0",
     "@nirvana/core": "*",
     "@types/carbon-components-react": "^7.55.1",
