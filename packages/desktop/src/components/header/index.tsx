@@ -60,19 +60,14 @@ export default function NirvanaHeader() {
         </Button>
       </div>
 
-      <div onClick={handleOpenMenu}>
+      <div onClick={handleOpenMenu} className={"cursor-pointer ml-2"}>
         {outputMode === "video" && (
-          <video
-            className="ml-2"
-            height={"50px"}
-            width={"50px"}
-            muted
-            autoPlay
-          />
+          <video height={"50px"} width={"50px"} muted autoPlay />
         )}
 
         {userDetailsRes?.user?.picture && outputMode === "audio" && (
           <Avatar
+            className="mr-1"
             alt={userDetailsRes?.user?.givenName}
             src={userDetailsRes?.user?.picture}
             variant="square"
