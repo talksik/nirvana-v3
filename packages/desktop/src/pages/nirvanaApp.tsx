@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "react-query";
 
+import { GlobalTheme } from "@carbon/react";
 import Login from "./Login";
 import NirvanaRouter from "./router";
 import ProtectedRoute from "../components/ProtectedRoute";
@@ -20,13 +21,14 @@ function NirvanaApp() {
   return (
     <>
       <QueryClientProvider client={queryClient}>
-        <RecoilRoot>
-          <ProtectedRoute>
-            <NirvanaRouter />
-          </ProtectedRoute>
-          <ReactQueryDevtools initialIsOpen={true} position={"bottom-left"} />
-        </RecoilRoot>
-
+        <GlobalTheme theme="white">
+          <RecoilRoot>
+            <ProtectedRoute>
+              <NirvanaRouter />
+            </ProtectedRoute>
+            <ReactQueryDevtools initialIsOpen={true} position={"bottom-left"} />
+          </RecoilRoot>
+        </GlobalTheme>
         <Toaster />
       </QueryClientProvider>
     </>

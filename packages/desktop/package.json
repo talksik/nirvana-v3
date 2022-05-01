@@ -107,20 +107,11 @@
     "webpack": "^5.72.0"
   },
   "dependencies": {
-    "@carbon/colors": "^11.1.0",
-    "@carbon/icons-react": "10.22.0",
-    "@carbon/motion": "^11.0.0",
     "@carbon/react": "^1.2.0",
-    "@carbon/themes": "^11.2.0",
-    "@carbon/type": "^11.2.0",
     "@getstation/electron-google-oauth2": "^2.1.0",
     "@nirvana/core": "*",
-    "@types/carbon-components-react": "^7.55.1",
     "antd": "^4.19.2",
     "axios": "^0.26.1",
-    "carbon-components": "10.25.0",
-    "carbon-components-react": "7.25.0",
-    "carbon-icons": "7.0.7",
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^8.0.1",
     "moment": "^2.29.1",
@@ -132,7 +123,7 @@
     "react-icons": "^4.3.1",
     "react-query": "^3.34.16",
     "recoil": "^0.6.1",
-    "sass": "1.29.0",
+    "sass": "^1.51.0",
     "socket.io-client": "^4.4.1"
   }
 }
