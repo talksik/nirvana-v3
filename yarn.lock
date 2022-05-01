@@ -134,6 +134,11 @@
     "@carbon/telemetry" "0.1.0"
     prop-types "^15.7.2"
 
+"@carbon/icons@^11.2.0":
+  version "11.2.0"
+  resolved "https://registry.yarnpkg.com/@carbon/icons/-/icons-11.2.0.tgz#d04f94adc26216e556084259031ee3fb3087389b"
+  integrity sha512-Ib0AUPwCXgDcotPwfb9eu23OBDEtmBbgKEF+RwMMlZEidLTR7DGl0Bvi0iAs1ciJjFO0+4qaxlnMcAJmBgWdYA==
+
 "@carbon/layout@^11.1.0":
   version "11.1.0"
   resolved "https://registry.yarnpkg.com/@carbon/layout/-/layout-11.1.0.tgz#7a2072495761b1c59ebfde4271166397d18ba2f5"

@@ -29,10 +29,14 @@ export default function NirvanaHeader() {
     <div className="flex flex-row items-center h-12 bg-gray-100">
       <Logo type="small" className="scale-[0.2]" />
 
-      <Button kind="ghost">flow state</Button>
+      <div className="ml-auto">
+        <Button size="sm" kind="ghost">
+          flow state
+        </Button>
+      </div>
 
       <video
-        className="ml-auto"
+        className="ml-2"
         ref={userVideo}
         height={"50px"}
         width={"50px"}

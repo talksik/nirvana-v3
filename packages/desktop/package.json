@@ -107,6 +107,7 @@
     "webpack": "^5.72.0"
   },
   "dependencies": {
+    "@carbon/icons": "^11.2.0",
     "@carbon/react": "^1.2.0",
     "@getstation/electron-google-oauth2": "^2.1.0",
     "@nirvana/core": "*",
