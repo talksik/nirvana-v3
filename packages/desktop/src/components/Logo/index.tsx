@@ -4,14 +4,14 @@ export default function Logo({
   className,
   type,
 }: {
-  className: string;
+  className?: string;
   type?: LogoType;
 }) {
   if (type === "small") {
     return (
       <svg
-        width="85"
-        height="107"
+        width="25"
+        height="31.75"
         viewBox="0 0 85 107"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"

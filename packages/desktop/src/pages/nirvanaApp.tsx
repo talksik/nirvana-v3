@@ -39,6 +39,16 @@ const theme = createTheme({
         },
       },
     },
+    MuiFab: {
+      styleOverrides: {
+        root: {
+          borderRadius: 0,
+        },
+      },
+    },
+  },
+  shape: {
+    borderRadius: 0,
   },
 });
 
