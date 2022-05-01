@@ -1,3 +1,5 @@
 export default function Overlay() {
-  return <div className="flex flex-col flex-1">this is the overlay</div>;
+  return (
+    <div className="flex flex-col bg-transparent">this is the overlay</div>
+  );
 }

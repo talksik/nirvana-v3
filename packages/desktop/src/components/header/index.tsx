@@ -84,7 +84,7 @@ export default function NirvanaHeader() {
       >
         <Logo type="small" />
 
-        <div className="mx-auto flex flex-row items-center space-x-2">
+        <div className="mx-auto flex flex-row items-center space-x-2 ml-2">
           <FaSearch className="text-xs text-gray-300" />
           <input
             placeholder="Type / to search"

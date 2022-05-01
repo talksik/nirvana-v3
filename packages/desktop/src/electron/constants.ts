@@ -6,6 +6,7 @@ enum Channels {
   ACTIVATE_LOG_IN = "ACTIVATE_LOG_IN",
   GOOGLE_AUTH_TOKENS = "GOOGLE_AUTH_TOKENS",
   RESIZE_WINDOW = "RESIZE_WINDOW",
+  ON_WINDOW_BLUR = "ON_WINDOW_BLUR",
 }
 
 export enum STORE_ITEMS {
@@ -22,17 +23,13 @@ export const DimensionPresets = {
     height: 675,
     width: 400,
   },
-  terminalDetailOrOverlay: {
-    height: 675,
-    width: 800,
-  },
-  terminalDetailOverlay: {
+  terminalAndDetails: {
     height: 675,
     width: 800,
   },
   // todo: typically just send whatever dimensions are needed
-  overlayMode: {
-    height: -1,
+  overlayOnlyMode: {
+    height: 800,
     width: 300,
   },
 };

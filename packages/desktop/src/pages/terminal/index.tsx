@@ -12,6 +12,8 @@ export default function NirvanaTerminal({
   handleSelectLine: (lineId: string) => void;
   allLines: ILineDetails[];
 }) {
+  // todo: sort/order based on activity and activity date and currently broadcasting/live
+
   const toggleTunedLines = useMemo(
     () => allLines.filter((line) => line.isUserToggleTunedIn),
     []

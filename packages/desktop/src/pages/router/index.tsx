@@ -1,4 +1,7 @@
-import { DimensionPresets, Dimensions } from "../../electron/constants";
+import Channels, {
+  DimensionPresets,
+  Dimensions,
+} from "../../electron/constants";
 import React, { useState } from "react";
 import { useCallback, useEffect, useMemo } from "react";
 
@@ -224,11 +227,22 @@ const testLines: ILineDetails[] = [
   ),
 ];
 
+type DesktopMode = "overlay" | "terminal" | "terminalAndDetails";
+
 export default function NirvanaRouter() {
   const [selectedLineId, setSelectedLineId] = useState<string>(null);
   const [desktopMode, setDesktopMode] = useState<Dimensions>(
     DimensionPresets.terminal
   );
+
+  useEffect(() => {
+    window.electronAPI.on(Channels.ON_WINDOW_BLUR, () => {
+      console.log(
+        "window blurring now, should be always on top and then ill tell main process to change dimensions"
+      );
+      setDesktopMode(DimensionPresets.overlayOnlyMode);
+    });
+  }, []);
 
   useEffect(() => {
     window.electronAPI.window.resizeWindow(desktopMode);
@@ -237,12 +251,12 @@ export default function NirvanaRouter() {
   useEffect(() => {
     if (selectedLineId) {
       setSelectedLineId(selectedLineId);
-      setDesktopMode(DimensionPresets.terminalDetailOverlay);
+      setDesktopMode(DimensionPresets.terminalAndDetails);
     } else {
       setSelectedLineId(null);
       setDesktopMode(DimensionPresets.terminal);
     }
-  }, [selectedLineId, desktopMode, setDesktopMode]);
+  }, [selectedLineId, setDesktopMode]);
 
   /** show user line details */
   const handleSelectLine = useCallback(
@@ -262,14 +276,18 @@ export default function NirvanaRouter() {
       <NirvanaHeader />
 
       <div className="flex flex-row">
-        <NirvanaTerminal
-          handleSelectLine={handleSelectLine}
-          allLines={testLines}
-        />
+        {(desktopMode === DimensionPresets.terminal ||
+          desktopMode === DimensionPresets.terminalAndDetails) && (
+          <NirvanaTerminal
+            handleSelectLine={handleSelectLine}
+            allLines={testLines}
+          />
+        )}
 
-        {selectedLine && <LineDetailsTerminal selectedLine={selectedLine} />}
+        {desktopMode === DimensionPresets.terminalAndDetails &&
+          selectedLine && <LineDetailsTerminal selectedLine={selectedLine} />}
 
-        {/* <Overlay /> */}
+        <Overlay />
       </div>
     </div>
   );

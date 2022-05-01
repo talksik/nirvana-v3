@@ -3,6 +3,7 @@ import { useCallback, useMemo } from "react";
 import { Avatar } from "antd";
 import { FiSun } from "react-icons/fi";
 import { ILineDetails } from "../../../pages/router/index";
+import LineIcon from "../lineIcon";
 
 export default function LineRow({
   lineDetails,
@@ -87,22 +88,9 @@ export default function LineRow({
       {renderActivityIcon}
 
       <span className="flex flex-row gap-2 items-center justify-start text-slate-800">
-        <Avatar.Group
-          maxCount={2}
-          maxPopoverTrigger="click"
-          size="default"
-          maxStyle={{
-            color: "#f56a00",
-            backgroundColor: "#fde3cf",
-            cursor: "pointer",
-            borderRadius: "0",
-          }}
-          className="shadow-lg"
-        >
-          {lineDetails.profilePictures.map((avatarSrc) => (
-            <Avatar src={avatarSrc} shape="square" size={"default"} />
-          ))}
-        </Avatar.Group>
+        {lineDetails.profilePictures && (
+          <LineIcon sourceImages={lineDetails.profilePictures} />
+        )}
 
         <h2
           className={`text-inherit text-md truncate ${

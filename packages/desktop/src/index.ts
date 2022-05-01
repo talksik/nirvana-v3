@@ -5,6 +5,7 @@ import {
   dialog,
   globalShortcut,
   ipcMain,
+  screen,
 } from "electron";
 import Channels, { Dimensions } from "./electron/constants";
 
@@ -37,11 +38,11 @@ const createWindow = (): void => {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
       sandbox: true,
     },
-    alwaysOnTop: true,
     icon: "./assets/1024x1024.icns",
 
     frame: false,
     roundedCorners: false,
+    transparent: true,
   });
 
   // and load the index.html of the app.
@@ -77,13 +78,39 @@ app
     ipcMain.on(Channels.RESIZE_WINDOW, (event, arg) => {
       const { width, height } = arg;
 
-      browserWindow.setSize(width, height, false);
+      if (
+        width === DimensionPresets.overlayOnlyMode.width &&
+        height === DimensionPresets.overlayOnlyMode.height
+      ) {
+        browserWindow.setAlwaysOnTop(true, "floating");
+
+        // move window/overlay to top right
+        let display = screen.getPrimaryDisplay();
+        browserWindow.setPosition(display.bounds.width, display.bounds.height);
+      } else browserWindow.setAlwaysOnTop(false);
+
+      browserWindow.setSize(width, height, true);
     });
   })
   .then(() => {
     // globalShortcut.register("`", () => {
     //   console.log("Electron loves global shortcuts!");
     // });
+
+    // on blur, show overlay, and tell app to trigger overlay mode
+    browserWindow.on("blur", () => {
+      // browserWindow.setAlwaysOnTop(true, "floating");
+
+      // let frontend handshake and then send remote control to change size
+      // const overlayDimensions = DimensionPresets.overlayMode;
+      // browserWindow.setSize(
+      //   overlayDimensions.width,
+      //   overlayDimensions.height,
+      //   true
+      // );
+
+      browserWindow.webContents.send(Channels.ON_WINDOW_BLUR);
+    });
   });
 
 // Quit when all windows are closed, except on macOS. There, it's common
