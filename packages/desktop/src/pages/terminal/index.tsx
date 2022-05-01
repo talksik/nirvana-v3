@@ -25,7 +25,7 @@ export default function NirvanaTerminal({
   );
 
   return (
-    <div className="flex flex-col flex-1">
+    <div className="flex flex-col flex-1 bg-white">
       {/* tuned in lines block */}
       <div className="bg-gray-100 flex flex-col">
         {/* tuned in header + general controls */}

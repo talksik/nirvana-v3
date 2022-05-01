@@ -195,23 +195,6 @@ const testLines: ILineDetails[] = [
   ),
 
   new LineDetails(
-    "line7",
-    "Thomas Shelby",
-    [
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLsupI89wVbXLRzxaiHG_rezqk3FrqDeMmog&usqp=CAU",
-    ],
-    2, // num members
-    false, // is user toggle tuned in
-    false, // is user broadcasting here
-    false, // is someone else broadcasting here
-    [], // stream images
-    [], //audio blocks
-    "last week", // time ago
-    false, //has new activity
-    [] // live broadcasters images
-  ),
-
-  new LineDetails(
     "line8",
     "Nirvana Support",
     [],

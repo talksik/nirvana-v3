@@ -44,13 +44,13 @@ const createWindow = (): void => {
 
     transparent: true,
 
-    backgroundColor: "#00000000",
+    // backgroundColor: "#00000000",
 
     frame: false,
     roundedCorners: false,
   });
 
-  // browserWindow.setBackgroundColor("#00000000");
+  browserWindow.setBackgroundColor("#00000000");
 
   // browserWindow.setIgnoreMouseEvents(true);
   // browserWindow.setFocusable(true);
