@@ -30,7 +30,9 @@ export default function NirvanaHeader() {
       <Logo type="small" className="scale-[0.2]" />
 
       <div className="ml-auto">
-        <Button>flow state</Button>
+        <Button color="info" size="small">
+          flow state
+        </Button>
       </div>
 
       <video
