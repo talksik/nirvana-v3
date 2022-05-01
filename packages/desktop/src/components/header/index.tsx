@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Button,
   ListItemIcon,
   ListItemText,
@@ -10,7 +11,6 @@ import { HeadsetMicSharp, VideocamSharp } from "@mui/icons-material";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { $selectedOutputMode } from "../../controller/recoil";
-import { Avatar } from "antd";
 import Logo from "../Logo";
 import { useGetUserDetails } from "../../controller/index";
 import { useRecoilState } from "recoil";
@@ -72,7 +72,11 @@ export default function NirvanaHeader() {
         )}
 
         {userDetailsRes?.user?.picture && outputMode === "audio" && (
-          <Avatar src={userDetailsRes?.user?.picture} />
+          <Avatar
+            alt={userDetailsRes?.user?.givenName}
+            src={userDetailsRes?.user?.picture}
+            variant="square"
+          />
         )}
       </div>
 
@@ -86,21 +90,19 @@ export default function NirvanaHeader() {
           "aria-labelledby": "basic-button",
         }}
       >
-        <MenuList>
-          <MenuItem onClick={() => setOutputMode("audio")}>
-            <ListItemIcon>
-              <HeadsetMicSharp fontSize="small" />
-            </ListItemIcon>
-            <ListItemText>Audio Only</ListItemText>
-          </MenuItem>
+        <MenuItem onClick={() => setOutputMode("audio")}>
+          <ListItemIcon>
+            <HeadsetMicSharp fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Audio Only</ListItemText>
+        </MenuItem>
 
-          <MenuItem onClick={() => setOutputMode("video")}>
-            <ListItemIcon>
-              <VideocamSharp fontSize="small" />
-            </ListItemIcon>
-            <ListItemText>Video</ListItemText>
-          </MenuItem>
-        </MenuList>
+        <MenuItem onClick={() => setOutputMode("video")}>
+          <ListItemIcon>
+            <VideocamSharp fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Video</ListItemText>
+        </MenuItem>
       </Menu>
     </div>
   );
