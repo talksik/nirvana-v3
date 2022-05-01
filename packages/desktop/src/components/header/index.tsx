@@ -79,7 +79,7 @@ export default function NirvanaHeader() {
       <GlobalHotKeys handlers={handlers} keyMap={keyMap} />
 
       <div
-        className="flex flex-row items-center bg-gray-100 pl-2"
+        className="flex flex-row items-center bg-gray-100 pl-2 border-b border-b-gray-200"
         id="titlebar"
       >
         <Logo type="small" />
