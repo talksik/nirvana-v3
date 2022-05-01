@@ -21,7 +21,6 @@ export default function NirvanaHeader() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [outputMode, setOutputMode] = useRecoilState($selectedOutputMode);
 
-  const userVideo = useRef<HTMLVideoElement>();
   const [userVideoStream, setUserVideoStream] =
     useState<MediaStream>(undefined);
 
@@ -30,10 +29,16 @@ export default function NirvanaHeader() {
     navigator.mediaDevices
       .getUserMedia({ video: true, audio: true })
       .then((stream: MediaStream) => {
-        if (userVideo?.current) userVideo.current.srcObject = stream;
         setUserVideoStream(stream);
       });
   }, []);
+
+  useEffect(() => {
+    if (userVideoStream && outputMode === "video")
+      document.querySelector("video").srcObject = userVideoStream;
+  }, [userVideoStream, outputMode]);
+
+  const menuOpen = useMemo(() => Boolean(anchorEl), [anchorEl]);
 
   const handleOpenMenu = useCallback((event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -44,8 +49,6 @@ export default function NirvanaHeader() {
   }, []);
 
   if (isLoading) return <>loading</>;
-
-  const menuOpen = useMemo(() => Boolean(anchorEl), [anchorEl]);
 
   return (
     <div className="flex flex-row items-center h-12 bg-gray-100">
@@ -61,7 +64,6 @@ export default function NirvanaHeader() {
         {outputMode === "video" && (
           <video
             className="ml-2"
-            ref={userVideo}
             height={"50px"}
             width={"50px"}
             muted
