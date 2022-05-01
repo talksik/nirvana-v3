@@ -1,15 +1,9 @@
-import { AddSharp, SearchSharp } from "@mui/icons-material";
-import { Button, Fab, InputAdornment, TextField } from "@mui/material";
-import { FaPlus, FaSearch } from "react-icons/fa";
-import { FiActivity, FiCloudDrizzle } from "react-icons/fi";
-import { useMemo, useRef, useState } from "react";
-
-import { Avatar } from "antd";
+import { FaPlus } from "react-icons/fa";
+import { FiActivity } from "react-icons/fi";
 import { ILineDetails } from "../router";
 import IconButton from "../../components/Button/IconButton/index";
 import LineRow from "../../components/lines/lineRow.tsx/index";
-import NirvanaHeader from "../../components/header";
-import { User } from "@nirvana/core/models";
+import { useMemo } from "react";
 
 export default function NirvanaTerminal({
   handleSelectLine,
@@ -30,8 +24,6 @@ export default function NirvanaTerminal({
 
   return (
     <div className="flex flex-col flex-1">
-      <NirvanaHeader />
-
       {/* tuned in lines block */}
       <div className="bg-gray-100 flex flex-col">
         {/* tuned in header + general controls */}

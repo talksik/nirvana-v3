@@ -42,7 +42,7 @@ export default function LineRow({
         <Avatar.Group
           maxCount={2}
           maxPopoverTrigger="click"
-          size="default"
+          size="small"
           maxStyle={{
             color: "#f56a00",
             backgroundColor: "#fde3cf",
@@ -52,7 +52,7 @@ export default function LineRow({
           className="shadow-lg"
         >
           {lineDetails.profilePicsLiveBroadcasters.map((avatarSrc) => (
-            <Avatar src={avatarSrc} shape="square" size={"default"} />
+            <Avatar src={avatarSrc} shape="square" size={"small"} />
           ))}
         </Avatar.Group>
       );

@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useCallback, useEffect, useMemo } from "react";
 
 import LineDetailsTerminal from "../lineDetailsTerminal";
+import NirvanaHeader from "../../components/header/index";
 import NirvanaTerminal from "../terminal";
 import Overlay from "../overlay";
 
@@ -257,15 +258,19 @@ export default function NirvanaRouter() {
   );
 
   return (
-    <div className="h-screen w-screen flex flex-row">
-      <NirvanaTerminal
-        handleSelectLine={handleSelectLine}
-        allLines={testLines}
-      />
+    <div className="flex flex-col h-screen w-screen">
+      <NirvanaHeader />
 
-      {selectedLine && <LineDetailsTerminal selectedLine={selectedLine} />}
+      <div className="flex flex-row">
+        <NirvanaTerminal
+          handleSelectLine={handleSelectLine}
+          allLines={testLines}
+        />
 
-      {/* <Overlay /> */}
+        {selectedLine && <LineDetailsTerminal selectedLine={selectedLine} />}
+
+        {/* <Overlay /> */}
+      </div>
     </div>
   );
 }
