@@ -33,3 +33,7 @@ button {
 html {
   background-color: #00000000;
 } */
+
+.ant-modal-footer {
+  padding: 0 !important;
+}
