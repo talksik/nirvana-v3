@@ -243,8 +243,8 @@ export default function NirvanaRouter() {
   useEffect(() => {
     // always have overlay so need to calculate that
     const overlayDimensions: Dimensions = {
-      height: 50 + numberOfOverlayRows * 200,
-      width: 350 * numberOfOverlayColumns,
+      height: 40 + numberOfOverlayRows * 200,
+      width: 360 * numberOfOverlayColumns,
     };
     const setAlwaysOnTop =
       desktopMode === "overlayOnly" || desktopMode === "flowState";
@@ -265,7 +265,7 @@ export default function NirvanaRouter() {
 
     if (desktopMode === "flowState") {
       finalPosition = "topRight";
-      finalDimensions = { height: 50, width: 325 };
+      finalDimensions = { height: 40, width: 360 };
     }
 
     // add overlay for all variants except flow state
