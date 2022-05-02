@@ -1,6 +1,13 @@
+import {
+  $maxNumberActiveStreams,
+  $numberActiveLines,
+} from "../../controller/recoil";
 import Channels, {
-  DimensionPresets,
+  DimensionChangeRequest,
   Dimensions,
+  OVERLAY_ONLY_INITIAL_PRESET,
+  TERMINAL_DETAILS_PRESET,
+  TERMINAL_PRESET,
 } from "../../electron/constants";
 import React, { useState } from "react";
 import { useCallback, useEffect, useMemo } from "react";
@@ -9,6 +16,7 @@ import LineDetailsTerminal from "../lineDetailsTerminal";
 import NirvanaHeader from "../../components/header/index";
 import NirvanaTerminal from "../terminal";
 import Overlay from "../overlay";
+import { useRecoilValue } from "recoil";
 
 export interface ILineDetails {
   lineId: string;
@@ -210,44 +218,82 @@ const testLines: ILineDetails[] = [
   ),
 ];
 
-type DesktopMode = "overlay" | "terminal" | "terminalAndDetails";
+type DesktopMode = "flowState" | "overlayOnly" | "terminal" | "terminalDetails";
 
 export default function NirvanaRouter() {
   const [selectedLineId, setSelectedLineId] = useState<string>(null);
-  const [desktopMode, setDesktopMode] = useState<Dimensions>(
-    DimensionPresets.terminal
-  );
+  const [desktopMode, setDesktopMode] = useState<DesktopMode>("terminal");
+  const numberOfOverlayColumns = useRecoilValue($numberActiveLines);
+  const numberOfOverlayRows = useRecoilValue($maxNumberActiveStreams);
 
+  // on window blur, put app in overlay only mode
   useEffect(() => {
     window.electronAPI.on(Channels.ON_WINDOW_BLUR, () => {
       console.log(
         "window blurring now, should be always on top and then ill tell main process to change dimensions"
       );
-      setDesktopMode(DimensionPresets.overlayOnlyMode);
+      setDesktopMode("overlayOnly");
     });
-  }, []);
+  }, [setDesktopMode]);
 
+  // handle all window resizing logic
   useEffect(() => {
-    window.electronAPI.window.resizeWindow(desktopMode);
-  }, [desktopMode]);
+    // always have overlay so need to calculate that
+    const overlayDimensions: Dimensions = {
+      height: 50 + numberOfOverlayRows * 200,
+      width: 325 + numberOfOverlayColumns,
+    };
+    const setAlwaysOnTop = desktopMode === "overlayOnly";
 
-  useEffect(() => {
-    if (selectedLineId) {
-      setSelectedLineId(selectedLineId);
-      setDesktopMode(DimensionPresets.terminalAndDetails);
-    } else {
-      setSelectedLineId(null);
-      setDesktopMode(DimensionPresets.terminal);
-    }
-  }, [selectedLineId, setDesktopMode]);
+    // add dimensions if it's not overlay only mode
+    let finalDimensions: Dimensions = { height: 0, width: 0 };
+
+    if (desktopMode === "terminal")
+      finalDimensions = { height: 675, width: 400 };
+    if (desktopMode === "terminalDetails")
+      finalDimensions = { height: 675, width: 800 };
+    if (desktopMode === "flowState")
+      finalDimensions = { height: 50, width: 325 };
+
+    if (desktopMode !== "flowState")
+      finalDimensions = {
+        width: finalDimensions.width + overlayDimensions.width,
+        height: Math.max(finalDimensions.height, overlayDimensions.height),
+      };
+
+    console.log(
+      "setting new dimensions",
+      desktopMode,
+      numberOfOverlayColumns,
+      numberOfOverlayRows,
+      overlayDimensions,
+      finalDimensions,
+      setAlwaysOnTop
+    );
+
+    // send the final dimensions to main process
+    window.electronAPI.window.resizeWindow({
+      setAlwaysOnTop,
+      dimensions: {
+        height: finalDimensions.height,
+        width: finalDimensions.width,
+      },
+      addDimensions: false,
+    });
+  }, [desktopMode, numberOfOverlayColumns, numberOfOverlayRows]);
 
   /** show user line details */
   const handleSelectLine = useCallback(
     (lineId: string) => {
       setSelectedLineId(lineId);
+      setDesktopMode("terminalDetails");
     },
-    [setSelectedLineId]
+    [setSelectedLineId, setDesktopMode]
   );
+
+  const handleToggleFlowState = useCallback(() => {
+    setDesktopMode("flowState");
+  }, [setDesktopMode]);
 
   const selectedLine = useMemo(
     () => testLines.find((line) => line.lineId === selectedLineId),
@@ -256,21 +302,19 @@ export default function NirvanaRouter() {
 
   return (
     <div className="flex flex-col h-screen w-screen">
-      <NirvanaHeader
-        onHeaderFocus={() => setDesktopMode(DimensionPresets.terminal)}
-      />
+      <NirvanaHeader onHeaderFocus={() => setDesktopMode("terminal")} />
 
       <div className="flex flex-row flex-1">
-        {(desktopMode === DimensionPresets.terminal ||
-          desktopMode === DimensionPresets.terminalAndDetails) && (
+        {(desktopMode === "terminal" || desktopMode === "terminalDetails") && (
           <NirvanaTerminal
             handleSelectLine={handleSelectLine}
             allLines={testLines}
           />
         )}
 
-        {desktopMode === DimensionPresets.terminalAndDetails &&
-          selectedLine && <LineDetailsTerminal selectedLine={selectedLine} />}
+        {desktopMode === "terminalDetails" && selectedLine && (
+          <LineDetailsTerminal selectedLine={selectedLine} />
+        )}
 
         <Overlay />
       </div>

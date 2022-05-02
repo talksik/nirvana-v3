@@ -29,3 +29,15 @@ export const $selectedOutputMode = atom<outputMode>({
   key: "OUTPUT_MODE",
   default: "video",
 });
+
+// number of active lines
+export const $numberActiveLines = atom<number>({
+  key: "NUMBER_ACTIVE_LINES",
+  default: 0,
+});
+
+// max number of active streams
+export const $maxNumberActiveStreams = atom<number>({
+  key: "MAX_NUMBER_ACTIVE_STREAMS",
+  default: 0,
+});

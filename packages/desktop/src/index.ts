@@ -7,9 +7,9 @@ import {
   ipcMain,
   screen,
 } from "electron";
-import Channels, { Dimensions } from "./electron/constants";
+import Channels, { TERMINAL_PRESET } from "./electron/constants";
 
-import { DimensionPresets } from "./electron/constants";
+import { DimensionChangeRequest } from "./electron/constants";
 import { handleGoogleLogin } from "./electron/handleLogin";
 import path from "path";
 import store from "./electron/store";
@@ -35,7 +35,7 @@ let display;
 const createWindow = (): void => {
   // Create the browser window.
   browserWindow = new BrowserWindow({
-    ...DimensionPresets.terminal,
+    ...{ height: TERMINAL_PRESET.height, width: TERMINAL_PRESET.width },
     webPreferences: {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
       sandbox: true,
@@ -87,25 +87,26 @@ app
     });
 
     // dynamically changing the window bounds
-    ipcMain.on(Channels.RESIZE_WINDOW, (event, arg) => {
-      const { width, height } = arg;
-
-      if (
-        width === DimensionPresets.overlayOnlyMode.width &&
-        height === DimensionPresets.overlayOnlyMode.height
-      ) {
+    ipcMain.on(Channels.RESIZE_WINDOW, (event, req: DimensionChangeRequest) => {
+      if (req.setAlwaysOnTop) {
         browserWindow.setAlwaysOnTop(true, "floating");
-
-        // move window/overlay to top right
-
-        browserWindow.setPosition(display.bounds.width - width, 0, true);
-
-        browserWindow.setSize(width, height, true);
       } else {
-        browserWindow.setSize(width, height, true);
-
-        browserWindow.center();
         browserWindow.setAlwaysOnTop(false);
+      }
+
+      if (req.addDimensions) {
+        const currentDimensions = browserWindow.getSize();
+        browserWindow.setSize(
+          currentDimensions[0] + req.dimensions.width,
+          currentDimensions[1] + req.dimensions.height,
+          true
+        );
+      } else {
+        browserWindow.setSize(
+          req.dimensions.width,
+          req.dimensions.height,
+          true
+        );
       }
     });
   })
@@ -116,16 +117,6 @@ app
 
     // on blur, show overlay, and tell app to trigger overlay mode
     browserWindow.on("blur", () => {
-      // browserWindow.setAlwaysOnTop(true, "floating");
-
-      // let frontend handshake and then send remote control to change size
-      // const overlayDimensions = DimensionPresets.overlayMode;
-      // browserWindow.setSize(
-      //   overlayDimensions.width,
-      //   overlayDimensions.height,
-      //   true
-      // );
-
       browserWindow.webContents.send(Channels.ON_WINDOW_BLUR);
     });
   });

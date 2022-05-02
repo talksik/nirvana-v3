@@ -13,25 +13,27 @@ export enum STORE_ITEMS {
   AUTH_SESSION_JWT = "AUTH_SESSION_JWT",
 }
 
-export type Dimensions = {
-  height: number;
-  width: number;
+export type Dimensions = { height: number; width: number };
+
+export interface DimensionChangeRequest {
+  setAlwaysOnTop: boolean;
+  dimensions: Dimensions;
+  addDimensions: boolean;
+}
+
+export const TERMINAL_PRESET: Dimensions = {
+  height: 675,
+  width: 400,
 };
 
-export const DimensionPresets = {
-  terminal: {
-    height: 675,
-    width: 400,
-  },
-  terminalAndDetails: {
-    height: 675,
-    width: 800,
-  },
-  // todo: typically just send whatever dimensions are needed
-  overlayOnlyMode: {
-    height: 800,
-    width: 325,
-  },
+export const TERMINAL_DETAILS_PRESET: Dimensions = {
+  height: 675,
+  width: 800,
+};
+
+export const OVERLAY_ONLY_INITIAL_PRESET: Dimensions = {
+  height: 50,
+  width: 325,
 };
 
 export default Channels;

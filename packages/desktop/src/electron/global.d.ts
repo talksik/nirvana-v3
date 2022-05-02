@@ -1,3 +1,4 @@
+import { Dimensions, DimensionChangeRequest } from "./constants";
 import { electronAPI } from "./preload";
 
 export {};
@@ -12,7 +13,7 @@ declare global {
         set(property: STORE_ITEMS, val: any): void;
       };
       window: {
-        resizeWindow(newDimensions: { width: number; height: number }): void;
+        resizeWindow(dimensionChangeRequest: DimensionChangeRequest): void;
       };
       on(channel: Channels, func: any): void;
       once(channel: Channels, func: any): void;
