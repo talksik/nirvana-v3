@@ -232,7 +232,7 @@ export default function NirvanaRouter() {
       console.log(
         "window blurring now, should be always on top and then ill tell main process to change dimensions"
       );
-      // setDesktopMode("overlayOnly");
+      setDesktopMode("overlayOnly");
     });
   }, [setDesktopMode]);
 
