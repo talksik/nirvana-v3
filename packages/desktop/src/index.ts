@@ -1,5 +1,6 @@
 import {
   BrowserWindow,
+  Display,
   Menu,
   app,
   dialog,
@@ -30,7 +31,7 @@ if (require("electron-squirrel-startup")) {
 // be closed automatically when the JavaScript object is garbage collected.
 export let browserWindow: BrowserWindow;
 
-let display;
+let display: Display;
 
 const createWindow = (): void => {
   // Create the browser window.
@@ -107,6 +108,19 @@ app
           req.dimensions.height,
           true
         );
+      }
+
+      if (req.setPosition) {
+        if (req.setPosition === "center") {
+          browserWindow.center();
+        }
+
+        if (req.setPosition === "topRight") {
+          browserWindow.setPosition(
+            display.bounds.width - req.dimensions.width,
+            0
+          );
+        }
       }
     });
   })

@@ -17,6 +17,7 @@ export type Dimensions = { height: number; width: number };
 
 export interface DimensionChangeRequest {
   setAlwaysOnTop: boolean;
+  setPosition?: "topRight" | "center";
   dimensions: Dimensions;
   addDimensions: boolean;
 }

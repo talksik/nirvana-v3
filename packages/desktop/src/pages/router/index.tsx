@@ -245,23 +245,38 @@ export default function NirvanaRouter() {
       height: 50 + numberOfOverlayRows * 200,
       width: 350 * numberOfOverlayColumns,
     };
-    const setAlwaysOnTop = desktopMode === "overlayOnly";
+    const setAlwaysOnTop =
+      desktopMode === "overlayOnly" || desktopMode === "flowState";
 
     // add dimensions if it's not overlay only mode
     let finalDimensions: Dimensions = { height: 0, width: 0 };
+    let finalPosition;
 
-    if (desktopMode === "terminal")
+    if (desktopMode === "terminal") {
+      finalPosition = "center";
       finalDimensions = { height: 675, width: 400 };
-    if (desktopMode === "terminalDetails")
-      finalDimensions = { height: 675, width: 800 };
-    if (desktopMode === "flowState")
-      finalDimensions = { height: 50, width: 325 };
+    }
 
+    if (desktopMode === "terminalDetails") {
+      finalPosition = "center";
+      finalDimensions = { height: 675, width: 800 };
+    }
+
+    if (desktopMode === "flowState") {
+      finalPosition = "topRight";
+      finalDimensions = { height: 50, width: 325 };
+    }
+
+    // add overlay for all variants except flow state
     if (desktopMode !== "flowState")
       finalDimensions = {
         width: finalDimensions.width + overlayDimensions.width,
         height: Math.max(finalDimensions.height, overlayDimensions.height),
       };
+
+    if (desktopMode === "overlayOnly") {
+      finalPosition = "topRight";
+    }
 
     console.log(
       "setting new dimensions",
@@ -280,6 +295,7 @@ export default function NirvanaRouter() {
         height: finalDimensions.height,
         width: finalDimensions.width,
       },
+      setPosition: finalPosition,
       addDimensions: false,
     });
   }, [desktopMode, numberOfOverlayColumns, numberOfOverlayRows]);
