@@ -42,7 +42,7 @@ const createWindow = (): void => {
     },
     icon: "./assets/1024x1024.icns",
 
-    transparent: true,
+    // transparent: true,
 
     // backgroundColor: "#00000000",
 
@@ -50,7 +50,7 @@ const createWindow = (): void => {
     roundedCorners: false,
   });
 
-  browserWindow.setBackgroundColor("#00000000");
+  // browserWindow.setBackgroundColor("#00000000");
 
   // browserWindow.setIgnoreMouseEvents(true);
   // browserWindow.setFocusable(true);

@@ -31,7 +31,7 @@ export default function Overlay() {
   };
 
   return (
-    <div className="flex flex-col bg-transparent max-w-sm">
+    <div className="flex flex-col max-w-sm">
       {[...Array(maxNumActiveStreams)].map((_n) => (
         <img
           className="w-fit"
