@@ -1,9 +1,11 @@
+import { useMemo, useState } from "react";
+
 import { FaPlus } from "react-icons/fa";
 import { FiActivity } from "react-icons/fi";
 import { ILineDetails } from "../router";
 import IconButton from "../../components/Button/IconButton/index";
 import LineRow from "../../components/lines/lineRow.tsx/index";
-import { useMemo } from "react";
+import NewLineModal from "./newLine";
 
 export default function NirvanaTerminal({
   handleSelectLine,
@@ -12,6 +14,8 @@ export default function NirvanaTerminal({
   handleSelectLine: (lineId: string) => void;
   allLines: ILineDetails[];
 }) {
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+
   // todo: sort/order based on activity and activity date and currently broadcasting/live
 
   const toggleTunedLines = useMemo(
@@ -26,6 +30,12 @@ export default function NirvanaTerminal({
 
   return (
     <div className="flex flex-col bg-white w-[400px]">
+      {/* modal for creating new line */}
+      <NewLineModal
+        open={isModalVisible}
+        handleClose={() => setIsModalVisible(false)}
+      />
+
       {/* tuned in lines block */}
       <div className="bg-gray-100 flex flex-col">
         {/* tuned in header + general controls */}
@@ -38,7 +48,7 @@ export default function NirvanaTerminal({
             <p className="text-slate-300 text-xs">3/5</p>
           </span>
 
-          <div className="ml-auto">
+          <div onClick={() => setIsModalVisible(true)} className="ml-auto">
             <IconButton>
               <FaPlus />
             </IconButton>

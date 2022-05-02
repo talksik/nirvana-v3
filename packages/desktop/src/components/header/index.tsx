@@ -1,17 +1,9 @@
-import {
-  Avatar,
-  Button,
-  ListItemIcon,
-  ListItemText,
-  Menu,
-  MenuItem,
-  MenuList,
-} from "@mui/material";
 import { GlobalHotKeys, KeyMap } from "react-hotkeys";
 import { HeadsetMicSharp, VideocamSharp } from "@mui/icons-material";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { $selectedOutputMode } from "../../controller/recoil";
+import { Avatar } from "antd";
 import { FaSearch } from "react-icons/fa";
 import Logo from "../Logo";
 import { useGetUserDetails } from "../../controller/index";
@@ -117,13 +109,13 @@ export default function NirvanaHeader({
               className="mr-1"
               alt={userDetailsRes?.user?.givenName}
               src={userDetailsRes?.user?.picture}
-              variant="square"
+              shape="square"
             />
           )}
         </div>
 
         {/* menu for the output options */}
-        <Menu
+        {/* <Menu
           open={menuOpen}
           id="user-output-selection-menu"
           anchorEl={anchorEl}
@@ -145,7 +137,7 @@ export default function NirvanaHeader({
             </ListItemIcon>
             <ListItemText>Video</ListItemText>
           </MenuItem>
-        </Menu>
+        </Menu> */}
       </div>
     </>
   );

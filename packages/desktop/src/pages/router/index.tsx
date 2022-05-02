@@ -223,7 +223,8 @@ type DesktopMode = "flowState" | "overlayOnly" | "terminal" | "terminalDetails";
 
 export default function NirvanaRouter() {
   const [selectedLineId, setSelectedLineId] = useState<string>(null);
-  const [desktopMode, setDesktopMode] = useState<DesktopMode>("terminal");
+  const [desktopMode, setDesktopMode] =
+    useState<DesktopMode>("terminalDetails");
   const numberOfOverlayColumns = useRecoilValue($numberActiveLines);
   const numberOfOverlayRows = useRecoilValue($maxNumberActiveStreams);
 
