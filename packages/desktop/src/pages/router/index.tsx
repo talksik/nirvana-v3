@@ -232,7 +232,7 @@ export default function NirvanaRouter() {
       console.log(
         "window blurring now, should be always on top and then ill tell main process to change dimensions"
       );
-      setDesktopMode("overlayOnly");
+      // setDesktopMode("overlayOnly");
     });
   }, [setDesktopMode]);
 
@@ -241,7 +241,7 @@ export default function NirvanaRouter() {
     // always have overlay so need to calculate that
     const overlayDimensions: Dimensions = {
       height: 50 + numberOfOverlayRows * 200,
-      width: 325 + numberOfOverlayColumns,
+      width: 350 * numberOfOverlayColumns,
     };
     const setAlwaysOnTop = desktopMode === "overlayOnly";
 
@@ -301,7 +301,7 @@ export default function NirvanaRouter() {
   );
 
   return (
-    <div className="flex flex-col h-screen w-screen">
+    <div className="flex flex-col">
       <NirvanaHeader onHeaderFocus={() => setDesktopMode("terminal")} />
 
       <div className="flex flex-row flex-1">

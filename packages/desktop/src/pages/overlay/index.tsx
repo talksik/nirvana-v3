@@ -31,11 +31,13 @@ export default function Overlay() {
   };
 
   return (
-    <div className="flex flex-col bg-transparent">
-      <img
-        className="w w-fit"
-        src="https://miro.medium.com/max/1200/1*hONz6Wttkst4FUp_0hwQJQ.png"
-      />
+    <div className="flex flex-col bg-transparent max-w-sm">
+      {[...Array(maxNumActiveStreams)].map((_n) => (
+        <img
+          className="w-fit"
+          src="https://miro.medium.com/max/1200/1*hONz6Wttkst4FUp_0hwQJQ.png"
+        />
+      ))}
 
       <button onClick={addActiveLine}>add column</button>
       <button onClick={addAnotherStream}>add row</button>
