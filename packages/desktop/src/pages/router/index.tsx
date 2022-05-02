@@ -16,6 +16,7 @@ import LineDetailsTerminal from "../lineDetailsTerminal";
 import NirvanaHeader from "../../components/header/index";
 import NirvanaTerminal from "../terminal";
 import Overlay from "../overlay";
+import { Radio } from "antd";
 import { useRecoilValue } from "recoil";
 
 export interface ILineDetails {
@@ -302,8 +303,20 @@ export default function NirvanaRouter() {
   );
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col h-screen">
       <NirvanaHeader onHeaderFocus={() => setDesktopMode("terminal")} />
+
+      <Radio.Group
+        value={desktopMode}
+        onChange={(e) => setDesktopMode(e.target.value)}
+      >
+        <Radio.Button value={"terminal"}>terminal</Radio.Button>
+        <Radio.Button value={"terminalDetails"}>
+          terminal and details
+        </Radio.Button>
+        <Radio.Button value={"flowState"}>flow state</Radio.Button>
+        <Radio.Button value={"overlayOnly"}>overlay only</Radio.Button>
+      </Radio.Group>
 
       <div className="flex flex-row flex-1">
         {(desktopMode === "terminal" || desktopMode === "terminalDetails") && (
@@ -317,7 +330,7 @@ export default function NirvanaRouter() {
           <LineDetailsTerminal selectedLine={selectedLine} />
         )}
 
-        <Overlay />
+        {desktopMode !== "flowState" && <Overlay />}
       </div>
     </div>
   );
