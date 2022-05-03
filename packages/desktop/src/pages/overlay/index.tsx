@@ -87,11 +87,12 @@ export default function Overlay() {
               var localPeerInitiator = new Peer({
                 initiator: true,
                 stream: localStream,
+                trickle: false, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times
               });
 
               localPeerInitiator.on("signal", (signal) => {
                 console.log(
-                  "sending a signal to all users connected and adding local peer object",
+                  "created local initiator peer and sending signal to: ",
                   userSocketId
                 );
 
@@ -130,9 +131,15 @@ export default function Overlay() {
             console.log("ooo newbie joined room, I guess I will accept it ");
 
             // if we are answering a received signal
-            var peerToCallerPeer = new Peer({ initiator: false });
+            var peerToCallerPeer = new Peer({
+              initiator: false,
+              trickle: false, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times
+            });
 
             peerToCallerPeer.on("signal", (signal) => {
+              console.log(
+                "as the answerer, I am going to send back my signal so that the newbie can update his local peer for me"
+              );
               socket.emit(SocketChannels.SEND_SIGNAL, {
                 userSocketIdToSignal: payload.senderUserSocketId,
                 simplePeerSignal: signal,

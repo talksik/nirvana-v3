@@ -58,7 +58,11 @@ export default function NirvanaTerminal({
         {/* list of all lines */}
         <div className="flex flex-col mt-2">
           {toggleTunedLines.map((line) => (
-            <LineRow lineDetails={line} onClick={handleSelectLine} />
+            <LineRow
+              id={line.lineId}
+              lineDetails={line}
+              onClick={handleSelectLine}
+            />
           ))}
         </div>
       </div>
@@ -67,7 +71,11 @@ export default function NirvanaTerminal({
 
       <div className={"flex flex-col"}>
         {restLines.map((line) => (
-          <LineRow lineDetails={line} onClick={handleSelectLine} />
+          <LineRow
+            id={line.lineId}
+            lineDetails={line}
+            onClick={handleSelectLine}
+          />
         ))}
       </div>
     </div>
