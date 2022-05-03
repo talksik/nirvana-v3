@@ -36,11 +36,10 @@ export default function Overlay() {
     $maxNumberActiveStreams
   );
 
-  const [remoteStreams, setRemoteStreams] = useState<MediaStream[]>([]);
+  // all of the peer connections to all people this client is connecting to
+  const [localPeerConnections, setLocalPeerConnections] = useState<Peer[]>([]);
 
-  const [peersRefs, setPeersRefs] = useState<
-    { peer: Peer; socketUserId: string }[]
-  >([]);
+  const peersRefs = useRef<{ peer: Peer; socketUserId: string }[]>([]);
 
   const localVideoRef = useRef<HTMLVideoElement>(null);
 
@@ -80,6 +79,7 @@ export default function Overlay() {
           (data: GetAllSocketClients) => {
             console.log("all socket client connections", data);
 
+            const peers = [];
             data?.socketIds.map((userSocketId) => {
               if (userSocketId === socket.id) return;
 
@@ -102,11 +102,15 @@ export default function Overlay() {
                 } as SendSignal);
               });
 
-              setPeersRefs((prevPeersRefs) => [
-                ...prevPeersRefs,
-                { peer: localPeerInitiator, socketUserId: userSocketId },
-              ]);
+              peersRefs.current.push({
+                peer: localPeerInitiator,
+                socketUserId: userSocketId,
+              });
+
+              peers.push(localPeerInitiator);
             });
+
+            setLocalPeerConnections(peers);
           }
         );
 
@@ -117,7 +121,7 @@ export default function Overlay() {
             console.log("got back answerers signal");
 
             // from the list of peers here locally, we want to accept the answers signal
-            const localPeerRefToAnswerer = peersRefs.find(
+            const localPeerRefToAnswerer = peersRefs.current.find(
               (peerRef) => peerRef.socketUserId === payload.senderUserSocketId
             );
 
@@ -136,12 +140,16 @@ export default function Overlay() {
               } as SendSignal);
             });
 
-            setPeersRefs((prevPeersRefs) => [
-              ...prevPeersRefs,
-              {
-                peer: peerToCallerPeer,
-                socketUserId: payload.senderUserSocketId,
-              },
+            peerToCallerPeer.signal(payload.simplePeerSignal);
+
+            peersRefs.current.push({
+              peer: peerToCallerPeer,
+              socketUserId: payload.senderUserSocketId,
+            });
+
+            setLocalPeerConnections((prevPeers) => [
+              ...prevPeers,
+              peerToCallerPeer,
             ]);
           }
         });
@@ -177,8 +185,8 @@ export default function Overlay() {
 
       <video muted id="userLocalVideo" ref={localVideoRef} controls autoPlay />
 
-      {peersRefs.map((peerRef) => (
-        <Video peer={peerRef.peer} />
+      {localPeerConnections.map((peer) => (
+        <Video peer={peer} />
       ))}
     </div>
   );
