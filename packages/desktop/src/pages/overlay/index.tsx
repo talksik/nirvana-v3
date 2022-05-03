@@ -119,11 +119,14 @@ export default function Overlay() {
         // hits this when I am sending and receiving
         socket.on(SocketChannels.RECEIVE_SIGNAL, (payload: ReceiveSignal) => {
           if (payload.isGoingBackToInitiator) {
-            console.log("got back answerers signal");
-
             // from the list of peers here locally, we want to accept the answers signal
             const localPeerRefToAnswerer = peersRefs.current.find(
               (peerRef) => peerRef.socketUserId === payload.senderUserSocketId
+            );
+
+            console.log(
+              "got back answerers signal, going to signal the right peer now: ",
+              localPeerRefToAnswerer
             );
 
             localPeerRefToAnswerer.peer.signal(payload.simplePeerSignal);
@@ -134,6 +137,7 @@ export default function Overlay() {
             var peerToCallerPeer = new Peer({
               initiator: false,
               trickle: false, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times
+              stream: localStream,
             });
 
             peerToCallerPeer.on("signal", (signal) => {
