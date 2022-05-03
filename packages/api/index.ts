@@ -1,6 +1,9 @@
 import express, { Application, Request, Response } from "express";
 
+import GetAllSocketClients from "@nirvana/core/sockets/getAllActiveSocketClients";
 import { NextFunction } from "express";
+import ReceiveSignal from "../core/sockets/receiveSignal";
+import SendSignal from "@nirvana/core/sockets/sendSignal";
 import SocketChannels from "@nirvana/core/sockets/channels";
 import { UserService } from "./services/user.service";
 import { UserStatus } from "@nirvana/core/models";
@@ -33,7 +36,7 @@ var server = app.listen(PORT, () => console.log("express running"));
 // socket IO stuff
 
 const io = require("socket.io")(server, {
-  // todo: add protection
+  // todo: add authentication
   cors: {
     origin: "*",
   },
@@ -123,6 +126,31 @@ io.on("connection", function (socket: any) {
       }
     }
   );
+
+  socket.on(SocketChannels.JOIN_LIVE_ROOM, async () => {
+    // TODO: only get the socket ids of the relevant rooms for this user
+    // return all Socket instances
+    const allConnectedSockets = Array.from(await io.of("/").sockets.keys());
+
+    io.to(socket.id).emit(SocketChannels.GET_ALL_ACTIVE_SOCKET_IDS, {
+      socketIds: allConnectedSockets,
+    } as GetAllSocketClients);
+  });
+
+  socket.on(SocketChannels.SEND_SIGNAL, async (payload: SendSignal) => {
+    console.log(payload);
+
+    const sendingBackData: ReceiveSignal = {
+      simplePeerSignal: payload.simplePeerSignal,
+      senderUserSocketId: socket.id,
+      isGoingBackToInitiator: payload.isAnswerer,
+    };
+
+    io.to(payload.userSocketIdToSignal).emit(
+      SocketChannels.RECEIVE_SIGNAL,
+      sendingBackData
+    );
+  });
 
   // ==== DISCONNECT ====
   socket.on("disconnect", () => {

@@ -55,8 +55,8 @@
         [
           "@electron-forge/plugin-webpack",
           {
-            "port": "4000",
-            "loggerPort": "9003",
+            "port": "4001",
+            "loggerPort": "9004",
             "mainConfig": "./webpack.main.config.js",
             "devContentSecurityPolicy": "connect-src 'self' http://localhost:5000 ws://localhost:5000 'unsafe-eval'",
             "renderer": {
@@ -124,6 +124,7 @@
     "react-query": "^3.34.16",
     "recoil": "^0.6.1",
     "sass": "^1.51.0",
+    "simple-peer": "^9.11.1",
     "socket.io-client": "^4.4.1"
   }
 }
