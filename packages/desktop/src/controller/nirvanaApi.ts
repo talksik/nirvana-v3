@@ -4,6 +4,7 @@ import CreateLineRequest from "@nirvana/core/requests/createLine.request";
 import { Line } from "@nirvana/core/models/line.model";
 import LoginResponse from "../../../core/responses/login.response";
 import MasterConversation from "@nirvana/core/models/masterLineData.model";
+import NirvanaResponse from "../../../core/responses/nirvanaResponse";
 import { User } from "@nirvana/core/models";
 import UserDetailsResponse from "../../../core/responses/userDetails.response";
 import UserSearchResponse from "../../../core/responses/userSearch.response";
@@ -82,19 +83,17 @@ async function userSearch(searchQuery: string): Promise<UserSearchResponse> {
 }
 
 async function getUserConversations(): Promise<MasterConversation[]> {
-  return await NirvanaApi.fetch(`/conversations`, "GET", true);
+  return await NirvanaApi.fetch(`/lines`, "GET", true);
 }
 
 async function getDmByUserId(otherUserId: string): Promise<Line> {
-  return await NirvanaApi.fetch(
-    `/conversations/dm/${otherUserId}`,
-    "GET",
-    true
-  );
+  return await NirvanaApi.fetch(`/lines/dm/${otherUserId}`, "GET", true);
 }
 
-async function createConversation(request: CreateLineRequest): Promise<void> {
-  return await NirvanaApi.fetch(`/conversations`, "POST", true, request);
+async function createLine(
+  request: CreateLineRequest
+): Promise<NirvanaResponse<Line>> {
+  return await NirvanaApi.fetch(`/lines`, "POST", true, request);
 }
 
 export const ApiCalls = {
@@ -104,5 +103,5 @@ export const ApiCalls = {
   userSearch,
   getUserConversations,
   getDmByUserId,
-  createConversation,
+  createLine,
 };

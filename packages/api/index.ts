@@ -28,7 +28,7 @@ app.get("/", (req: Request, res: Response) => {
 
 app.use("/api/user", getUserRoutes());
 app.use("/api/search", getSearchRoutes());
-app.use("/api/conversations", getLineRoutes());
+app.use("/api/lines", getLineRoutes());
 
 const PORT = 5000;
 var server = app.listen(PORT, () => console.log("express running"));

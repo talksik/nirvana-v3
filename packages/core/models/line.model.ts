@@ -2,10 +2,11 @@ import { ObjectId } from "mongodb";
 
 export class Line {
   constructor(
-    public _id?: ObjectId,
+    public createdByUserId: ObjectId,
+    public name?: string,
     public createdDate: Date = new Date(),
     public lastUpdatedDate: Date = new Date(),
-    public name?: string
+    public _id?: ObjectId
   ) {}
 }
 

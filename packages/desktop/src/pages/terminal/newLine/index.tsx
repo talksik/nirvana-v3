@@ -1,7 +1,7 @@
 import { Avatar, Modal } from "antd";
 import { HotKeys, KeyMap } from "react-hotkeys";
 import { useCallback, useEffect, useState } from "react";
-import { useCreateConvo, useUserSearch } from "../../../controller/index";
+import { useCreateLine, useUserSearch } from "../../../controller/index";
 
 import BasicUserRow from "../../../components/User/basicUserDetailsRow";
 import { FiSearch } from "react-icons/fi";
@@ -23,7 +23,7 @@ export default function NewLineModal({
   const [searchQuery, setSearchQuery] = useState<string>("");
   const { refetch, data: searchRes } = useUserSearch(searchQuery);
 
-  const { mutateAsync, isError, isLoading } = useCreateConvo();
+  const { mutateAsync, isLoading } = useCreateLine();
 
   const [lineName, setLineName] = useState<string>("");
 
@@ -71,6 +71,7 @@ export default function NewLineModal({
   );
 
   const handleSubmit = useCallback(async () => {
+    // TODO: prevent creating one-on-one line if already exists with x person?
     // ensure that we don't have a one on one chat already with x person if it's one person selected
 
     // upon success,
@@ -89,7 +90,12 @@ export default function NewLineModal({
         selectedPerson._id.toString()
       );
 
-      await mutateAsync({ lineName, otherMemberIds: selectedMemberIds });
+      const res = await mutateAsync({
+        lineName,
+        otherMemberIds: selectedMemberIds,
+      });
+
+      toast.success("created line!");
 
       // handle close once the new line is created
       handleClose();

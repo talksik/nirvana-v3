@@ -48,6 +48,6 @@ export function useGetDmByUserId() {
   return useMutation(ApiCalls.getDmByUserId);
 }
 
-export function useCreateConvo() {
-  return useMutation(ApiCalls.createConversation);
+export function useCreateLine() {
+  return useMutation(ApiCalls.createLine);
 }

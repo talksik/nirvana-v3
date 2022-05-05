@@ -13,6 +13,7 @@ import GetDmConversationByOtherUserIdResponse from "@nirvana/core/responses/getD
 import GetUserLinesResponse from "@nirvana/core/responses/getUserLines.response";
 import { LineService } from "../services/line.service";
 import MasterLineData from "@nirvana/core/models/masterLineData.model";
+import NirvanaResponse from "../../core/responses/nirvanaResponse";
 import { ObjectId } from "mongodb";
 import Relationship from "@nirvana/core/models/relationship.model";
 import { UserService } from "../services/user.service";
@@ -70,7 +71,15 @@ async function createLine(req: Request, res: Response) {
 
     const userInfo = res.locals.userInfo as JwtClaims;
 
-    const newLine = new Line(new ObjectId(), new Date());
+    const newLine = new Line(
+      new ObjectId(userInfo.userId),
+      reqObj.lineName,
+      new Date(),
+      new Date(),
+      new ObjectId()
+    );
+
+    // TODO: validate that users exists before creating line members
     const lineMembers: LineMember[] =
       reqObj.otherMemberIds.map((memId) => {
         const newLineMember = new LineMember(
@@ -96,8 +105,12 @@ async function createLine(req: Request, res: Response) {
     );
 
     transactionResult
-      ? res.status(200).json(newLine)
-      : res.status(400).json("unable to create line");
+      ? res.status(200).json(new NirvanaResponse(newLine))
+      : res
+          .status(400)
+          .json(
+            new NirvanaResponse(undefined, new Error("unable to create line"))
+          );
   } catch (error) {
     console.log(error);
     res.status(500).json(error);
