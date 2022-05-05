@@ -41,3 +41,15 @@ export const $maxNumberActiveStreams = atom<number>({
   key: "MAX_NUMBER_ACTIVE_STREAMS",
   default: 0,
 });
+
+type DesktopMode = "flowState" | "overlayOnly" | "terminal" | "terminalDetails";
+
+export const $desktopMode = atom<DesktopMode>({
+  key: "DESKTOP_MODE",
+  default: "terminal",
+});
+
+export const $selectedLineId = atom<string>({
+  key: "SELECTED_LINE_ID",
+  default: null,
+});

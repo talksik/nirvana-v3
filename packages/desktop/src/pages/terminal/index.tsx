@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { $desktopMode, $selectedLineId } from "../../controller/recoil";
+import { useCallback, useMemo, useState } from "react";
 
 import { FaPlus } from "react-icons/fa";
 import { FiActivity } from "react-icons/fi";
@@ -6,15 +7,17 @@ import { ILineDetails } from "../router";
 import IconButton from "../../components/Button/IconButton/index";
 import LineRow from "../../components/lines/lineRow.tsx/index";
 import NewLineModal from "./newLine";
+import { useSetRecoilState } from "recoil";
 
 export default function NirvanaTerminal({
-  handleSelectLine,
   allLines,
 }: {
-  handleSelectLine: (lineId: string) => void;
   allLines: ILineDetails[];
 }) {
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+
+  const setSelectedLineId = useSetRecoilState($selectedLineId);
+  const setDesktopMode = useSetRecoilState($desktopMode);
 
   // todo: sort/order based on activity and activity date and currently broadcasting/live
 
@@ -26,6 +29,15 @@ export default function NirvanaTerminal({
   const restLines = useMemo(
     () => allLines.filter((line) => !line.isUserToggleTunedIn),
     []
+  );
+
+  /** show user line details */
+  const handleSelectLine = useCallback(
+    (lineId: string) => {
+      setSelectedLineId(lineId);
+      setDesktopMode("terminalDetails");
+    },
+    [setSelectedLineId, setDesktopMode]
   );
 
   return (

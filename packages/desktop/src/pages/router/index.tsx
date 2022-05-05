@@ -1,6 +1,8 @@
 import {
+  $desktopMode,
   $maxNumberActiveStreams,
   $numberActiveLines,
+  $selectedLineId,
 } from "../../controller/recoil";
 import Channels, {
   DimensionChangeRequest,
@@ -11,13 +13,13 @@ import Channels, {
 } from "../../electron/constants";
 import React, { useState } from "react";
 import { useCallback, useEffect, useMemo } from "react";
+import { useRecoilState, useRecoilValue } from "recoil";
 
 import LineDetailsTerminal from "../lineDetailsTerminal";
 import NirvanaHeader from "../../components/header/index";
 import NirvanaTerminal from "../terminal";
 import Overlay from "../overlay";
 import { Radio } from "antd";
-import { useRecoilValue } from "recoil";
 
 export interface ILineDetails {
   lineId: string;
@@ -219,12 +221,9 @@ const testLines: ILineDetails[] = [
   ),
 ];
 
-type DesktopMode = "flowState" | "overlayOnly" | "terminal" | "terminalDetails";
-
 export default function NirvanaRouter() {
-  const [selectedLineId, setSelectedLineId] = useState<string>(null);
-  const [desktopMode, setDesktopMode] =
-    useState<DesktopMode>("terminalDetails");
+  const [selectedLineId, setSelectedLineId] = useRecoilState($selectedLineId);
+  const [desktopMode, setDesktopMode] = useRecoilState($desktopMode);
   const numberOfOverlayColumns = useRecoilValue($numberActiveLines);
   const numberOfOverlayRows = useRecoilValue($maxNumberActiveStreams);
 
@@ -235,7 +234,7 @@ export default function NirvanaRouter() {
         "window blurring now, should be always on top and then ill tell main process to change dimensions"
       );
       // todo: just in testing mode
-      // setDesktopMode("overlayOnly");
+      setDesktopMode("overlayOnly");
     });
   }, [setDesktopMode]);
 
@@ -301,15 +300,6 @@ export default function NirvanaRouter() {
     });
   }, [desktopMode, numberOfOverlayColumns, numberOfOverlayRows]);
 
-  /** show user line details */
-  const handleSelectLine = useCallback(
-    (lineId: string) => {
-      setSelectedLineId(lineId);
-      setDesktopMode("terminalDetails");
-    },
-    [setSelectedLineId, setDesktopMode]
-  );
-
   const handleToggleFlowState = useCallback(() => {
     setDesktopMode("flowState");
   }, [setDesktopMode]);
@@ -323,24 +313,9 @@ export default function NirvanaRouter() {
     <div className="flex flex-col h-screen">
       <NirvanaHeader onHeaderFocus={() => setDesktopMode("terminal")} />
 
-      <Radio.Group
-        value={desktopMode}
-        onChange={(e) => setDesktopMode(e.target.value)}
-      >
-        <Radio.Button value={"terminal"}>terminal</Radio.Button>
-        <Radio.Button value={"terminalDetails"}>
-          terminal and details
-        </Radio.Button>
-        <Radio.Button value={"flowState"}>flow state</Radio.Button>
-        <Radio.Button value={"overlayOnly"}>overlay only</Radio.Button>
-      </Radio.Group>
-
       <div className="flex flex-row flex-1">
         {(desktopMode === "terminal" || desktopMode === "terminalDetails") && (
-          <NirvanaTerminal
-            handleSelectLine={handleSelectLine}
-            allLines={testLines}
-          />
+          <NirvanaTerminal allLines={testLines} />
         )}
 
         {desktopMode === "terminalDetails" && selectedLine && (

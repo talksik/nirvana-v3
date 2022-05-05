@@ -1,9 +1,9 @@
+import { Avatar, Menu } from "antd";
 import { GlobalHotKeys, KeyMap } from "react-hotkeys";
 import { HeadsetMicSharp, VideocamSharp } from "@mui/icons-material";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { $selectedOutputMode } from "../../controller/recoil";
-import { Avatar } from "antd";
 import { FaSearch } from "react-icons/fa";
 import Logo from "../Logo";
 import { useGetUserDetails } from "../../controller/index";
