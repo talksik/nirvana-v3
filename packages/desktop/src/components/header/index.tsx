@@ -1,46 +1,41 @@
-import { $desktopMode, $selectedOutputMode } from "../../controller/recoil";
-import { Avatar, Menu } from "antd";
+import {
+  $desktopMode,
+  $jwtToken,
+  $mediaSettings,
+} from "../../controller/recoil";
+import { Avatar, Dropdown, Menu, Tooltip } from "antd";
+import { FiCheck, FiLogOut } from "react-icons/fi";
 import { GlobalHotKeys, KeyMap } from "react-hotkeys";
-import { HeadsetMicSharp, VideocamSharp } from "@mui/icons-material";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 
 import { FaSearch } from "react-icons/fa";
 import Logo from "../Logo";
 import { useGetUserDetails } from "../../controller/index";
 
+/**
+ * TODO: add in video mode
+ *
+ */
 export default function NirvanaHeader({
   onHeaderFocus,
 }: {
   onHeaderFocus: () => void;
 }) {
-  const { data: userDetailsRes, isLoading } = useGetUserDetails();
+  const { data: userDetailsRes, isLoading, isError } = useGetUserDetails();
 
   const inputRef = useRef<HTMLInputElement>(null);
   const [searchInput, setSearchInput] = useState<string>("");
 
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [outputMode, setOutputMode] = useRecoilState($selectedOutputMode);
-
   const desktopMode = useRecoilValue($desktopMode);
 
-  const [userVideoStream, setUserVideoStream] =
-    useState<MediaStream>(undefined);
+  const [mediaSettings, setMediaSettings] = useRecoilState($mediaSettings);
 
-  // todo: show user local video stream
-  useEffect(() => {
-    navigator.mediaDevices
-      .getUserMedia({ video: true, audio: true })
-      .then((stream: MediaStream) => {
-        setUserVideoStream(stream);
-      });
-  }, []);
+  const setJwtToken = useSetRecoilState($jwtToken);
 
   useEffect(() => {
-    const videoElem = document.querySelector("video");
-    if (userVideoStream && outputMode === "video" && videoElem)
-      videoElem.srcObject = userVideoStream;
-  }, [userVideoStream, outputMode]);
+    if (isError) setJwtToken(null);
+  }, [isError]);
 
   /** hide the search bar in the header so that it's cleaner for these two modes */
   const shouldHideSearch = useMemo(() => {
@@ -49,10 +44,6 @@ export default function NirvanaHeader({
 
     return false;
   }, [desktopMode]);
-
-  const handleOpenMenu = useCallback((event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  }, []);
 
   const selectSearch = () => {
     inputRef.current?.focus();
@@ -73,7 +64,63 @@ export default function NirvanaHeader({
     SELECT_SEARCH: selectSearch,
   };
 
+  const handleMuteToggle = useCallback(() => {
+    setMediaSettings((previousMediaSettings) => ({
+      ...previousMediaSettings,
+      isMuted: !previousMediaSettings.isMuted,
+    }));
+  }, [setMediaSettings]);
+
+  const handleSignOut = useCallback(() => {
+    setJwtToken(null);
+  }, [setJwtToken]);
+
   if (isLoading) return <>loading</>;
+
+  const profileMenu = (
+    <Menu
+      items={[
+        {
+          label: (
+            <span onClick={handleMuteToggle}>
+              {mediaSettings.isMuted ? "Unmute" : "Mute"}
+            </span>
+          ),
+          key: `profile-menu-${1}`,
+        },
+        {
+          label: <span>Audio Mode</span>,
+          icon: <> {mediaSettings.mode === "audio" ? <FiCheck /> : <></>} </>,
+          disabled: false,
+          key: `profile-menu-${2}`,
+        },
+        {
+          label: (
+            <Tooltip title="coming soon">
+              <span>Video Mode</span>
+            </Tooltip>
+          ),
+          icon: <>{mediaSettings.mode === "video" ? <FiCheck /> : <></>} </>,
+          disabled: true,
+          key: `profile-menu-${3}`,
+        },
+        {
+          type: "divider",
+          key: `profile-menu-${4}`,
+        },
+        {
+          label: <span onClick={handleSignOut}>Sign Out</span>,
+          icon: <FiLogOut />,
+          key: `profile-menu-${5}`,
+        },
+        {
+          danger: true,
+          label: "a danger item",
+          key: `profile-menu-${6}`,
+        },
+      ]}
+    />
+  );
 
   return (
     <>
@@ -88,7 +135,7 @@ export default function NirvanaHeader({
         </div>
 
         {!shouldHideSearch && (
-          <div className="mx-auto flex flex-row items-center space-x-2 ml-2">
+          <div className="mx-auto flex flex-row items-center space-x-2 ml-5">
             <FaSearch className="text-xs text-gray-300" />
             <input
               placeholder="Type / to search"
@@ -101,24 +148,32 @@ export default function NirvanaHeader({
         )}
 
         {/* todo: move this ghost button to components */}
-        <button className="text-gray-300 ml-auto text-xs px-2 py-1 transition-all hover:bg-gray-200">
+        <button className="text-gray-300 ml-auto text-xs p-3 transition-all hover:bg-gray-200">
           flow state
         </button>
 
-        <div onClick={handleOpenMenu} className={"cursor-pointer ml-2"}>
-          {outputMode === "video" && (
-            <video height={"64px"} width={"90"} muted autoPlay />
-          )}
+        <Dropdown overlay={profileMenu}>
+          <div className={"cursor-pointer ml-2"}>
+            {userDetailsRes?.user?.picture &&
+              mediaSettings.mode === "audio" && (
+                <Avatar
+                  className="mr-1"
+                  alt={userDetailsRes?.user?.givenName}
+                  src={userDetailsRes?.user?.picture}
+                  shape="square"
+                />
+              )}
+          </div>
+        </Dropdown>
 
-          {userDetailsRes?.user?.picture && outputMode === "audio" && (
-            <Avatar
-              className="mr-1"
-              alt={userDetailsRes?.user?.givenName}
-              src={userDetailsRes?.user?.picture}
-              shape="square"
-            />
-          )}
-        </div>
+        {userDetailsRes?.user?.picture && mediaSettings.mode === "audio" && (
+          <Avatar
+            className="mr-1"
+            alt={userDetailsRes?.user?.givenName}
+            src={userDetailsRes?.user?.picture}
+            shape="square"
+          />
+        )}
 
         {/* menu for the output options */}
         {/* <Menu

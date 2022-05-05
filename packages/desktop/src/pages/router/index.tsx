@@ -233,8 +233,8 @@ export default function NirvanaRouter() {
       console.log(
         "window blurring now, should be always on top and then ill tell main process to change dimensions"
       );
-      // todo: just in testing mode
-      setDesktopMode("overlayOnly");
+      // TODO: testing mode
+      // setDesktopMode("overlayOnly");
     });
   }, [setDesktopMode]);
 

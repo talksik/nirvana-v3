@@ -22,14 +22,6 @@ export const $newConvoPage = atom<boolean>({
   default: false,
 });
 
-type outputMode = "audio" | "video" | "off";
-
-// selected output mode
-export const $selectedOutputMode = atom<outputMode>({
-  key: "OUTPUT_MODE",
-  default: "video",
-});
-
 // number of active lines
 export const $numberActiveLines = atom<number>({
   key: "NUMBER_ACTIVE_LINES",
@@ -42,6 +34,8 @@ export const $maxNumberActiveStreams = atom<number>({
   default: 0,
 });
 
+// ============
+
 type DesktopMode = "flowState" | "overlayOnly" | "terminal" | "terminalDetails";
 
 export const $desktopMode = atom<DesktopMode>({
@@ -52,4 +46,13 @@ export const $desktopMode = atom<DesktopMode>({
 export const $selectedLineId = atom<string>({
   key: "SELECTED_LINE_ID",
   default: null,
+});
+
+interface MediaSettings {
+  mode: "audio" | "video";
+  isMuted: boolean;
+}
+export const $mediaSettings = atom<MediaSettings>({
+  key: "MEDIA_SETTINGS",
+  default: { isMuted: false, mode: "audio" },
 });

@@ -1,10 +1,9 @@
-import { useAuthCheck, useLogin } from "../../controller/index";
-
 import { $jwtToken } from "../../controller/recoil";
 import Login from "../../pages/Login";
 import NirvanaApi from "../../controller/nirvanaApi";
 import { STORE_ITEMS } from "../../electron/constants";
 import SkeletonLoader from "../loading/skeleton";
+import { useAuthCheck } from "../../controller/index";
 import { useEffect } from "react";
 import { useRecoilState } from "recoil";
 
