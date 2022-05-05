@@ -186,9 +186,9 @@ export default function Overlay() {
           }
         });
       })
-      .catch((err) => {
+      .catch((err: Error) => {
         console.error(err);
-        toast.error(err);
+        toast.error(err.message);
       });
   }, []);
 

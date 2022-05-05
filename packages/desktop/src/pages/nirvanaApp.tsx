@@ -48,6 +48,7 @@ function NirvanaApp() {
 
           <ReactQueryDevtools initialIsOpen={true} position={"bottom-left"} />
         </RecoilRoot>
+
         <Toaster />
       </QueryClientProvider>
     </>
