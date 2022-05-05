@@ -310,9 +310,9 @@ export default function NirvanaRouter() {
   );
 
   const overlayView = useMemo(() => {
-    if (desktopMode === "flowState") return <></>;
+    if (desktopMode === "overlayOnly") return <Overlay />;
 
-    return <Overlay />;
+    return <></>;
   }, [desktopMode]);
 
   return (
