@@ -1,10 +1,9 @@
-import { $desktopMode, $selectedLineId } from "../../../controller/recoil";
 import { useCallback, useMemo } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
 
+import { $selectedLineId } from "../../../controller/recoil";
 import { Avatar } from "antd";
 import { FiSun } from "react-icons/fi";
-import { ILineDetails } from "../../../pages/router/index";
 import LineIcon from "../lineIcon";
 import MasterLineData from "@nirvana/core/models/masterLineData.model";
 import { useGetUserDetails } from "../../../controller/index";
@@ -20,13 +19,10 @@ export default function LineRow({
   const [selectedLineId, setSelectedLineId] = useRecoilState($selectedLineId);
   const { data: userData } = useGetUserDetails();
 
-  const setDesktopMode = useSetRecoilState($desktopMode);
-
   /** show user line details */
   const handleSelectLine = useCallback(() => {
     setSelectedLineId(masterLineData.lineDetails._id.toString());
-    setDesktopMode("terminalDetails");
-  }, [setSelectedLineId, setDesktopMode, masterLineData]);
+  }, [setSelectedLineId, masterLineData]);
 
   /**
    * TODO: slowly add to this and fix based on added features

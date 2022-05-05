@@ -66,9 +66,6 @@ export default function Overlay() {
 
   // initially, have these set to default
   useEffect(() => {
-    setNumActiveLines(1);
-    setMaxNumActiveStreams(1);
-
     // POC: nirvana all connected users call
     // send signal to all peers through ws
 
