@@ -50,7 +50,11 @@ export default function Login() {
   };
 
   return (
-    <div className="container flex flex-col space-y-5 justify-center items-center h-screen bg-zinc-700">
+    <div
+      className="flex flex-col space-y-5 justify-center items-center 
+    h-screen w-screen
+     bg-zinc-700"
+    >
       <Logo className="scale-50" />
 
       {isLoading ? (

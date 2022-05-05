@@ -112,11 +112,7 @@ export default function NirvanaHeader({
           label: <span onClick={handleSignOut}>Sign Out</span>,
           icon: <FiLogOut />,
           key: `profile-menu-${5}`,
-        },
-        {
           danger: true,
-          label: "a danger item",
-          key: `profile-menu-${6}`,
         },
       ]}
     />
@@ -127,7 +123,7 @@ export default function NirvanaHeader({
       <GlobalHotKeys handlers={handlers} keyMap={keyMap} />
 
       <div
-        className="flex flex-row items-center bg-gray-100 pl-7 h-16 border-b border-b-gray-200"
+        className="flex flex-row items-center bg-gray-100 p-4 border-b border-b-gray-200"
         id="titlebar"
       >
         <div onClick={onHeaderFocus}>
@@ -157,7 +153,7 @@ export default function NirvanaHeader({
             {userDetailsRes?.user?.picture &&
               mediaSettings.mode === "audio" && (
                 <Avatar
-                  className="mr-1"
+                  className="mr-1 shadow-md"
                   alt={userDetailsRes?.user?.givenName}
                   src={userDetailsRes?.user?.picture}
                   shape="square"
@@ -165,15 +161,6 @@ export default function NirvanaHeader({
               )}
           </div>
         </Dropdown>
-
-        {userDetailsRes?.user?.picture && mediaSettings.mode === "audio" && (
-          <Avatar
-            className="mr-1"
-            alt={userDetailsRes?.user?.givenName}
-            src={userDetailsRes?.user?.picture}
-            shape="square"
-          />
-        )}
 
         {/* menu for the output options */}
         {/* <Menu
