@@ -2,6 +2,7 @@ import NirvanaApi, { ApiCalls } from "./nirvanaApi";
 import { useMutation, useQuery } from "react-query";
 
 import { $jwtToken } from "./recoil";
+import { queryClient } from "../pages/nirvanaApp";
 import { useRecoilValue } from "recoil";
 
 // ====== QUERIES
@@ -50,5 +51,9 @@ export function useGetDmByUserId() {
 }
 
 export function useCreateLine() {
-  return useMutation(ApiCalls.createLine);
+  return useMutation(ApiCalls.createLine, {
+    onSuccess: (res, req) => {
+      queryClient.invalidateQueries(["USER_LINES"]);
+    },
+  });
 }
