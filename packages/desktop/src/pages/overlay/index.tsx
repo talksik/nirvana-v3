@@ -32,7 +32,7 @@ function Video({ peer }: { peer: Peer }) {
           .find((track) => track.enabled);
 
         if (!videoAvailabe) console.log("someone muted!!! ooo");
-      });
+      }, 2000);
     });
 
     peer.on("close", () => {

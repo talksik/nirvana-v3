@@ -50,7 +50,7 @@ export default function ProtectedRoute({
     refetch();
   }, [jwtToken]);
 
-  if (isLoading || isFetching) {
+  if (isLoading) {
     return (
       <div className="container h-screen w-screen flex flex-col justify-center mx-10">
         <SkeletonLoader />

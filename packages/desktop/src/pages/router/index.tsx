@@ -309,6 +309,12 @@ export default function NirvanaRouter() {
     [testLines, selectedLineId]
   );
 
+  const overlayView = useMemo(() => {
+    if (desktopMode === "flowState") return <></>;
+
+    return <Overlay />;
+  }, [desktopMode]);
+
   return (
     <div className="flex flex-col h-screen">
       <NirvanaHeader onHeaderFocus={() => setDesktopMode("terminal")} />
@@ -322,7 +328,7 @@ export default function NirvanaRouter() {
           <LineDetailsTerminal selectedLine={selectedLine} />
         )}
 
-        {desktopMode !== "flowState" && <Overlay />}
+        {overlayView}
       </div>
     </div>
   );
