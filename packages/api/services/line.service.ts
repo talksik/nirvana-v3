@@ -1,13 +1,10 @@
-import {
-  Conversation,
-  ConversationMember,
-} from "../../core/models/conversation.model";
+import { Line, LineMember } from "@nirvana/core/models/line.model";
 import { client, collections } from "./database.service";
 
 import { ObjectId } from "mongodb";
 
-export class ConversationService {
-  static async getConversationByOtherUserId(otherUserId: ObjectId) {
+export class LineService {
+  static async getLineByOtherUserId(otherUserId: ObjectId) {
     // get all of the conversations for this user that have exactly two conversation members
     // get all of the conversationMembers for this user
     // get all of the conversations for this user
@@ -21,58 +18,54 @@ export class ConversationService {
     // return null;
   }
 
-  static async getConversationsByIds(convoIds: ObjectId[]) {
+  static async getLinesByIds(convoIds: ObjectId[]) {
     const query = { _id: { $in: convoIds } };
 
-    const convosRes = await collections.conversations?.find(query).toArray();
+    const convosRes = await collections.lines?.find(query).toArray();
 
     // exists
     if (convosRes?.length) {
-      return convosRes as Conversation[];
+      return convosRes as Line[];
     }
 
     return null;
   }
 
-  static async getConversationsMembersByUserId(userId: string) {
+  static async getLineMembersByUserId(userId: string) {
     const query = { userId: new ObjectId(userId) };
 
-    const convoMembersRes = await collections.conversationMembers
+    const convoMembersRes = await collections.lineMembers
       ?.find(query)
       .toArray();
 
     // exists
     if (convoMembersRes?.length) {
-      return convoMembersRes as ConversationMember[];
+      return convoMembersRes as LineMember[];
     }
 
     return null;
   }
 
-  static async createConversation(
-    convo: Conversation,
-    convoMembers: ConversationMember[]
-  ) {
+  static async createLine(line: Line, lineMembers: LineMember[]) {
     const session = client.startSession();
     try {
       const transactionResults = await session.withTransaction(async () => {
         // todo: check if convoMembers userId's actually exist
 
-        const insertConvoRes = await collections.conversations?.insertOne(
-          convo
-        );
-        if (!insertConvoRes?.insertedId) {
+        const insertLineRes = await collections.lines?.insertOne(line);
+        if (!insertLineRes?.insertedId) {
           await session.abortTransaction();
-          console.error("failed to create convo");
+          console.error("failed to create line");
 
           return;
         }
 
-        const insertConvoMembersRes =
-          await collections.conversationMembers?.insertMany(convoMembers);
+        const insertConvoMembersRes = await collections.lineMembers?.insertMany(
+          lineMembers
+        );
         if (!insertConvoMembersRes?.insertedCount) {
           await session.abortTransaction();
-          console.error("failed to create conversation members");
+          console.error("failed to create line members");
 
           return;
         }

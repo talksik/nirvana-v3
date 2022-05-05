@@ -96,6 +96,8 @@ export default function NewLineModal({
     } catch (error) {
       toast.error(error);
       console.error(error);
+    } finally {
+      console.log("done");
     }
   }, [lineName, selectedPeople]);
 

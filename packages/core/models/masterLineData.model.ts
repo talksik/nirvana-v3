@@ -1,8 +1,8 @@
 import AudioClip from "./audioClip.model";
-import { ConversationMember } from "./conversation.model";
+import { LineMember } from "./line.model";
 import { ObjectId } from "mongodb";
 
-export default class MasterConversation {
+export default class MasterLineData {
   constructor(
     // attributes of conversation
     public id: ObjectId, // id of the conversation
@@ -11,9 +11,9 @@ export default class MasterConversation {
     public lastUpdatedDate: Date,
 
     // compiled data for easy client read
-    public currentUserMember?: ConversationMember,
+    public currentUserMember?: LineMember,
 
-    public otherMembers?: ConversationMember[],
+    public otherMembers?: LineMember[],
 
     public audioClips: AudioClip[] = [],
 

@@ -1,4 +1,4 @@
-import MasterConversation from "../../../../core/models/masterConversation.model";
+import MasterConversation from "@nirvana/core/models/masterLineData.model";
 import UserStatusText from "../User/userStatusText";
 export default function BasicConversationRow({
   masterConvo,

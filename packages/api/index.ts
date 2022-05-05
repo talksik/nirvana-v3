@@ -8,7 +8,7 @@ import SocketChannels from "@nirvana/core/sockets/channels";
 import { UserService } from "./services/user.service";
 import { UserStatus } from "@nirvana/core/models";
 import cors from "cors";
-import getConversationRoutes from "./routes/conversation";
+import getLineRoutes from "./routes/line";
 import getSearchRoutes from "./routes/search";
 import getUserRoutes from "./routes/user";
 
@@ -28,7 +28,7 @@ app.get("/", (req: Request, res: Response) => {
 
 app.use("/api/user", getUserRoutes());
 app.use("/api/search", getSearchRoutes());
-app.use("/api/conversations", getConversationRoutes());
+app.use("/api/conversations", getLineRoutes());
 
 const PORT = 5000;
 var server = app.listen(PORT, () => console.log("express running"));

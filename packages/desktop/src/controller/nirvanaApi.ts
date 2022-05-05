@@ -1,9 +1,9 @@
 import axios, { AxiosRequestConfig, AxiosResponse, Method } from "axios";
 
-import { Conversation } from "../../../core/models/conversation.model";
 import CreateLineRequest from "@nirvana/core/requests/createLine.request";
+import { Line } from "@nirvana/core/models/line.model";
 import LoginResponse from "../../../core/responses/login.response";
-import MasterConversation from "../../../core/models/masterConversation.model";
+import MasterConversation from "@nirvana/core/models/masterLineData.model";
 import { User } from "@nirvana/core/models";
 import UserDetailsResponse from "../../../core/responses/userDetails.response";
 import UserSearchResponse from "../../../core/responses/userSearch.response";
@@ -85,7 +85,7 @@ async function getUserConversations(): Promise<MasterConversation[]> {
   return await NirvanaApi.fetch(`/conversations`, "GET", true);
 }
 
-async function getDmByUserId(otherUserId: string): Promise<Conversation> {
+async function getDmByUserId(otherUserId: string): Promise<Line> {
   return await NirvanaApi.fetch(
     `/conversations/dm/${otherUserId}`,
     "GET",

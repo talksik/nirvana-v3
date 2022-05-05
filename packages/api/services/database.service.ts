@@ -6,9 +6,8 @@ import { loadConfig } from "../config";
 // Global Variables
 export const collections: {
   users?: mongoDB.Collection;
-  conversations?: mongoDB.Collection;
-  conversationMembers?: mongoDB.Collection;
-  audioClips?: mongoDB.Collection;
+  lines?: mongoDB.Collection;
+  lineMembers?: mongoDB.Collection;
 } = {};
 
 // Initialize Connection
@@ -23,16 +22,12 @@ client.connect();
 const db: mongoDB.Db = client.db(process.env.DB_NAME);
 
 const usersCollection: mongoDB.Collection = db.collection("users");
-const convoCollection: mongoDB.Collection = db.collection("conversations");
-const convoMembersCollection: mongoDB.Collection = db.collection(
-  "conversationMembers"
-);
-const audioClipsCollection: mongoDB.Collection = db.collection("audioClips");
+const lineCollection: mongoDB.Collection = db.collection("lines");
+const lineMembersCollection: mongoDB.Collection = db.collection("lineMembers");
 
 collections.users = usersCollection;
-collections.conversations = convoCollection;
-collections.conversationMembers = convoMembersCollection;
-collections.audioClips = audioClipsCollection;
+collections.lines = lineCollection;
+collections.lineMembers = lineMembersCollection;
 
 console.log(
   `Successfully connected to database: ${db.databaseName} and collections`
