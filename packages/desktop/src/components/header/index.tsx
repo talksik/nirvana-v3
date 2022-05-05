@@ -76,14 +76,14 @@ export default function NirvanaHeader({
       <GlobalHotKeys handlers={handlers} keyMap={keyMap} />
 
       <div
-        className="flex flex-row items-center bg-gray-100 pl-2 border-b border-b-gray-200"
+        className="flex flex-row items-center bg-gray-100 pl-7 border-b border-b-gray-200"
         id="titlebar"
       >
         <div onClick={onHeaderFocus}>
           <Logo type="small" />
         </div>
 
-        <div className="mx-auto flex flex-row items-center space-x-2 ml-2">
+        <div className="mx-auto flex flex-row items-center space-x-2">
           <FaSearch className="text-xs text-gray-300" />
           <input
             placeholder="Type / to search"
@@ -101,7 +101,7 @@ export default function NirvanaHeader({
 
         <div onClick={handleOpenMenu} className={"cursor-pointer ml-2"}>
           {outputMode === "video" && (
-            <video height={"50px"} width={"50px"} muted autoPlay />
+            <video height={"75px"} width={"90"} muted autoPlay />
           )}
 
           {userDetailsRes?.user?.picture && outputMode === "audio" && (
