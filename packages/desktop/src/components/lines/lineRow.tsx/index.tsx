@@ -6,11 +6,9 @@ import { ILineDetails } from "../../../pages/router/index";
 import LineIcon from "../lineIcon";
 
 export default function LineRow({
-  id,
   lineDetails,
   onClick,
 }: {
-  id: string;
   lineDetails: ILineDetails;
   onClick: (lineId: string) => void;
 }) {
@@ -43,6 +41,7 @@ export default function LineRow({
     if (lineDetails.profilePicsLiveBroadcasters?.length)
       return (
         <Avatar.Group
+          key={`lineRowRightActivityGroup-${lineDetails.lineId}`}
           maxCount={2}
           maxPopoverTrigger="click"
           size="small"
@@ -87,7 +86,6 @@ export default function LineRow({
   return (
     <div
       onClick={handleSelectLine}
-      id={id}
       className="flex flex-row items-center justify-start gap-2 p-2 px-4 h-14 hover:bg-gray-200 cursor-pointer transition-all
   last:border-b-0 border-b border-b-gray-200"
     >

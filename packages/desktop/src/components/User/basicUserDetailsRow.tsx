@@ -15,7 +15,7 @@ export default function BasicUserRow({
     <span
       key={user._id.toString() + new Date().toDateString()}
       className="border-t border-t-gray-200 py-3 px-2 flex flex-row justify-start 
-    items-center w-full hover:bg-gray-300 cursor-pointer group"
+    items-center w-full hover:bg-gray-200 cursor-pointer group"
     >
       <Avatar
         key={`searchUsers-${user._id.toString()}`}
@@ -28,7 +28,7 @@ export default function BasicUserRow({
       <span className="flex flex-col items-start">
         <span className="text-gray-500 text-lg font-semibold">{user.name}</span>
 
-        <span className="text-zinc-300">{user.email}</span>
+        <span className="text-gray-300">{user.email}</span>
       </span>
 
       <div className="ml-auto">{rightJsx}</div>

@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig, AxiosResponse, Method } from "axios";
 
 import { Conversation } from "../../../core/models/conversation.model";
-import CreateConvoRequest from "../../../core/requests/createConvo.request";
+import CreateLineRequest from "@nirvana/core/requests/createLine.request";
 import LoginResponse from "../../../core/responses/login.response";
 import MasterConversation from "../../../core/models/masterConversation.model";
 import { User } from "@nirvana/core/models";
@@ -93,13 +93,8 @@ async function getDmByUserId(otherUserId: string): Promise<Conversation> {
   );
 }
 
-async function createConversation(otherMemberIds: string[]): Promise<void> {
-  return await NirvanaApi.fetch(
-    `/conversations`,
-    "POST",
-    true,
-    new CreateConvoRequest(otherMemberIds)
-  );
+async function createConversation(request: CreateLineRequest): Promise<void> {
+  return await NirvanaApi.fetch(`/conversations`, "POST", true, request);
 }
 
 export const ApiCalls = {

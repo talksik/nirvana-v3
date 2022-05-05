@@ -8,7 +8,7 @@ import express, { Application, Request, Response } from "express";
 
 import Content from "@nirvana/core/models/content.model";
 import { ConversationService } from "../services/conversation.service";
-import CreateConvoRequest from "../../core/requests/createConvo.request";
+import CreateLineRequest from "../../core/requests/createLine.request";
 import GetConversationDetailsResponse from "@nirvana/core/responses/getConversationDetails.response";
 import GetDmConversationByOtherUserIdResponse from "../../core/responses/getDmConversationByOtherUserId.response";
 import GetUserConversationsResponse from "../../core/responses/getUserConversations.response";
@@ -60,7 +60,7 @@ async function getDmByOtherUserId(req: Request, res: Response) {
 
 async function createConversation(req: Request, res: Response) {
   try {
-    const reqObj: CreateConvoRequest = req.body as CreateConvoRequest;
+    const reqObj: CreateLineRequest = req.body as CreateLineRequest;
     console.log(req.body);
 
     if (!reqObj?.otherMemberIds.length) {
