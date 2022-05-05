@@ -121,7 +121,7 @@ export default function NirvanaHeader({
 
   return (
     <>
-      <GlobalHotKeys handlers={handlers} keyMap={keyMap} />
+      <GlobalHotKeys handlers={handlers} keyMap={keyMap} allowChanges />
 
       <div
         className="flex flex-row items-center bg-gray-100 p-4 border-b border-b-gray-200"

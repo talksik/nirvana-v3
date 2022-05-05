@@ -11,6 +11,7 @@ import Channels, {
   TERMINAL_DETAILS_PRESET,
   TERMINAL_PRESET,
 } from "../../electron/constants";
+import { GlobalHotKeys, KeyMap } from "react-hotkeys";
 import React, { useState } from "react";
 import { useCallback, useEffect, useMemo } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -231,13 +232,14 @@ export default function NirvanaRouter() {
   useEffect(() => {
     // add dimensions if it's not overlay only mode
     let finalDimensions: Dimensions = { height: 0, width: 0 };
-    let finalPosition;
+    let finalPosition: "center" | "topRight";
 
     const setAlwaysOnTop =
       desktopMode === "overlayOnly" || desktopMode === "flowState";
 
     // go hunting for which dimensions to have
     if (desktopMode === "terminal") {
+      finalPosition = "center";
       finalDimensions = { height: 675, width: 400 };
     }
     if (desktopMode === "terminalDetails") {
@@ -298,7 +300,10 @@ export default function NirvanaRouter() {
     if (selectedLineId && desktopMode === "terminal") {
       console.log("selected line right now", selectedLineId);
       setDesktopMode("terminalDetails");
-    }
+    } else if (!selectedLineId && desktopMode === "terminalDetails")
+      setDesktopMode("terminal");
+
+    // TODO: add more cases step by step based on experience I want
   }, [selectedLineId, desktopMode, setDesktopMode]);
 
   const handleToggleFlowState = useCallback(() => {

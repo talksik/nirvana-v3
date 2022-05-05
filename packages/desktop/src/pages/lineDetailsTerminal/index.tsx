@@ -1,9 +1,38 @@
+import { GlobalHotKeys, KeyMap } from "react-hotkeys";
+import { useCallback, useMemo } from "react";
+
+import { $selectedLineId } from "../../controller/recoil";
 import { ILineDetails } from "../router";
 import LineIcon from "../../components/lines/lineIcon/index";
+import { useRecoilState } from "recoil";
 
 export default function LineDetailsTerminal() {
+  const [selectedLineId, setSelectedLineId] = useRecoilState($selectedLineId);
+
+  const handleEscape = useCallback(() => {
+    console.log("deselecting line");
+
+    setSelectedLineId(null);
+  }, [setSelectedLineId]);
+
+  const keyMap: KeyMap = useMemo(
+    () => ({
+      DESELECT_LINE: "esc",
+    }),
+    [handleEscape]
+  );
+
+  const handlers = useMemo(
+    () => ({
+      DESELECT_LINE: handleEscape,
+    }),
+    [handleEscape]
+  );
+
   return (
-    <></>
+    <>
+      <GlobalHotKeys handlers={handlers} keyMap={keyMap} allowChanges />
+    </>
     // <div
     //   id={`${selectedLine.lineId}-lineDetailsTerminal`}
     //   className="flex flex-col bg-gray-100 w-[400px]"
