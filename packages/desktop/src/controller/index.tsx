@@ -37,10 +37,11 @@ export function useUserSearch(searchQuery: string) {
   });
 }
 
-export function useUserConvos() {
-  // todo: merge with sockets + audio clip data + master data + convomember data
+export function useUserLines() {
+  // todo: base/source of truth for getting all of the lines for the user
+  // merge with sockets + audio clip data + master data + convomember data
 
-  return useQuery("USER_CONVERSATIONS", ApiCalls.getUserConversations);
+  return useQuery("USER_LINES", ApiCalls.getUserLines);
 }
 
 // =========== MUTATIONS

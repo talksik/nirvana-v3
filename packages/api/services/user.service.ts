@@ -19,6 +19,19 @@ export class UserService {
     return null;
   }
 
+  static async getUsersByIds(userIds: ObjectId[]) {
+    const query = { _id: { $in: userIds } };
+
+    const res = await collections.users?.find(query).toArray();
+
+    // exists
+    if (res?.length) {
+      return res as User[];
+    }
+
+    return undefined;
+  }
+
   static async getUserByGoogleId(googleUserId: string) {
     const query = { googleId: googleUserId };
 

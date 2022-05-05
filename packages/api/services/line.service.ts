@@ -46,6 +46,20 @@ export class LineService {
     return null;
   }
 
+  /** Get all of the members associated to the given list of lines */
+  static async getLineMembersInLines(lineIds: ObjectId[]) {
+    const query = { lineId: { $in: lineIds } };
+
+    const lineMembersRes = await collections.lineMembers?.find(query).toArray();
+
+    // exists
+    if (lineMembersRes?.length) {
+      return lineMembersRes as LineMember[];
+    }
+
+    return null;
+  }
+
   static async createLine(line: Line, lineMembers: LineMember[]) {
     const session = client.startSession();
     try {

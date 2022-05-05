@@ -1,5 +1,6 @@
 import { Line } from "../models/line.model";
+import MasterLineData from "../models/masterLineData.model";
 
 export default class GetUserLinesResponse {
-  constructor(public lines: Line[]) {}
+  constructor(public masterLines: MasterLineData[]) {}
 }

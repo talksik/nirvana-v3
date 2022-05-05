@@ -16,6 +16,7 @@ import MasterLineData from "@nirvana/core/models/masterLineData.model";
 import NirvanaResponse from "../../core/responses/nirvanaResponse";
 import { ObjectId } from "mongodb";
 import Relationship from "@nirvana/core/models/relationship.model";
+import { User } from "@nirvana/core/models/user.model";
 import { UserService } from "../services/user.service";
 import { collections } from "../services/database.service";
 
@@ -122,42 +123,89 @@ async function getUserLines(req: Request, res: Response) {
     const userInfo = res.locals.userInfo as JwtClaims;
 
     // get all of user's lineMember entries
-    const lineMembers = await LineService.getLineMembersByUserId(
+    const userLineMembers = await LineService.getLineMembersByUserId(
       userInfo.userId
     );
 
-    if (!lineMembers?.length) {
+    if (!userLineMembers?.length) {
       res.status(400).json();
 
       return;
     }
 
-    const lineIds = lineMembers?.map((lineMem) => lineMem.lineId) ?? [];
+    const lineIds =
+      userLineMembers?.map((lineMember) => lineMember.lineId) ?? [];
+
+    // this will include the current user lineMember association to the line
+    const allLineMembers = await LineService.getLineMembersInLines(lineIds);
+
+    const allLinesUsers: ObjectId[] = [];
+    allLineMembers?.map((currentLineMember) => {
+      if (currentLineMember?._id) allLinesUsers.push(currentLineMember.userId);
+    }) ?? [];
+
+    // get all users relevant here
+    const allRelevantUsers = await UserService.getUsersByIds(allLinesUsers);
 
     // get all lines from the list of relevant lines
     const lines = (await LineService.getLinesByIds(lineIds)) ?? [];
 
-    const masterLines =
-      lines.map((currentLine) => {
-        const associatedLineMember = lineMembers.find((lineMember) =>
-          lineMember.lineId.equals(currentLine._id!)
-        );
+    const masterLines: MasterLineData[] = [];
 
-        // TODO: get all of the other members on the line
+    // TODO: get the latest audio blocks for this line...maybe like today and yesterday or by block count
 
-        // TODO: get the latest audio blocks for this line...maybe like today and yesterday or by block count
+    lines.map((currentLine) => {
+      let associatedLineMembersForLine: LineMember[] = [];
 
-        return new MasterLineData(
-          currentLine._id!,
-          currentLine.createdDate,
-          currentLine.lastUpdatedDate,
-          associatedLineMember
-        );
+      // get all of the line members for this Line
+      // make sure that we don't add line member if it's the current user
+      allLineMembers?.map((lineMember) => {
+        if (currentLine._id) {
+          if (lineMember.lineId.equals(currentLine._id))
+            associatedLineMembersForLine.push(lineMember);
+        }
       }) ?? [];
 
-    const resObj = new GetUserLinesResponse(lines);
+      // get the user lineMember assoc out of the list of the lineMembers for this line
+      const userLineMember = associatedLineMembersForLine?.find(
+        (currentLineMemberForLine) =>
+          currentLineMemberForLine.userId.toString() === userInfo.userId
+      );
 
-    res.json(masterLines);
+      console.log(associatedLineMembersForLine);
+
+      if (userLineMember) {
+        // take out the current user from the "other" line members list now
+
+        associatedLineMembersForLine = associatedLineMembersForLine.filter(
+          (currentLineMember) =>
+            currentLineMember.userId.toString() !== userInfo.userId
+        );
+
+        // get the user objects for all of the other members
+        const otherUsers: User[] = [];
+        associatedLineMembersForLine.forEach((currentLineMember) => {
+          const foundUserObject = allRelevantUsers?.find(
+            (currentUser) => currentUser._id === currentLineMember.userId
+          );
+
+          if (foundUserObject) otherUsers.push(foundUserObject);
+        });
+
+        masterLines.push(
+          new MasterLineData(
+            currentLine,
+            userLineMember,
+            associatedLineMembersForLine,
+            otherUsers
+          )
+        );
+      }
+    });
+
+    const resObj = new GetUserLinesResponse(masterLines);
+
+    res.json(new NirvanaResponse(resObj));
   } catch (error) {
     res.status(500).json(error);
   }
