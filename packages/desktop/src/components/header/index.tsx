@@ -4,7 +4,7 @@ import {
   $mediaSettings,
 } from "../../controller/recoil";
 import { Avatar, Dropdown, Menu, Tooltip } from "antd";
-import { FiCheck, FiLogOut } from "react-icons/fi";
+import { FiCheck, FiLogOut, FiMic, FiMicOff } from "react-icons/fi";
 import { GlobalHotKeys, KeyMap } from "react-hotkeys";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
@@ -86,6 +86,7 @@ export default function NirvanaHeader({
               {mediaSettings.isMuted ? "Unmute" : "Mute"}
             </span>
           ),
+          icon: <> {mediaSettings.isMuted ? <FiMicOff /> : <FiMic />} </>,
           key: `profile-menu-${1}`,
         },
         {
