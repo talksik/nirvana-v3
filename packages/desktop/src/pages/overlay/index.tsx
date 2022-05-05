@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { $maxNumberActiveStreams } from "../../controller/recoil";
 import { $numberActiveLines } from "../../controller/recoil";
@@ -21,11 +21,20 @@ function Video({ peer }: { peer: Peer }) {
 
   useEffect(() => {
     peer.on("stream", (remoteStream: MediaStream) => {
+      console.log("stream coming in, adding video src object");
+
       if (videoRef?.current) videoRef.current.srcObject = remoteStream;
+    });
+
+    peer.on("close", () => {
+      console.log("remote user closed mediaconnection");
+      videoRef.current.height = 0;
     });
   }, [videoRef]);
 
-  return <video ref={videoRef} controls height={"200"} width="250" autoPlay />;
+  return (
+    <video ref={videoRef} controls height={"200"} width="250" autoPlay muted />
+  );
 }
 
 export default function Overlay() {
@@ -42,6 +51,9 @@ export default function Overlay() {
   const peersRefs = useRef<{ peer: Peer; socketUserId: string }[]>([]);
 
   const localVideoRef = useRef<HTMLVideoElement>(null);
+
+  const [localUserVideoStream, setLocalUserVideoStream] =
+    useState<MediaStream>(null);
 
   // initially, have these set to default
   useEffect(() => {
@@ -68,6 +80,8 @@ export default function Overlay() {
     navigator.mediaDevices
       .getUserMedia({ video: true, audio: true })
       .then((localStream: MediaStream) => {
+        setLocalUserVideoStream(localStream);
+
         // show user video
         if (localVideoRef?.current)
           localVideoRef.current.srcObject = localStream;
@@ -100,6 +114,7 @@ export default function Overlay() {
                 socket.emit(SocketChannels.SEND_SIGNAL, {
                   userSocketIdToSignal: userSocketId,
                   simplePeerSignal: signal,
+                  isAnswerer: false,
                 } as SendSignal);
               });
 
@@ -182,6 +197,13 @@ export default function Overlay() {
     setMaxNumActiveStreams((prevNum) => prevNum + 1);
   };
 
+  // handle shortcut to enable this stream if this video component is selected
+  const toggleMyStreamOnOrOff = useCallback(() => {
+    localUserVideoStream
+      .getTracks()
+      .forEach((track) => (track.enabled = !track.enabled));
+  }, [localUserVideoStream]);
+
   return (
     <div className="flex flex-col max-w-sm">
       {/* {[...Array(maxNumActiveStreams)].map((_n) => (
@@ -195,6 +217,8 @@ export default function Overlay() {
       <button onClick={addAnotherStream}>add row</button> */}
 
       <video muted id="userLocalVideo" ref={localVideoRef} controls autoPlay />
+
+      <button onClick={toggleMyStreamOnOrOff}>Toggle My Stream</button>
 
       {localPeerConnections.map((peer) => (
         <Video peer={peer} />

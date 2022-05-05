@@ -143,7 +143,7 @@ io.on("connection", function (socket: any) {
     const sendingBackData: ReceiveSignal = {
       simplePeerSignal: payload.simplePeerSignal,
       senderUserSocketId: socket.id,
-      isGoingBackToInitiator: payload.isAnswerer,
+      isGoingBackToInitiator: payload.isAnswerer ? true : false,
     };
 
     io.to(payload.userSocketIdToSignal).emit(

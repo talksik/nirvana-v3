@@ -1,7 +1,6 @@
 import { BsApple, BsWindows } from "react-icons/bs";
 import { FaPeopleCarry, FaRunning } from "react-icons/fa";
 
-import { Button } from "carbon-components-react";
 import Footer from "../components/footer";
 import Header from "../components/header";
 import { MdOutlineNaturePeople } from "react-icons/md";
@@ -21,8 +20,6 @@ const Home: NextPage = () => {
               The <span className="text-nirvanaTeal">walkie-talkie</span> <br />{" "}
               for remote startups.
             </span>
-
-            <Button>yoo carbon what's up</Button>
 
             <span className="text-zinc-400 text-lg md:text-xl mt-5 text-center md:text-left">
               The <span className="text-nirvanaTeal">{"'less is more'"}</span>{" "}
