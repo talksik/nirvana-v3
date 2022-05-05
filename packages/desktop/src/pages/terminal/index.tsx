@@ -60,6 +60,17 @@ export default function NirvanaTerminal({
 
             <p className="text-slate-300 text-xs">3/5</p>
           </span>
+
+          <Tooltip title="new line">
+            <div
+              onClick={() => setIsModalVisible(true)}
+              className="ml-auto shadow-xl"
+            >
+              <IconButton>
+                <FaPlus />
+              </IconButton>
+            </div>
+          </Tooltip>
         </div>
 
         {/* list of all lines */}
@@ -76,7 +87,7 @@ export default function NirvanaTerminal({
 
       {/* rest of the lines */}
 
-      <div className={"flex flex-col relative h-full"}>
+      <div className={"flex flex-col"}>
         {restLines.map((line) => (
           <LineRow
             id={line.lineId}
@@ -84,17 +95,6 @@ export default function NirvanaTerminal({
             onClick={handleSelectLine}
           />
         ))}
-
-        <Tooltip title="new line">
-          <div
-            onClick={() => setIsModalVisible(true)}
-            className="ml-auto absolute bottom-5 right-5 shadow-xl"
-          >
-            <IconButton>
-              <FaPlus />
-            </IconButton>
-          </div>
-        </Tooltip>
       </div>
     </div>
   );
