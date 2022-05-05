@@ -54,8 +54,13 @@ export default function LineRow({
           }}
           className="shadow-lg"
         >
-          {lineDetails.profilePicsLiveBroadcasters.map((avatarSrc) => (
-            <Avatar src={avatarSrc} shape="square" size={"small"} />
+          {lineDetails.profilePicsLiveBroadcasters.map((avatarSrc, index) => (
+            <Avatar
+              key={`lineListActivitySection-${avatarSrc}-${index}`}
+              src={avatarSrc}
+              shape="square"
+              size={"small"}
+            />
           ))}
         </Avatar.Group>
       );

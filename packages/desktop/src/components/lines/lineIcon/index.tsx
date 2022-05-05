@@ -14,8 +14,13 @@ export default function LineIcon({ sourceImages }: { sourceImages: string[] }) {
       }}
       className="shadow-lg"
     >
-      {sourceImages?.map((avatarSrc) => (
-        <Avatar src={avatarSrc} shape="square" size={"default"} />
+      {sourceImages?.map((avatarSrc, index) => (
+        <Avatar
+          key={`lineIcon-${avatarSrc}-${index}`}
+          src={avatarSrc}
+          shape="square"
+          size={"default"}
+        />
       ))}
     </Avatar.Group>
   );

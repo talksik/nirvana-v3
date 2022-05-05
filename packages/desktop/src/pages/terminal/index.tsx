@@ -15,7 +15,7 @@ export default function NirvanaTerminal({
 }: {
   allLines: ILineDetails[];
 }) {
-  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(true);
 
   const setSelectedLineId = useSetRecoilState($selectedLineId);
   const setDesktopMode = useSetRecoilState($desktopMode);
