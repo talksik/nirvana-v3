@@ -7,6 +7,8 @@ export function useAuthCheck(jwtToken?: string) {
     retry: false,
     refetchOnWindowFocus: false,
     enabled: jwtToken ? true : false,
+
+    refetchInterval: 10000,
   });
 }
 

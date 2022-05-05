@@ -4,17 +4,18 @@ export class User {
   constructor(
     public googleId: string, // our Google id that every google user has unique that we are going to use for now
     public email: string,
-    public verifiedEmail: boolean,
+
     public name: string,
     public givenName: string,
     public familyName: string,
-    public picture: string,
-    public locale: string,
+    public createdDate: Date,
+    public picture?: string,
+    public verifiedEmail: boolean = false,
+
+    public locale?: string,
 
     // additional properties specific to our users collection
-
-    public createdDate: Date,
-    public status: UserStatus,
+    public status?: UserStatus,
     public lastUpdatedDate?: Date,
     public _id?: ObjectId
   ) {}

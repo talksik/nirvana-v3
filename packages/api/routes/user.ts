@@ -93,18 +93,17 @@ async function login(req: Request, res: Response) {
         );
 
       // create initial user model object
+
       const newUser = new User(
         googleUserId,
         userInfo.email,
-        userInfo.verifiedEmail,
         userInfo.name,
         userInfo.given_name,
         userInfo.family_name,
-        userInfo.picture,
-        userInfo.locale,
         new Date(),
-        UserStatus.ONLINE,
-        new Date()
+        userInfo.picture,
+        userInfo.verifiedEmail,
+        userInfo.locale
       );
 
       // create user if not exists
