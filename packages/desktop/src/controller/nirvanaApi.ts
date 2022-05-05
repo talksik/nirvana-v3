@@ -1,6 +1,7 @@
 import axios, { AxiosRequestConfig, AxiosResponse, Method } from "axios";
 
 import CreateLineRequest from "@nirvana/core/requests/createLine.request";
+import GetUserLinesResponse from "@nirvana/core/responses/getUserLines.response";
 import { Line } from "@nirvana/core/models/line.model";
 import LoginResponse from "../../../core/responses/login.response";
 import MasterLineData from "@nirvana/core/models/masterLineData.model";
@@ -82,7 +83,7 @@ async function userSearch(searchQuery: string): Promise<UserSearchResponse> {
   );
 }
 
-async function getUserLines(): Promise<NirvanaResponse<MasterLineData[]>> {
+async function getUserLines(): Promise<NirvanaResponse<GetUserLinesResponse>> {
   return await NirvanaApi.fetch(`/lines`, "GET", true);
 }
 

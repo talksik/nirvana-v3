@@ -1,47 +1,58 @@
+import { $desktopMode, $selectedLineId } from "../../../controller/recoil";
 import { useCallback, useMemo } from "react";
+import { useRecoilState, useSetRecoilState } from "recoil";
 
 import { Avatar } from "antd";
 import { FiSun } from "react-icons/fi";
 import { ILineDetails } from "../../../pages/router/index";
 import LineIcon from "../lineIcon";
+import MasterLineData from "@nirvana/core/models/masterLineData.model";
+import { useGetUserDetails } from "../../../controller/index";
+
+// todo: send a much more comprehensive master line object? or just add properties to the
+// masterLineData object so that we don't have different models to maintain between client and server
 
 export default function LineRow({
-  lineDetails,
-  onClick,
+  masterLineData,
 }: {
-  lineDetails: ILineDetails;
-  onClick: (lineId: string) => void;
+  masterLineData: MasterLineData;
 }) {
+  const [selectedLineId, setSelectedLineId] = useRecoilState($selectedLineId);
+  const { data: userData } = useGetUserDetails();
+
+  const setDesktopMode = useSetRecoilState($desktopMode);
+
+  /** show user line details */
+  const handleSelectLine = useCallback(() => {
+    setSelectedLineId(masterLineData.lineDetails._id.toString());
+    setDesktopMode("terminalDetails");
+  }, [setSelectedLineId, setDesktopMode, masterLineData]);
+
+  /**
+   * TODO: slowly add to this and fix based on added features
+   * */
   const renderActivityIcon = useMemo(() => {
-    if (lineDetails.isUserBroadcastingHere)
+    // if there is someone or me broadcasting here
+    if (masterLineData.currentUserMember.lastVisitDate)
       return <FiSun className="text-xs text-teal-500" />;
 
-    if (
-      lineDetails.isSomeoneElseBroadcastingHere ||
-      lineDetails.profilePicsLiveBroadcasters?.length > 0
-    )
-      return <FiSun className="text-xs text-gray-800" />;
-
-    if (lineDetails.hasNewActivity)
+    // if there is new activity blocks for me
+    if (masterLineData.currentUserMember.lastVisitDate)
       return (
         <span className="h-2 w-2 rounded-full bg-slate-800 animate-pulse"></span>
-      );
-
-    if (lineDetails.isUserToggleTunedIn)
-      return (
-        <span className="h-2 w-2 rounded-full bg-slate-200 animate-pulse"></span>
       );
 
     return (
       <span className="h-2 w-2 rounded-full bg-white animate-pulse"></span>
     );
-  }, [lineDetails]);
+  }, [masterLineData]);
 
   const renderRightActivity = useMemo(() => {
-    if (lineDetails.profilePicsLiveBroadcasters?.length)
+    // TODO: this should be the list of broadcasters, not members...change once we have that
+    if (masterLineData.otherUserObjects?.length)
       return (
         <Avatar.Group
-          key={`lineRowRightActivityGroup-${lineDetails.lineId}`}
+          key={`lineRowRightActivityGroup-${masterLineData.lineDetails._id.toString()}`}
           maxCount={2}
           maxPopoverTrigger="click"
           size="small"
@@ -53,10 +64,10 @@ export default function LineRow({
           }}
           className="shadow-lg"
         >
-          {lineDetails.profilePicsLiveBroadcasters.map((avatarSrc, index) => (
+          {masterLineData.otherUserObjects?.map((otherUser, index) => (
             <Avatar
-              key={`lineListActivitySection-${avatarSrc}-${index}`}
-              src={avatarSrc}
+              key={`lineListActivitySection-${otherUser._id.toString()}-${index}`}
+              src={otherUser.picture ?? ""}
               shape="square"
               size={"small"}
             />
@@ -64,24 +75,34 @@ export default function LineRow({
         </Avatar.Group>
       );
 
-    if (lineDetails.hasNewActivity)
+    // if there is new activity/black dot, then show relative time as little bolder? or too much?
+
+    // TODO: add moment for relative time of activity
+    if (masterLineData.currentUserMember.lastVisitDate)
       return (
         <span className={`text-gray-400 ml-auto text-xs font-semibold`}>
-          {lineDetails.timeAgo}
+          {masterLineData.currentUserMember.lastVisitDate}
         </span>
       );
 
     return (
       <span className={`text-gray-300 ml-auto text-xs `}>
-        {lineDetails.timeAgo}
+        {masterLineData.currentUserMember.lastVisitDate}
       </span>
     );
-  }, [lineDetails]);
+  }, [masterLineData]);
 
-  const handleSelectLine = useCallback(
-    (e) => onClick(lineDetails.lineId),
-    [onClick, lineDetails]
-  );
+  const profilePictures = useMemo(() => {
+    const pictureSources: string[] = [];
+
+    if (userData?.user?.picture) pictureSources.push(userData.user.picture);
+
+    masterLineData.otherUserObjects?.forEach((otherUser) => {
+      if (otherUser.picture) pictureSources.push(otherUser.picture);
+    });
+
+    return pictureSources;
+  }, [masterLineData, userData]);
 
   return (
     <div
@@ -93,16 +114,16 @@ export default function LineRow({
       {renderActivityIcon}
 
       <span className="flex flex-row gap-2 items-center justify-start text-slate-800">
-        {lineDetails.profilePictures && (
-          <LineIcon sourceImages={lineDetails.profilePictures} />
-        )}
+        {profilePictures && <LineIcon sourceImages={profilePictures} />}
 
         <h2
           className={`text-inherit text-md truncate ${
-            lineDetails.hasNewActivity ? "font-semibold" : ""
+            masterLineData.currentUserMember.lastVisitDate
+              ? "font-semibold"
+              : ""
           }`}
         >
-          {lineDetails.name}
+          {masterLineData.lineDetails.name}
         </h2>
       </span>
 

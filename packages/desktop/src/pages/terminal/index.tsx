@@ -1,4 +1,5 @@
 import { $desktopMode, $selectedLineId } from "../../controller/recoil";
+import { Skeleton, Tooltip } from "antd";
 import { useCallback, useMemo, useState } from "react";
 
 import { FaPlus } from "react-icons/fa";
@@ -7,8 +8,8 @@ import { ILineDetails } from "../router";
 import IconButton from "../../components/Button/IconButton/index";
 import LineRow from "../../components/lines/lineRow.tsx/index";
 import NewLineModal from "./newLine";
-import { Tooltip } from "antd";
 import { useSetRecoilState } from "recoil";
+import { useUserLines } from "../../controller/index";
 
 export default function NirvanaTerminal({
   allLines,
@@ -20,6 +21,8 @@ export default function NirvanaTerminal({
   const setSelectedLineId = useSetRecoilState($selectedLineId);
   const setDesktopMode = useSetRecoilState($desktopMode);
 
+  const { data: userLinesRes, isLoading } = useUserLines();
+
   // todo: sort/order based on activity and activity date and currently broadcasting/live
 
   const toggleTunedLines = useMemo(
@@ -30,15 +33,6 @@ export default function NirvanaTerminal({
   const restLines = useMemo(
     () => allLines.filter((line) => !line.isUserToggleTunedIn),
     []
-  );
-
-  /** show user line details */
-  const handleSelectLine = useCallback(
-    (lineId: string) => {
-      setSelectedLineId(lineId);
-      setDesktopMode("terminalDetails");
-    },
-    [setSelectedLineId, setDesktopMode]
   );
 
   return (
@@ -73,28 +67,39 @@ export default function NirvanaTerminal({
           </Tooltip>
         </div>
 
-        {/* list of all lines */}
+        {/* list of toggle tuned lines */}
         <div className="flex flex-col mt-2">
-          {toggleTunedLines.map((line) => (
+          {/* {toggleTunedLines.map((line) => (
             <LineRow
               key={line.lineId}
               lineDetails={line}
               onClick={handleSelectLine}
             />
-          ))}
+          ))} */}
         </div>
       </div>
 
       {/* rest of the lines */}
-
       <div className={"flex flex-col"}>
-        {restLines.map((line) => (
-          <LineRow
-            key={line.lineId}
-            lineDetails={line}
-            onClick={handleSelectLine}
-          />
-        ))}
+        {/* {restLines.map((line) => (
+     <LineRow
+       key={line.lineId}
+       lineDetails={line}
+       onClick={handleSelectLine}
+     />
+   ))} */}
+        {isLoading ? (
+          <Skeleton />
+        ) : (
+          <>
+            {userLinesRes?.data?.masterLines?.map((masterLineData) => (
+              <LineRow
+                key={`terminalListLines-${masterLineData.lineDetails._id.toString()}`}
+                masterLineData={masterLineData}
+              />
+            ))}
+          </>
+        )}
       </div>
     </div>
   );

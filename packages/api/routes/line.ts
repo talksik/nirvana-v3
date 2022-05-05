@@ -172,8 +172,6 @@ async function getUserLines(req: Request, res: Response) {
           currentLineMemberForLine.userId.toString() === userInfo.userId
       );
 
-      console.log(associatedLineMembersForLine);
-
       if (userLineMember) {
         // take out the current user from the "other" line members list now
 
