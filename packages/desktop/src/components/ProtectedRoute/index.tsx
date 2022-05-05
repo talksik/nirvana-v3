@@ -14,8 +14,7 @@ export default function ProtectedRoute({
 }) {
   const [jwtToken, setJwtToken] = useRecoilState($jwtToken);
 
-  const { isLoading, isError, isFetching, isSuccess, refetch } =
-    useAuthCheck(jwtToken);
+  const { isLoading, isError, isFetching, isSuccess, refetch } = useAuthCheck();
 
   useEffect(() => {
     // on load of this, if we already have jwt tokens in store,

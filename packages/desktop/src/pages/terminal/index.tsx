@@ -7,6 +7,7 @@ import { ILineDetails } from "../router";
 import IconButton from "../../components/Button/IconButton/index";
 import LineRow from "../../components/lines/lineRow.tsx/index";
 import NewLineModal from "./newLine";
+import { Tooltip } from "antd";
 import { useSetRecoilState } from "recoil";
 
 export default function NirvanaTerminal({
@@ -49,7 +50,7 @@ export default function NirvanaTerminal({
       />
 
       {/* tuned in lines block */}
-      <div className="bg-gray-100 flex flex-col">
+      <div className="bg-gray-100 flex flex-col shadow-lg">
         {/* tuned in header + general controls */}
         <div className="flex flex-row items-center p-3 pb-0">
           <span className="flex flex-row gap-2 items-center justify-start text-slate-800">
@@ -84,14 +85,16 @@ export default function NirvanaTerminal({
           />
         ))}
 
-        <div
-          onClick={() => setIsModalVisible(true)}
-          className="ml-auto absolute bottom-2 right-2 shadow-xl"
-        >
-          <IconButton>
-            <FaPlus />
-          </IconButton>
-        </div>
+        <Tooltip title="new line">
+          <div
+            onClick={() => setIsModalVisible(true)}
+            className="ml-auto absolute bottom-5 right-5 shadow-xl"
+          >
+            <IconButton>
+              <FaPlus />
+            </IconButton>
+          </div>
+        </Tooltip>
       </div>
     </div>
   );

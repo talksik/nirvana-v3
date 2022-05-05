@@ -1,12 +1,16 @@
 import NirvanaApi, { ApiCalls } from "./nirvanaApi";
 import { useMutation, useQuery } from "react-query";
 
+import { $jwtToken } from "./recoil";
+import { useRecoilValue } from "recoil";
+
 // ====== QUERIES
-export function useAuthCheck(jwtToken?: string) {
+export function useAuthCheck() {
+  const jwtToken = useRecoilValue($jwtToken);
+
   return useQuery("AUTH_CHECK", ApiCalls.authCheck, {
     retry: false,
     refetchOnWindowFocus: false,
-    enabled: jwtToken ? true : false,
 
     refetchInterval: 10000,
   });
