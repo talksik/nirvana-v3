@@ -1,13 +1,13 @@
+import { $desktopMode, $selectedOutputMode } from "../../controller/recoil";
 import { Avatar, Menu } from "antd";
 import { GlobalHotKeys, KeyMap } from "react-hotkeys";
 import { HeadsetMicSharp, VideocamSharp } from "@mui/icons-material";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useRecoilState, useRecoilValue } from "recoil";
 
-import { $selectedOutputMode } from "../../controller/recoil";
 import { FaSearch } from "react-icons/fa";
 import Logo from "../Logo";
 import { useGetUserDetails } from "../../controller/index";
-import { useRecoilState } from "recoil";
 
 export default function NirvanaHeader({
   onHeaderFocus,
@@ -21,6 +21,8 @@ export default function NirvanaHeader({
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [outputMode, setOutputMode] = useRecoilState($selectedOutputMode);
+
+  const desktopMode = useRecoilValue($desktopMode);
 
   const [userVideoStream, setUserVideoStream] =
     useState<MediaStream>(undefined);
@@ -40,14 +42,16 @@ export default function NirvanaHeader({
       videoElem.srcObject = userVideoStream;
   }, [userVideoStream, outputMode]);
 
-  const menuOpen = useMemo(() => Boolean(anchorEl), [anchorEl]);
+  /** hide the search bar in the header so that it's cleaner for these two modes */
+  const shouldHideSearch = useMemo(() => {
+    if (desktopMode === "flowState" || desktopMode === "overlayOnly")
+      return true;
+
+    return false;
+  }, [desktopMode]);
 
   const handleOpenMenu = useCallback((event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
-  }, []);
-
-  const handleCloseMenu = useCallback(() => {
-    setAnchorEl(null);
   }, []);
 
   const selectSearch = () => {
@@ -76,32 +80,34 @@ export default function NirvanaHeader({
       <GlobalHotKeys handlers={handlers} keyMap={keyMap} />
 
       <div
-        className="flex flex-row items-center bg-gray-100 pl-7 border-b border-b-gray-200"
+        className="flex flex-row items-center bg-gray-100 pl-7 h-16 border-b border-b-gray-200"
         id="titlebar"
       >
         <div onClick={onHeaderFocus}>
           <Logo type="small" />
         </div>
 
-        <div className="mx-auto flex flex-row items-center space-x-2">
-          <FaSearch className="text-xs text-gray-300" />
-          <input
-            placeholder="Type / to search"
-            className="bg-transparent placeholder-gray-300 placeholder:text-xs focus:outline-none"
-            ref={inputRef}
-            onChange={onSearchChange}
-            value={searchInput}
-          />
-        </div>
+        {!shouldHideSearch && (
+          <div className="mx-auto flex flex-row items-center space-x-2">
+            <FaSearch className="text-xs text-gray-300" />
+            <input
+              placeholder="Type / to search"
+              className="bg-transparent placeholder-gray-300 placeholder:text-xs focus:outline-none"
+              ref={inputRef}
+              onChange={onSearchChange}
+              value={searchInput}
+            />
+          </div>
+        )}
 
         {/* todo: move this ghost button to components */}
-        <button className="text-gray-300 text-xs px-2 py-1 transition-all hover:bg-gray-200">
+        <button className="text-gray-300 ml-auto text-xs px-2 py-1 transition-all hover:bg-gray-200">
           flow state
         </button>
 
         <div onClick={handleOpenMenu} className={"cursor-pointer ml-2"}>
           {outputMode === "video" && (
-            <video height={"75px"} width={"90"} muted autoPlay />
+            <video height={"64px"} width={"90"} muted autoPlay />
           )}
 
           {userDetailsRes?.user?.picture && outputMode === "audio" && (

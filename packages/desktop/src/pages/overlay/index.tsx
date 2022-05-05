@@ -24,6 +24,15 @@ function Video({ peer }: { peer: Peer }) {
       console.log("stream coming in, adding video src object");
 
       if (videoRef?.current) videoRef.current.srcObject = remoteStream;
+
+      // check if other user muted
+      setInterval(() => {
+        const videoAvailabe = remoteStream
+          .getVideoTracks()
+          .find((track) => track.enabled);
+
+        if (!videoAvailabe) console.log("someone muted!!! ooo");
+      });
     });
 
     peer.on("close", () => {
