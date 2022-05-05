@@ -9,9 +9,12 @@
 export default class NirvanaResponse<T> {
   data?: T;
   error?: Error;
+  message?: string;
 
-  constructor(_data: T, _error?: Error) {
+  constructor(_data: T, _error?: Error, _message?: string) {
     this.data = _data;
     this.error = _error;
+
+    this.message = _message;
   }
 }

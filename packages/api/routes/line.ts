@@ -128,7 +128,11 @@ async function getUserLines(req: Request, res: Response) {
     );
 
     if (!userLineMembers?.length) {
-      res.status(400).json();
+      const resObj = new GetUserLinesResponse([]);
+
+      res.json(
+        new NirvanaResponse(resObj, undefined, "this user is not in any lines")
+      );
 
       return;
     }
@@ -139,13 +143,14 @@ async function getUserLines(req: Request, res: Response) {
     // this will include the current user lineMember association to the line
     const allLineMembers = await LineService.getLineMembersInLines(lineIds);
 
-    const allLinesUsers: ObjectId[] = [];
+    const allLinesUsersIds: ObjectId[] = [];
     allLineMembers?.map((currentLineMember) => {
-      if (currentLineMember?._id) allLinesUsers.push(currentLineMember.userId);
+      if (currentLineMember?.userId)
+        allLinesUsersIds.push(currentLineMember.userId);
     }) ?? [];
 
     // get all users relevant here
-    const allRelevantUsers = await UserService.getUsersByIds(allLinesUsers);
+    const allRelevantUsers = await UserService.getUsersByIds(allLinesUsersIds);
 
     // get all lines from the list of relevant lines
     const lines = (await LineService.getLinesByIds(lineIds)) ?? [];
@@ -183,8 +188,8 @@ async function getUserLines(req: Request, res: Response) {
         // get the user objects for all of the other members
         const otherUsers: User[] = [];
         associatedLineMembersForLine.forEach((currentLineMember) => {
-          const foundUserObject = allRelevantUsers?.find(
-            (currentUser) => currentUser._id === currentLineMember.userId
+          const foundUserObject = allRelevantUsers?.find((currentUser) =>
+            currentUser._id?.equals(currentLineMember.userId)
           );
 
           if (foundUserObject) otherUsers.push(foundUserObject);

@@ -33,8 +33,8 @@ export default function LineRow({
    * */
   const renderActivityIcon = useMemo(() => {
     // if there is someone or me broadcasting here
-    if (masterLineData.currentUserMember.lastVisitDate)
-      return <FiSun className="text-xs text-teal-500" />;
+    // if (masterLineData.currentUserMember.lastVisitDate)
+    return <FiSun className="text-xs text-teal-500" />;
 
     // if there is new activity blocks for me
     if (masterLineData.currentUserMember.lastVisitDate)
@@ -95,7 +95,8 @@ export default function LineRow({
   const profilePictures = useMemo(() => {
     const pictureSources: string[] = [];
 
-    if (userData?.user?.picture) pictureSources.push(userData.user.picture);
+    // ?don't add in my image as that's useless contextually?
+    // if (userData?.user?.picture) pictureSources.push(userData.user.picture);
 
     masterLineData.otherUserObjects?.forEach((otherUser) => {
       if (otherUser.picture) pictureSources.push(otherUser.picture);

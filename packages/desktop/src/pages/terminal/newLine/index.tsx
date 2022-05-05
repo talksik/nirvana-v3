@@ -98,7 +98,7 @@ export default function NewLineModal({
       toast.success("created line!");
 
       // handle close once the new line is created
-      handleClose();
+      // handleClose();
     } catch (error) {
       toast.error(error);
       console.error(error);

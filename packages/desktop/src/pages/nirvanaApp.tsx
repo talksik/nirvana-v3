@@ -46,10 +46,7 @@ function NirvanaApp() {
             <NirvanaRouter />
           </ProtectedRoute>
 
-          {/* <ReactQueryDevtools
-              initialIsOpen={false}
-              position={"bottom-left"}
-            /> */}
+          <ReactQueryDevtools initialIsOpen={true} position={"bottom-left"} />
         </RecoilRoot>
         <Toaster />
       </QueryClientProvider>

@@ -16,7 +16,7 @@ export default function NirvanaTerminal({
 }: {
   allLines: ILineDetails[];
 }) {
-  const [isModalVisible, setIsModalVisible] = useState<boolean>(true);
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
 
   const setSelectedLineId = useSetRecoilState($selectedLineId);
   const setDesktopMode = useSetRecoilState($desktopMode);
@@ -92,6 +92,13 @@ export default function NirvanaTerminal({
           <Skeleton />
         ) : (
           <>
+            {" "}
+            {!userLinesRes?.data?.masterLines.length && (
+              <span className="text-gray-300 text-sm my-5 text-center">
+                You have no lines! <br /> Create one to connect to your team
+                instantly.
+              </span>
+            )}
             {userLinesRes?.data?.masterLines?.map((masterLineData) => (
               <LineRow
                 key={`terminalListLines-${masterLineData.lineDetails._id.toString()}`}
