@@ -1,6 +1,8 @@
 import SocketChannels, {
   ConnectToLine,
   SomeoneConnected,
+  SomeoneTuned,
+  TuneToLine,
 } from "@nirvana/core/sockets/channels";
 
 import GetAllSocketClients from "@nirvana/core/sockets/getAllActiveSocketClients";
@@ -9,6 +11,7 @@ import ReceiveSignal from "@nirvana/core/sockets/receiveSignal";
 import SendSignal from "@nirvana/core/sockets/sendSignal";
 import { UserService } from "../services/user.service";
 import { UserStatus } from "@nirvana/core/models/user.model";
+import { client } from "../services/database.service";
 import { loadConfig } from "../config";
 
 const jwt = require("jsonwebtoken");
@@ -55,100 +58,42 @@ export default function InitializeWs(io: any) {
 
       // ?verification that user is in a particular line to be tuned into it or just generally in it?
 
-      // regular socket rooms for information for all clients in a specific line
-
-      // another namespace or so for clients tuned into certain lines
-
-      // ===== JOIN ====
-      /** User wants to subscribe to live emissions of a conversation */
+      /** CONNECT | User wants to subscribe to live emissions of a line */
       socket.on(SocketChannels.CONNECT_TO_LINE, (req: ConnectToLine) => {
         // add this user to the room
-
         console.log(`${socket.id} user joined room for line ${req.lineId}`);
 
-        socket.join(req.lineId);
+        const roomName = `connectedLine:${req.lineId}`;
+        socket.join(roomName);
 
         console.log(`${socket.id} now in rooms ${socket.rooms}`);
 
-        io.in(req.lineId).emit(
+        const clientUserIdsInRoom = [...io.sockets.adapter.rooms.get(roomName)];
+
+        io.in(roomName).emit(
           SocketChannels.SOMEONE_CONNECTED_TO_LINE,
-          new SomeoneConnected(req.lineId, userInfo.userId)
+          new SomeoneConnected(req.lineId, userInfo.userId, clientUserIdsInRoom)
         );
       });
 
-      // ==== UPDATES ====
-      // can be a change of:
-      // 1. status...later...do short polling for this instead
-      // 2. new content: audio clip or link
-      // 3. someone is starting to speak
-      // send message to everyone in room except sender...
+      /** TUNE | User tunes into the line either temporarily or toggled in  */
+      socket.on(SocketChannels.TUNE_TO_LINE, (req: TuneToLine) => {
+        console.log(`${socket.id} user tuned into room for line ${req.lineId}`);
 
-      /** User wants to send some update to a particular room */
-      socket.on(
-        SocketChannels.SEND_AUDIO_CLIP,
-        (relationshipId: string, audioChunks: any) => {
-          console.log(
-            `new audio chunks received..routing to appropriate room!`
-          );
-          console.log(relationshipId);
-          console.log(audioChunks);
+        const roomName = `tunedLine:${req.lineId}`;
+        socket.join(roomName);
 
-          io.in(relationshipId).emit(
-            SocketChannels.SEND_AUDIO_CLIP,
-            relationshipId,
-            audioChunks
-          );
-        }
-      );
+        console.log(`${socket.id} now in rooms ${socket.rooms}`);
 
-      // tell everyone in a room when someone is starting to speak
-      socket.on(
-        SocketChannels.SEND_STARTED_SPEAKING,
-        (relationshipId: string) => {
-          console.log(`started speaking in ${relationshipId}`);
-          io.in(relationshipId).emit(
-            SocketChannels.SEND_STARTED_SPEAKING,
-            relationshipId
-          );
-        }
-      );
+        const clientUserIdsInRoom = io.sockets.adapter.rooms
+          .get(roomName)
+          .map((socketId: any) => socketIdsToUserIds[socketId]);
 
-      // tell everyone in a room when someone is stopping to speak
-      socket.on(
-        SocketChannels.SEND_STOPPED_SPEAKING,
-        (relationshipId: string) => {
-          console.log(`stopped speaking in ${relationshipId}`);
-          io.in(relationshipId).emit(
-            SocketChannels.SEND_STOPPED_SPEAKING,
-            relationshipId
-          );
-        }
-      );
-
-      // change of user status to all of users' rooms and db update
-      socket.on(
-        SocketChannels.SEND_USER_STATUS_UPDATE,
-        async (userGoogleId: string, newStatus: UserStatus) => {
-          console.log("new status for user");
-
-          const resultUpdate = await UserService.updateUserStatus(
-            userGoogleId,
-            newStatus
-          );
-
-          // tell all rooms that the user is part of
-          // that this user has updated their status
-          if (resultUpdate?.modifiedCount) {
-            socket.rooms.forEach((roomId: string) => {
-              io.in(roomId).emit(
-                SocketChannels.SEND_USER_STATUS_UPDATE,
-                userGoogleId,
-                newStatus
-              );
-            });
-          }
-        }
-      );
+        io.in(roomName).emit(
+          SocketChannels.SOMEONE_TUNED_TO_LINE,
+          new SomeoneTuned(req.lineId, userInfo.userId, clientUserIdsInRoom)
+        );
+      });
 
       socket.on(SocketChannels.JOIN_LIVE_ROOM, async () => {
         // TODO: only get the socket ids of the relevant rooms for this user
@@ -178,6 +123,9 @@ export default function InitializeWs(io: any) {
       // ==== DISCONNECT ====
       socket.on("disconnect", () => {
         delete socketIdsToUserIds[socket.id];
+
+        // get all of the rooms of this socket
+        // notify everyone of this disconnection
 
         console.log("user disconnected");
       });

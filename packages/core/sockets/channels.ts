@@ -18,8 +18,10 @@ enum SocketChannels {
    * when someone connects to a line, whether tuned in or not
    */
   CONNECT_TO_LINE = "CONNECT_TO_LINE",
-
   SOMEONE_CONNECTED_TO_LINE = "SOMEONE_CONNECTED_TO_LINE",
+
+  TUNE_TO_LINE = "TUNE_TO_LINE",
+  SOMEONE_TUNED_TO_LINE = "SOMEONE_TUNED_TO_LINE",
 }
 
 export default SocketChannels;
@@ -28,5 +30,20 @@ export class ConnectToLine {
   constructor(public lineId: string) {}
 }
 export class SomeoneConnected {
-  constructor(public lineId: string, public userId: string) {}
+  constructor(
+    public lineId: string,
+    public userId: string,
+    public allConnectedIntoUserIds: string[]
+  ) {}
+}
+
+export class TuneToLine {
+  constructor(public lineId: string, public keepTunedIn: boolean = false) {}
+}
+export class SomeoneTuned {
+  constructor(
+    public lineId: string,
+    public userId: string,
+    public allTunedIntoUserIds: string[]
+  ) {}
 }

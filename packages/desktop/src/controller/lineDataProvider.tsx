@@ -2,6 +2,7 @@ import { $jwtToken, $selectedLineId } from "./recoil";
 import {
   ConnectToLine,
   SomeoneConnected,
+  SomeoneTuned,
 } from "@nirvana/core/sockets/channels";
 import React, { useContext } from "react";
 import { Socket, io } from "socket.io-client";
@@ -39,7 +40,6 @@ export function LineDataProvider({ children }) {
   // ?just do simple synchronous axios/fetch in useEffect and manage isLoading ourselves?
   const { data: basicUserLinesData } = useUserLines();
   const jwtToken = useRecoilValue($jwtToken);
-  const selectedLineId = useRecoilValue($selectedLineId);
 
   const [linesMap, setLinesMap] = useState<LineIdToMasterLine>({});
 
@@ -61,14 +61,34 @@ export function LineDataProvider({ children }) {
       queryClient.invalidateQueries("SERVER_CHECK");
     });
 
+    // when me or anyone just initially connects to line
     $ws.on(
       SocketChannels.SOMEONE_CONNECTED_TO_LINE,
       (res: SomeoneConnected) => {
         toast(
-          `another user (${res.userId}) tuned into line ${res.lineId} that you are in also`
+          `another user (${res.userId}) connected into line ${res.lineId} that you are in also connected to`
+        );
+
+        // change the correct masterLineData to contain this
+
+        console.log(
+          `here are all of the users in the tuned in room`,
+          res.allConnectedIntoUserIds
         );
       }
     );
+
+    // whether toggle tuned or temporarily
+    $ws.on(SocketChannels.SOMEONE_TUNED_TO_LINE, (res: SomeoneTuned) => {
+      toast(
+        `another user (${res.userId}) tuned into line ${res.lineId} that you are in also`
+      );
+
+      console.log(
+        `here are all of the users in the tuned in room`,
+        res.allTunedIntoUserIds
+      );
+    });
   }, []);
 
   // connect through ws to enrich basic lines data
@@ -94,6 +114,10 @@ export function LineDataProvider({ children }) {
 
         basicUserLinesData.data.masterLines.map((masterLine) => {
           newMap[masterLine.lineDetails._id.toString()] = masterLine;
+
+          handleConnect(masterLine.lineDetails._id.toString());
+
+          // tune into lines
         });
 
         return newMap;
@@ -101,27 +125,20 @@ export function LineDataProvider({ children }) {
     }
   }, [basicUserLinesData]);
 
-  // on change of line Id, we want to toggle tune into the line
-  useEffect(() => {
-    if (selectedLineId) handleToggleTune(selectedLineId, true, true);
-  }, [selectedLineId]);
+  const handleConnect = (lineId: string) => {
+    $ws.emit(SocketChannels.CONNECT_TO_LINE, new ConnectToLine(lineId));
+  };
 
   /**
    * toggle into a specific line
    * @param temporary: denotes whether we are just listening in or want to persist "toggling" it on so that it shows up in overlay
    * TODO: have loading state for this particular part of context value
    */
-
-  const handleToggleTune = (
-    lineId: string,
-    turnOn: boolean = true,
-    temporary: boolean = true
-  ) => {
+  const handleTune = (lineId: string, turnToggleOn: boolean = false) => {
     // they already are in the socket room for updates including media connections and disconnections
     // but set the flag so that the line row can know whether or not to start the webrtc process
     // and know when to get out or disconnect from the webrtc when the flag turns off
-
-    $ws.emit(SocketChannels.CONNECT_TO_LINE, new ConnectToLine(lineId));
+    // $ws.emit(SocketChannels.TUNE_INTO_LINE, new TuneIntoLine(lineId));
   };
 
   /**
