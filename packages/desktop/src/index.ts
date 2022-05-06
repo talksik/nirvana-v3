@@ -47,6 +47,8 @@ const createWindow = (): void => {
 
     // backgroundColor: "#00000000",
 
+    alwaysOnTop: true, // testing purposes
+
     frame: false,
     roundedCorners: false,
   });
