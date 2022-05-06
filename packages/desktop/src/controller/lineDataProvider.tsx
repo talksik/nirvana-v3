@@ -3,6 +3,8 @@ import {
   ConnectToLine,
   SomeoneConnected,
   SomeoneTuned,
+  UserBroadcastPull,
+  UserBroadcastingPush,
 } from "@nirvana/core/sockets/channels";
 import React, { useContext } from "react";
 import { Socket, io } from "socket.io-client";
@@ -23,11 +25,13 @@ interface ILineDataContext {
   // represents the modified and up to date lines data with availability from session
   linesMap: LineIdToMasterLine;
   relevantUsers: User[];
+  handleUserBroadcast: (lineId: string, isTurningOn: boolean) => void;
 }
 
 const LineDataContext = React.createContext<ILineDataContext>({
   linesMap: {},
   relevantUsers: [],
+  handleUserBroadcast: (lineId: string, isTurningOn: boolean = true) => {},
 });
 
 let $ws: Socket;
@@ -89,7 +93,27 @@ export function LineDataProvider({ children }) {
         res.allTunedIntoUserIds
       );
     });
-  }, []);
+
+    $ws.on(
+      SocketChannels.USER_BROADCAST_PUSH_PULL,
+      (pull: UserBroadcastPull) => {
+        toast.success(
+          `someone or myself buzz on or off in line ${pull.lineId}`
+        );
+
+        setLinesMap((prevLinesMap) => {
+          const newMap = { ...prevLinesMap };
+
+          // todo: check if it's the user or someone else broadcasting
+
+          if (newMap[pull.lineId])
+            newMap[pull.lineId].isUserBroadcasting = true;
+
+          return newMap;
+        });
+      }
+    );
+  }, [setLinesMap]);
 
   // connect through ws to enrich basic lines data
   useEffect(() => {
@@ -115,7 +139,7 @@ export function LineDataProvider({ children }) {
         basicUserLinesData.data.masterLines.map((masterLine) => {
           newMap[masterLine.lineDetails._id.toString()] = masterLine;
 
-          handleConnect(masterLine.lineDetails._id.toString());
+          handleConnectToLine(masterLine.lineDetails._id.toString());
 
           // tune into lines
         });
@@ -125,7 +149,7 @@ export function LineDataProvider({ children }) {
     }
   }, [basicUserLinesData]);
 
-  const handleConnect = (lineId: string) => {
+  const handleConnectToLine = (lineId: string) => {
     $ws.emit(SocketChannels.CONNECT_TO_LINE, new ConnectToLine(lineId));
   };
 
@@ -134,12 +158,37 @@ export function LineDataProvider({ children }) {
    * @param temporary: denotes whether we are just listening in or want to persist "toggling" it on so that it shows up in overlay
    * TODO: have loading state for this particular part of context value
    */
-  const handleTune = (lineId: string, turnToggleOn: boolean = false) => {
+  const handleTuneToLine = (lineId: string, turnToggleOn: boolean = false) => {
     // they already are in the socket room for updates including media connections and disconnections
     // but set the flag so that the line row can know whether or not to start the webrtc process
     // and know when to get out or disconnect from the webrtc when the flag turns off
     // $ws.emit(SocketChannels.TUNE_INTO_LINE, new TuneIntoLine(lineId));
   };
+
+  /**
+   * This is when the user wants to tell everyone that they are streaming/broadcasting/buzzing to
+   * a specific line, whether they are toggle tuned or temporarily tuned in
+   *
+   * Note: They could be using push to talk or toggle broadcast
+   *
+   * Note: this is handling the data transmission as is the responsibility of this overall context provider
+   * and not necessarily the aspect of enabling and disabling streaming as webrtc is reliable enough for that
+   *
+   * @param lineId the line that the current user is talking into
+   */
+  const handleUserBroadcast = useCallback(
+    (lineId: string, isTurningOn: boolean = true) => {
+      // emit telling people
+      $ws.emit(
+        SocketChannels.USER_BROADCAST_PUSH_PULL,
+        new UserBroadcastingPush(lineId, isTurningOn)
+      );
+
+      // ?handle recording here as well? or record the incoming stream instead?
+      // ?could just take in the audiochunks here and all, but not sure yet
+    },
+    [$ws]
+  );
 
   /**
    * get more audio blocks for a certain line
@@ -156,6 +205,7 @@ export function LineDataProvider({ children }) {
   const value: ILineDataContext = {
     linesMap, // TODO send the updated map instead of this array
     relevantUsers: [],
+    handleUserBroadcast,
   };
 
   return (

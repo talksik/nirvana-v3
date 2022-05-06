@@ -25,7 +25,7 @@ export default function NirvanaTerminal() {
   // simply using this query for specific data on loading
   // todo: add these properties in context provider value although more work down the line for control
   const { isLoading: isLoadingInitialLines } = useUserLines();
-  const { linesMap } = useLineDataProvider();
+  const { linesMap, handleUserBroadcast } = useLineDataProvider();
 
   const allLines: MasterLineData[] = useMemo(() => {
     const masterLines: MasterLineData[] = Object.values(linesMap);
@@ -53,18 +53,24 @@ export default function NirvanaTerminal() {
     setSelectedLineId(null);
   }, [setSelectedLineId]);
 
+  const handleStartBroadcast = useCallback(() => {
+    if (selectedLineId) handleUserBroadcast(selectedLineId, true);
+  }, [selectedLineId]);
+
   const keyMap: KeyMap = useMemo(
     () => ({
       DESELECT_LINE: "esc",
+      START_BROADCAST: "`",
     }),
-    [handleEscape]
+    []
   );
 
   const handlers = useMemo(
     () => ({
       DESELECT_LINE: handleEscape,
+      START_BROADCAST: handleStartBroadcast,
     }),
-    [handleEscape]
+    [handleEscape, handleStartBroadcast]
   );
 
   return (

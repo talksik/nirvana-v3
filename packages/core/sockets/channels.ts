@@ -22,6 +22,8 @@ enum SocketChannels {
 
   TUNE_TO_LINE = "TUNE_TO_LINE",
   SOMEONE_TUNED_TO_LINE = "SOMEONE_TUNED_TO_LINE",
+
+  USER_BROADCAST_PUSH_PULL = "USER_BROADCAST_PUSH_PULL",
 }
 
 export default SocketChannels;
@@ -45,5 +47,17 @@ export class SomeoneTuned {
     public lineId: string,
     public userId: string,
     public allTunedIntoUserIds: string[]
+  ) {}
+}
+
+export class UserBroadcastingPush {
+  constructor(public lineId: string, public isTurningOn: boolean = true) {}
+}
+export class UserBroadcastPull {
+  // is the user turning their broadcasting on or off for a specific line?
+  constructor(
+    public lineId: string,
+    public userId: string,
+    public isTurningOn: boolean = true
   ) {}
 }

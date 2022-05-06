@@ -83,10 +83,14 @@ export default function LineDetailsTerminal() {
 
           {/* TODO: change to border and inset color for when inactive button */}
           <button
-            className={`bg-teal-800 p-3 flex justify-center items-center shadow-lg
-          hover:scale-105 transition-all `}
+            className={`p-3 flex justify-center items-center shadow-lg
+          hover:scale-105 transition-all ${
+            selectedLine.isUserBroadcasting || selectedLine.isOtherBroadcasting
+              ? "bg-teal-800 text-white"
+              : "text-teal-800 border-teal-800"
+          }`}
           >
-            <FiSun className="text-white text-lg" />
+            <FiSun className="text-lg" />
           </button>
         </div>
       </div>

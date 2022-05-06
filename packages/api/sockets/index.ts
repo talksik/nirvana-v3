@@ -3,6 +3,8 @@ import SocketChannels, {
   SomeoneConnected,
   SomeoneTuned,
   TuneToLine,
+  UserBroadcastPull,
+  UserBroadcastingPush,
 } from "@nirvana/core/sockets/channels";
 
 import GetAllSocketClients from "@nirvana/core/sockets/getAllActiveSocketClients";
@@ -94,6 +96,19 @@ export default function InitializeWs(io: any) {
           new SomeoneTuned(req.lineId, userInfo.userId, clientUserIdsInRoom)
         );
       });
+
+      /** BROADCAST UPDATE | tell all who are connected to line, not just tuned into, that there is an update to someone broadcasting */
+      socket.on(
+        SocketChannels.USER_BROADCAST_PUSH_PULL,
+        (req: UserBroadcastingPush) => {
+          const roomName = `connectedLine:${req.lineId}`;
+
+          io.in(roomName).emit(
+            SocketChannels.USER_BROADCAST_PUSH_PULL,
+            new UserBroadcastPull(req.lineId, userInfo.userId, req.isTurningOn)
+          );
+        }
+      );
 
       socket.on(SocketChannels.JOIN_LIVE_ROOM, async () => {
         // TODO: only get the socket ids of the relevant rooms for this user
