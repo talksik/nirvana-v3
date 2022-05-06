@@ -38,6 +38,7 @@ export function useUserSearch(searchQuery: string) {
   });
 }
 
+/** query responsible solely for getting lines and the intersection with sockets happens elsewhere */
 export function useUserLines() {
   // todo: base/source of truth for getting all of the lines for the user
   // merge with sockets + audio clip data + master data + convomember data

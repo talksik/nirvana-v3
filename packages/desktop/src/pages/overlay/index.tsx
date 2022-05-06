@@ -84,7 +84,7 @@ export default function Overlay() {
     console.log("socket id", socket.id);
 
     navigator.mediaDevices
-      .getUserMedia({ video: true, audio: true })
+      .getUserMedia({ video: false, audio: true })
       .then((localStream: MediaStream) => {
         setLocalUserVideoStream(localStream);
 
