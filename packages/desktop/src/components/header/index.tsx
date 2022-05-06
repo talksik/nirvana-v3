@@ -127,9 +127,11 @@ export default function NirvanaHeader({
         className="flex flex-row items-center bg-gray-100 p-4 border-b border-b-gray-200"
         id="titlebar"
       >
-        <div onClick={onHeaderFocus}>
-          <Logo type="small" />
-        </div>
+        <Tooltip title="connected">
+          <div onClick={onHeaderFocus} className="animate-pulse">
+            <Logo type="small" />
+          </div>
+        </Tooltip>
 
         {!shouldHideSearch && (
           <div className="mx-auto flex flex-row items-center space-x-2 ml-5">
