@@ -57,7 +57,7 @@ export default class NirvanaApi {
 }
 
 async function serverCheck(): Promise<void> {
-  return await NirvanaApi.fetch(`/`, "GET", false);
+  return await NirvanaApi.fetch(`/status`, "GET", false);
 }
 
 async function login(reqLoginTokens: {

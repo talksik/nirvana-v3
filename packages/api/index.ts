@@ -28,7 +28,7 @@ app.get("/", (req: Request, res: Response) => {
   res.send("hello world.");
 });
 
-app.use("/api", (req: Request, res: Response) => {
+app.use("/api/status", (req: Request, res: Response) => {
   res.json(new NirvanaResponse("wohoo, server is healthy"));
 });
 

@@ -127,9 +127,9 @@ export default function NirvanaHeader({
         className="flex flex-row items-center bg-gray-100 p-4 border-b border-b-gray-200"
         id="titlebar"
       >
-        <Tooltip title="connected">
+        <Tooltip title="connected" placement="right">
           <div onClick={onHeaderFocus} className="animate-pulse">
-            <Logo type="small" />
+            <Logo type="small" grayscale={desktopMode === "flowState"} />
           </div>
         </Tooltip>
 
