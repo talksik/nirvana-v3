@@ -52,7 +52,7 @@ export default function NirvanaTerminal({
 
             <h2 className="text-inherit text-sm">Tuned In</h2>
 
-            <p className="text-slate-300 text-xs">3/5</p>
+            <p className="text-slate-300 text-xs">0/5</p>
           </span>
 
           <Tooltip title="new line">
@@ -68,26 +68,11 @@ export default function NirvanaTerminal({
         </div>
 
         {/* list of toggle tuned lines */}
-        <div className="flex flex-col mt-2">
-          {/* {toggleTunedLines.map((line) => (
-            <LineRow
-              key={line.lineId}
-              lineDetails={line}
-              onClick={handleSelectLine}
-            />
-          ))} */}
-        </div>
+        <div className="flex flex-col mt-2"></div>
       </div>
 
       {/* rest of the lines */}
       <div className={"flex flex-col"}>
-        {/* {restLines.map((line) => (
-     <LineRow
-       key={line.lineId}
-       lineDetails={line}
-       onClick={handleSelectLine}
-     />
-   ))} */}
         {isLoading ? (
           <Skeleton />
         ) : (
