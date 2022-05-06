@@ -22,8 +22,6 @@ export default function ProtectedRoute({
     error,
   } = useServerCheck();
 
-  console.log(error);
-
   const { isLoading, isError, isFetching, isSuccess, refetch } =
     useAuthCheck(isServerHealthy);
 
