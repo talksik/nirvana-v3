@@ -1,8 +1,12 @@
+import SocketChannels, {
+  ConnectToLine,
+  SomeoneConnected,
+} from "@nirvana/core/sockets/channels";
+
 import GetAllSocketClients from "@nirvana/core/sockets/getAllActiveSocketClients";
 import { JwtClaims } from "../middleware/auth";
 import ReceiveSignal from "@nirvana/core/sockets/receiveSignal";
 import SendSignal from "@nirvana/core/sockets/sendSignal";
-import SocketChannels from "@nirvana/core/sockets/channels";
 import { UserService } from "../services/user.service";
 import { UserStatus } from "@nirvana/core/models/user.model";
 import { loadConfig } from "../config";
@@ -10,6 +14,10 @@ import { loadConfig } from "../config";
 const jwt = require("jsonwebtoken");
 
 const config = loadConfig();
+
+const socketIdsToUserIds: {
+  [socketId: string]: string;
+} = {};
 
 export default function InitializeWs(io: any) {
   console.log("initializing web sockets");
@@ -35,6 +43,8 @@ export default function InitializeWs(io: any) {
     .on("connection", function (socket: any) {
       const userInfo: JwtClaims = socket.userInfo;
 
+      socketIdsToUserIds[socket.id] = userInfo.userId.toString();
+
       console.log(
         `a user connected | user Id: ${userInfo.userId} and name: ${userInfo.name}`
       );
@@ -51,16 +61,19 @@ export default function InitializeWs(io: any) {
 
       // ===== JOIN ====
       /** User wants to subscribe to live emissions of a conversation */
-      socket.on(SocketChannels.JOIN_ROOM, (relationshipId: string) => {
+      socket.on(SocketChannels.CONNECT_TO_LINE, (req: ConnectToLine) => {
         // add this user to the room
 
-        console.log(
-          `${socket.id} user joined room for relationship ${relationshipId}`
-        );
+        console.log(`${socket.id} user joined room for line ${req.lineId}`);
 
-        socket.join(relationshipId);
+        socket.join(req.lineId);
 
         console.log(`${socket.id} now in rooms ${socket.rooms}`);
+
+        io.in(req.lineId).emit(
+          SocketChannels.SOMEONE_CONNECTED_TO_LINE,
+          new SomeoneConnected(req.lineId, userInfo.userId)
+        );
       });
 
       // ==== UPDATES ====
@@ -164,6 +177,8 @@ export default function InitializeWs(io: any) {
 
       // ==== DISCONNECT ====
       socket.on("disconnect", () => {
+        delete socketIdsToUserIds[socket.id];
+
         console.log("user disconnected");
       });
     });

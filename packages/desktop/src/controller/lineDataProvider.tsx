@@ -1,8 +1,12 @@
+import { $jwtToken, $selectedLineId } from "./recoil";
+import {
+  ConnectToLine,
+  SomeoneConnected,
+} from "@nirvana/core/sockets/channels";
 import React, { useContext } from "react";
 import { Socket, io } from "socket.io-client";
 import { useCallback, useEffect, useState } from "react";
 
-import { $jwtToken } from "./recoil";
 import MasterLineData from "@nirvana/core/models/masterLineData.model";
 import SocketChannels from "@nirvana/core/sockets/channels";
 import { User } from "@nirvana/core/models";
@@ -35,6 +39,7 @@ export function LineDataProvider({ children }) {
   // ?just do simple synchronous axios/fetch in useEffect and manage isLoading ourselves?
   const { data: basicUserLinesData } = useUserLines();
   const jwtToken = useRecoilValue($jwtToken);
+  const selectedLineId = useRecoilValue($selectedLineId);
 
   const [linesMap, setLinesMap] = useState<LineIdToMasterLine>({});
 
@@ -43,7 +48,7 @@ export function LineDataProvider({ children }) {
       query: { token: jwtToken },
     });
 
-    $ws.on("connection", () => toast.success("you are connected"));
+    $ws.on("connect", () => toast.success("you are connected"));
 
     // client-side errors
     $ws.on("connect_error", (err) => {
@@ -55,6 +60,15 @@ export function LineDataProvider({ children }) {
       // this should overall remount this component currently which is what we want for new data
       queryClient.invalidateQueries("SERVER_CHECK");
     });
+
+    $ws.on(
+      SocketChannels.SOMEONE_CONNECTED_TO_LINE,
+      (res: SomeoneConnected) => {
+        toast(
+          `another user (${res.userId}) tuned into line ${res.lineId} that you are in also`
+        );
+      }
+    );
   }, []);
 
   // connect through ws to enrich basic lines data
@@ -86,6 +100,29 @@ export function LineDataProvider({ children }) {
       });
     }
   }, [basicUserLinesData]);
+
+  // on change of line Id, we want to toggle tune into the line
+  useEffect(() => {
+    if (selectedLineId) handleToggleTune(selectedLineId, true, true);
+  }, [selectedLineId]);
+
+  /**
+   * toggle into a specific line
+   * @param temporary: denotes whether we are just listening in or want to persist "toggling" it on so that it shows up in overlay
+   * TODO: have loading state for this particular part of context value
+   */
+
+  const handleToggleTune = (
+    lineId: string,
+    turnOn: boolean = true,
+    temporary: boolean = true
+  ) => {
+    // they already are in the socket room for updates including media connections and disconnections
+    // but set the flag so that the line row can know whether or not to start the webrtc process
+    // and know when to get out or disconnect from the webrtc when the flag turns off
+
+    $ws.emit(SocketChannels.CONNECT_TO_LINE, new ConnectToLine(lineId));
+  };
 
   /**
    * get more audio blocks for a certain line

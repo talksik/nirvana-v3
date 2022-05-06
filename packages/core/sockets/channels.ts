@@ -1,5 +1,4 @@
 enum SocketChannels {
-  JOIN_ROOM = "JOIN_ROOM",
   SEND_AUDIO_CLIP = "SEND_AUDIO_CLIP",
   SEND_USER_STATUS_UPDATE = "SEND_USER_STATUS_UPDATE",
 
@@ -14,7 +13,20 @@ enum SocketChannels {
   RECEIVE_SIGNAL = "RECEIVE_SIGNAL",
 
   // v3
-  CONNECT = "CONNECT",
+
+  /**
+   * when someone connects to a line, whether tuned in or not
+   */
+  CONNECT_TO_LINE = "CONNECT_TO_LINE",
+
+  SOMEONE_CONNECTED_TO_LINE = "SOMEONE_CONNECTED_TO_LINE",
 }
 
 export default SocketChannels;
+
+export class ConnectToLine {
+  constructor(public lineId: string) {}
+}
+export class SomeoneConnected {
+  constructor(public lineId: string, public userId: string) {}
+}
