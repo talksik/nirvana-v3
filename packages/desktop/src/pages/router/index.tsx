@@ -286,12 +286,12 @@ export default function NirvanaRouter() {
       console.log(
         "window blurring now, should be always on top and then ill tell main process to change dimensions"
       );
-      // TODO: testing mode
-      setDesktopMode("overlayOnly");
+      // TODO: testing mode... uncomment both instructions below
+      // setDesktopMode("overlayOnly");
 
       // todo: make sure that if I am toggle broadcasted into a line, then don't deselect selected line
       // the overlay should be showing selected line if I am broadcasting toggled into it as well as of course all other toggle tuned ones
-      setSelectedLineId(null);
+      // setSelectedLineId(null);
     });
   }, [setDesktopMode, setSelectedLineId]);
 
