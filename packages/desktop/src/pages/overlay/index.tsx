@@ -8,7 +8,6 @@ import Peer from "simple-peer";
 import ReceiveSignal from "@nirvana/core/sockets/receiveSignal";
 import SendSignal from "@nirvana/core/sockets/sendSignal";
 import SocketChannels from "@nirvana/core/sockets/channels";
-import { socket } from "../nirvanaApp";
 import toast from "react-hot-toast";
 import { useRecoilState } from "recoil";
 
@@ -65,132 +64,132 @@ export default function Overlay() {
     useState<MediaStream>(null);
 
   // initially, have these set to default
-  useEffect(() => {
-    // POC: nirvana all connected users call
-    // send signal to all peers through ws
+  // useEffect(() => {
+  //   // POC: nirvana all connected users call
+  //   // send signal to all peers through ws
 
-    // I join x room
+  //   // I join x room
 
-    // I need to do the work of sending my signal to all others in the room
-    //    -> I create a local peer object for my connection to all other people in the room
-    //    -> entails me sending my signal data to all other users...
+  //   // I need to do the work of sending my signal to all others in the room
+  //   //    -> I create a local peer object for my connection to all other people in the room
+  //   //    -> entails me sending my signal data to all other users...
 
-    // the other users will get pinged with my signal data
-    //      -> now they have to take that signal data for new x user
-    //      and create their local peer object sending their stream to it
-    //      and accept/answer the signal after creating this local peer connection between them and the newbie user
-    // send back their signal now so that the initiator can get it and accept it
+  //   // the other users will get pinged with my signal data
+  //   //      -> now they have to take that signal data for new x user
+  //   //      and create their local peer object sending their stream to it
+  //   //      and accept/answer the signal after creating this local peer connection between them and the newbie user
+  //   // send back their signal now so that the initiator can get it and accept it
 
-    console.log("socket id", socket.id);
+  //   console.log("socket id", socket.id);
 
-    navigator.mediaDevices
-      .getUserMedia({ video: false, audio: true })
-      .then((localStream: MediaStream) => {
-        setLocalUserVideoStream(localStream);
+  //   navigator.mediaDevices
+  //     .getUserMedia({ video: false, audio: true })
+  //     .then((localStream: MediaStream) => {
+  //       setLocalUserVideoStream(localStream);
 
-        // show user video
-        if (localVideoRef?.current)
-          localVideoRef.current.srcObject = localStream;
+  //       // show user video
+  //       if (localVideoRef?.current)
+  //         localVideoRef.current.srcObject = localStream;
 
-        socket.emit(SocketChannels.JOIN_LIVE_ROOM);
+  //       socket.emit(SocketChannels.JOIN_LIVE_ROOM);
 
-        socket.on(
-          SocketChannels.GET_ALL_ACTIVE_SOCKET_IDS,
-          (data: GetAllSocketClients) => {
-            console.log("all socket client connections", data);
+  //       socket.on(
+  //         SocketChannels.GET_ALL_ACTIVE_SOCKET_IDS,
+  //         (data: GetAllSocketClients) => {
+  //           console.log("all socket client connections", data);
 
-            const peers = [];
-            data?.socketIds.map((userSocketId) => {
-              if (userSocketId === socket.id) return;
+  //           const peers = [];
+  //           data?.socketIds.map((userSocketId) => {
+  //             if (userSocketId === socket.id) return;
 
-              // need one for each user I want to connect to
-              var localPeerInitiator = new Peer({
-                initiator: true,
-                stream: localStream,
-                trickle: false, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times
-              });
+  //             // need one for each user I want to connect to
+  //             var localPeerInitiator = new Peer({
+  //               initiator: true,
+  //               stream: localStream,
+  //               trickle: false, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times
+  //             });
 
-              localPeerInitiator.on("signal", (signal) => {
-                console.log(
-                  "created local initiator peer and sending signal to: ",
-                  userSocketId
-                );
+  //             localPeerInitiator.on("signal", (signal) => {
+  //               console.log(
+  //                 "created local initiator peer and sending signal to: ",
+  //                 userSocketId
+  //               );
 
-                // send the local peer-peer signal to other users
-                socket.emit(SocketChannels.SEND_SIGNAL, {
-                  userSocketIdToSignal: userSocketId,
-                  simplePeerSignal: signal,
-                  isAnswerer: false,
-                } as SendSignal);
-              });
+  //               // send the local peer-peer signal to other users
+  //               socket.emit(SocketChannels.SEND_SIGNAL, {
+  //                 userSocketIdToSignal: userSocketId,
+  //                 simplePeerSignal: signal,
+  //                 isAnswerer: false,
+  //               } as SendSignal);
+  //             });
 
-              peersRefs.current.push({
-                peer: localPeerInitiator,
-                socketUserId: userSocketId,
-              });
+  //             peersRefs.current.push({
+  //               peer: localPeerInitiator,
+  //               socketUserId: userSocketId,
+  //             });
 
-              peers.push(localPeerInitiator);
-            });
+  //             peers.push(localPeerInitiator);
+  //           });
 
-            setLocalPeerConnections(peers);
-          }
-        );
+  //           setLocalPeerConnections(peers);
+  //         }
+  //       );
 
-        // incoming calls, accept them and send back
-        // hits this when I am sending and receiving
-        socket.on(SocketChannels.RECEIVE_SIGNAL, (payload: ReceiveSignal) => {
-          if (payload.isGoingBackToInitiator) {
-            // from the list of peers here locally, we want to accept the answers signal
-            const localPeerRefToAnswerer = peersRefs.current.find(
-              (peerRef) => peerRef.socketUserId === payload.senderUserSocketId
-            );
+  //       // incoming calls, accept them and send back
+  //       // hits this when I am sending and receiving
+  //       socket.on(SocketChannels.RECEIVE_SIGNAL, (payload: ReceiveSignal) => {
+  //         if (payload.isGoingBackToInitiator) {
+  //           // from the list of peers here locally, we want to accept the answers signal
+  //           const localPeerRefToAnswerer = peersRefs.current.find(
+  //             (peerRef) => peerRef.socketUserId === payload.senderUserSocketId
+  //           );
 
-            console.log(
-              "got back answerers signal, going to signal the right peer now: ",
-              localPeerRefToAnswerer
-            );
+  //           console.log(
+  //             "got back answerers signal, going to signal the right peer now: ",
+  //             localPeerRefToAnswerer
+  //           );
 
-            localPeerRefToAnswerer.peer.signal(payload.simplePeerSignal);
-          } else {
-            console.log("ooo newbie joined room, I guess I will accept it ");
+  //           localPeerRefToAnswerer.peer.signal(payload.simplePeerSignal);
+  //         } else {
+  //           console.log("ooo newbie joined room, I guess I will accept it ");
 
-            // if we are answering a received signal
-            var peerToCallerPeer = new Peer({
-              initiator: false,
-              trickle: false, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times
-              stream: localStream,
-            });
+  //           // if we are answering a received signal
+  //           var peerToCallerPeer = new Peer({
+  //             initiator: false,
+  //             trickle: false, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times
+  //             stream: localStream,
+  //           });
 
-            peerToCallerPeer.on("signal", (signal) => {
-              console.log(
-                "as the answerer, I am going to send back my signal so that the newbie can update his local peer for me"
-              );
-              socket.emit(SocketChannels.SEND_SIGNAL, {
-                userSocketIdToSignal: payload.senderUserSocketId,
-                simplePeerSignal: signal,
-                isAnswerer: true,
-              } as SendSignal);
-            });
+  //           peerToCallerPeer.on("signal", (signal) => {
+  //             console.log(
+  //               "as the answerer, I am going to send back my signal so that the newbie can update his local peer for me"
+  //             );
+  //             socket.emit(SocketChannels.SEND_SIGNAL, {
+  //               userSocketIdToSignal: payload.senderUserSocketId,
+  //               simplePeerSignal: signal,
+  //               isAnswerer: true,
+  //             } as SendSignal);
+  //           });
 
-            peerToCallerPeer.signal(payload.simplePeerSignal);
+  //           peerToCallerPeer.signal(payload.simplePeerSignal);
 
-            peersRefs.current.push({
-              peer: peerToCallerPeer,
-              socketUserId: payload.senderUserSocketId,
-            });
+  //           peersRefs.current.push({
+  //             peer: peerToCallerPeer,
+  //             socketUserId: payload.senderUserSocketId,
+  //           });
 
-            setLocalPeerConnections((prevPeers) => [
-              ...prevPeers,
-              peerToCallerPeer,
-            ]);
-          }
-        });
-      })
-      .catch((err: Error) => {
-        console.error(err);
-        toast.error(err.message);
-      });
-  }, []);
+  //           setLocalPeerConnections((prevPeers) => [
+  //             ...prevPeers,
+  //             peerToCallerPeer,
+  //           ]);
+  //         }
+  //       });
+  //     })
+  //     .catch((err: Error) => {
+  //       console.error(err);
+  //       toast.error(err.message);
+  //     });
+  // }, []);
 
   // TODO: get all of the toggle tuned in lines and any line that I am toggle broadcasting to
   //    loop through and send lineId to the x child stream overlay components who will do the work

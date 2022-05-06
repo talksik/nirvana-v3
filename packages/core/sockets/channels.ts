@@ -12,6 +12,9 @@ enum SocketChannels {
   SEND_SIGNAL = "SEND_SIGNAL",
 
   RECEIVE_SIGNAL = "RECEIVE_SIGNAL",
+
+  // v3
+  CONNECT = "CONNECT",
 }
 
 export default SocketChannels;

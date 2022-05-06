@@ -8,6 +8,15 @@ import { User } from "./user.model";
 // speed...I'm developing full stack and I just want all of the data and don't want to change this model
 // repeatedly and trace data back and forth
 export default class MasterLineData {
+  // if someone else is buzzing on the line
+  isOtherBroadcasting?: boolean = false;
+  // if I am buzzing in the line
+  isUserBroadcasting?: boolean = false;
+  // list of user Ids of everyone who is buzzing in this line
+  currentBroadcasters: string[] = [];
+  // ?current people tuned into the line...not sure if this is a product decision but can support it
+  tunedInMemberIds: string[] = [];
+
   constructor(
     // full line object
     public lineDetails: Line,
