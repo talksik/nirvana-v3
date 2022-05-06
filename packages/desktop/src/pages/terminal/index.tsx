@@ -53,14 +53,39 @@ export default function NirvanaTerminal() {
     setSelectedLineId(null);
   }, [setSelectedLineId]);
 
-  const handleStartBroadcast = useCallback(() => {
-    if (selectedLineId) handleUserBroadcast(selectedLineId, true);
-  }, [selectedLineId]);
+  const handleStartBroadcast = useCallback(
+    (lineId: string) => () => {
+      console.log(`starting broadcast for ${lineId}!!!`);
+
+      // todo: enable stream in this tuned in channel
+
+      if (lineId) handleUserBroadcast(lineId, true);
+    },
+    []
+  );
+
+  const handleStopBroadcast = useCallback(
+    (lineId: string) => () => {
+      console.log(`stopping broadcast for ${lineId}!!!`);
+
+      // todo: disable stream in this tuned in channel
+
+      if (lineId) handleUserBroadcast(lineId, false);
+    },
+    []
+  );
 
   const keyMap: KeyMap = useMemo(
     () => ({
       DESELECT_LINE: "esc",
-      START_BROADCAST: "`",
+      START_BROADCAST: {
+        sequence: "`",
+        action: "keydown",
+      },
+      STOP_BROADCAST: {
+        sequence: "`",
+        action: "keyup",
+      },
     }),
     []
   );
@@ -68,9 +93,10 @@ export default function NirvanaTerminal() {
   const handlers = useMemo(
     () => ({
       DESELECT_LINE: handleEscape,
-      START_BROADCAST: handleStartBroadcast,
+      START_BROADCAST: handleStartBroadcast(selectedLineId),
+      STOP_BROADCAST: handleStopBroadcast(selectedLineId),
     }),
-    [handleEscape, handleStartBroadcast]
+    [selectedLineId]
   );
 
   return (

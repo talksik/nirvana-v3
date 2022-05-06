@@ -81,6 +81,7 @@ export function LineDataProvider({ children }) {
     // whether toggle tuned or temporarily
     $ws.on(SocketChannels.SOMEONE_TUNED_TO_LINE, (res: SomeoneTuned) => {
       // TODO: change the correct master line data to show user who's tuned in
+
       toast(
         `another user (${res.userId}) tuned into line ${res.lineId} that you are in also`
       );
@@ -104,7 +105,7 @@ export function LineDataProvider({ children }) {
           // todo: check if it's the user or someone else broadcasting
 
           if (newMap[pull.lineId])
-            newMap[pull.lineId].isUserBroadcasting = true;
+            newMap[pull.lineId].isUserBroadcasting = pull.isTurningOn;
 
           return newMap;
         });
