@@ -100,13 +100,13 @@ app
         browserWindow.setSize(
           currentDimensions[0] + req.dimensions.width,
           currentDimensions[1] + req.dimensions.height,
-          true
+          false
         );
       } else {
         browserWindow.setSize(
           req.dimensions.width,
           req.dimensions.height,
-          true
+          false
         );
       }
 
