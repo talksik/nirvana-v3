@@ -20,6 +20,7 @@ export default function LineIcon({ sourceImages }: { sourceImages: string[] }) {
           src={avatarSrc}
           shape="square"
           size={"default"}
+          className={"grayscale"}
         />
       ))}
     </Avatar.Group>

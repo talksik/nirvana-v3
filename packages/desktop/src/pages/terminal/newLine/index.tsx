@@ -164,41 +164,47 @@ export default function NewLineModal({
             </span>
 
             {/* search results */}
-            <div className="flex flex-col border border-gray-200 shadow-md max-h-[500px] w-full overflow-y-auto">
-              {searchRes?.users?.map((searchedUser) => (
-                <BasicUserRow
-                  key={`searchResUser-${searchedUser.googleId}`}
-                  user={searchedUser}
-                  rightJsx={
-                    <button onClick={() => selectUser(searchedUser)}>
-                      Add
-                    </button>
-                  }
-                />
-              ))}
-            </div>
+            {searchRes?.users?.length > 0 && (
+              <div className="flex flex-col border border-gray-200 shadow-md max-h-[500px] w-full overflow-y-auto">
+                {searchRes?.users?.map((searchedUser) => (
+                  <BasicUserRow
+                    key={`searchResUser-${searchedUser.googleId}`}
+                    user={searchedUser}
+                    rightJsx={
+                      <button onClick={() => selectUser(searchedUser)}>
+                        Add
+                      </button>
+                    }
+                  />
+                ))}
+              </div>
+            )}
           </div>
 
           {/* selected people */}
-          <div className="flex flex-col gap-2 mb-5">
-            <p className="text-gray-300 text-sm">Selected People</p>
+          {selectedPeople?.length > 0 && (
+            <div className="flex flex-col gap-2 mb-5">
+              <p className="text-gray-300 text-sm">Selected People</p>
 
-            <div className="flex flex-col w-full">
-              {selectedPeople.map((selectedUser) => (
-                <BasicUserRow
-                  key={`selectedUser-${selectedUser.googleId}`}
-                  user={selectedUser}
-                  rightJsx={
-                    <button
-                      onClick={() => unSelectUser(selectedUser._id.toString())}
-                    >
-                      Remove
-                    </button>
-                  }
-                />
-              ))}
+              <div className="flex flex-col w-full">
+                {selectedPeople.map((selectedUser) => (
+                  <BasicUserRow
+                    key={`selectedUser-${selectedUser.googleId}`}
+                    user={selectedUser}
+                    rightJsx={
+                      <button
+                        onClick={() =>
+                          unSelectUser(selectedUser._id.toString())
+                        }
+                      >
+                        Remove
+                      </button>
+                    }
+                  />
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="flex flex-col gap-2">
             <p className="text-gray-300 text-sm">Line Name (optional)</p>

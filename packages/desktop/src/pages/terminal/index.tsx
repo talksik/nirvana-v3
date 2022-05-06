@@ -46,11 +46,11 @@ export default function NirvanaTerminal({
       {/* tuned in lines block */}
       <div className="bg-gray-100 flex flex-col shadow-lg">
         {/* tuned in header + general controls */}
-        <div className="flex flex-row items-center p-3 pb-0">
-          <span className="flex flex-row gap-2 items-center justify-start text-slate-800">
+        <div className="flex flex-row items-center py-3 px-4 pb-0">
+          <span className="flex flex-row gap-2 items-center justify-start text-gray-400 animate-pulse">
             <FiActivity className="text-sm" />
 
-            <h2 className="text-inherit font-semibold text-sm">Tuned In</h2>
+            <h2 className="text-inherit text-sm">Tuned In</h2>
 
             <p className="text-slate-300 text-xs">3/5</p>
           </span>

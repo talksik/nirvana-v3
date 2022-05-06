@@ -155,7 +155,7 @@ export default function NirvanaHeader({
               mediaSettings.mode === "audio" && (
                 <Avatar
                   key={`userHeaderProfilePicture`}
-                  className="mr-1 shadow-md"
+                  className="shadow-md"
                   alt={userDetailsRes?.user?.givenName}
                   src={userDetailsRes?.user?.picture}
                   shape="square"

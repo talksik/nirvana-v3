@@ -22,7 +22,7 @@ export default function BasicUserRow({
         shape="square"
         src={user.picture}
         size="default"
-        className="shadow-lg mx-5"
+        className="shadow-lg mr-2"
       />
 
       <span className="flex flex-col items-start">
