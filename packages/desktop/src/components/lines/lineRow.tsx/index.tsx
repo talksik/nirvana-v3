@@ -5,6 +5,7 @@ import { $selectedLineId } from "../../../controller/recoil";
 import { Avatar } from "antd";
 import { FiSun } from "react-icons/fi";
 import LineIcon from "../lineIcon";
+import { LineMemberState } from "@nirvana/core/models/line.model";
 import MasterLineData from "@nirvana/core/models/masterLineData.model";
 import { useGetUserDetails } from "../../../controller/index";
 

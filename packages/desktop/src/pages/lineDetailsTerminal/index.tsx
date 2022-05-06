@@ -5,10 +5,32 @@ import { useCallback, useMemo } from "react";
 import { $selectedLineId } from "../../controller/recoil";
 import { ILineDetails } from "../router";
 import LineIcon from "../../components/lines/lineIcon/index";
+import { LineMemberState } from "@nirvana/core/models/line.model";
+import MasterLineData from "@nirvana/core/models/masterLineData.model";
+import { Tooltip } from "antd";
+import { useLineDataProvider } from "../../controller/lineDataProvider";
 import { useRecoilState } from "recoil";
 
 export default function LineDetailsTerminal() {
   const [selectedLineId, setSelectedLineId] = useRecoilState($selectedLineId);
+
+  const { linesMap } = useLineDataProvider();
+
+  const selectedLine: MasterLineData | undefined = useMemo(() => {
+    if (!selectedLineId) return undefined;
+
+    // find the line from the data provider
+    if (linesMap[selectedLineId]) {
+      return linesMap[selectedLineId];
+    }
+
+    return undefined;
+  }, [selectedLineId, linesMap]);
+
+  const isUserToggleTuned = useMemo(
+    () => selectedLine.currentUserMember.state === LineMemberState.TUNED,
+    [selectedLine]
+  );
 
   const handleEscape = useCallback(() => {
     console.log("deselecting line");
@@ -59,16 +81,33 @@ export default function LineDetailsTerminal() {
           className="absolute bottom-0 p-4 shadow-2xl
         flex flex-row items-center gap-2 justify-end w-full"
         >
-          <button className="p-3 flex justify-center items-center hover:bg-gray-300 transition-all">
+          <button
+            className={`p-3 flex justify-center items-center hover:bg-gray-300
+           transition-all hover:scale-105`}
+          >
             <FiSettings className="text-gray-400 text-md" />
           </button>
 
-          <button className="bg-gray-800 p-3 flex justify-center items-center shadow-lg">
-            <FiActivity className="text-white text-lg" />
-          </button>
+          <Tooltip
+            title={`${
+              isUserToggleTuned ? "toggle tuned" : "temporarily tuned"
+            }`}
+          >
+            <button
+              className={`p-3 flex justify-center items-center shadow-lg
+          hover:scale-105 transition-all animate-pulse ${
+            isUserToggleTuned ? "bg-gray-800 text-white" : "text-black"
+          }`}
+            >
+              <FiActivity className="text-lg" />
+            </button>
+          </Tooltip>
 
           {/* TODO: change to border and inset color for when inactive button */}
-          <button className="bg-teal-800 p-3 flex justify-center items-center shadow-lg">
+          <button
+            className={`bg-teal-800 p-3 flex justify-center items-center shadow-lg
+          hover:scale-105 transition-all `}
+          >
             <FiSun className="text-white text-lg" />
           </button>
         </div>

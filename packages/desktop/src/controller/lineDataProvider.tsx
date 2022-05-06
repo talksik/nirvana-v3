@@ -1,38 +1,49 @@
 import React, { useContext } from "react";
+import { Socket, io } from "socket.io-client";
+import { useCallback, useEffect, useState } from "react";
 
 import { $jwtToken } from "./recoil";
 import MasterLineData from "@nirvana/core/models/masterLineData.model";
 import SocketChannels from "@nirvana/core/sockets/channels";
 import { User } from "@nirvana/core/models";
-import { io } from "socket.io-client";
 import { queryClient } from "../pages/nirvanaApp";
 import toast from "react-hot-toast";
-import { useEffect } from "react";
 import { useRecoilValue } from "recoil";
 import { useUserLines } from "./index";
 
+type LineIdToMasterLine = {
+  [lineId: string]: MasterLineData;
+};
 interface ILineDataContext {
   // represents the modified and up to date lines data with availability from session
-  lines: MasterLineData[];
+  linesMap: LineIdToMasterLine;
   relevantUsers: User[];
 }
 
 const LineDataContext = React.createContext<ILineDataContext>({
-  lines: [],
+  linesMap: {},
   relevantUsers: [],
 });
 
-let $ws;
+let $ws: Socket;
 
 export function LineDataProvider({ children }) {
+  // TODO: have internal loading to prevent showing even router and all if something is not ready
+  // or have it within each property within the context value
+
   // persistent store of lines
+  // ?just do simple synchronous axios/fetch in useEffect and manage isLoading ourselves?
   const { data: basicUserLinesData } = useUserLines();
   const jwtToken = useRecoilValue($jwtToken);
+
+  const [linesMap, setLinesMap] = useState<LineIdToMasterLine>({});
 
   useEffect(() => {
     $ws = io("http://localhost:5000", {
       query: { token: jwtToken },
     });
+
+    $ws.on("connection", () => toast.success("you are connected"));
 
     // client-side errors
     $ws.on("connect_error", (err) => {
@@ -55,12 +66,46 @@ export function LineDataProvider({ children }) {
     // $ws.on(SocketChannels.CONNECT, console.log());
 
     $ws.on("test", () => console.log("test"));
+
+    if (basicUserLinesData?.data?.masterLines.length > 0) {
+      setLinesMap((prevMappings) => {
+        // go through the lines from the persistent store
+
+        // get all of the id's and map assign to the main object
+
+        // ?prolly have no previous at this point...but I'm okay with override since this
+        // ?useeffect is triggered on the refetching of the persistent store so we
+        // ?are prolly looking to do a full app refresh and connection refresh
+        const newMap = { ...prevMappings };
+
+        basicUserLinesData.data.masterLines.map((masterLine) => {
+          newMap[masterLine.lineDetails._id.toString()] = masterLine;
+        });
+
+        return newMap;
+      });
+    }
   }, [basicUserLinesData]);
 
-  // get updated associations with certain lines
+  /**
+   * get more audio blocks for a certain line
+   */
+  const handleFetchMoreAudioBlocks = useCallback(
+    (lineId: string) => {
+      // simple axios fetch for this specific block
+      // update the specific line in lines map
+      // set the state to trigger the re-renders in the tree
+    },
+    [setLinesMap]
+  );
+
+  const value: ILineDataContext = {
+    linesMap, // TODO send the updated map instead of this array
+    relevantUsers: [],
+  };
 
   return (
-    <LineDataContext.Provider value={{} as ILineDataContext}>
+    <LineDataContext.Provider value={value}>
       {children}
     </LineDataContext.Provider>
   );

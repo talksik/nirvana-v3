@@ -12,12 +12,16 @@ import Channels, {
   TERMINAL_PRESET,
 } from "../../electron/constants";
 import { GlobalHotKeys, KeyMap } from "react-hotkeys";
+import {
+  LineDataProvider,
+  useLineDataProvider,
+} from "../../controller/lineDataProvider";
 import React, { useState } from "react";
 import { useCallback, useEffect, useMemo } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 
-import { LineDataProvider } from "../../controller/lineDataProvider";
 import LineDetailsTerminal from "../lineDetailsTerminal";
+import MasterLineData from "@nirvana/core/models/masterLineData.model";
 import NirvanaHeader from "../../components/header/index";
 import NirvanaTerminal from "../terminal";
 import Overlay from "../overlay";
@@ -269,7 +273,7 @@ export default function NirvanaRouter() {
 
     // send the final dimensions to main process
     window.electronAPI.window.resizeWindow({
-      setAlwaysOnTop,
+      setAlwaysOnTop: true, // TODO: remove, just this for testing
       dimensions: {
         height: finalDimensions.height,
         width: finalDimensions.width,
@@ -318,11 +322,11 @@ export default function NirvanaRouter() {
 
         <div className="flex flex-row flex-1">
           {(desktopMode === "terminal" ||
-            desktopMode === "terminalDetails") && (
-            <NirvanaTerminal allLines={testLines} />
-          )}
+            desktopMode === "terminalDetails") && <NirvanaTerminal />}
 
-          {desktopMode === "terminalDetails" && <LineDetailsTerminal />}
+          {desktopMode === "terminalDetails" && selectedLineId && (
+            <LineDetailsTerminal />
+          )}
 
           {desktopMode === "overlayOnly" && <Overlay />}
         </div>

@@ -6,34 +6,44 @@ import { FaPlus } from "react-icons/fa";
 import { FiActivity } from "react-icons/fi";
 import { ILineDetails } from "../router";
 import IconButton from "../../components/Button/IconButton/index";
+import { LineMemberState } from "@nirvana/core/models/line.model";
 import LineRow from "../../components/lines/lineRow.tsx/index";
+import MasterLineData from "@nirvana/core/models/masterLineData.model";
 import NewLineModal from "./newLine";
+import { useLineDataProvider } from "../../controller/lineDataProvider";
 import { useSetRecoilState } from "recoil";
 import { useUserLines } from "../../controller/index";
 
-export default function NirvanaTerminal({
-  allLines,
-}: {
-  allLines: ILineDetails[];
-}) {
+export default function NirvanaTerminal() {
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
 
   const setSelectedLineId = useSetRecoilState($selectedLineId);
   const setDesktopMode = useSetRecoilState($desktopMode);
 
-  const { data: userLinesRes, isLoading } = useUserLines();
+  // simply using this query for specific data on loading
+  // todo: add these properties in context provider value although more work down the line for control
+  const { isLoading: isLoadingInitialLines } = useUserLines();
+  const { linesMap } = useLineDataProvider();
+
+  const allLines: MasterLineData[] = useMemo(() => {
+    const masterLines: MasterLineData[] = Object.values(linesMap);
+
+    return masterLines.filter(
+      (masterLine) =>
+        masterLine.currentUserMember.state === LineMemberState.INBOX
+    );
+  }, [linesMap]);
+
+  const toggleTunedLines = useMemo(() => {
+    const masterLines: MasterLineData[] = Object.values(linesMap);
+
+    return masterLines.filter(
+      (masterLine) =>
+        masterLine.currentUserMember.state === LineMemberState.TUNED
+    );
+  }, [linesMap]);
 
   // todo: sort/order based on activity and activity date and currently broadcasting/live
-
-  const toggleTunedLines = useMemo(
-    () => allLines.filter((line) => line.isUserToggleTunedIn),
-    []
-  );
-
-  const restLines = useMemo(
-    () => allLines.filter((line) => !line.isUserToggleTunedIn),
-    []
-  );
 
   return (
     <div className="flex flex-col bg-white w-[400px]">
@@ -68,22 +78,29 @@ export default function NirvanaTerminal({
         </div>
 
         {/* list of toggle tuned lines */}
-        <div className="flex flex-col mt-2"></div>
+        <div className="flex flex-col mt-2">
+          {toggleTunedLines.map((masterLineData) => (
+            <LineRow
+              key={`terminalListLines-${masterLineData.lineDetails._id.toString()}`}
+              masterLineData={masterLineData}
+            />
+          ))}
+        </div>
       </div>
 
       {/* rest of the lines */}
       <div className={"flex flex-col"}>
-        {isLoading ? (
+        {isLoadingInitialLines ? (
           <Skeleton />
         ) : (
           <>
-            {!userLinesRes?.data?.masterLines?.length && (
+            {!allLines.length && (
               <span className="text-gray-300 text-sm my-5 text-center">
                 You have no lines! <br /> Create one to connect to your team
                 instantly.
               </span>
             )}
-            {userLinesRes?.data?.masterLines?.map((masterLineData) => (
+            {allLines.map((masterLineData) => (
               <LineRow
                 key={`terminalListLines-${masterLineData.lineDetails._id.toString()}`}
                 masterLineData={masterLineData}
