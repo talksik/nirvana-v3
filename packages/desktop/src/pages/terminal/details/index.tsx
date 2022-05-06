@@ -87,7 +87,7 @@ export default function LineDetailsTerminal() {
           hover:scale-105 transition-all ${
             selectedLine.isUserBroadcasting || selectedLine.isOtherBroadcasting
               ? "bg-teal-800 text-white"
-              : "text-teal-800 border-teal-800"
+              : "text-teal-800 border-teal-800 border"
           }`}
           >
             <FiSun className="text-lg" />

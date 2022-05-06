@@ -69,14 +69,10 @@ export function LineDataProvider({ children }) {
     $ws.on(
       SocketChannels.SOMEONE_CONNECTED_TO_LINE,
       (res: SomeoneConnected) => {
-        toast(
-          `another user (${res.userId}) connected into line ${res.lineId} that you are in also connected to`
-        );
-
-        // change the correct masterLineData to contain this
+        // TODO: change the correct masterLineData to contain this
 
         console.log(
-          `here are all of the users in the tuned in room`,
+          `connected to line...here are all of the users in the conected line ${res.lineId}`,
           res.allConnectedIntoUserIds
         );
       }
@@ -84,6 +80,7 @@ export function LineDataProvider({ children }) {
 
     // whether toggle tuned or temporarily
     $ws.on(SocketChannels.SOMEONE_TUNED_TO_LINE, (res: SomeoneTuned) => {
+      // TODO: change the correct master line data to show user who's tuned in
       toast(
         `another user (${res.userId}) tuned into line ${res.lineId} that you are in also`
       );
