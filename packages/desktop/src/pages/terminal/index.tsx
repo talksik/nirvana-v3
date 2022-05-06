@@ -77,7 +77,7 @@ export default function NirvanaTerminal({
           <Skeleton />
         ) : (
           <>
-            {!userLinesRes?.data?.masterLines.length && (
+            {!userLinesRes?.data?.masterLines?.length && (
               <span className="text-gray-300 text-sm my-5 text-center">
                 You have no lines! <br /> Create one to connect to your team
                 instantly.

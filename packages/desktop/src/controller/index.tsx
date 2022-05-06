@@ -6,7 +6,20 @@ import { queryClient } from "../pages/nirvanaApp";
 import { useRecoilValue } from "recoil";
 
 // ====== QUERIES
-export function useAuthCheck() {
+
+/**
+ * ensure that the server is up
+ */
+export function useServerCheck() {
+  return useQuery("SERVER_CHECK", ApiCalls.serverCheck, {
+    retry: true,
+    refetchOnWindowFocus: false,
+
+    refetchInterval: 10000,
+  });
+}
+
+export function useAuthCheck(enabled: boolean = true) {
   const jwtToken = useRecoilValue($jwtToken);
 
   return useQuery("AUTH_CHECK", ApiCalls.authCheck, {
@@ -14,6 +27,7 @@ export function useAuthCheck() {
     refetchOnWindowFocus: false,
 
     refetchInterval: 10000,
+    enabled,
   });
 }
 

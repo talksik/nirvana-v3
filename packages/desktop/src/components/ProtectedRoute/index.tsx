@@ -1,9 +1,10 @@
+import { useAuthCheck, useServerCheck } from "../../controller/index";
+
 import { $jwtToken } from "../../controller/recoil";
 import Login from "../../pages/Login";
 import NirvanaApi from "../../controller/nirvanaApi";
 import { STORE_ITEMS } from "../../electron/constants";
 import SkeletonLoader from "../loading/skeleton";
-import { useAuthCheck } from "../../controller/index";
 import { useEffect } from "react";
 import { useRecoilState } from "recoil";
 
@@ -14,7 +15,17 @@ export default function ProtectedRoute({
 }) {
   const [jwtToken, setJwtToken] = useRecoilState($jwtToken);
 
-  const { isLoading, isError, isFetching, isSuccess, refetch } = useAuthCheck();
+  const {
+    isError: serverFailure,
+    isLoading: serverLoading,
+    isSuccess: isServerHealthy,
+    error,
+  } = useServerCheck();
+
+  console.log(error);
+
+  const { isLoading, isError, isFetching, isSuccess, refetch } =
+    useAuthCheck(isServerHealthy);
 
   useEffect(() => {
     // on load of this, if we already have jwt tokens in store,
@@ -48,6 +59,15 @@ export default function ProtectedRoute({
 
     refetch();
   }, [jwtToken]);
+
+  if (serverLoading)
+    return (
+      <span className="text-md text-gray-400 flex items-center justify-center flex-1 text-center p-5 h-screen">
+        Sorry...this is our bad. Our servers are loading. We are trying our best
+        to back up and running! :) <br /> Please contact me for urgent concerns:
+        arjunpatel@berkeley.edu
+      </span>
+    );
 
   if (isLoading) {
     return (

@@ -1,12 +1,12 @@
 import { QueryClient, QueryClientProvider } from "react-query";
 
-import Login from "./Login";
 import NirvanaRouter from "./router";
 import ProtectedRoute from "../components/ProtectedRoute";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { RecoilRoot } from "recoil";
 import { Toaster } from "react-hot-toast";
 import { configure } from "react-hotkeys";
+import { io } from "socket.io-client";
 import testConnection from "@nirvana/core";
 
 testConnection();

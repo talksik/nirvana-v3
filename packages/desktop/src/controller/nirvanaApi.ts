@@ -56,6 +56,10 @@ export default class NirvanaApi {
   }
 }
 
+async function serverCheck(): Promise<void> {
+  return await NirvanaApi.fetch(`/`, "GET", false);
+}
+
 async function login(reqLoginTokens: {
   accessToken: string;
   idToken: string;
@@ -98,6 +102,7 @@ async function createLine(
 }
 
 export const ApiCalls = {
+  serverCheck,
   login,
   authCheck,
   getUserDetails,

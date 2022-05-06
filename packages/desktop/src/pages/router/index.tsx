@@ -16,6 +16,7 @@ import React, { useState } from "react";
 import { useCallback, useEffect, useMemo } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 
+import { LineDataProvider } from "../../controller/lineDataProvider";
 import LineDetailsTerminal from "../lineDetailsTerminal";
 import NirvanaHeader from "../../components/header/index";
 import NirvanaTerminal from "../terminal";
@@ -311,18 +312,21 @@ export default function NirvanaRouter() {
   }, [setDesktopMode]);
 
   return (
-    <div className="flex flex-col">
-      <NirvanaHeader onHeaderFocus={() => setDesktopMode("terminal")} />
+    <LineDataProvider>
+      <div className="flex flex-col">
+        <NirvanaHeader onHeaderFocus={() => setDesktopMode("terminal")} />
 
-      <div className="flex flex-row flex-1">
-        {(desktopMode === "terminal" || desktopMode === "terminalDetails") && (
-          <NirvanaTerminal allLines={testLines} />
-        )}
+        <div className="flex flex-row flex-1">
+          {(desktopMode === "terminal" ||
+            desktopMode === "terminalDetails") && (
+            <NirvanaTerminal allLines={testLines} />
+          )}
 
-        {desktopMode === "terminalDetails" && <LineDetailsTerminal />}
+          {desktopMode === "terminalDetails" && <LineDetailsTerminal />}
 
-        {desktopMode === "overlayOnly" && <Overlay />}
+          {desktopMode === "overlayOnly" && <Overlay />}
+        </div>
       </div>
-    </div>
+    </LineDataProvider>
   );
 }
