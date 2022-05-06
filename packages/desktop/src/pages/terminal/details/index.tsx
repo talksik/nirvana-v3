@@ -2,13 +2,13 @@ import { FiActivity, FiSettings, FiSun } from "react-icons/fi";
 import { GlobalHotKeys, KeyMap } from "react-hotkeys";
 import { useCallback, useMemo } from "react";
 
-import { $selectedLineId } from "../../controller/recoil";
-import { ILineDetails } from "../router";
-import LineIcon from "../../components/lines/lineIcon/index";
+import { $selectedLineId } from "../../../controller/recoil";
+import { ILineDetails } from "../../router";
+import LineIcon from "../../../components/lines/lineIcon/index";
 import { LineMemberState } from "@nirvana/core/models/line.model";
 import MasterLineData from "@nirvana/core/models/masterLineData.model";
 import { Tooltip } from "antd";
-import { useLineDataProvider } from "../../controller/lineDataProvider";
+import { useLineDataProvider } from "../../../controller/lineDataProvider";
 import { useRecoilState } from "recoil";
 
 export default function LineDetailsTerminal() {
@@ -28,34 +28,12 @@ export default function LineDetailsTerminal() {
   }, [selectedLineId, linesMap]);
 
   const isUserToggleTuned = useMemo(
-    () => selectedLine.currentUserMember.state === LineMemberState.TUNED,
+    () => selectedLine?.currentUserMember?.state === LineMemberState.TUNED,
     [selectedLine]
-  );
-
-  const handleEscape = useCallback(() => {
-    console.log("deselecting line");
-
-    setSelectedLineId(null);
-  }, [setSelectedLineId]);
-
-  const keyMap: KeyMap = useMemo(
-    () => ({
-      DESELECT_LINE: "esc",
-    }),
-    [handleEscape]
-  );
-
-  const handlers = useMemo(
-    () => ({
-      DESELECT_LINE: handleEscape,
-    }),
-    [handleEscape]
   );
 
   return (
     <>
-      <GlobalHotKeys handlers={handlers} keyMap={keyMap} allowChanges />
-
       <div className="flex flex-col bg-gray-100 w-[400px] items-stretch justify-start relative">
         {/* line overview header */}
         <div className="flex flex-row p-3 items-center gap-1">
