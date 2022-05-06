@@ -19,11 +19,12 @@ export default function ProtectedRoute({
     isError: serverFailure,
     isLoading: serverLoading,
     isSuccess: isServerHealthy,
-    error,
+    error: serverStatusError,
   } = useServerCheck();
 
-  const { isLoading, isError, isFetching, isSuccess, refetch } =
-    useAuthCheck(isServerHealthy);
+  const { isLoading, isError, isFetching, isSuccess, refetch } = useAuthCheck(
+    !serverLoading
+  );
 
   useEffect(() => {
     // on load of this, if we already have jwt tokens in store,

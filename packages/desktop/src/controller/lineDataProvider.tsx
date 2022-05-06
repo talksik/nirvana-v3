@@ -5,6 +5,7 @@ import MasterLineData from "@nirvana/core/models/masterLineData.model";
 import SocketChannels from "@nirvana/core/sockets/channels";
 import { User } from "@nirvana/core/models";
 import { io } from "socket.io-client";
+import { queryClient } from "../pages/nirvanaApp";
 import toast from "react-hot-toast";
 import { useEffect } from "react";
 import { useRecoilValue } from "recoil";
@@ -33,10 +34,15 @@ export function LineDataProvider({ children }) {
       query: { token: jwtToken },
     });
 
-    // client-side
+    // client-side errors
     $ws.on("connect_error", (err) => {
       console.error(err.message); // prints the message associated with the error
       toast.error("sorry...this is our bad...please refresh with cmd + r");
+
+      // force refetch of server status as well as these generally go hand in hand
+
+      // this should overall remount this component currently which is what we want for new data
+      queryClient.invalidateQueries("SERVER_CHECK");
     });
   }, []);
 
