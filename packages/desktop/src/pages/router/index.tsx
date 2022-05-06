@@ -313,7 +313,7 @@ export default function NirvanaRouter() {
 
   return (
     <LineDataProvider>
-      <div className="flex flex-col">
+      <div className="flex flex-col flex-1">
         <NirvanaHeader onHeaderFocus={() => setDesktopMode("terminal")} />
 
         <div className="flex flex-row flex-1">

@@ -1,13 +1,20 @@
 @import "~antd/dist/antd.css";
 
-#root {
-  padding: 0 !important;
-  font-family: "IBM Plex Sans", sans-serif;
-}
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+#root {
+  @apply flex flex-col flex-1;
+  padding: 0 !important;
+  font-family: "IBM Plex Sans", sans-serif;
+}
 
 /* button {
   @apply transition-all;
