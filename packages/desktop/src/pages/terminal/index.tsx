@@ -1,7 +1,7 @@
 import { $desktopMode, $selectedLineId } from "../../controller/recoil";
 import { GlobalHotKeys, KeyMap } from "react-hotkeys";
 import { Skeleton, Tooltip } from "antd";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
 
 import { FaPlus } from "react-icons/fa";
@@ -109,6 +109,13 @@ export default function NirvanaTerminal() {
     return undefined;
   }, [selectedLineId, linesMap]);
 
+  const [listRenderTest, setListRenderTest] = useState<boolean>(false);
+  useEffect(() => {
+    setInterval(() => {
+      setListRenderTest(true);
+    }, 2000);
+  }, [setListRenderTest]);
+
   return (
     <>
       <GlobalHotKeys handlers={handlers} keyMap={keyMap} allowChanges />
@@ -182,7 +189,17 @@ export default function NirvanaTerminal() {
         {desktopMode === "terminalDetails" && selectedLine && (
           <LineDetailsTerminal selectedLine={selectedLine} />
         )}
+
+        {listRenderTest && <RenderTest />}
       </div>
     </>
   );
+}
+
+function RenderTest() {
+  useEffect(() => {
+    console.error("YOOOO FROM THE RENDER TEST COMPONENT");
+  }, []);
+
+  return <>this is the render test</>;
 }

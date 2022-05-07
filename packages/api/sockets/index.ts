@@ -137,9 +137,9 @@ export default function InitializeWs(io: any) {
           );
 
           // we want to notify everyone connected to the line even if they are not tuned in
-          const connectedLine = `connectedLine:${req.lineId}`;
+          const connectedLineRoomName = `connectedLine:${req.lineId}`;
 
-          io.in(connectedLine).emit(
+          io.in(connectedLineRoomName).emit(
             ServerResponseChannels.SOMEONE_TUNED_INTO_LINE,
             new SomeoneTunedResponse(
               req.lineId,
@@ -158,7 +158,7 @@ export default function InitializeWs(io: any) {
       );
 
       /**
-       * Notify all users when someone UNTUNES from a room
+       * Notify all connected users when someone UNTUNES from a room
        * ?might not be needed, all users' memory of tuned in users is irrelevant? don't need real time? but UI will show # of users tuned in?
        */
       socket.on(
@@ -169,14 +169,28 @@ export default function InitializeWs(io: any) {
 
           console.log("someone left room");
 
-          io.in(roomName).emit(
+          const clientUserIdsInRoom = [
+            ...io.sockets.adapter.rooms.get(roomName),
+          ].map(
+            (otherUserSocketId: string) => socketIdsToUserIds[otherUserSocketId]
+          );
+
+          // we want to notify everyone connected to the line even if they are not tuned in
+          const connectedLineRoomName = `connectedLine:${req.lineId}`;
+
+          io.in(connectedLineRoomName).emit(
             ServerResponseChannels.SOMEONE_UNTUNED_FROM_LINE,
-            new SomeoneUntunedFromLineResponse(req.lineId, userInfo.userId)
+            new SomeoneUntunedFromLineResponse(
+              req.lineId,
+              userInfo.userId,
+              clientUserIdsInRoom
+            )
           );
         }
       );
 
-      /** BROADCAST UPDATE | tell all who are connected to line, not just tuned into, that there is an update to someone broadcasting */
+      // TODO: use same pattern as tuning and untuning and send updated fresh list of current broadcasters but using another namespace/room for broadcasters in a line
+      /** BROADCAST UPDATE | tell all connected, not just tuned into, that there is an update to someone broadcasting */
       socket.on(
         ServerRequestChannels.BROADCAST_TO_LINE,
         (req: StartBroadcastingRequest) => {

@@ -5,10 +5,12 @@ import {
   ServerResponseChannels,
   SomeoneConnectedResponse,
   SomeoneTunedResponse,
+  SomeoneUntunedFromLineResponse,
   StartBroadcastingRequest,
   StopBroadcastingRequest,
   TuneToLineRequest,
   UserStartedBroadcastingResponse,
+  UserStoppedBroadcastingResponse,
 } from "@nirvana/core/sockets/channels";
 import React, { useContext, useState } from "react";
 import { Socket, io } from "socket.io-client";
@@ -98,8 +100,48 @@ function useSocketHandler(linesData: MasterLineData[]) {
           // TODO: update the relevant lineMember (based on which userId is given): state and last visit date if current user is joining
 
           if (newMap[res.lineId])
+            newMap[res.lineId].tunedInMemberIds = res.allTunedIntoUserIds;
+
+          return newMap;
+        });
+      }
+    );
+
+    $ws.on(
+      ServerResponseChannels.SOMEONE_UNTUNED_FROM_LINE,
+      (res: SomeoneUntunedFromLineResponse) => {
+        console.log(
+          `here are all of updated users in the tuned in room`,
+          res.allTunedIntoUserIds
+        );
+
+        // TODO: if toggled in, make sure to update the current line member in the lines map so that
+        // we can know to untune if user selects another line
+
+        setLinesMap((prevLinesMap) => {
+          const newMap = { ...prevLinesMap };
+
+          // TODO: update the relevant lineMember (based on which userId is given): state and last visit date if current user is joining
+
+          if (newMap[res.lineId])
+            newMap[res.lineId].tunedInMemberIds = res.allTunedIntoUserIds;
+
+          return newMap;
+        });
+      }
+    );
+
+    $ws.on(
+      ServerResponseChannels.SOMEONE_STARTED_BROADCASTING,
+      (res: UserStartedBroadcastingResponse) => {
+        console.log("someone is starting to broadcast");
+
+        setLinesMap((prevLinesMap) => {
+          const newMap = { ...prevLinesMap };
+
+          if (newMap[res.lineId])
             newMap[res.lineId].currentBroadcastersUserIds = [
-              ...(newMap[res.lineId].tunedInMemberIds ?? []),
+              ...(newMap[res.lineId].currentBroadcastersUserIds ?? []),
               res.userId,
             ];
 
@@ -108,22 +150,19 @@ function useSocketHandler(linesData: MasterLineData[]) {
       }
     );
 
-    // could
     $ws.on(
-      ServerResponseChannels.SOMEONE_STARTED_BROADCASTING,
-      (res: UserStartedBroadcastingResponse) => {
-        toast.success(`someone or myself buzz on or off in line ${res.lineId}`);
-
+      ServerResponseChannels.SOMEONE_STOPPED_BROADCASTING,
+      (res: UserStoppedBroadcastingResponse) => {
         setLinesMap((prevLinesMap) => {
           const newMap = { ...prevLinesMap };
 
-          // todo: check if it's the user or someone else broadcasting
-
-          if (newMap[res.lineId])
-            newMap[res.lineId].currentBroadcastersUserIds = [
-              ...(newMap[res.lineId].currentBroadcastersUserIds ?? []),
-              res.userId,
-            ];
+          if (newMap[res.lineId]?.currentBroadcastersUserIds) {
+            newMap[res.lineId].currentBroadcastersUserIds = newMap[
+              res.lineId
+            ].currentBroadcastersUserIds.filter(
+              (broadcasterUserId) => broadcasterUserId !== res.userId
+            );
+          }
 
           return newMap;
         });

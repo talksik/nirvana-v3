@@ -1,3 +1,4 @@
+// ! NOTE: these are legacy and too much thinking in the developers head to understand the flow
 enum SocketChannels {
   SEND_AUDIO_CLIP = "SEND_AUDIO_CLIP",
   SEND_USER_STATUS_UPDATE = "SEND_USER_STATUS_UPDATE",
@@ -80,7 +81,11 @@ export class UntuneFromLineRequest {
   constructor(public lineId: string) {}
 }
 export class SomeoneUntunedFromLineResponse {
-  constructor(public lineId: string, public userId: string) {}
+  constructor(
+    public lineId: string,
+    public userId: string,
+    public allTunedIntoUserIds: string[]
+  ) {}
 }
 
 export class StartBroadcastingRequest {
