@@ -326,6 +326,9 @@ function StreamRoom({
           );
         });
     }
+
+    // TODO: p1 : destroy peers on load
+    return () => {};
   }, [userDetails, setUserPeers]);
 
   // calculate diff to clean our userPeerMap to unmount and detroy certain peer connections

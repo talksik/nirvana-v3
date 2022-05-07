@@ -27,23 +27,24 @@ export default function ProtectedRoute({
     !serverLoading
   );
 
-  useEffect(() => {
-    // on load of this, if we already have jwt tokens in store,
-    // then try using them with auth check
-    window.electronAPI.store
-      .get(STORE_ITEMS.AUTH_SESSION_JWT)
-      .then((jwtToken: string) => {
-        if (jwtToken) {
-          NirvanaApi._jwtToken = jwtToken;
-          setJwtToken(jwtToken);
-          refetch();
+  // ! REMOVING FOR TESTING MULTIPLE CLIENTS
+  // useEffect(() => {
+  //   // on load of this, if we already have jwt tokens in store,
+  //   // then try using them with auth check
+  //   window.electronAPI.store
+  //     .get(STORE_ITEMS.AUTH_SESSION_JWT)
+  //     .then((jwtToken: string) => {
+  //       if (jwtToken) {
+  //         NirvanaApi._jwtToken = jwtToken;
+  //         setJwtToken(jwtToken);
+  //         refetch();
 
-          console.log("retrieved jwtToken from storage", jwtToken);
-        } else {
-          console.log("no jwt token in store");
-        }
-      });
-  }, []);
+  //         console.log("retrieved jwtToken from storage", jwtToken);
+  //       } else {
+  //         console.log("no jwt token in store");
+  //       }
+  //     });
+  // }, []);
 
   useEffect(() => {
     console.log("change in jwt token", jwtToken);
