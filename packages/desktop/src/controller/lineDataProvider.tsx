@@ -21,7 +21,7 @@ import { useUserLines } from "./index";
 
 let $ws: Socket;
 
-export function useSocketHandler(linesData: MasterLineData[]) {
+function useSocketHandler(linesData: MasterLineData[]) {
   const jwtToken = useRecoilValue($jwtToken);
 
   const [linesMap, setLinesMap] = useState<LineIdToMasterLine>({});
@@ -177,7 +177,7 @@ export function useSocketHandler(linesData: MasterLineData[]) {
   };
 }
 
-export type LineIdToMasterLine = {
+type LineIdToMasterLine = {
   [lineId: string]: MasterLineData;
 };
 interface ILineDataContext {
