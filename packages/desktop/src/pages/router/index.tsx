@@ -13,32 +13,6 @@ import NirvanaHeader from "../../components/header/index";
 import NirvanaTerminal from "../terminal";
 import Overlay from "../overlay";
 
-export interface ILineDetails {
-  lineId: string;
-  name: string;
-
-  profilePictures: string[];
-  numberMembers: number;
-
-  isUserToggleTunedIn: boolean;
-
-  isUserBroadcastingHere: boolean;
-  isSomeoneElseBroadcastingHere: boolean;
-  streamImages: string[];
-
-  audioBlocks: {
-    creatorProfilePicture: string;
-    creatorName: string;
-    lengthOfClip: number;
-    relativeTimeAgo: string;
-  }[];
-  timeAgo: string;
-
-  hasNewActivity: boolean;
-
-  profilePicsLiveBroadcasters?: string[];
-}
-
 export default function NirvanaRouter() {
   const [selectedLineId, setSelectedLineId] = useRecoilState($selectedLineId);
   const [desktopMode, setDesktopMode] = useRecoilState($desktopMode);

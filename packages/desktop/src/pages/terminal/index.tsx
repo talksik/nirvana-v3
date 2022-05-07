@@ -6,7 +6,6 @@ import { useRecoilState, useSetRecoilState } from "recoil";
 
 import { FaPlus } from "react-icons/fa";
 import { FiActivity } from "react-icons/fi";
-import { ILineDetails } from "../router";
 import IconButton from "../../components/Button/IconButton/index";
 import LineDetailsTerminal from "./details";
 import { LineMemberState } from "@nirvana/core/models/line.model";
@@ -99,6 +98,17 @@ export default function NirvanaTerminal() {
     [selectedLineId]
   );
 
+  const selectedLine: MasterLineData | undefined = useMemo(() => {
+    if (!selectedLineId) return undefined;
+
+    // find the line from the data provider
+    if (linesMap[selectedLineId]) {
+      return linesMap[selectedLineId];
+    }
+
+    return undefined;
+  }, [selectedLineId, linesMap]);
+
   return (
     <>
       <GlobalHotKeys handlers={handlers} keyMap={keyMap} allowChanges />
@@ -169,8 +179,8 @@ export default function NirvanaTerminal() {
           </div>
         </div>
 
-        {desktopMode === "terminalDetails" && selectedLineId && (
-          <LineDetailsTerminal />
+        {desktopMode === "terminalDetails" && selectedLine && (
+          <LineDetailsTerminal selectedLine={selectedLine} />
         )}
       </div>
     </>

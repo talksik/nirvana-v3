@@ -29,6 +29,10 @@ const socketIdsToUserIds: {
 export default function InitializeWs(io: any) {
   console.log("initializing web sockets");
 
+  setInterval(() => {
+    console.log(socketIdsToUserIds);
+  }, 5000);
+
   return io
     .use(function (socket: any, next: any) {
       console.log("authenticating user...");
@@ -163,6 +167,9 @@ export default function InitializeWs(io: any) {
         // notify everyone of this disconnection
 
         console.log("user disconnected");
+        console.log(
+          `list of sockets mappings in memory: ${socketIdsToUserIds}`
+        );
       });
     });
 }

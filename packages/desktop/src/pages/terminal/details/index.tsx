@@ -3,7 +3,6 @@ import { GlobalHotKeys, KeyMap } from "react-hotkeys";
 import { useCallback, useMemo } from "react";
 
 import { $selectedLineId } from "../../../controller/recoil";
-import { ILineDetails } from "../../router";
 import LineIcon from "../../../components/lines/lineIcon/index";
 import { LineMemberState } from "@nirvana/core/models/line.model";
 import MasterLineData from "@nirvana/core/models/masterLineData.model";
@@ -11,22 +10,11 @@ import { Tooltip } from "antd";
 import { useLineDataProvider } from "../../../controller/lineDataProvider";
 import { useRecoilState } from "recoil";
 
-export default function LineDetailsTerminal() {
-  const [selectedLineId, setSelectedLineId] = useRecoilState($selectedLineId);
-
-  const { linesMap } = useLineDataProvider();
-
-  const selectedLine: MasterLineData | undefined = useMemo(() => {
-    if (!selectedLineId) return undefined;
-
-    // find the line from the data provider
-    if (linesMap[selectedLineId]) {
-      return linesMap[selectedLineId];
-    }
-
-    return undefined;
-  }, [selectedLineId, linesMap]);
-
+export default function LineDetailsTerminal({
+  selectedLine,
+}: {
+  selectedLine: MasterLineData;
+}) {
   const isUserToggleTuned = useMemo(
     () => selectedLine?.currentUserMember?.state === LineMemberState.TUNED,
     [selectedLine]
