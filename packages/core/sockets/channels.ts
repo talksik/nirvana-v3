@@ -23,15 +23,42 @@ enum SocketChannels {
   TUNE_TO_LINE = "TUNE_TO_LINE",
   SOMEONE_TUNED_TO_LINE = "SOMEONE_TUNED_TO_LINE",
 
+  SOMEONE_UNTUNED_FROM_LINE = "SOMEONE_UNTUNED_FROM_LINE",
+
   USER_BROADCAST_PUSH_PULL = "USER_BROADCAST_PUSH_PULL",
+}
+
+// ! MAKE SURE THAT THE ENUMS BETWEEN REQUEST AND RESPONSE DON'T OVERLAP???
+// ?maybe won't matter since it's different for server and client?
+export enum ServerRequestChannels {
+  CONNECT_TO_LINE = "CONNECT_TO_LINE",
+
+  DISCONNECT_FROM_LINE = "DISCONNECT_FROM_LINE", // TODO: not implementing now
+
+  TUNE_INTO_LINE = "TUNE_INTO_LINE", // pass in if user wants to toggle/persist? or is this just temporary?
+  UNTUNE_FROM_LINE = "UNTUNE_FROM_LINE",
+
+  BROADCAST_TO_LINE = "BROADCAST_TO_LINE",
+  STOP_BROADCAST_TO_LINE = "STOP_BROADCAST_TO_LINE",
+}
+
+export enum ServerResponseChannels {
+  SOMEONE_CONNECTED_TO_LINE = "SOMEONE_CONNECTED_TO_LINE",
+  SOMEONE_DISCONNECTED_FROM_LINE = "SOMEONE_DISCONNECTED_FROM_LINE",
+
+  SOMEONE_TUNED_INTO_LINE = "SOMEONE_TUNED_INTO_LINE", // allows all current tuned in folks to create peer objects
+  SOMEONE_UNTUNED_FROM_LINE = "SOMEONE_UNTUNED_FROM_LINE", // discard peer
+
+  SOMEONE_STARTED_BROADCASTING = "SOMEONE_STARTED_BROADCASTING", //show their stream tracks
+  SOMEONE_STOPPED_BROADCASTING = "SOMEONE_STOPPED_BROADCASTING", // stop showing their stream tracks
 }
 
 export default SocketChannels;
 
-export class ConnectToLine {
+export class ConnectToLineRequest {
   constructor(public lineId: string) {}
 }
-export class SomeoneConnected {
+export class SomeoneConnectedResponse {
   constructor(
     public lineId: string,
     public userId: string,
@@ -39,29 +66,38 @@ export class SomeoneConnected {
   ) {}
 }
 
-export class TuneToLine {
+export class TuneToLineRequest {
   constructor(public lineId: string, public keepTunedIn: boolean = false) {}
 }
-export class SomeoneTuned {
+export class SomeoneTunedResponse {
   constructor(
     public lineId: string,
     public userId: string,
     public allTunedIntoUserIds: string[]
   ) {}
 }
-
-export class UserBroadcastingPush {
-  constructor(public lineId: string, public isTurningOn: boolean = true) {}
+export class UntuneFromLineRequest {
+  constructor(public lineId: string) {}
 }
-export class UserBroadcastPull {
-  // is the user turning their broadcasting on or off for a specific line?
-  constructor(
-    public lineId: string,
-    public userId: string,
-    public isTurningOn: boolean = true
-  ) {}
+export class SomeoneUntunedFromLineResponse {
+  constructor(public lineId: string, public userId: string) {}
 }
 
+export class StartBroadcastingRequest {
+  constructor(public lineId: string) {}
+}
+export class UserStartedBroadcastingResponse {
+  constructor(public lineId: string, public userId: string) {}
+}
+
+export class StopBroadcastingRequest {
+  constructor(public lineId: string) {}
+}
+export class UserStoppedBroadcastingResponse {
+  constructor(public lineId: string, public userId: string) {}
+}
+
+// ?another approach to use switch statements, but it just requires same mess, just less methods with socket but who cares right now
 export class SocketEmitter<T> {
   constructor(public channel: SocketChannels, data: T) {}
 }

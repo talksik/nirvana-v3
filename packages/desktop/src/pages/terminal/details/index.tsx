@@ -7,6 +7,7 @@ import LineIcon from "../../../components/lines/lineIcon/index";
 import { LineMemberState } from "@nirvana/core/models/line.model";
 import MasterLineData from "@nirvana/core/models/masterLineData.model";
 import { Tooltip } from "antd";
+import { useGetUserDetails } from "../../../controller";
 import { useLineDataProvider } from "../../../controller/lineDataProvider";
 import { useRecoilState } from "recoil";
 
@@ -15,9 +16,20 @@ export default function LineDetailsTerminal({
 }: {
   selectedLine: MasterLineData;
 }) {
+  const { data: userDetails } = useGetUserDetails();
   const isUserToggleTuned = useMemo(
     () => selectedLine?.currentUserMember?.state === LineMemberState.TUNED,
     [selectedLine]
+  );
+
+  // seeing if I am in the list of broadcasters
+  // the source of truth from the socket connections telling me if my clicking actually made a round trip
+  const isUserBroadcasting = useMemo(
+    () =>
+      selectedLine?.currentBroadcastersUserIds?.includes(
+        userDetails?.user._id.toString()
+      ),
+    [userDetails, selectedLine]
   );
 
   return (
@@ -54,9 +66,10 @@ export default function LineDetailsTerminal({
             <FiSettings className="text-gray-400 text-md" />
           </button>
 
+          {/* TODO: move to on hover of line row  */}
           <Tooltip
             title={`${
-              isUserToggleTuned ? "toggle tuned" : "temporarily tuned"
+              isUserToggleTuned ? "click to untoggle" : "click to stay tuned in"
             }`}
           >
             <button
@@ -69,11 +82,10 @@ export default function LineDetailsTerminal({
             </button>
           </Tooltip>
 
-          {/* TODO: change to border and inset color for when inactive button */}
           <button
             className={`p-3 flex justify-center items-center shadow-lg
           hover:scale-105 transition-all ${
-            selectedLine.isUserBroadcasting || selectedLine.isOtherBroadcasting
+            isUserBroadcasting
               ? "bg-teal-800 text-white"
               : "text-teal-800 border-teal-800 border"
           }`}

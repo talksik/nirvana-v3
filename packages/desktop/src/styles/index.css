@@ -27,6 +27,14 @@ body {
   cursor: pointer;
 }
 
+/* TODO: temporary...remove? later? */
+body {
+  -webkit-user-select: none;
+  -webkit-app-region: drag;
+
+  cursor: pointer;
+}
+
 .titlebar-button {
   -webkit-app-region: no-drag;
 }

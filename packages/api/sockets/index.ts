@@ -1,10 +1,16 @@
-import SocketChannels, {
-  ConnectToLine,
-  SomeoneConnected,
-  SomeoneTuned,
-  TuneToLine,
-  UserBroadcastPull,
-  UserBroadcastingPush,
+import {
+  ConnectToLineRequest,
+  ServerRequestChannels,
+  ServerResponseChannels,
+  SomeoneConnectedResponse,
+  SomeoneTunedResponse,
+  SomeoneUntunedFromLineResponse,
+  StartBroadcastingRequest,
+  StopBroadcastingRequest,
+  TuneToLineRequest,
+  UntuneFromLineRequest,
+  UserStartedBroadcastingResponse,
+  UserStoppedBroadcastingResponse,
 } from "@nirvana/core/sockets/channels";
 
 import GetAllSocketClients from "@nirvana/core/sockets/getAllActiveSocketClients";
@@ -22,6 +28,7 @@ const jwt = require("jsonwebtoken");
 
 const config = loadConfig();
 
+// NOTE: client socket connections should never have to deal with socketIds
 const socketIdsToUserIds: {
   [socketId: string]: string;
 } = {};
@@ -67,97 +74,147 @@ export default function InitializeWs(io: any) {
       // ?verification that user is in a particular line to be tuned into it or just generally in it?
 
       /** CONNECT | User wants to subscribe to live emissions of a line */
-      socket.on(SocketChannels.CONNECT_TO_LINE, (req: ConnectToLine) => {
-        // add this user to the room
-        console.log(`${socket.id} user joined room for line ${req.lineId}`);
-
-        const roomName = `connectedLine:${req.lineId}`;
-        socket.join(roomName);
-
-        console.log(`${socket.id} now in rooms ${socket.rooms}`);
-
-        const clientUserIdsInRoom = [...io.sockets.adapter.rooms.get(roomName)];
-
-        io.in(roomName).emit(
-          SocketChannels.SOMEONE_CONNECTED_TO_LINE,
-          new SomeoneConnected(req.lineId, userInfo.userId, clientUserIdsInRoom)
-        );
-      });
-
-      /** TUNE | User tunes into the line either temporarily or toggled in  */
-      socket.on(SocketChannels.TUNE_TO_LINE, async (req: TuneToLine) => {
-        console.log(`${socket.id} user tuned into room for line ${req.lineId}`);
-
-        const roomName = `tunedLine:${req.lineId}`;
-        socket.join(roomName);
-
-        console.log(`${socket.id} now in rooms ${socket.rooms}`);
-
-        // persist tuning in if user is toggle tuning in
-        if (req.keepTunedIn) {
-          await LineService.updateLineMemberState(
-            req.lineId,
-            userInfo.userId,
-            LineMemberState.TUNED
-          );
-        } else {
-          // just updates the
-          await LineService.updateLineMemberVisitDate(
-            req.lineId,
-            userInfo.userId
-          );
-        }
-
-        const clientUserIdsInRoom = io.sockets.adapter.rooms
-          .get(roomName)
-          .map((socketId: any) => socketIdsToUserIds[socketId]);
-
-        // we want to notify everyone connected to the line even if they are not tuned in
-        const connectedLine = `connectedLine:${req.lineId}`;
-
-        io.in(connectedLine).emit(
-          SocketChannels.SOMEONE_TUNED_TO_LINE,
-          new SomeoneTuned(req.lineId, userInfo.userId, clientUserIdsInRoom)
-        );
-      });
-
-      /** BROADCAST UPDATE | tell all who are connected to line, not just tuned into, that there is an update to someone broadcasting */
       socket.on(
-        SocketChannels.USER_BROADCAST_PUSH_PULL,
-        (req: UserBroadcastingPush) => {
+        ServerRequestChannels.CONNECT_TO_LINE,
+        (req: ConnectToLineRequest) => {
+          // add this user to the room
+          console.log(`${socket.id} user joined room for line ${req.lineId}`);
+
           const roomName = `connectedLine:${req.lineId}`;
+          socket.join(roomName);
+
+          console.log(`${socket.id} now in rooms ${socket.rooms}`);
+
+          const clientUserIdsInRoom = [
+            ...io.sockets.adapter.rooms.get(roomName),
+          ].map(
+            (otherUserSocketId: string) => socketIdsToUserIds[otherUserSocketId]
+          );
 
           io.in(roomName).emit(
-            SocketChannels.USER_BROADCAST_PUSH_PULL,
-            new UserBroadcastPull(req.lineId, userInfo.userId, req.isTurningOn)
+            ServerResponseChannels.SOMEONE_CONNECTED_TO_LINE,
+            new SomeoneConnectedResponse(
+              req.lineId,
+              userInfo.userId,
+              clientUserIdsInRoom
+            )
           );
         }
       );
 
-      socket.on(SocketChannels.JOIN_LIVE_ROOM, async () => {
-        // TODO: only get the socket ids of the relevant rooms for this user
-        // return all Socket instances
-        const allConnectedSockets = Array.from(await io.of("/").sockets.keys());
+      /** TUNE | User tunes into the line either temporarily or toggled in  */
+      socket.on(
+        ServerRequestChannels.TUNE_INTO_LINE,
+        async (req: TuneToLineRequest) => {
+          console.log(
+            `${socket.id} user tuned into room for line ${req.lineId}`
+          );
 
-        io.to(socket.id).emit(SocketChannels.GET_ALL_ACTIVE_SOCKET_IDS, {
-          socketIds: allConnectedSockets,
-        } as GetAllSocketClients);
-      });
+          const roomName = `tunedLine:${req.lineId}`;
+          socket.join(roomName);
 
-      socket.on(SocketChannels.SEND_SIGNAL, async (payload: SendSignal) => {
-        console.log(payload);
+          console.log(`${socket.id} now in rooms ${socket.rooms}`);
 
-        const sendingBackData: ReceiveSignal = {
-          simplePeerSignal: payload.simplePeerSignal,
-          senderUserSocketId: socket.id,
-          isGoingBackToInitiator: payload.isAnswerer ? true : false,
-        };
+          // persist tuning in if user is toggle tuning in
+          if (req.keepTunedIn) {
+            await LineService.updateLineMemberState(
+              req.lineId,
+              userInfo.userId,
+              LineMemberState.TUNED
+            );
+          } else {
+            // just updates the
+            await LineService.updateLineMemberVisitDate(
+              req.lineId,
+              userInfo.userId
+            );
+          }
 
-        io.to(payload.userSocketIdToSignal).emit(
-          SocketChannels.RECEIVE_SIGNAL,
-          sendingBackData
-        );
-      });
+          const clientUserIdsInRoom = [
+            ...io.sockets.adapter.rooms.get(roomName),
+          ].map(
+            (otherUserSocketId: string) => socketIdsToUserIds[otherUserSocketId]
+          );
+
+          // we want to notify everyone connected to the line even if they are not tuned in
+          const connectedLine = `connectedLine:${req.lineId}`;
+
+          io.in(connectedLine).emit(
+            ServerResponseChannels.SOMEONE_TUNED_INTO_LINE,
+            new SomeoneTunedResponse(
+              req.lineId,
+              userInfo.userId,
+              clientUserIdsInRoom
+            )
+          );
+        }
+      );
+
+      /**
+       * TODO: handle when user wants to completely leave a line (delete or removed from one)
+       */
+      socket.on(ServerRequestChannels.DISCONNECT_FROM_LINE, () =>
+        console.log("not implemented")
+      );
+
+      /**
+       * Notify all users when someone UNTUNES from a room
+       * ?might not be needed, all users' memory of tuned in users is irrelevant? don't need real time? but UI will show # of users tuned in?
+       */
+      socket.on(
+        ServerRequestChannels.UNTUNE_FROM_LINE,
+        async (req: UntuneFromLineRequest) => {
+          const roomName = `tunedLine:${req.lineId}`;
+          socket.leave(roomName);
+
+          console.log("someone left room");
+
+          io.in(roomName).emit(
+            ServerResponseChannels.SOMEONE_UNTUNED_FROM_LINE,
+            new SomeoneUntunedFromLineResponse(req.lineId, userInfo.userId)
+          );
+        }
+      );
+
+      /** BROADCAST UPDATE | tell all who are connected to line, not just tuned into, that there is an update to someone broadcasting */
+      socket.on(
+        ServerRequestChannels.BROADCAST_TO_LINE,
+        (req: StartBroadcastingRequest) => {
+          const roomName = `connectedLine:${req.lineId}`;
+
+          io.in(roomName).emit(
+            ServerResponseChannels.SOMEONE_STARTED_BROADCASTING,
+            new UserStartedBroadcastingResponse(req.lineId, userInfo.userId)
+          );
+        }
+      );
+
+      socket.on(
+        ServerRequestChannels.STOP_BROADCAST_TO_LINE,
+        (req: StopBroadcastingRequest) => {
+          const roomName = `connectedLine:${req.lineId}`;
+
+          io.in(roomName).emit(
+            ServerResponseChannels.SOMEONE_STOPPED_BROADCASTING,
+            new UserStoppedBroadcastingResponse(req.lineId, userInfo.userId)
+          );
+        }
+      );
+
+      // socket.on(SocketChannels.SEND_SIGNAL, async (payload: SendSignal) => {
+      //   console.log(payload);
+
+      //   const sendingBackData: ReceiveSignal = {
+      //     simplePeerSignal: payload.simplePeerSignal,
+      //     senderUserSocketId: socket.id,
+      //     isGoingBackToInitiator: payload.isAnswerer ? true : false,
+      //   };
+
+      //   io.to(payload.userSocketIdToSignal).emit(
+      //     SocketChannels.RECEIVE_SIGNAL,
+      //     sendingBackData
+      //   );
+      // });
 
       // ==== DISCONNECT ====
       socket.on("disconnect", () => {

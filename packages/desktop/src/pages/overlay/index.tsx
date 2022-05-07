@@ -93,6 +93,14 @@ export default function Overlay() {
 
   //       socket.emit(SocketChannels.JOIN_LIVE_ROOM);
 
+  // would already have all of the tuned in sockets in array
+  // then create a peer for each...tell others to create also because they would have received
+  // "SOMEONE_TUNED_INTO_LINE"
+
+  // need a peer connection with every userId in the list of tunedInFolks so that when it comes time to broadcast
+  // it's super simple in that we just start playing the stream from the appropriate peer who is associated with the correct userId
+  // small validation to consider is that the broadcasterUserIds are in the list of tunedInUserIds
+
   //       socket.on(
   //         SocketChannels.GET_ALL_ACTIVE_SOCKET_IDS,
   //         (data: GetAllSocketClients) => {
