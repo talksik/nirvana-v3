@@ -30,7 +30,6 @@ export default function NirvanaRouter() {
 
     // go hunting for which dimensions to have
     if (desktopMode === "terminal") {
-      finalPosition = "center";
       finalDimensions = { height: 675, width: 400 };
     }
     if (desktopMode === "terminalDetails") {
@@ -41,7 +40,6 @@ export default function NirvanaRouter() {
       finalDimensions = { height: 68, width: 360 };
     }
     if (desktopMode === "overlayOnly") {
-      finalPosition = "topRight";
       finalDimensions = {
         height: 68 + numberOfOverlayRows * 200,
         width: 360 + 360 * numberOfOverlayColumns,
