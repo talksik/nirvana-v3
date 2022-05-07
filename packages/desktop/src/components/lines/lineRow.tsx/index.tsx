@@ -198,7 +198,7 @@ function StreamRoom({
     if (userDetails) {
       navigator.mediaDevices
         .getUserMedia({
-          video: false,
+          video: true,
           audio: {
             echoCancellation: true,
             autoGainControl: true,
@@ -207,24 +207,25 @@ function StreamRoom({
         .then((userStream) => {
           setLocalStream(userStream);
 
-          // if (userStreamTagRef?.current)
-          //   userStreamTagRef.current.srcObject = userStream;
+          if (userStreamTagRef?.current)
+            userStreamTagRef.current.srcObject = userStream;
 
           // alternative to dom element
           // const audio = new Audio();
           // audio.autoplay = true;
           // audio.srcObject = userStream;
 
+          // !TEST STUFF
           // test distortion to go away on disabling audio
-          setTimeout(() => {
-            console.log("stopping audio stream ");
+          // setTimeout(() => {
+          //   console.log("stopping audio stream ");
 
-            userStream.getTracks().forEach((track) => {
-              track.enabled = !track.enabled;
+          //   userStream.getTracks().forEach((track) => {
+          //     track.enabled = !track.enabled;
 
-              track.stop();
-            });
-          }, 2000);
+          //     track.stop();
+          //   });
+          // }, 2000);
 
           // take the initial list of tunedInUsers without my own id
           const everyOtherTunedUserId = tunedInUsers.filter(
@@ -367,7 +368,13 @@ function StreamRoom({
   // we only loop through peers that are associated to user Ids which exist in the currentBroadcasters array
   return (
     <>
-      <audio autoPlay ref={userStreamTagRef} muted />
+      <video
+        height={"200"}
+        width={"300"}
+        autoPlay
+        ref={userStreamTagRef}
+        muted
+      />
       this is the video of people
       {userPeers &&
         Object.entries(userPeers).map(([userId, peer]) => (
@@ -409,7 +416,13 @@ function PeerStreamRenderer({
 
   return (
     <>
-      <audio muted={!isBroadcasting} autoPlay ref={streamRef} />
+      <video
+        height={"400"}
+        width={"500"}
+        muted={!isBroadcasting}
+        autoPlay
+        ref={streamRef}
+      />
     </>
   );
 }
