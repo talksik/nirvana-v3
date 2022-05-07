@@ -52,6 +52,30 @@ export default function NirvanaTerminal() {
     );
   }, [linesMap]);
 
+  const selectedLine: MasterLineData | undefined = useMemo(() => {
+    if (!selectedLineId) return undefined;
+
+    // find the line from the data provider
+    if (linesMap[selectedLineId]) {
+      console.log("looking for selected Line in map for details section");
+
+      const foundSelectedLine = linesMap[selectedLineId];
+
+      // on mount of this, we want to temporarily tune into the line if we are not already tuned in...which would happen if we toggle tuned in
+      if (
+        !foundSelectedLine.tunedInMemberIds?.includes(
+          userDetails?.user?._id.toString()
+        )
+      ) {
+        handleTuneToLine(selectedLineId, false);
+      }
+
+      return { ...foundSelectedLine };
+    }
+
+    return undefined;
+  }, [selectedLineId, linesMap, userDetails]);
+
   // todo: sort/order based on activity and activity date and currently broadcasting/live
 
   const handleEscape = useCallback(() => {
@@ -59,15 +83,30 @@ export default function NirvanaTerminal() {
 
     setSelectedLineId((prevSelectedLineId) => {
       // ! only want to untune if it's a temporarily tuned line
-      if (
-        linesMap[prevSelectedLineId].currentUserMember?.state ===
-        LineMemberState.INBOX
-      )
+      if (selectedLine.currentUserMember?.state === LineMemberState.INBOX)
         handleUnTuneToLine(prevSelectedLineId);
 
       return null;
     });
-  }, [setSelectedLineId, linesMap]);
+  }, [setSelectedLineId, selectedLine]);
+
+  /** show user line details on click of one line */
+  const handleSelectLine = useCallback(
+    (newLineIdToSelect: string) => {
+      setSelectedLineId((prevSelectedLineId) => {
+        // untune myself from the previously selected if it was a temporary one/inbox
+        // todo: p3: consolidate this logic as it's used in escape but different scenarios sort of so p3
+        if (
+          prevSelectedLineId &&
+          selectedLine.currentUserMember?.state === LineMemberState.INBOX
+        )
+          handleUnTuneToLine(prevSelectedLineId);
+
+        return newLineIdToSelect;
+      });
+    },
+    [setSelectedLineId, selectedLine]
+  );
 
   const handleStartBroadcast = useCallback(
     (lineId: string) => () => {
@@ -115,30 +154,6 @@ export default function NirvanaTerminal() {
     [selectedLineId]
   );
 
-  const selectedLine: MasterLineData | undefined = useMemo(() => {
-    if (!selectedLineId) return undefined;
-
-    // find the line from the data provider
-    if (linesMap[selectedLineId]) {
-      console.log("looking for selected Line in map for details section");
-
-      const foundSelectedLine = linesMap[selectedLineId];
-
-      // on mount of this, we want to temporarily tune into the line if we are not already tuned in...which would happen if we toggle tuned in
-      if (
-        !foundSelectedLine.tunedInMemberIds?.includes(
-          userDetails?.user?._id.toString()
-        )
-      ) {
-        handleTuneToLine(selectedLineId, false);
-      }
-
-      return { ...foundSelectedLine };
-    }
-
-    return undefined;
-  }, [selectedLineId, linesMap, userDetails]);
-
   return (
     <>
       <GlobalHotKeys handlers={handlers} keyMap={keyMap} allowChanges />
@@ -181,6 +196,7 @@ export default function NirvanaTerminal() {
                 <LineRow
                   key={`terminalListLines-${masterLineData.lineDetails._id.toString()}`}
                   masterLineData={masterLineData}
+                  handleSelectLine={handleSelectLine}
                 />
               ))}
             </div>
@@ -202,6 +218,7 @@ export default function NirvanaTerminal() {
                 <LineRow
                   key={`terminalListLines-${masterLineData.lineDetails._id.toString()}`}
                   masterLineData={masterLineData}
+                  handleSelectLine={handleSelectLine}
                 />
               ))
             )}

@@ -16,32 +16,16 @@ import { useRecoilState } from "recoil";
 
 export default function LineRow({
   masterLineData,
+  handleSelectLine,
 }: {
   masterLineData: MasterLineData;
+  handleSelectLine: (lineId: string) => void;
 }) {
   const [selectedLineId, setSelectedLineId] = useRecoilState($selectedLineId);
   const { data: userData } = useGetUserDetails();
 
   // TODO: p2 move those socket handler functions to another hook so that they don't come from the context as this will cause each line row to re-render on changes to the context state/value
   const { handleUnTuneToLine } = useLineDataProvider();
-
-  /** show user line details */
-  const handleSelectLine = useCallback(() => {
-    // if not already selected so that we are not changing this recoil atom of selected line id and causing a mess
-    if (selectedLineId !== masterLineData.lineDetails._id.toString()) {
-      setSelectedLineId((prevSelectedLineId) => {
-        // untune myself from the previously selected if it was a temporary one/inbox
-        // todo: p3: consolidate this logic as it's used in escape but different scenarios sort of so p3
-        if (
-          prevSelectedLineId &&
-          masterLineData.currentUserMember?.state === LineMemberState.INBOX
-        )
-          handleUnTuneToLine(prevSelectedLineId);
-
-        return masterLineData.lineDetails._id.toString();
-      });
-    }
-  }, [setSelectedLineId, masterLineData, selectedLineId]);
 
   // take the source of truth list of memeberIds tuned in, and see if I'm in it
   const isUserTunedIn = useMemo(
@@ -131,7 +115,9 @@ export default function LineRow({
 
   return (
     <div
-      onClick={handleSelectLine}
+      onClick={() =>
+        handleSelectLine(masterLineData.lineDetails._id.toString())
+      }
       className={`flex flex-row items-center justify-start gap-2 p-2 px-4 h-14 hover:bg-gray-200 cursor-pointer transition-all
   last:border-b-0 border-b border-b-gray-200 relative z-50 ${
     selectedLineId === masterLineData.lineDetails._id.toString() &&
