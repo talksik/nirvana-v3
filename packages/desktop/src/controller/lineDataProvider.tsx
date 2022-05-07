@@ -58,6 +58,10 @@ function useSocketHandler(linesData: MasterLineData[]) {
    * initiate listeners
    */
   useEffect(() => {
+    /**
+     * TODO: P0 : notified that someone else added me to a line they created
+     */
+
     // when me or anyone just initially connects to line
     $ws.on(
       ServerResponseChannels.SOMEONE_CONNECTED_TO_LINE,

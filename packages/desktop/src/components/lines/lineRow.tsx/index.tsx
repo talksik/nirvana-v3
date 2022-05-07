@@ -24,9 +24,6 @@ export default function LineRow({
   const [selectedLineId, setSelectedLineId] = useRecoilState($selectedLineId);
   const { data: userData } = useGetUserDetails();
 
-  // TODO: p2 move those socket handler functions to another hook so that they don't come from the context as this will cause each line row to re-render on changes to the context state/value
-  const { handleUnTuneToLine } = useLineDataProvider();
-
   // take the source of truth list of memeberIds tuned in, and see if I'm in it
   const isUserTunedIn = useMemo(
     () =>
