@@ -16,7 +16,6 @@ import {
 import React, { useContext, useState } from "react";
 import { Socket, io } from "socket.io-client";
 import { useCallback, useEffect } from "react";
-import { useGetUserDetails, useUserLines } from "./index";
 
 import { LineMemberState } from "@nirvana/core/models/line.model";
 import MasterLineData from "@nirvana/core/models/masterLineData.model";
@@ -24,6 +23,7 @@ import { User } from "@nirvana/core/models";
 import { queryClient } from "../pages/nirvanaApp";
 import toast from "react-hot-toast";
 import { useRecoilValue } from "recoil";
+import { useUserLines } from "./index";
 
 let $ws: Socket;
 
@@ -61,6 +61,9 @@ function useSocketHandler(linesData: MasterLineData[]) {
     /**
      * TODO: P0 : notified that someone else added me to a line they created
      */
+    // 1. get the new line from axios or just from the ws itself
+    // 2. add it to the lines map with all of the right data
+    // 3. make sure to connect to it as if it's inbox material
 
     // when me or anyone just initially connects to line
     $ws.on(
