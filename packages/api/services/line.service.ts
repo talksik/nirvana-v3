@@ -1,6 +1,11 @@
-import { Line, LineMember } from "@nirvana/core/models/line.model";
+import {
+  Line,
+  LineMember,
+  LineMemberState,
+} from "@nirvana/core/models/line.model";
 import { client, collections } from "./database.service";
 
+import NirvanaResponse from "@nirvana/core/responses/nirvanaResponse";
 import { ObjectId } from "mongodb";
 
 export class LineService {
@@ -108,5 +113,33 @@ export class LineService {
     }
 
     return null;
+  }
+
+  static async updateLineMemberState(
+    lineId: string,
+    userId: string,
+    newState: LineMemberState
+  ) {
+    const query = { lineId, userId: new ObjectId(userId) };
+    const updateSet = { $set: { state: newState, lastVisitDate: new Date() } };
+
+    const updateRes = await collections.lineMembers?.findOneAndUpdate(
+      query,
+      updateSet
+    );
+
+    return updateRes;
+  }
+
+  static async updateLineMemberVisitDate(lineId: string, userId: string) {
+    const query = { lineId, userId: new ObjectId(userId) };
+    const updateSet = { $set: { lastVisitDate: new Date() } };
+
+    const updateRes = await collections.lineMembers?.findOneAndUpdate(
+      query,
+      updateSet
+    );
+
+    return updateRes;
   }
 }

@@ -9,6 +9,8 @@ import SocketChannels, {
 
 import GetAllSocketClients from "@nirvana/core/sockets/getAllActiveSocketClients";
 import { JwtClaims } from "../middleware/auth";
+import { LineMemberState } from "@nirvana/core/models/line.model";
+import { LineService } from "../services/line.service";
 import ReceiveSignal from "@nirvana/core/sockets/receiveSignal";
 import SendSignal from "@nirvana/core/sockets/sendSignal";
 import { UserService } from "../services/user.service";
@@ -79,7 +81,7 @@ export default function InitializeWs(io: any) {
       });
 
       /** TUNE | User tunes into the line either temporarily or toggled in  */
-      socket.on(SocketChannels.TUNE_TO_LINE, (req: TuneToLine) => {
+      socket.on(SocketChannels.TUNE_TO_LINE, async (req: TuneToLine) => {
         console.log(`${socket.id} user tuned into room for line ${req.lineId}`);
 
         const roomName = `tunedLine:${req.lineId}`;
@@ -87,11 +89,29 @@ export default function InitializeWs(io: any) {
 
         console.log(`${socket.id} now in rooms ${socket.rooms}`);
 
+        // persist tuning in if user is toggle tuning in
+        if (req.keepTunedIn) {
+          await LineService.updateLineMemberState(
+            req.lineId,
+            userInfo.userId,
+            LineMemberState.TUNED
+          );
+        } else {
+          // just updates the
+          await LineService.updateLineMemberVisitDate(
+            req.lineId,
+            userInfo.userId
+          );
+        }
+
         const clientUserIdsInRoom = io.sockets.adapter.rooms
           .get(roomName)
           .map((socketId: any) => socketIdsToUserIds[socketId]);
 
-        io.in(roomName).emit(
+        // we want to notify everyone connected to the line even if they are not tuned in
+        const connectedLine = `connectedLine:${req.lineId}`;
+
+        io.in(connectedLine).emit(
           SocketChannels.SOMEONE_TUNED_TO_LINE,
           new SomeoneTuned(req.lineId, userInfo.userId, clientUserIdsInRoom)
         );

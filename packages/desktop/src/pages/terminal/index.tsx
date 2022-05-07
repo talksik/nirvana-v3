@@ -25,7 +25,7 @@ export default function NirvanaTerminal() {
   // simply using this query for specific data on loading
   // todo: add these properties in context provider value although more work down the line for control
   const { isLoading: isLoadingInitialLines } = useUserLines();
-  const { linesMap, handleUserBroadcast } = useLineDataProvider();
+  const { linesMap } = useLineDataProvider();
 
   const allLines: MasterLineData[] = useMemo(() => {
     const masterLines: MasterLineData[] = Object.values(linesMap);
@@ -59,7 +59,7 @@ export default function NirvanaTerminal() {
 
       // todo: enable stream in this tuned in channel
 
-      if (lineId) handleUserBroadcast(lineId, true);
+      // if (lineId) handleUserBroadcast(lineId, true);
     },
     []
   );
@@ -70,7 +70,7 @@ export default function NirvanaTerminal() {
 
       // todo: disable stream in this tuned in channel
 
-      if (lineId) handleUserBroadcast(lineId, false);
+      // if (lineId) handleUserBroadcast(lineId, false);
     },
     []
   );

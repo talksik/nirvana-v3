@@ -61,3 +61,7 @@ export class UserBroadcastPull {
     public isTurningOn: boolean = true
   ) {}
 }
+
+export class SocketEmitter<T> {
+  constructor(public channel: SocketChannels, data: T) {}
+}
