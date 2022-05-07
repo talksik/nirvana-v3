@@ -30,7 +30,6 @@ function useSocketHandler(linesData: MasterLineData[]) {
   const jwtToken = useRecoilValue($jwtToken);
 
   const [linesMap, setLinesMap] = useState<LineIdToMasterLine>({});
-  const { data: userDetails } = useGetUserDetails();
 
   /**
    * handle ws connection
@@ -102,7 +101,10 @@ function useSocketHandler(linesData: MasterLineData[]) {
             newMap[res.lineId].tunedInMemberIds = res.allTunedIntoUserIds;
 
             // if user is me, make sure to show me my updated line member association
-            if (userDetails.user._id.toString() === res.userId) {
+            if (
+              newMap[res.lineId].currentUserMember?._id.toString() ===
+              res.userId
+            ) {
               console.log(
                 "updated my line member state for this line | is toggle tuned in: ",
                 res.toggledIn

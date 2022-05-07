@@ -19,15 +19,6 @@ export default function LineDetailsTerminal({
   const { handleTuneToLine } = useLineDataProvider();
   const { data: userDetails } = useGetUserDetails();
 
-  // on mount of this, we want to temporarily tune into the line if we are not already
-  useEffect(() => {
-    if (
-      !selectedLine.tunedInMemberIds?.includes(userDetails?.user._id.toString())
-    ) {
-      handleTuneToLine(selectedLine.lineDetails._id.toString(), false);
-    }
-  }, []);
-
   const isUserToggleTuned = useMemo(
     () => selectedLine?.currentUserMember?.state === LineMemberState.TUNED,
     [selectedLine]

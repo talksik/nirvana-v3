@@ -2,6 +2,7 @@ import { $desktopMode, $selectedLineId } from "../../controller/recoil";
 import { GlobalHotKeys, KeyMap } from "react-hotkeys";
 import { Skeleton, Tooltip } from "antd";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useGetUserDetails, useUserLines } from "../../controller/index";
 import { useRecoilState, useSetRecoilState } from "recoil";
 
 import { FaPlus } from "react-icons/fa";
@@ -13,18 +14,18 @@ import LineRow from "../../components/lines/lineRow.tsx/index";
 import MasterLineData from "@nirvana/core/models/masterLineData.model";
 import NewLineModal from "./newLine";
 import { useLineDataProvider } from "../../controller/lineDataProvider";
-import { useUserLines } from "../../controller/index";
 
 export default function NirvanaTerminal() {
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
 
+  const { data: userDetails } = useGetUserDetails();
   const [selectedLineId, setSelectedLineId] = useRecoilState($selectedLineId);
   const [desktopMode, setDesktopMode] = useRecoilState($desktopMode);
 
   // simply using this query for specific data on loading
   // todo: add these properties in context provider value although more work down the line for control
   const { isLoading: isLoadingInitialLines } = useUserLines();
-  const { linesMap } = useLineDataProvider();
+  const { linesMap, handleTuneToLine } = useLineDataProvider();
 
   useEffect(() => {
     console.log("change/update in lines map");
@@ -109,11 +110,22 @@ export default function NirvanaTerminal() {
 
     // find the line from the data provider
     if (linesMap[selectedLineId]) {
-      return linesMap[selectedLineId];
+      const foundSelectedLine = linesMap[selectedLineId];
+
+      // on mount of this, we want to temporarily tune into the line if we are not already tuned in...which would happen if we toggle tuned in
+      if (
+        !foundSelectedLine.tunedInMemberIds?.includes(
+          userDetails?.user?._id.toString()
+        )
+      ) {
+        handleTuneToLine(selectedLineId, false);
+      }
+
+      return foundSelectedLine;
     }
 
     return undefined;
-  }, [selectedLineId, linesMap]);
+  }, [selectedLineId, linesMap, userDetails]);
 
   const [listRenderTest, setListRenderTest] = useState<boolean>(false);
   useEffect(() => {
