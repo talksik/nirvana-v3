@@ -25,7 +25,8 @@ export default function NirvanaTerminal() {
   // simply using this query for specific data on loading
   // todo: add these properties in context provider value although more work down the line for control
   const { isLoading: isLoadingInitialLines } = useUserLines();
-  const { linesMap, handleTuneToLine } = useLineDataProvider();
+  const { linesMap, handleTuneToLine, handleUnTuneToLine } =
+    useLineDataProvider();
 
   useEffect(() => {
     console.log("change/update in lines map");
@@ -56,8 +57,17 @@ export default function NirvanaTerminal() {
   const handleEscape = useCallback(() => {
     console.log("deselecting line");
 
-    setSelectedLineId(null);
-  }, [setSelectedLineId]);
+    setSelectedLineId((prevSelectedLineId) => {
+      // ! only want to untune if it's a temporarily tuned line
+      if (
+        linesMap[prevSelectedLineId].currentUserMember?.state ===
+        LineMemberState.INBOX
+      )
+        handleUnTuneToLine(prevSelectedLineId);
+
+      return null;
+    });
+  }, [setSelectedLineId, linesMap]);
 
   const handleStartBroadcast = useCallback(
     (lineId: string) => () => {

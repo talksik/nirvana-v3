@@ -86,7 +86,7 @@ export default function InitializeWs(io: any) {
           console.log(`${socket.id} now in rooms ${socket.rooms}`);
 
           const clientUserIdsInRoom = [
-            ...io.sockets.adapter.rooms.get(roomName),
+            ...(io.sockets.adapter.rooms.get(roomName) ?? []),
           ].map(
             (otherUserSocketId: string) => socketIdsToUserIds[otherUserSocketId]
           );
@@ -100,6 +100,13 @@ export default function InitializeWs(io: any) {
             )
           );
         }
+      );
+
+      /**
+       * TODO: handle when user wants to completely leave a line (delete or removed from one)
+       */
+      socket.on(ServerRequestChannels.DISCONNECT_FROM_LINE, () =>
+        console.log("not implemented")
       );
 
       /** TUNE | User tunes into the line either temporarily or toggled in  */
@@ -131,7 +138,7 @@ export default function InitializeWs(io: any) {
           }
 
           const clientUserIdsInRoom = [
-            ...io.sockets.adapter.rooms.get(roomName),
+            ...(io.sockets.adapter.rooms.get(roomName) ?? []),
           ].map(
             (otherUserSocketId: string) => socketIdsToUserIds[otherUserSocketId]
           );
@@ -152,13 +159,6 @@ export default function InitializeWs(io: any) {
       );
 
       /**
-       * TODO: handle when user wants to completely leave a line (delete or removed from one)
-       */
-      socket.on(ServerRequestChannels.DISCONNECT_FROM_LINE, () =>
-        console.log("not implemented")
-      );
-
-      /**
        * Notify all connected users when someone UNTUNES from a room
        * ?might not be needed, all users' memory of tuned in users is irrelevant? don't need real time? but UI will show # of users tuned in?
        */
@@ -171,7 +171,7 @@ export default function InitializeWs(io: any) {
           console.log("someone left room");
 
           const clientUserIdsInRoom = [
-            ...io.sockets.adapter.rooms.get(roomName),
+            ...(io.sockets.adapter.rooms.get(roomName) ?? []),
           ].map(
             (otherUserSocketId: string) => socketIdsToUserIds[otherUserSocketId]
           );

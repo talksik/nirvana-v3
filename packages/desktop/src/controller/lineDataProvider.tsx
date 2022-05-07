@@ -9,6 +9,7 @@ import {
   StartBroadcastingRequest,
   StopBroadcastingRequest,
   TuneToLineRequest,
+  UntuneFromLineRequest,
   UserStartedBroadcastingResponse,
   UserStoppedBroadcastingResponse,
 } from "@nirvana/core/sockets/channels";
@@ -257,6 +258,20 @@ function useSocketHandler(linesData: MasterLineData[]) {
     [$ws]
   );
 
+  const handleUnTuneToLine = useCallback(
+    (lineId: string) => {
+      // they already are in the socket room for updates including media connections and disconnections
+      // but set the flag so that the line row can know whether or not to start the webrtc process
+      // and know when to get out or disconnect from the webrtc when the flag turns off
+
+      $ws.emit(
+        ServerRequestChannels.UNTUNE_FROM_LINE,
+        new UntuneFromLineRequest(lineId)
+      );
+    },
+    [$ws]
+  );
+
   /**
    * This is when the user wants to tell everyone that they are streaming/broadcasting/buzzing to
    * a specific line, whether they are toggle tuned or temporarily tuned in
@@ -313,6 +328,7 @@ function useSocketHandler(linesData: MasterLineData[]) {
     handleStartBroadcast,
     handleStopBroadcast,
     handleFetchMoreAudioBlocks,
+    handleUnTuneToLine,
   };
 }
 
