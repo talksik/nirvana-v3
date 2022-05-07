@@ -208,7 +208,7 @@ async function getUserLines(req: Request, res: Response) {
 
     const resObj = new GetUserLinesResponse(masterLines);
 
-    res.json(new NirvanaResponse(resObj));
+    res.json(new NirvanaResponse<GetUserLinesResponse>(resObj));
   } catch (error) {
     res.status(500).json(error);
   }

@@ -20,7 +20,7 @@ export class LineMember {
     public lineId: ObjectId,
     public userId: ObjectId,
 
-    public state: LineMemberState = LineMemberState.INBOX,
+    public state: LineMemberState,
 
     public createdDate: Date = new Date(),
     public _id?: ObjectId

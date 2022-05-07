@@ -18,7 +18,7 @@ export default class NirvanaApi {
   // auth token from google that our backend will use
   static _jwtToken?: string;
 
-  static async fetch(
+  static async fetch<T>(
     url: string,
     method: Method,
     privateRoute = false,
@@ -88,7 +88,11 @@ async function userSearch(searchQuery: string): Promise<UserSearchResponse> {
 }
 
 async function getUserLines(): Promise<NirvanaResponse<GetUserLinesResponse>> {
-  return await NirvanaApi.fetch(`/lines`, "GET", true);
+  return await NirvanaApi.fetch<NirvanaResponse<GetUserLinesResponse>>(
+    `/lines`,
+    "GET",
+    true
+  );
 }
 
 async function getDmByUserId(otherUserId: string): Promise<Line> {

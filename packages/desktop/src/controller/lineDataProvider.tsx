@@ -207,18 +207,18 @@ function useSocketHandler(linesData: MasterLineData[]) {
         // ?are prolly looking to do a full app refresh and connection refresh
         const newMap = { ...prevMappings };
 
-        linesData.map((masterLine) => {
+        linesData.forEach((masterLine) => {
           const lineId = masterLine.lineDetails._id.toString();
           newMap[lineId] = masterLine;
-
-          console.log(masterLine);
 
           handleConnectToLine(lineId);
 
           // tune into lines that I should be
           if (masterLine.currentUserMember.state === LineMemberState.TUNED) {
             // don't need to turn toggle on, it's already on
-            handleTuneToLine(lineId, false);
+            // ! CHANGE PARADIGM TO NOT INCLUDING TOGGLING IN REQUESTS WITH THE SAME AS TUNING IN
+            // right now, writing just because of later logic
+            handleTuneToLine(lineId, true);
           }
         });
 
@@ -344,8 +344,6 @@ export function LineDataProvider({ children }) {
   // ?just do simple synchronous axios/fetch in useEffect and manage isLoading ourselves?
   const { data: basicUserLinesData } = useUserLines();
 
-  console.log(basicUserLinesData?.data?.masterLines);
-
   const { linesMap, ...handlers } = useSocketHandler(
     basicUserLinesData?.data?.masterLines
   );
@@ -355,7 +353,7 @@ export function LineDataProvider({ children }) {
   }
 
   const value: ILineDataContext & ReturnType<typeof useSocketHandler> = {
-    linesMap: {}, // TODO send the updated map instead of this array
+    linesMap, // TODO send the updated map instead of this array
     relevantUsers: [],
     $ws,
     ...handlers,
