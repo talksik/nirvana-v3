@@ -1,6 +1,5 @@
 import { FiActivity, FiSun } from "react-icons/fi";
-import { useCallback, useEffect, useMemo } from "react";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useCallback, useMemo } from "react";
 
 import { $selectedLineId } from "../../../controller/recoil";
 import { Avatar } from "antd";
@@ -9,6 +8,8 @@ import { LineMemberState } from "@nirvana/core/models/line.model";
 import MasterLineData from "@nirvana/core/models/masterLineData.model";
 import moment from "moment";
 import { useGetUserDetails } from "../../../controller/index";
+import { useLineDataProvider } from "../../../controller/lineDataProvider";
+import { useRecoilState } from "recoil";
 
 // todo: send a much more comprehensive master line object? or just add properties to the
 // masterLineData object so that we don't have different models to maintain between client and server
@@ -21,10 +22,26 @@ export default function LineRow({
   const [selectedLineId, setSelectedLineId] = useRecoilState($selectedLineId);
   const { data: userData } = useGetUserDetails();
 
+  // TODO: p2 move those socket handler functions to another hook so that they don't come from the context as this will cause each line row to re-render on changes to the context state/value
+  const { handleUnTuneToLine } = useLineDataProvider();
+
   /** show user line details */
   const handleSelectLine = useCallback(() => {
-    setSelectedLineId(masterLineData.lineDetails._id.toString());
-  }, [setSelectedLineId, masterLineData]);
+    // if not already selected so that we are not changing this recoil atom of selected line id and causing a mess
+    if (selectedLineId !== masterLineData.lineDetails._id.toString()) {
+      setSelectedLineId((prevSelectedLineId) => {
+        // untune myself from the previously selected if it was a temporary one/inbox
+        // todo: p3: consolidate this logic as it's used in escape but different scenarios sort of so p3
+        if (
+          prevSelectedLineId &&
+          masterLineData.currentUserMember?.state === LineMemberState.INBOX
+        )
+          handleUnTuneToLine(prevSelectedLineId);
+
+        return masterLineData.lineDetails._id.toString();
+      });
+    }
+  }, [setSelectedLineId, masterLineData, selectedLineId]);
 
   // take the source of truth list of memeberIds tuned in, and see if I'm in it
   const isUserTunedIn = useMemo(
