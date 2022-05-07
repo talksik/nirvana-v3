@@ -1,9 +1,9 @@
-import { useCallback, useMemo } from "react";
+import { FiActivity, FiSun } from "react-icons/fi";
+import { useCallback, useEffect, useMemo } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
 
 import { $selectedLineId } from "../../../controller/recoil";
 import { Avatar } from "antd";
-import { FiSun } from "react-icons/fi";
 import LineIcon from "../lineIcon";
 import { LineMemberState } from "@nirvana/core/models/line.model";
 import MasterLineData from "@nirvana/core/models/masterLineData.model";
@@ -26,13 +26,22 @@ export default function LineRow({
     setSelectedLineId(masterLineData.lineDetails._id.toString());
   }, [setSelectedLineId, masterLineData]);
 
+  // take the source of truth list of memeberIds tuned in, and see if I'm in it
+  const isUserTunedIn = useMemo(
+    () =>
+      masterLineData.tunedInMemberIds?.includes(userData?.user?._id.toString()),
+    [masterLineData.tunedInMemberIds, userData]
+  );
+
   /**
    * TODO: slowly add to this and fix based on added features
    * */
   const renderActivityIcon = useMemo(() => {
+    if (isUserTunedIn) return <FiActivity className="text-black" />;
+
     // if there is someone or me broadcasting here
-    // if (masterLineData.currentUserMember.lastVisitDate)
-    return <FiSun className="text-xs text-teal-500" />;
+    if (masterLineData.currentBroadcastersUserIds?.length > 0)
+      return <FiSun className="text-xs text-teal-500" />;
 
     // if there is new activity blocks for me
     if (masterLineData.currentUserMember.lastVisitDate)
@@ -43,11 +52,11 @@ export default function LineRow({
     return (
       <span className="h-2 w-2 rounded-full bg-white animate-pulse"></span>
     );
-  }, [masterLineData]);
+  }, [masterLineData, isUserTunedIn]);
 
   const renderRightActivity = useMemo(() => {
-    // TODO: this should be the list of broadcasters, not members...change once we have that
-    if (masterLineData.otherUserObjects?.length)
+    // TODO: get the profile pictures of the broadcasters
+    if (masterLineData.currentBroadcastersUserIds?.length > 0)
       return (
         <Avatar.Group
           key={`lineRowRightActivityGroup-${masterLineData.lineDetails._id.toString()}`}
@@ -75,7 +84,7 @@ export default function LineRow({
 
     // if there is new activity/black dot, then show relative time as little bolder? or too much?
 
-    // TODO: add moment for relative time of activity
+    // TODO: compare last visit date to latest audio block
     if (masterLineData.currentUserMember.lastVisitDate)
       return (
         <span className={`text-gray-400 ml-auto text-xs font-semibold`}>
