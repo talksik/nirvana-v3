@@ -120,13 +120,18 @@ export class LineService {
     userId: string,
     newState: LineMemberState
   ) {
-    const query = { lineId, userId: new ObjectId(userId) };
+    const query = {
+      lineId: new ObjectId(lineId),
+      userId: new ObjectId(userId),
+    };
     const updateSet = { $set: { state: newState, lastVisitDate: new Date() } };
 
     const updateRes = await collections.lineMembers?.findOneAndUpdate(
       query,
       updateSet
     );
+
+    console.log(updateRes);
 
     return updateRes;
   }

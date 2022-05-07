@@ -21,7 +21,7 @@ export default function LineDetailsTerminal({
 
   const isUserToggleTuned = useMemo(
     () => selectedLine?.currentUserMember?.state === LineMemberState.TUNED,
-    [selectedLine]
+    [selectedLine.currentUserMember]
   );
 
   // seeing if I am in the list of broadcasters
@@ -33,6 +33,10 @@ export default function LineDetailsTerminal({
       ),
     [userDetails, selectedLine]
   );
+
+  useEffect(() => {
+    console.log(selectedLine?.currentUserMember);
+  }, [selectedLine]);
 
   return (
     <>

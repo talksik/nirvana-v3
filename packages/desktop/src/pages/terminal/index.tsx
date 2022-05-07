@@ -110,7 +110,11 @@ export default function NirvanaTerminal() {
 
     // find the line from the data provider
     if (linesMap[selectedLineId]) {
+      console.log("looking for selected Line in map for details section");
+
       const foundSelectedLine = linesMap[selectedLineId];
+
+      console.log(foundSelectedLine);
 
       // on mount of this, we want to temporarily tune into the line if we are not already tuned in...which would happen if we toggle tuned in
       if (
@@ -181,25 +185,24 @@ export default function NirvanaTerminal() {
             </div>
           </div>
 
+          {!(allLines.length > 0 && !(toggleTunedLines.length > 0)) && (
+            <span className="text-gray-300 text-sm my-5 text-center">
+              You have no lines! <br /> Create one to connect to your team
+              instantly.
+            </span>
+          )}
+
           {/* rest of the lines */}
           <div className={"flex flex-col"}>
             {isLoadingInitialLines ? (
               <Skeleton />
             ) : (
-              <>
-                {!allLines.length && (
-                  <span className="text-gray-300 text-sm my-5 text-center">
-                    You have no lines! <br /> Create one to connect to your team
-                    instantly.
-                  </span>
-                )}
-                {allLines.map((masterLineData) => (
-                  <LineRow
-                    key={`terminalListLines-${masterLineData.lineDetails._id.toString()}`}
-                    masterLineData={masterLineData}
-                  />
-                ))}
-              </>
+              allLines.map((masterLineData) => (
+                <LineRow
+                  key={`terminalListLines-${masterLineData.lineDetails._id.toString()}`}
+                  masterLineData={masterLineData}
+                />
+              ))
             )}
           </div>
         </div>

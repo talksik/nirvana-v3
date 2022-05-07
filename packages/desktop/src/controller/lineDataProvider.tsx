@@ -102,7 +102,7 @@ function useSocketHandler(linesData: MasterLineData[]) {
 
             // if user is me, make sure to show me my updated line member association
             if (
-              newMap[res.lineId].currentUserMember?._id.toString() ===
+              newMap[res.lineId].currentUserMember?.userId.toString() ===
               res.userId
             ) {
               console.log(
@@ -195,6 +195,7 @@ function useSocketHandler(linesData: MasterLineData[]) {
   useEffect(() => {
     if (linesData?.length > 0) {
       console.log("going to make initial connections and create lines map");
+      console.log(linesData);
 
       setLinesMap((prevMappings) => {
         // go through the lines from the persistent store
@@ -209,6 +210,8 @@ function useSocketHandler(linesData: MasterLineData[]) {
         linesData.map((masterLine) => {
           const lineId = masterLine.lineDetails._id.toString();
           newMap[lineId] = masterLine;
+
+          console.log(masterLine);
 
           handleConnectToLine(lineId);
 
@@ -341,6 +344,8 @@ export function LineDataProvider({ children }) {
   // ?just do simple synchronous axios/fetch in useEffect and manage isLoading ourselves?
   const { data: basicUserLinesData } = useUserLines();
 
+  console.log(basicUserLinesData?.data?.masterLines);
+
   const { linesMap, ...handlers } = useSocketHandler(
     basicUserLinesData?.data?.masterLines
   );
@@ -350,7 +355,7 @@ export function LineDataProvider({ children }) {
   }
 
   const value: ILineDataContext & ReturnType<typeof useSocketHandler> = {
-    linesMap, // TODO send the updated map instead of this array
+    linesMap: {}, // TODO send the updated map instead of this array
     relevantUsers: [],
     $ws,
     ...handlers,

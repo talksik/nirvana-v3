@@ -7,6 +7,7 @@ import { FiSun } from "react-icons/fi";
 import LineIcon from "../lineIcon";
 import { LineMemberState } from "@nirvana/core/models/line.model";
 import MasterLineData from "@nirvana/core/models/masterLineData.model";
+import moment from "moment";
 import { useGetUserDetails } from "../../../controller/index";
 
 // todo: send a much more comprehensive master line object? or just add properties to the
@@ -78,13 +79,13 @@ export default function LineRow({
     if (masterLineData.currentUserMember.lastVisitDate)
       return (
         <span className={`text-gray-400 ml-auto text-xs font-semibold`}>
-          {masterLineData.currentUserMember.lastVisitDate}
+          {moment(masterLineData.currentUserMember.lastVisitDate).fromNow()}
         </span>
       );
 
     return (
       <span className={`text-gray-300 ml-auto text-xs `}>
-        {masterLineData.currentUserMember.lastVisitDate}
+        {moment(masterLineData.currentUserMember.lastVisitDate).fromNow()}
       </span>
     );
   }, [masterLineData]);
