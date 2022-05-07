@@ -57,6 +57,27 @@ export default function Login() {
     >
       <Logo className="scale-50" />
 
+      {/* ! TESTING PURPOSES */}
+      <button
+        onClick={() =>
+          setJwtToken(
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MjczYTNjZGVmYzc3MDNhZDg1NWYzMjYiLCJnb29nbGVVc2VySWQiOiIxMTM0NzA3ODY2OTAzNTMxMDkwODYiLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EtL0FPaDE0R2ptMjlTZDFXbm04TnZaYlhrb3N2ZjZTb0lENmtCUDVPSFJMVklPQlE9czk2LWMiLCJlbWFpbCI6InBhdGVsLmFyanVuNTBAZ21haWwuY29tIiwibmFtZSI6IkFyanVuIFBhdGVsIiwiaWF0IjoxNjUxOTY2MDg2fQ.bGK4DaUyuHCIRFhX5g3xQxI5SVMKR7hmte1UpmTZaVc"
+          )
+        }
+      >
+        patel.arjun50@gmail.com
+      </button>
+
+      <button
+        onClick={() =>
+          setJwtToken(
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MjczYTZmYmVmYzc3MDNhZDg1NWYzMjciLCJnb29nbGVVc2VySWQiOiIxMTE2NzEzNTI4MDkwMTg3NjM4MjYiLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EtL0FPaDE0R2dUUmFNaVVUZkNaX1ZOM2M3SFJyYUlZUmpmN1BNSUZjVThJdlZiPXM5Ni1jIiwiZW1haWwiOiJhcmp1bnBhdGVsQGJlcmtlbGV5LmVkdSIsIm5hbWUiOiJBcmp1biBQYXRlbCIsImlhdCI6MTY1MTk2NjA5OH0.53TbuXaHDTivEpqVr-TP5A1vVIFznT3q_HoVxOReZKc"
+          )
+        }
+      >
+        arjunpatel@berkeley.edu
+      </button>
+
       {isLoading ? (
         <>
           <span className="text-white">Attempting to log you in</span>
