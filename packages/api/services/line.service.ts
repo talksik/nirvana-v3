@@ -131,8 +131,6 @@ export class LineService {
       updateSet
     );
 
-    console.log(updateRes);
-
     return updateRes;
   }
 

@@ -30,7 +30,7 @@ export default function NirvanaTerminal() {
   useEffect(() => {
     console.log("change/update in lines map");
 
-    console.log(linesMap);
+    // console.log(linesMap);
   }, [linesMap]);
 
   const allLines: MasterLineData[] = useMemo(() => {
@@ -114,8 +114,6 @@ export default function NirvanaTerminal() {
 
       const foundSelectedLine = linesMap[selectedLineId];
 
-      console.log(foundSelectedLine);
-
       // on mount of this, we want to temporarily tune into the line if we are not already tuned in...which would happen if we toggle tuned in
       if (
         !foundSelectedLine.tunedInMemberIds?.includes(
@@ -125,7 +123,7 @@ export default function NirvanaTerminal() {
         handleTuneToLine(selectedLineId, false);
       }
 
-      return foundSelectedLine;
+      return { ...foundSelectedLine };
     }
 
     return undefined;

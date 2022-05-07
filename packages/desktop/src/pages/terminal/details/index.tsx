@@ -21,7 +21,7 @@ export default function LineDetailsTerminal({
 
   const isUserToggleTuned = useMemo(
     () => selectedLine?.currentUserMember?.state === LineMemberState.TUNED,
-    [selectedLine.currentUserMember]
+    [selectedLine]
   );
 
   // seeing if I am in the list of broadcasters
@@ -33,10 +33,6 @@ export default function LineDetailsTerminal({
       ),
     [userDetails, selectedLine]
   );
-
-  useEffect(() => {
-    console.log(selectedLine?.currentUserMember);
-  }, [selectedLine]);
 
   return (
     <>
@@ -88,7 +84,15 @@ export default function LineDetailsTerminal({
             isUserToggleTuned ? "bg-gray-800 text-white" : "text-black"
           }`}
               onClick={() =>
-                handleTuneToLine(selectedLine.lineDetails._id.toString(), true)
+                isUserToggleTuned
+                  ? handleTuneToLine(
+                      selectedLine.lineDetails._id.toString(),
+                      false
+                    )
+                  : handleTuneToLine(
+                      selectedLine.lineDetails._id.toString(),
+                      true
+                    )
               }
             >
               <FiActivity className="text-lg" />

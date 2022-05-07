@@ -344,10 +344,12 @@ export function LineDataProvider({ children }) {
   // ?just do simple synchronous axios/fetch in useEffect and manage isLoading ourselves?
   const { data: basicUserLinesData } = useUserLines();
 
+  // ! passing in the same data of the query passes reference so changes that happen in socketHandler impact react query cache
   const { linesMap, ...handlers } = useSocketHandler(
     basicUserLinesData?.data?.masterLines
   );
 
+  // avoid children rendering if they don't have the ws to make individual calls with
   if (!$ws) {
     return <span>attempting to connect you for the here and now...</span>;
   }

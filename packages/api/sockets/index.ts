@@ -123,10 +123,10 @@ export default function InitializeWs(io: any) {
               LineMemberState.TUNED
             );
           } else {
-            // just updates the
-            await LineService.updateLineMemberVisitDate(
+            await LineService.updateLineMemberState(
               req.lineId,
-              userInfo.userId
+              userInfo.userId,
+              LineMemberState.INBOX
             );
           }
 
