@@ -264,6 +264,7 @@ function StreamRoom({
               console.log(
                 "ooo newbie joined room, I guess I will accept it and send him my signal"
               );
+              console.log(res);
 
               var peerForMeAndNewbie = new Peer({
                 initiator: false,
@@ -297,11 +298,21 @@ function StreamRoom({
           $ws.on(
             `${ServerResponseChannels.RTC_RECEIVING_ANSWER_RESPONSE_PREFIX}:${lineId}`,
             (res: RtcReceiveAnswerResponse) => {
-              console.log("oooo some master received my call and accepted it");
+              console.log(
+                `oooo some master received my call and accepted it ${JSON.stringify(
+                  res
+                )}`
+              );
+              console.log(res);
 
               // find the peer we created earlier for this master
               // ?is this okay? using the setter to get the current state?
               setUserPeers((previousUserPeersMap) => {
+                console.log(
+                  "here is the current peers map",
+                  previousUserPeersMap
+                );
+
                 const peerForAnswerer =
                   previousUserPeersMap[res.answererUserId];
 
@@ -341,6 +352,11 @@ function StreamRoom({
 
   // calculate diff to clean our userPeerMap to unmount and detroy certain peer connections
   useEffect(() => {}, [tunedInUsers]);
+
+  useEffect(() => {
+    console.log("keeping an eye on user peers map");
+    console.log(userPeers);
+  }, [userPeers]);
 
   // todo, someone tell the main object that I am finally connected after everything...different than tuned in
 
