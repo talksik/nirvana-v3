@@ -129,13 +129,6 @@ export default function NirvanaTerminal() {
     return undefined;
   }, [selectedLineId, linesMap, userDetails]);
 
-  const [listRenderTest, setListRenderTest] = useState<boolean>(false);
-  useEffect(() => {
-    setInterval(() => {
-      setListRenderTest(true);
-    }, 2000);
-  }, [setListRenderTest]);
-
   return (
     <>
       <GlobalHotKeys handlers={handlers} keyMap={keyMap} allowChanges />
@@ -183,7 +176,7 @@ export default function NirvanaTerminal() {
             </div>
           </div>
 
-          {!(allLines.length > 0 && !(toggleTunedLines.length > 0)) && (
+          {!(allLines.length > 0) && !(toggleTunedLines.length > 0) && (
             <span className="text-gray-300 text-sm my-5 text-center">
               You have no lines! <br /> Create one to connect to your team
               instantly.
@@ -208,17 +201,7 @@ export default function NirvanaTerminal() {
         {desktopMode === "terminalDetails" && selectedLine && (
           <LineDetailsTerminal selectedLine={selectedLine} />
         )}
-
-        {listRenderTest && <RenderTest />}
       </div>
     </>
   );
-}
-
-function RenderTest() {
-  useEffect(() => {
-    console.error("YOOOO FROM THE RENDER TEST COMPONENT");
-  }, []);
-
-  return <>this is the render test</>;
 }
