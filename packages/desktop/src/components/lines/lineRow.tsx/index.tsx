@@ -359,6 +359,8 @@ function StreamRoom({
   useEffect(() => {
     console.log("keeping an eye on user peers map");
     console.log(userPeers);
+
+    // TODO: p1...when the peer map user count === tuned in - 1, then we tell parent to say that we are actually tuned in/connected
   }, [userPeers]);
 
   // todo, someone tell the main object that I am finally connected after everything...different than tuned in
