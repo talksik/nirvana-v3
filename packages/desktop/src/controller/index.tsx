@@ -57,7 +57,11 @@ export function useUserLines() {
   // todo: base/source of truth for getting all of the lines for the user
   // merge with sockets + audio clip data + master data + convomember data
 
-  return useQuery("USER_LINES", ApiCalls.getUserLines);
+  return useQuery("USER_LINES", ApiCalls.getUserLines, {
+    refetchOnWindowFocus: false,
+    refetchIntervalInBackground: false,
+    staleTime: Infinity,
+  });
 }
 
 // =========== MUTATIONS

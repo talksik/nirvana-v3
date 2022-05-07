@@ -20,6 +20,7 @@ export default function ProtectedRoute({
     isLoading: serverLoading,
     isSuccess: isServerHealthy,
     error: serverStatusError,
+    isFetching: serverFetching,
   } = useServerCheck();
 
   const { isLoading, isError, isFetching, isSuccess, refetch } = useAuthCheck(
@@ -59,6 +60,7 @@ export default function ProtectedRoute({
     refetch();
   }, [jwtToken]);
 
+  // first time loading
   if (serverLoading)
     return (
       <span className="text-md text-gray-400 flex items-center justify-center flex-1 text-center p-5 h-screen">

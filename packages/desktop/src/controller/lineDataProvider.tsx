@@ -174,8 +174,9 @@ function useSocketHandler(linesData: MasterLineData[]) {
    * and doing initial connections/tune ins ?could trigger this later?
    */
   useEffect(() => {
-    console.log(linesData);
-    if (linesData) {
+    if (linesData?.length > 0) {
+      console.log("going to make initial connections and create lines map");
+
       setLinesMap((prevMappings) => {
         // go through the lines from the persistent store
 
@@ -282,17 +283,14 @@ function useSocketHandler(linesData: MasterLineData[]) {
     [$ws]
   );
 
+  // TODO: move all of these emitters to just having child views doing the work here
   return {
     linesMap,
-    emitters: $ws
-      ? {
-          handleConnectToLine,
-          handleTuneToLine,
-          handleStartBroadcast,
-          handleStopBroadcast,
-          handleFetchMoreAudioBlocks,
-        }
-      : {},
+    handleConnectToLine,
+    handleTuneToLine,
+    handleStartBroadcast,
+    handleStopBroadcast,
+    handleFetchMoreAudioBlocks,
   };
 }
 
@@ -303,11 +301,17 @@ interface ILineDataContext {
   // represents the modified and up to date lines data with availability from session
   linesMap: LineIdToMasterLine;
   relevantUsers: User[];
+
+  // in case some components need this like in the peer handling
+  $ws: Socket;
 }
 
-const LineDataContext = React.createContext<ILineDataContext>({
+const LineDataContext = React.createContext<
+  Partial<ILineDataContext & ReturnType<typeof useSocketHandler>>
+>({
   linesMap: {},
   relevantUsers: [],
+  $ws: undefined,
 });
 
 export function LineDataProvider({ children }) {
@@ -318,11 +322,19 @@ export function LineDataProvider({ children }) {
   // ?just do simple synchronous axios/fetch in useEffect and manage isLoading ourselves?
   const { data: basicUserLinesData } = useUserLines();
 
-  const { linesMap } = useSocketHandler(basicUserLinesData?.data?.masterLines);
+  const { linesMap, ...handlers } = useSocketHandler(
+    basicUserLinesData?.data?.masterLines
+  );
 
-  const value: ILineDataContext = {
+  if (!$ws) {
+    return <span>attempting to connect you for the here and now...</span>;
+  }
+
+  const value: ILineDataContext & ReturnType<typeof useSocketHandler> = {
     linesMap, // TODO send the updated map instead of this array
     relevantUsers: [],
+    $ws,
+    ...handlers,
   };
 
   return (

@@ -16,6 +16,8 @@ export default function LineDetailsTerminal({
 }: {
   selectedLine: MasterLineData;
 }) {
+  const { handleTuneToLine } = useLineDataProvider();
+
   const { data: userDetails } = useGetUserDetails();
   const isUserToggleTuned = useMemo(
     () => selectedLine?.currentUserMember?.state === LineMemberState.TUNED,
@@ -59,6 +61,10 @@ export default function LineDetailsTerminal({
           className="absolute bottom-0 p-4 shadow-2xl
         flex flex-row items-center gap-2 justify-end w-full"
         >
+          <span className="mr-auto text-teal-800">{`${
+            selectedLine?.tunedInMemberIds?.length ?? 0
+          } on the line`}</span>
+
           <button
             className={`p-3 flex justify-center items-center hover:bg-gray-300
            transition-all hover:scale-105`}
@@ -77,6 +83,9 @@ export default function LineDetailsTerminal({
           hover:scale-105 transition-all animate-pulse ${
             isUserToggleTuned ? "bg-gray-800 text-white" : "text-black"
           }`}
+              onClick={() =>
+                handleTuneToLine(selectedLine.lineDetails._id.toString(), true)
+              }
             >
               <FiActivity className="text-lg" />
             </button>

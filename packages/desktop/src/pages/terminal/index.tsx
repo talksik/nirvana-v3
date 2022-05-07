@@ -26,6 +26,12 @@ export default function NirvanaTerminal() {
   const { isLoading: isLoadingInitialLines } = useUserLines();
   const { linesMap } = useLineDataProvider();
 
+  useEffect(() => {
+    console.log("change/update in lines map");
+
+    console.log(linesMap);
+  }, [linesMap]);
+
   const allLines: MasterLineData[] = useMemo(() => {
     const masterLines: MasterLineData[] = Object.values(linesMap);
 
