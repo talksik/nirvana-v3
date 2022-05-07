@@ -113,11 +113,6 @@ function useSocketHandler(linesData: MasterLineData[]) {
               newMap[res.lineId].currentUserMember?.userId.toString() ===
               res.userId
             ) {
-              console.log(
-                "updated my line member state for this line | is toggle tuned in: ",
-                res.toggledIn
-              );
-
               newMap[res.lineId].currentUserMember.lastVisitDate = new Date();
               newMap[res.lineId].currentUserMember.state = res.toggledIn
                 ? LineMemberState.TUNED
@@ -202,9 +197,6 @@ function useSocketHandler(linesData: MasterLineData[]) {
    */
   useEffect(() => {
     if (linesData?.length > 0) {
-      console.log("going to make initial connections and create lines map");
-      console.log(linesData);
-
       setLinesMap((prevMappings) => {
         // go through the lines from the persistent store
 

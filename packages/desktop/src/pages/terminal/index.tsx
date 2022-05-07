@@ -29,8 +29,7 @@ export default function NirvanaTerminal() {
     useLineDataProvider();
 
   useEffect(() => {
-    console.log("change/update in lines map");
-
+    // console.log("change/update in lines map");
     // console.log(linesMap);
   }, [linesMap]);
 
@@ -59,7 +58,7 @@ export default function NirvanaTerminal() {
 
     // find the line from the data provider
     if (linesMap[selectedLineId]) {
-      console.log("looking for selected Line in map for details section");
+      // console.log("looking for selected Line in map for details section");
 
       const foundSelectedLine = linesMap[selectedLineId];
 

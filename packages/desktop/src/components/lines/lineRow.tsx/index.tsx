@@ -328,7 +328,15 @@ function StreamRoom({
     }
 
     // TODO: p1 : destroy peers on load
-    return () => {};
+    // ! remove ws handlers so that the same channels don't get triggered twice when I retune into this line
+    return () => {
+      $ws.removeListener(
+        `${ServerResponseChannels.RTC_RECEIVING_ANSWER_RESPONSE_PREFIX}:${lineId}`
+      );
+      $ws.removeListener(
+        `${ServerResponseChannels.RTC_NEW_USER_JOINED_RESPONSE_PREFIX}:${lineId}`
+      );
+    };
   }, [userDetails, setUserPeers]);
 
   // calculate diff to clean our userPeerMap to unmount and detroy certain peer connections
