@@ -1,6 +1,12 @@
 import { Avatar } from "antd";
 
-export default function LineIcon({ sourceImages }: { sourceImages: string[] }) {
+export default function LineIcon({
+  sourceImages,
+  grayscale = true,
+}: {
+  sourceImages: string[];
+  grayscale: boolean;
+}) {
   return (
     <Avatar.Group
       maxCount={2}
@@ -20,7 +26,7 @@ export default function LineIcon({ sourceImages }: { sourceImages: string[] }) {
           src={avatarSrc}
           shape="square"
           size={"default"}
-          className={"grayscale"}
+          className={`${grayscale && "grayscale"}`}
         />
       ))}
     </Avatar.Group>

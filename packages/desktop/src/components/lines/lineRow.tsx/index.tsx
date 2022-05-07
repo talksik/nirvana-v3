@@ -142,7 +142,9 @@ export default function LineRow({
       {renderActivityIcon}
 
       <span className="flex flex-row gap-2 items-center justify-start text-slate-800">
-        {profilePictures && <LineIcon sourceImages={profilePictures} />}
+        {profilePictures && (
+          <LineIcon grayscale={!isUserTunedIn} sourceImages={profilePictures} />
+        )}
 
         <h2
           className={`text-inherit text-md truncate ${
@@ -151,7 +153,8 @@ export default function LineRow({
               : ""
           }`}
         >
-          {masterLineData.lineDetails.name}
+          {masterLineData.lineDetails.name ||
+            masterLineData.otherUserObjects[0].givenName}
         </h2>
       </span>
 

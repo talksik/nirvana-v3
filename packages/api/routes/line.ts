@@ -74,7 +74,7 @@ async function createLine(req: Request, res: Response) {
 
     const newLine = new Line(
       new ObjectId(userInfo.userId),
-      reqObj.lineName,
+      reqObj.lineName ?? undefined,
       new Date(),
       new Date(),
       new ObjectId()
