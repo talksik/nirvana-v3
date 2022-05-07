@@ -22,7 +22,7 @@ export default function LineDetailsTerminal({
 
   return (
     <>
-      <div className="flex flex-col bg-gray-100 w-[400px] items-stretch justify-start relative">
+      <div className="flex flex-col flex-1 bg-gray-100 items-stretch justify-start relative border-l border-l-gray-100">
         {/* line overview header */}
         <div className="flex flex-row p-3 items-center gap-1">
           {/* <LineIcon sourceImages={selectedLine.profilePictures} />
