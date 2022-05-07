@@ -270,7 +270,7 @@ function StreamRoom({
               var peerForMeAndNewbie = new Peer({
                 initiator: false,
                 trickle: false, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times
-                stream: localStream, // add in my own stream that I got before
+                stream: userStream, // add in my own stream that I got before
               });
 
               peerForMeAndNewbie.on("signal", (signal) => {
@@ -309,13 +309,14 @@ function StreamRoom({
               // find the peer we created earlier for this master
               // ?is this okay? using the setter to get the current state?
               setUserPeers((previousUserPeersMap) => {
+                const newUserPeerMap = { ...previousUserPeersMap };
+
                 console.log(
                   "here is the current peers map",
                   previousUserPeersMap
                 );
 
-                const peerForAnswerer =
-                  previousUserPeersMap[res.answererUserId];
+                const peerForAnswerer = newUserPeerMap[res.answererUserId];
 
                 if (peerForAnswerer) {
                   peerForAnswerer.signal(res.simplePeerSignal);
@@ -325,7 +326,8 @@ function StreamRoom({
                   );
                 }
 
-                return previousUserPeersMap;
+                // note needed to change state so that the peer object that gets iterated in dom isn't the old referenced one/we trigger refresh for the child component
+                return newUserPeerMap;
               });
             }
           );
