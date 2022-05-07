@@ -15,6 +15,7 @@ import {
 import React, { useContext, useState } from "react";
 import { Socket, io } from "socket.io-client";
 import { useCallback, useEffect } from "react";
+import { useGetUserDetails, useUserLines } from "./index";
 
 import { LineMemberState } from "@nirvana/core/models/line.model";
 import MasterLineData from "@nirvana/core/models/masterLineData.model";
@@ -22,7 +23,6 @@ import { User } from "@nirvana/core/models";
 import { queryClient } from "../pages/nirvanaApp";
 import toast from "react-hot-toast";
 import { useRecoilValue } from "recoil";
-import { useUserLines } from "./index";
 
 let $ws: Socket;
 
@@ -30,6 +30,7 @@ function useSocketHandler(linesData: MasterLineData[]) {
   const jwtToken = useRecoilValue($jwtToken);
 
   const [linesMap, setLinesMap] = useState<LineIdToMasterLine>({});
+  const { data: userDetails } = useGetUserDetails();
 
   /**
    * handle ws connection
@@ -97,10 +98,26 @@ function useSocketHandler(linesData: MasterLineData[]) {
         setLinesMap((prevLinesMap) => {
           const newMap = { ...prevLinesMap };
 
-          // TODO: update the relevant lineMember (based on which userId is given): state and last visit date if current user is joining
-
-          if (newMap[res.lineId])
+          if (newMap[res.lineId]) {
             newMap[res.lineId].tunedInMemberIds = res.allTunedIntoUserIds;
+
+            // if user is me, make sure to show me my updated line member association
+            if (userDetails.user._id.toString() === res.userId) {
+              console.log(
+                "updated my line member state for this line | is toggle tuned in: ",
+                res.toggledIn
+              );
+
+              newMap[res.lineId].currentUserMember.lastVisitDate = new Date();
+              newMap[res.lineId].currentUserMember.state = res.toggledIn
+                ? LineMemberState.TUNED
+                : LineMemberState.INBOX;
+            }
+
+            // TODO: update the relevant lineMember (based on which userId is given): state and last visit date if current user is joining
+            // and not just if it's the current user toggling in
+            // right now, we just want user to know number of folks tuned and no need to expose who is toggle tuned...that lineMember can be stale
+          }
 
           return newMap;
         });

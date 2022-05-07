@@ -74,7 +74,8 @@ export class SomeoneTunedResponse {
   constructor(
     public lineId: string,
     public userId: string,
-    public allTunedIntoUserIds: string[]
+    public allTunedIntoUserIds: string[],
+    public toggledIn: boolean = false // tell client if this new user toggled in or just temporary so that they can update the right LineMember assoc
   ) {}
 }
 export class UntuneFromLineRequest {

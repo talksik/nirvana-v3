@@ -144,7 +144,8 @@ export default function InitializeWs(io: any) {
             new SomeoneTunedResponse(
               req.lineId,
               userInfo.userId,
-              clientUserIdsInRoom
+              clientUserIdsInRoom,
+              req.keepTunedIn
             )
           );
         }

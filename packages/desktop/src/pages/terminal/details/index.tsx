@@ -1,13 +1,13 @@
 import { FiActivity, FiSettings, FiSun } from "react-icons/fi";
 import { GlobalHotKeys, KeyMap } from "react-hotkeys";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 
 import { $selectedLineId } from "../../../controller/recoil";
 import LineIcon from "../../../components/lines/lineIcon/index";
 import { LineMemberState } from "@nirvana/core/models/line.model";
 import MasterLineData from "@nirvana/core/models/masterLineData.model";
 import { Tooltip } from "antd";
-import { useGetUserDetails } from "../../../controller";
+import { useGetUserDetails } from "../../../controller/index";
 import { useLineDataProvider } from "../../../controller/lineDataProvider";
 import { useRecoilState } from "recoil";
 
@@ -17,8 +17,17 @@ export default function LineDetailsTerminal({
   selectedLine: MasterLineData;
 }) {
   const { handleTuneToLine } = useLineDataProvider();
-
   const { data: userDetails } = useGetUserDetails();
+
+  // on mount of this, we want to temporarily tune into the line if we are not already
+  useEffect(() => {
+    if (
+      !selectedLine.tunedInMemberIds?.includes(userDetails?.user._id.toString())
+    ) {
+      handleTuneToLine(selectedLine.lineDetails._id.toString(), false);
+    }
+  }, []);
+
   const isUserToggleTuned = useMemo(
     () => selectedLine?.currentUserMember?.state === LineMemberState.TUNED,
     [selectedLine]
