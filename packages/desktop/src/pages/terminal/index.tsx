@@ -37,6 +37,8 @@ export default function NirvanaTerminal() {
   const allLines: MasterLineData[] = useMemo(() => {
     const masterLines: MasterLineData[] = Object.values(linesMap);
 
+    // TODO: sort based on the audio blocks and currentMember lastActiveDate
+
     return masterLines.filter(
       (masterLine) =>
         masterLine.currentUserMember.state === LineMemberState.INBOX
@@ -93,17 +95,19 @@ export default function NirvanaTerminal() {
   /** show user line details on click of one line */
   const handleSelectLine = useCallback(
     (newLineIdToSelect: string) => {
-      setSelectedLineId((prevSelectedLineId) => {
-        // untune myself from the previously selected if it was a temporary one/inbox
-        // todo: p3: consolidate this logic as it's used in escape but different scenarios sort of so p3
-        if (
-          prevSelectedLineId &&
-          selectedLine.currentUserMember?.state === LineMemberState.INBOX
-        )
-          handleUnTuneToLine(prevSelectedLineId);
+      if (newLineIdToSelect !== selectedLine?.lineDetails._id.toString()) {
+        setSelectedLineId((prevSelectedLineId) => {
+          // untune myself from the previously selected if it was a temporary one/inbox
+          // todo: p3: consolidate this logic as it's used in escape but different scenarios sort of so p3
+          if (
+            prevSelectedLineId &&
+            selectedLine.currentUserMember?.state === LineMemberState.INBOX
+          )
+            handleUnTuneToLine(prevSelectedLineId);
 
-        return newLineIdToSelect;
-      });
+          return newLineIdToSelect;
+        });
+      }
     },
     [setSelectedLineId, selectedLine]
   );
