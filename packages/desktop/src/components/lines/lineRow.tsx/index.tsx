@@ -1,4 +1,8 @@
 import { FiActivity, FiSun } from "react-icons/fi";
+import {
+  ServerResponseChannels,
+  SomeoneUntunedFromLineResponse,
+} from "@nirvana/core/sockets/channels";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { $selectedLineId } from "../../../controller/recoil";
@@ -154,7 +158,7 @@ export default function LineRow({
       {isUserTunedIn && (
         <StreamRoom
           currentBroadcasters={masterLineData.currentBroadcastersUserIds}
-          initialTunedInUserIds={masterLineData.tunedInMemberIds}
+          tunedInUsers={masterLineData.tunedInMemberIds}
         />
       )}
     </>
@@ -162,10 +166,10 @@ export default function LineRow({
 }
 
 function StreamRoom({
-  initialTunedInUserIds,
+  tunedInUsers,
   currentBroadcasters,
 }: {
-  initialTunedInUserIds?: string[];
+  tunedInUsers?: string[];
   currentBroadcasters?: string[];
 }) {
   // ?could move this up the tree and pass it down? or set it in the header?
@@ -176,18 +180,44 @@ function StreamRoom({
   // local peer map of userIds to peers
   const [userPeers, setUserPeers] = useState<{ [userId: string]: Peer }>({});
 
+  // ws listen to events of user disconnecting and such or rely on tunedin members prop
+  const { $ws } = useLineDataProvider();
+
   useEffect(() => {
     navigator.mediaDevices
-      .getUserMedia({ video: false, audio: true })
+      .getUserMedia({
+        video: false,
+        audio: {
+          echoCancellation: true,
+          autoGainControl: true,
+        },
+      })
       .then((userStream) => {
         setLocalStream(userStream);
 
-        if (userStreamTagRef?.current)
-          userStreamTagRef.current.srcObject = userStream;
+        // if (userStreamTagRef?.current)
+        //   userStreamTagRef.current.srcObject = userStream;
 
+        // alternative to dom element
         // const audio = new Audio();
         // audio.autoplay = true;
         // audio.srcObject = userStream;
+
+        // test distortion to go away on disabling audio
+        setTimeout(() => {
+          console.log("stopping audio stream ");
+
+          userStream.getTracks().forEach((track) => {
+            track.enabled = !track.enabled;
+
+            track.stop();
+          });
+        }, 2000);
+
+        // take the initial list of tunedInUsers
+        // create local peer objects for them
+        // notify all of them individually
+        //
       })
       .catch((error) => {
         console.error(error);
@@ -196,7 +226,19 @@ function StreamRoom({
           "Make sure that you have permissions enabled and microphone connected"
         );
       });
+
+    $ws.on(
+      ServerResponseChannels.SOMEONE_UNTUNED_FROM_LINE,
+      (res: SomeoneUntunedFromLineResponse) => {
+        // take the relevant userId
+        res.userId;
+      }
+    );
   }, []);
+
+  useEffect(() => {
+    console.log("change in tuned in users in the streaming room!!!");
+  }, [tunedInUsers]);
 
   // we only loop through peers that are associated to user Ids which exist in the currentBroadcasters array
   return (
@@ -234,19 +276,15 @@ function PeerStreamRenderer({
 
       if (streamRef?.current) streamRef.current.srcObject = remotePeerStream;
     });
+
+    return () => peer.destroy();
   }, [streamRef]);
 
   // when someone is broadcasting, we enable their stream
 
   return (
     <>
-      <video
-        muted={!isBroadcasting}
-        autoPlay
-        ref={streamRef}
-        height={"400"}
-        width={"500"}
-      />
+      <audio muted={!isBroadcasting} autoPlay ref={streamRef} />
     </>
   );
 }
