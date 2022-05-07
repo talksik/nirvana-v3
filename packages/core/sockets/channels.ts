@@ -41,6 +41,9 @@ export enum ServerRequestChannels {
 
   BROADCAST_TO_LINE = "BROADCAST_TO_LINE",
   STOP_BROADCAST_TO_LINE = "STOP_BROADCAST_TO_LINE",
+
+  RTC_CALL_REQUEST = "RTC_CALL_PREFIX",
+  RTC_ANSWER_REQUEST = "RTC_ANSWER_REQUEST_PREFIX",
 }
 
 export enum ServerResponseChannels {
@@ -52,6 +55,10 @@ export enum ServerResponseChannels {
 
   SOMEONE_STARTED_BROADCASTING = "SOMEONE_STARTED_BROADCASTING", //show their stream tracks
   SOMEONE_STOPPED_BROADCASTING = "SOMEONE_STOPPED_BROADCASTING", // stop showing their stream tracks
+
+  // sending to the correct room of tunedin folks AND also making sure it's the right event handler in the right handler for this component
+  RTC_NEW_USER_JOINED_RESPONSE_PREFIX = "RTC_NEW_USER_JOINED_RESPONSE_PREFIX",
+  RTC_RECEIVING_ANSWER_RESPONSE_PREFIX = "RTC_RECEIVING_ANSWER_RESPONSE_PREFIX",
 }
 
 export default SocketChannels;
@@ -106,4 +113,28 @@ export class UserStoppedBroadcastingResponse {
 // ?another approach to use switch statements, but it just requires same mess, just less methods with socket but who cares right now
 export class SocketEmitter<T> {
   constructor(public channel: SocketChannels, data: T) {}
+}
+
+export class RtcCallRequest {
+  constructor(
+    public lineId: string,
+    public userIdToCall: string,
+    public simplePeerSignal: any
+  ) {}
+}
+
+export class RtcNewUserResponse {
+  constructor(public newUserId: string, public simplePeerSignal: any) {}
+}
+
+export class RtcAnswerRequest {
+  constructor(
+    public lineId: string,
+    public userIdToCall: string,
+    public simplePeerSignal: any
+  ) {}
+}
+
+export class RtcReceiveAnswerResponse {
+  constructor(public answererUserId: string, public simplePeerSignal: any) {}
 }

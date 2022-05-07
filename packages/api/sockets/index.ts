@@ -1,5 +1,9 @@
 import {
   ConnectToLineRequest,
+  RtcAnswerRequest,
+  RtcCallRequest,
+  RtcNewUserResponse,
+  RtcReceiveAnswerResponse,
   ServerRequestChannels,
   ServerResponseChannels,
   SomeoneConnectedResponse,
@@ -32,6 +36,9 @@ const config = loadConfig();
 const socketIdsToUserIds: {
   [socketId: string]: string;
 } = {};
+const userIdsToSocketIds: {
+  [userId: string]: string;
+} = {};
 
 export default function InitializeWs(io: any) {
   console.log("initializing web sockets");
@@ -62,6 +69,7 @@ export default function InitializeWs(io: any) {
       const userInfo: JwtClaims = socket.userInfo;
 
       socketIdsToUserIds[socket.id] = userInfo.userId.toString();
+      userIdsToSocketIds[userInfo.userId.toString()] = socket.id;
 
       console.log(
         `a user connected | user Id: ${userInfo.userId} and name: ${userInfo.name}`
@@ -231,9 +239,35 @@ export default function InitializeWs(io: any) {
       //   );
       // });
 
+      // tell the proper other user to create a local peer object for the one on one mesh connection
+      socket.on(
+        ServerRequestChannels.RTC_CALL_REQUEST,
+        (req: RtcCallRequest) => {
+          const userSocketId = userIdsToSocketIds[req.userIdToCall];
+
+          io.to(userSocketId).emit(
+            `${ServerResponseChannels.RTC_NEW_USER_JOINED_RESPONSE_PREFIX}:${req.lineId}`,
+            new RtcNewUserResponse(userInfo.userId, req.simplePeerSignal)
+          );
+        }
+      );
+
+      socket.on(
+        ServerRequestChannels.RTC_ANSWER_REQUEST,
+        (req: RtcAnswerRequest) => {
+          const userSocketId = userIdsToSocketIds[req.userIdToCall];
+
+          io.to(userSocketId).emit(
+            `${ServerResponseChannels.RTC_RECEIVING_ANSWER_RESPONSE_PREFIX}:${req.lineId}`,
+            new RtcReceiveAnswerResponse(userInfo.userId, req.simplePeerSignal)
+          );
+        }
+      );
+
       // ==== DISCONNECT ====
       socket.on("disconnect", () => {
         delete socketIdsToUserIds[socket.id];
+        delete userIdsToSocketIds[userInfo.userId];
 
         // get all of the rooms of this socket
         // notify everyone of this disconnection
@@ -242,6 +276,10 @@ export default function InitializeWs(io: any) {
         console.log(
           `list of sockets mappings in memory: ${socketIdsToUserIds}`
         );
+
+        console.log(socket.rooms);
+
+        // ! NOTIFY ALL CONNECTED LINES SO THAT THEY CAN REMOVE FROM THEIR SESSION CONNECTED USERS ARRAY AND TUNED IN ARRAY
       });
     });
 }
