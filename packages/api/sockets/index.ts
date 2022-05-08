@@ -282,10 +282,12 @@ export default function InitializeWs(io: any) {
               // get fresh list of tuned in folks without me
               const clientUserIdsInRoom = [
                 ...(io.sockets.adapter.rooms.get(roomName) ?? []),
-              ].map(
-                (otherUserSocketId: string) =>
-                  socketIdsToUserIds[otherUserSocketId]
-              );
+              ]
+                .filter((mappedSocketId) => mappedSocketId !== socket.id)
+                .map(
+                  (otherUserSocketId: string) =>
+                    socketIdsToUserIds[otherUserSocketId]
+                );
 
               io.in(roomName).emit(
                 ServerResponseChannels.SOMEONE_UNTUNED_FROM_LINE,
