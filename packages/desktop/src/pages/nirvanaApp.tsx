@@ -46,7 +46,16 @@ function NirvanaApp() {
           <ReactQueryDevtools initialIsOpen={true} position={"bottom-left"} />
         </RecoilRoot>
 
-        <Toaster />
+        <Toaster
+          position={"bottom-center"}
+          toastOptions={{
+            style: {
+              borderRadius: "10px",
+              background: "#333",
+              color: "#fff",
+            },
+          }}
+        />
       </QueryClientProvider>
     </>
   );

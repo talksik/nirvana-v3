@@ -13,10 +13,11 @@ import { useRecoilState } from "recoil";
 
 export default function LineDetailsTerminal({
   selectedLine,
+  handleToggleTuneToLine,
 }: {
   selectedLine?: MasterLineData;
+  handleToggleTuneToLine: (lineId: string, turnToggleOn: boolean) => void;
 }) {
-  const { handleTuneToLine } = useLineDataProvider();
   const { data: userDetails } = useGetUserDetails();
 
   console.log("selected line", selectedLine);
@@ -75,11 +76,11 @@ export default function LineDetailsTerminal({
           }`}
                   onClick={() =>
                     isUserToggleTuned
-                      ? handleTuneToLine(
+                      ? handleToggleTuneToLine(
                           selectedLine.lineDetails._id.toString(),
                           false
                         )
-                      : handleTuneToLine(
+                      : handleToggleTuneToLine(
                           selectedLine.lineDetails._id.toString(),
                           true
                         )

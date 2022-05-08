@@ -13,6 +13,7 @@ import { LineMemberState } from "@nirvana/core/models/line.model";
 import LineRow from "../../components/lines/lineRow.tsx/index";
 import MasterLineData from "@nirvana/core/models/masterLineData.model";
 import NewLineModal from "./newLine";
+import toast from "react-hot-toast";
 import { useLineDataProvider } from "../../controller/lineDataProvider";
 
 export default function NirvanaTerminal() {
@@ -114,6 +115,19 @@ export default function NirvanaTerminal() {
       }
     },
     [setSelectedLineId, selectedLine]
+  );
+
+  const handleToggleTuneToLine = useCallback(
+    (lineId: string, turnToggleOn: boolean) => {
+      if (toggleTunedLines?.length >= 3) {
+        toast.error("You cannot toggle more than 3 lines!");
+
+        return;
+      }
+
+      handleTuneToLine(lineId, turnToggleOn);
+    },
+    [toggleTunedLines, handleTuneToLine]
   );
 
   const handleStartBroadcast = useCallback(
@@ -238,7 +252,10 @@ export default function NirvanaTerminal() {
           </div>
         </div>
 
-        <LineDetailsTerminal selectedLine={selectedLine} />
+        <LineDetailsTerminal
+          handleToggleTuneToLine={handleToggleTuneToLine}
+          selectedLine={selectedLine}
+        />
       </div>
     </>
   );
