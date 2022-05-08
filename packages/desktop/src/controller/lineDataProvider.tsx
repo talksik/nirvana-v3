@@ -319,6 +319,10 @@ function useSocketHandler(linesData: MasterLineData[]) {
     [$ws]
   );
 
+  /**
+   * TODO: handle telling overall current client that we are finally rtc connected  for a certain line
+   */
+
   // TODO: move all of these emitters to just having child views doing the work here
   return {
     linesMap,

@@ -341,7 +341,10 @@ function StreamRoom({
 
           $ws.on(
             `${ServerResponseChannels.SOMEONE_UNTUNED_FROM_LINE}:${lineId}`,
-            (res: SomeoneUntunedFromLineResponse) => {}
+            (res: SomeoneUntunedFromLineResponse) => {
+              // find the peer object and remove from our userPeers map
+              // will also cause unmounting the child component which destroys peer object but also can destroy here
+            }
           );
         })
         .catch((error) => {
@@ -371,14 +374,37 @@ function StreamRoom({
   useEffect(() => {
     console.log("keeping an eye on user peers map");
     console.log(userPeers);
-
-    // TODO: p1...when the peer map user count === tuned in - 1, then we tell parent to say that we are actually tuned in/connected
   }, [userPeers]);
 
   // todo, someone tell the main object that I am finally connected after everything...different than tuned in
 
+  // TODO: p1...when the peer map user count > tunedIn.length, then we get rid of the right person from list cuzz they have officially left or disconnected
   useEffect(() => {
     console.log("change in tuned in users in the streaming room!!!");
+
+    setUserPeers((prevUserPeersMap) => {
+      // go through the userIds here
+      // if tunedIn users doesn't have a userId, this guy prolly disconnected
+
+      const newMap = { ...prevUserPeersMap }; //ensures going through the list of peers again to remove specific ones
+
+      const otherUserIdsPeers = Object.keys(prevUserPeersMap);
+
+      otherUserIdsPeers.forEach((otherUserId) => {
+        // problem if we are trying to show stream of someone who is not tuned in
+        if (!tunedInUsers.includes(otherUserId)) {
+          console.log("user left with id:", otherUserId);
+          const disconnectedLocalPeer = newMap[otherUserId];
+
+          if (disconnectedLocalPeer) {
+            disconnectedLocalPeer.peer?.destroy();
+            delete newMap[otherUserId];
+          }
+        }
+      });
+
+      return newMap;
+    });
   }, [tunedInUsers]);
 
   // todo: when user isUserBroadcasting is false, disable localUserStream in this component
