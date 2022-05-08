@@ -36,7 +36,7 @@ export const $maxNumberActiveStreams = atom<number>({
 
 // ============
 
-type DesktopMode = "flowState" | "overlayOnly" | "terminal" | "terminalDetails";
+type DesktopMode = "flowState" | "overlayOnly" | "terminal";
 
 export const $desktopMode = atom<DesktopMode>({
   key: "DESKTOP_MODE",

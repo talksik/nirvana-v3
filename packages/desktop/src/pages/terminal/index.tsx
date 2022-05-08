@@ -233,9 +233,7 @@ export default function NirvanaTerminal() {
           </div>
         </div>
 
-        {desktopMode === "terminalDetails" && selectedLine && (
-          <LineDetailsTerminal selectedLine={selectedLine} />
-        )}
+        <LineDetailsTerminal selectedLine={selectedLine} />
       </div>
     </>
   );

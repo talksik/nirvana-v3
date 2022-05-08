@@ -14,10 +14,12 @@ import { useRecoilState } from "recoil";
 export default function LineDetailsTerminal({
   selectedLine,
 }: {
-  selectedLine: MasterLineData;
+  selectedLine?: MasterLineData;
 }) {
   const { handleTuneToLine } = useLineDataProvider();
   const { data: userDetails } = useGetUserDetails();
+
+  console.log("selected line", selectedLine);
 
   const isUserToggleTuned = useMemo(
     () => selectedLine?.currentUserMember?.state === LineMemberState.TUNED,
@@ -37,82 +39,69 @@ export default function LineDetailsTerminal({
   return (
     <>
       <div
-        className="flex flex-col flex-1 bg-gray-100 items-stretch justify-start relative 
+        className="flex flex-col flex-1 bg-gray-100 relative 
       border-l border-l-gray-200"
       >
-        {/* line overview header */}
-        <div className="flex flex-row p-3 items-center gap-1">
-          {/* <LineIcon sourceImages={selectedLine.profilePictures} />
-
-          <span className="flex flex-col items-start gap-1">
-            <h2
-              className={`text-inherit text-md truncate ${
-                selectedLine.hasNewActivity ? "font-semibold" : ""
-              }`}
-            >
-              {selectedLine.name}
-            </h2>
-
-            <span className="text-xs text-gray-300">
-              {`${selectedLine.numberMembers} members`}
-            </span>
-          </span> */}
-        </div>
-
-        {/* controls */}
-        <div
-          className="absolute bottom-0 p-4 shadow-2xl
+        {selectedLine && (
+          <>
+            {/* controls */}
+            <div
+              className="absolute bottom-0 p-4 shadow-2xl
         flex flex-row items-center gap-2 justify-end w-full"
-        >
-          <span className="mr-auto text-teal-800">{`${
-            selectedLine?.tunedInMemberIds?.length ?? 0
-          } on the line`}</span>
+            >
+              <span className="mr-auto text-teal-800">{`${
+                selectedLine?.tunedInMemberIds?.length ?? 0
+              } on the line`}</span>
 
-          <button
-            className={`p-3 flex justify-center items-center hover:bg-gray-300
+              <button
+                className={`p-3 flex justify-center items-center hover:bg-gray-300
            transition-all hover:scale-105`}
-          >
-            <FiSettings className="text-gray-400 text-md" />
-          </button>
+              >
+                <FiSettings className="text-gray-400 text-md" />
+              </button>
 
-          {/* TODO: move to on hover of line row  */}
-          <Tooltip
-            title={`${
-              isUserToggleTuned ? "click to untoggle" : "click to stay tuned in"
-            }`}
-          >
-            <button
-              className={`p-3 flex justify-center items-center shadow-lg
+              {/* TODO: move to on hover of line row  */}
+              <Tooltip
+                title={`${
+                  isUserToggleTuned
+                    ? "click to untoggle"
+                    : "click to stay tuned in"
+                }`}
+              >
+                <button
+                  className={`p-3 flex justify-center items-center shadow-lg
           hover:scale-105 transition-all animate-pulse ${
             isUserToggleTuned ? "bg-gray-800 text-white" : "text-black"
           }`}
-              onClick={() =>
-                isUserToggleTuned
-                  ? handleTuneToLine(
-                      selectedLine.lineDetails._id.toString(),
-                      false
-                    )
-                  : handleTuneToLine(
-                      selectedLine.lineDetails._id.toString(),
-                      true
-                    )
-              }
-            >
-              <FiActivity className="text-lg" />
-            </button>
-          </Tooltip>
+                  onClick={() =>
+                    isUserToggleTuned
+                      ? handleTuneToLine(
+                          selectedLine.lineDetails._id.toString(),
+                          false
+                        )
+                      : handleTuneToLine(
+                          selectedLine.lineDetails._id.toString(),
+                          true
+                        )
+                  }
+                >
+                  <FiActivity className="text-lg" />
+                </button>
+              </Tooltip>
 
-          <button
-            className={`p-3 flex justify-center items-center shadow-lg
+              <button
+                className={`p-3 flex justify-center items-center shadow-lg
           hover:scale-105 transition-all ${
             isUserBroadcasting
               ? "bg-teal-800 text-white"
               : "text-teal-800 border-teal-800 border"
           }`}
-          >
-            <FiSun className="text-lg" />
-          </button>
-        </div>
+              >
+                <FiSun className="text-lg" />
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </>
   );

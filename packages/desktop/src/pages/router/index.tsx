@@ -30,10 +30,7 @@ export default function NirvanaRouter() {
 
     // go hunting for which dimensions to have
     if (desktopMode === "terminal") {
-      finalDimensions = { height: 675, width: 400 };
-    }
-    if (desktopMode === "terminalDetails") {
-      finalDimensions = { height: 675, width: 800 };
+      finalDimensions = { height: 875, width: 1210 };
     }
     if (desktopMode === "flowState") {
       finalPosition = "topRight";
@@ -83,17 +80,6 @@ export default function NirvanaRouter() {
       // setSelectedLineId(null);
     });
   }, [setDesktopMode, setSelectedLineId]);
-
-  // handling desktop mode switch on change of selected line
-  useEffect(() => {
-    if (selectedLineId && desktopMode === "terminal") {
-      console.log("selected line right now", selectedLineId);
-      setDesktopMode("terminalDetails");
-    } else if (!selectedLineId && desktopMode === "terminalDetails")
-      setDesktopMode("terminal");
-
-    // TODO: add more cases step by step based on experience I want
-  }, [selectedLineId, desktopMode, setDesktopMode]);
 
   const handleToggleFlowState = useCallback(() => {
     setDesktopMode("flowState");
