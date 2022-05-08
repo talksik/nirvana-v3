@@ -35,6 +35,12 @@ export default function LineRow({
   const [selectedLineId, setSelectedLineId] = useRecoilState($selectedLineId);
   const { data: userData } = useGetUserDetails();
 
+  useEffect(() => {
+    console.warn("mounting linerow");
+
+    return () => console.warn("UNMOUNTING line row");
+  }, []);
+
   // take the source of truth list of memeberIds tuned in, and see if I'm in it
   const isUserTunedIn = useMemo(
     () =>
@@ -194,6 +200,7 @@ function StreamRoom({
   // ws listen to events of user disconnecting and such or rely on tunedin members prop
   const { $ws } = useLineDataProvider();
 
+  // todo: get the right constraints based on user settings...audio, video, or none? header selections? make a decision
   useEffect(() => {
     if (userDetails) {
       navigator.mediaDevices
@@ -331,6 +338,11 @@ function StreamRoom({
               });
             }
           );
+
+          $ws.on(
+            `${ServerResponseChannels.SOMEONE_UNTUNED_FROM_LINE}:${lineId}`,
+            (res: SomeoneUntunedFromLineResponse) => {}
+          );
         })
         .catch((error) => {
           console.error(error);
@@ -368,6 +380,9 @@ function StreamRoom({
   useEffect(() => {
     console.log("change in tuned in users in the streaming room!!!");
   }, [tunedInUsers]);
+
+  // todo: when user isUserBroadcasting is false, disable localUserStream in this component
+  // and also emit, which should already have been done
 
   // we only loop through peers that are associated to user Ids which exist in the currentBroadcasters array
   return (
