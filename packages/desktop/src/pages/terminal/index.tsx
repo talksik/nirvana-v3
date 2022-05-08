@@ -167,7 +167,7 @@ export default function NirvanaTerminal() {
       <GlobalHotKeys handlers={handlers} keyMap={keyMap} allowChanges />
 
       <div className="flex flex-row flex-1">
-        <div className="flex flex-col bg-white w-[400px]">
+        <div className="flex flex-col bg-white w-[400px] relative group">
           {/* modal for creating new line */}
           <NewLineModal
             open={isModalVisible}
@@ -183,19 +183,10 @@ export default function NirvanaTerminal() {
 
                 <h2 className="text-inherit text-sm">Tuned In</h2>
 
-                <p className="text-slate-300 text-xs">0/5</p>
+                <p className="text-slate-300 text-xs">{`${
+                  toggleTunedLines?.length || 0
+                }/3`}</p>
               </span>
-
-              <Tooltip title="new line">
-                <div
-                  onClick={() => setIsModalVisible(true)}
-                  className="ml-auto shadow-xl"
-                >
-                  <IconButton>
-                    <FaPlus />
-                  </IconButton>
-                </div>
-              </Tooltip>
             </div>
 
             {/* list of toggle tuned lines */}
@@ -230,6 +221,19 @@ export default function NirvanaTerminal() {
                 />
               ))
             )}
+          </div>
+
+          <div
+            onClick={() => setIsModalVisible(true)}
+            className="absolute bottom-0 p-3 right-0 z-10 translate-y-24 group-hover:translate-y-0 transition-all"
+          >
+            <button
+              className="flex flex-row gap-2 items-center justify-evenly 
+            shadow-2xl bg-gray-800 p-2 text-white text-xs"
+            >
+              <FaPlus />
+              <span>New line</span>
+            </button>
           </div>
         </div>
 
