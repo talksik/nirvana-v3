@@ -33,6 +33,11 @@ export default function NirvanaTerminal() {
     // console.log(linesMap);
   }, [linesMap]);
 
+  // ! remounting when toggle tuning and untoggle tuning a line
+  // because it changes the list that it's in...solution 1: put everything in one list and use one sort to handle toggle tuned items to be clean
+  // the change in the object or the property which is specifically currentUserMember of the masterLineData sent in to line row
+  // causes a re-render but not a unmount and remount
+
   const allLines: MasterLineData[] = useMemo(() => {
     const masterLines: MasterLineData[] = Object.values(linesMap);
 
