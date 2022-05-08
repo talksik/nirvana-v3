@@ -134,7 +134,7 @@ export default function NirvanaHeader({
         </Tooltip>
 
         {!shouldHideSearch && (
-          <div className="mx-auto flex flex-row items-center space-x-2 ml-5">
+          <div className="mx-auto flex flex-row items-center space-x-2">
             <FaSearch className="text-xs text-gray-300" />
             <input
               placeholder="Type / to search"
@@ -147,7 +147,7 @@ export default function NirvanaHeader({
         )}
 
         {/* todo: move this ghost button to components */}
-        <button className="text-gray-300 ml-auto text-xs p-3 transition-all hover:bg-gray-200">
+        <button className="text-gray-300 text-xs p-3 transition-all hover:bg-gray-200">
           flow state
         </button>
 
