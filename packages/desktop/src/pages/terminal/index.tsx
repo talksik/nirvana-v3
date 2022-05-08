@@ -225,11 +225,12 @@ export default function NirvanaTerminal() {
 
           <div
             onClick={() => setIsModalVisible(true)}
-            className="absolute bottom-0 p-3 right-0 z-10 translate-y-24 group-hover:translate-y-0 transition-all"
+            className="absolute bottom-3 right-3 z-10 scale-0 
+            group-hover:scale-100 ease-in-out hover:transition group-hover:transition delay-100 duration-200"
           >
             <button
               className="flex flex-row gap-2 items-center justify-evenly 
-            shadow-2xl bg-gray-800 p-2 text-white text-xs"
+              shadow-xl bg-gray-800 p-2 text-white text-xs"
             >
               <FaPlus />
               <span>New line</span>
