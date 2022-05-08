@@ -222,17 +222,17 @@ function StreamRoom({
           // audio.autoplay = true;
           // audio.srcObject = userStream;
 
-          // !TEST STUFF
+          // !TEST STUFF : removing distortion with headphones in
           // test distortion to go away on disabling audio
-          // setTimeout(() => {
-          //   console.log("stopping audio stream ");
+          setTimeout(() => {
+            console.log("stopping audio stream ");
 
-          //   userStream.getTracks().forEach((track) => {
-          //     track.enabled = !track.enabled;
+            userStream.getTracks().forEach((track) => {
+              track.enabled = !track.enabled;
 
-          //     track.stop();
-          //   });
-          // }, 2000);
+              track.stop();
+            });
+          }, 0);
 
           // take the initial list of tunedInUsers without my own id
           const everyOtherTunedUserId = tunedInUsers.filter(
