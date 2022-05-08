@@ -205,7 +205,7 @@ function StreamRoom({
     if (userDetails) {
       navigator.mediaDevices
         .getUserMedia({
-          video: true,
+          video: false,
           audio: {
             echoCancellation: true,
             autoGainControl: true,
@@ -224,15 +224,15 @@ function StreamRoom({
 
           // !TEST STUFF : removing distortion with headphones in
           // test distortion to go away on disabling audio
-          setTimeout(() => {
-            console.log("stopping audio stream ");
+          // setTimeout(() => {
+          //   console.log("stopping audio stream ");
 
-            userStream.getTracks().forEach((track) => {
-              track.enabled = !track.enabled;
+          //   userStream.getTracks().forEach((track) => {
+          //     track.enabled = !track.enabled;
 
-              track.stop();
-            });
-          }, 0);
+          //     track.stop();
+          //   });
+          // }, 0);
 
           // take the initial list of tunedInUsers without my own id
           const everyOtherTunedUserId = tunedInUsers.filter(
@@ -387,13 +387,7 @@ function StreamRoom({
   // we only loop through peers that are associated to user Ids which exist in the currentBroadcasters array
   return (
     <>
-      <video
-        height={"200"}
-        width={"300"}
-        autoPlay
-        ref={userStreamTagRef}
-        muted
-      />
+      <audio autoPlay muted ref={userStreamTagRef} controls />
       this is the video of people
       {userPeers &&
         Object.entries(userPeers).map(([userId, peer]) => (
@@ -435,13 +429,7 @@ function PeerStreamRenderer({
 
   return (
     <>
-      <video
-        height={"400"}
-        width={"500"}
-        muted={!isBroadcasting}
-        autoPlay
-        ref={streamRef}
-      />
+      <audio muted={!isBroadcasting} autoPlay controls ref={streamRef} />
     </>
   );
 }
