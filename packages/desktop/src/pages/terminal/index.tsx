@@ -119,7 +119,8 @@ export default function NirvanaTerminal() {
 
   const handleToggleTuneToLine = useCallback(
     (lineId: string, turnToggleOn: boolean) => {
-      if (toggleTunedLines?.length >= 3) {
+      // inhibit if they are trying to turn on and already have 3 toggle tuned
+      if (toggleTunedLines?.length >= 3 && turnToggleOn) {
         toast.error("You cannot toggle more than 3 lines!");
 
         return;
