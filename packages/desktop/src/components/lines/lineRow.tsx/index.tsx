@@ -103,13 +103,13 @@ export default function LineRow({
     if (masterLineData.currentUserMember.lastVisitDate)
       return (
         <span className={`text-gray-400 ml-auto text-xs font-semibold`}>
-          {moment(masterLineData.currentUserMember.lastVisitDate).fromNow()}
+          {moment(masterLineData.currentUserMember.lastVisitDate).fromNow(true)}
         </span>
       );
 
     return (
       <span className={`text-gray-300 ml-auto text-xs `}>
-        {moment(masterLineData.currentUserMember.lastVisitDate).fromNow()}
+        {moment(masterLineData.currentUserMember.lastVisitDate).fromNow(true)}
       </span>
     );
   }, [masterLineData]);

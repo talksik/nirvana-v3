@@ -40,7 +40,7 @@ type DesktopMode = "flowState" | "overlayOnly" | "terminal";
 
 export const $desktopMode = atom<DesktopMode>({
   key: "DESKTOP_MODE",
-  default: "terminal",
+  default: "flowState",
 });
 
 export const $selectedLineId = atom<string>({
