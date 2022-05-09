@@ -16,7 +16,11 @@ import NewLineModal from "./newLine";
 import toast from "react-hot-toast";
 import { useLineDataProvider } from "../../controller/lineDataProvider";
 
-export default function NirvanaTerminal() {
+export default function NirvanaTerminal({
+  overlayOnly,
+}: {
+  overlayOnly: boolean;
+}) {
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
 
   const { data: userDetails } = useGetUserDetails();

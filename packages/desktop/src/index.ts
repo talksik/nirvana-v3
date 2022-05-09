@@ -8,7 +8,7 @@ import {
   ipcMain,
   screen,
 } from "electron";
-import Channels, { TERMINAL_PRESET } from "./electron/constants";
+import Channels, { DEFAULT_APP_PRESET } from "./electron/constants";
 
 import { DimensionChangeRequest } from "./electron/constants";
 import { handleGoogleLogin } from "./electron/handleLogin";
@@ -36,7 +36,7 @@ let display: Display;
 const createWindow = (): void => {
   // Create the browser window.
   browserWindow = new BrowserWindow({
-    ...{ height: TERMINAL_PRESET.height, width: TERMINAL_PRESET.width },
+    ...DEFAULT_APP_PRESET,
     webPreferences: {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
       sandbox: true,

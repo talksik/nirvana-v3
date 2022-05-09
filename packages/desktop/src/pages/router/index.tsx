@@ -4,7 +4,10 @@ import {
   $numberActiveLines,
   $selectedLineId,
 } from "../../controller/recoil";
-import Channels, { Dimensions } from "../../electron/constants";
+import Channels, {
+  DEFAULT_APP_PRESET,
+  Dimensions,
+} from "../../electron/constants";
 import { useCallback, useEffect } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 
@@ -25,17 +28,13 @@ export default function NirvanaRouter() {
     let finalDimensions: Dimensions = { height: 0, width: 0 };
     let finalPosition: "center" | "topRight";
 
-    const setAlwaysOnTop =
-      desktopMode === "overlayOnly" || desktopMode === "flowState";
+    const setAlwaysOnTop = desktopMode === "overlayOnly";
 
     // go hunting for which dimensions to have
-    if (desktopMode === "terminal") {
-      finalDimensions = { height: 875, width: 1210 };
+    if (desktopMode === "terminal" || desktopMode == "flowState") {
+      finalDimensions = DEFAULT_APP_PRESET;
     }
-    if (desktopMode === "flowState") {
-      finalPosition = "topRight";
-      finalDimensions = { height: 68, width: 360 };
-    }
+
     if (desktopMode === "overlayOnly") {
       finalDimensions = {
         height: 68 + numberOfOverlayRows * 200,
@@ -81,17 +80,32 @@ export default function NirvanaRouter() {
     });
   }, [setDesktopMode, setSelectedLineId]);
 
-  const handleToggleFlowState = useCallback(() => {
-    setDesktopMode("flowState");
-  }, [setDesktopMode]);
-
   return (
-    <LineDataProvider>
-      <div className="flex flex-col flex-1">
-        <NirvanaHeader onHeaderFocus={() => setDesktopMode("terminal")} />
+    <div className="flex flex-col flex-1">
+      <NirvanaHeader onHeaderFocus={() => setDesktopMode("terminal")} />
 
-        <NirvanaTerminal />
-      </div>
-    </LineDataProvider>
+      {desktopMode === "flowState" && <FlowState />}
+
+      {/* remount nirvana terminal */}
+      {(desktopMode === "terminal" || desktopMode === "overlayOnly") && (
+        <LineDataProvider>
+          <NirvanaTerminal overlayOnly={desktopMode === "overlayOnly"} />
+        </LineDataProvider>
+      )}
+    </div>
   );
+}
+
+function FlowState() {
+  useEffect(() => {
+    fetch("http://zenquotes.io/api/random", { method: "GET" })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch(() => {
+        // do nothing, don't bother user, just don't show the quote
+      });
+  }, []);
+
+  return <>{}</>;
 }

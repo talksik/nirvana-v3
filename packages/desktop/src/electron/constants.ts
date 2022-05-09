@@ -22,15 +22,7 @@ export interface DimensionChangeRequest {
   addDimensions: boolean;
 }
 
-export const TERMINAL_PRESET: Dimensions = {
-  height: 675,
-  width: 400,
-};
-
-export const TERMINAL_DETAILS_PRESET: Dimensions = {
-  height: 675,
-  width: 800,
-};
+export const DEFAULT_APP_PRESET: Dimensions = { height: 875, width: 1210 };
 
 export const OVERLAY_ONLY_INITIAL_PRESET: Dimensions = {
   height: 50,

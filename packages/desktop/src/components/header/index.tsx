@@ -27,7 +27,7 @@ export default function NirvanaHeader({
   const inputRef = useRef<HTMLInputElement>(null);
   const [searchInput, setSearchInput] = useState<string>("");
 
-  const desktopMode = useRecoilValue($desktopMode);
+  const [desktopMode, setDesktopMode] = useRecoilState($desktopMode);
 
   const [mediaSettings, setMediaSettings] = useRecoilState($mediaSettings);
 
@@ -147,9 +147,21 @@ export default function NirvanaHeader({
         )}
 
         {/* todo: move this ghost button to components */}
-        <button className="text-gray-300 text-xs p-3 transition-all hover:bg-gray-200">
-          flow state
-        </button>
+        {desktopMode === "flowState" ? (
+          <button
+            onClick={() => setDesktopMode("terminal")}
+            className="ml-auto text-gray-300 text-xs p-3 transition-all hover:bg-gray-200"
+          >
+            connect
+          </button>
+        ) : (
+          <button
+            onClick={() => setDesktopMode("flowState")}
+            className="text-gray-300 text-xs p-3 transition-all hover:bg-gray-200"
+          >
+            flow state
+          </button>
+        )}
 
         <Dropdown overlay={profileMenu}>
           <div className={"cursor-pointer ml-2"}>
