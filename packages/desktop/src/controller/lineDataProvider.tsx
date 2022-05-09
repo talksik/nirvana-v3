@@ -35,16 +35,176 @@ function useSocketHandler(linesData: MasterLineData[]) {
   /**
    * handle ws connection
    */
+
+  // ! POTENTIAL DIAGNOSIS with socket reconnections on electron idle causing
+  // no more event listeners being fired off: potentially because the listeners were for an older manager or instance
+  // so when the client reconnects, with another instance,
+
   useEffect(() => {
     $ws = io("http://localhost:5000", {
       query: { token: jwtToken },
+      transports: ["websocket"],
+      upgrade: false,
+      forceNew: true,
+      reconnection: false, // ! TESTING THE PROBLEM WITH RECONNECTION CLIENT LISTENERS NOT ACTIVATING
     });
 
-    $ws.on("connect", () => toast.success("you are connected"));
+    $ws.on("connect", () => {
+      console.log(
+        "SOCKETS | CLIENT CONNECTED in socket handler, setting up client side listeners for requests"
+      );
+      toast.success("you are connected");
+
+      /**
+       * initiate listeners
+       */
+
+      /**
+       * TODO: P0 : notified that someone else added me to a line they created
+       */
+      // 1. get the new line from axios or just from the ws itself
+      // 2. add it to the lines map with all of the right data
+      // 3. make sure to connect to it as if it's inbox material
+
+      // when me or anyone just initially connects to line
+      $ws.on(
+        ServerResponseChannels.SOMEONE_CONNECTED_TO_LINE,
+        (res: SomeoneConnectedResponse) => {
+          console.log(
+            `connected to line...here are all of the updated in the conected line ${res.lineId}...this isn't reliable considering it's not updated later`,
+            res.allConnectedIntoUserIds
+          );
+
+          setLinesMap((prevLinesMap) => {
+            const newMap = { ...prevLinesMap };
+
+            if (newMap[res.lineId])
+              newMap[res.lineId].connectedMemberIds = [
+                ...(newMap[res.lineId]?.connectedMemberIds ?? []),
+                res.userId,
+              ];
+
+            return newMap;
+          });
+        }
+      );
+
+      // someone tuning in, including perhaps me | either toggled in or just temporary
+      $ws.on(
+        ServerResponseChannels.SOMEONE_TUNED_INTO_LINE,
+        (res: SomeoneTunedResponse) => {
+          console.log(
+            `here are all of updated users in the tuned in room`,
+            res.allTunedIntoUserIds
+          );
+
+          // TODO: if toggled in, make sure to update the current line member in the lines map so that
+          // we can know to untune if user selects another line
+
+          // below, we are setting the list of tuned in folks based on fresh list from the server
+          //   better than just adding and removing? i think so, but have to handle not interrupting existing peer connections as this changes
+          setLinesMap((prevLinesMap) => {
+            const newMap = { ...prevLinesMap };
+
+            if (newMap[res.lineId]) {
+              newMap[res.lineId].tunedInMemberIds = res.allTunedIntoUserIds;
+
+              // if user is me, make sure to show me my updated line member association
+              if (
+                newMap[res.lineId].currentUserMember?.userId.toString() ===
+                res.userId
+              ) {
+                newMap[res.lineId].currentUserMember.lastVisitDate = new Date();
+                newMap[res.lineId].currentUserMember.state = res.toggledIn
+                  ? LineMemberState.TUNED
+                  : LineMemberState.INBOX;
+              }
+
+              // TODO: update the relevant lineMember (based on which userId is given): state and last visit date if current user is joining
+              // and not just if it's the current user toggling in
+              // right now, we just want user to know number of folks tuned and no need to expose who is toggle tuned...that lineMember can be stale
+            }
+
+            return newMap;
+          });
+        }
+      );
+
+      $ws.on(
+        ServerResponseChannels.SOMEONE_UNTUNED_FROM_LINE,
+        (res: SomeoneUntunedFromLineResponse) => {
+          console.log(
+            `here are all of updated users in the tuned in room`,
+            res.allTunedIntoUserIds
+          );
+
+          // TODO: if toggled in, make sure to update the current line member in the lines map so that
+          // we can know to untune if user selects another line
+
+          setLinesMap((prevLinesMap) => {
+            const newMap = { ...prevLinesMap };
+
+            // TODO: update the relevant lineMember (based on which userId is given): state and last visit date if current user is joining
+
+            if (newMap[res.lineId])
+              newMap[res.lineId].tunedInMemberIds = res.allTunedIntoUserIds;
+
+            return newMap;
+          });
+        }
+      );
+
+      $ws.on(
+        ServerResponseChannels.SOMEONE_STARTED_BROADCASTING,
+        (res: UserStartedBroadcastingResponse) => {
+          console.log("someone is starting to broadcast");
+
+          setLinesMap((prevLinesMap) => {
+            const newMap = { ...prevLinesMap };
+
+            if (newMap[res.lineId])
+              newMap[res.lineId].currentBroadcastersUserIds = [
+                ...(newMap[res.lineId].currentBroadcastersUserIds ?? []),
+                res.userId,
+              ];
+
+            return newMap;
+          });
+        }
+      );
+
+      $ws.on(
+        ServerResponseChannels.SOMEONE_STOPPED_BROADCASTING,
+        (res: UserStoppedBroadcastingResponse) => {
+          setLinesMap((prevLinesMap) => {
+            const newMap = { ...prevLinesMap };
+
+            if (newMap[res.lineId]?.currentBroadcastersUserIds) {
+              newMap[res.lineId].currentBroadcastersUserIds = newMap[
+                res.lineId
+              ].currentBroadcastersUserIds.filter(
+                (broadcasterUserId) => broadcasterUserId !== res.userId
+              );
+            }
+
+            return newMap;
+          });
+        }
+      );
+    });
+
+    $ws.io.on("close", () => {
+      console.error(
+        "there was a problem with your app...connection closed likely due to idling"
+      );
+      toast.error(
+        "SOCKETS | connection closed with websockets!!!! either reload app or manually reconnect here"
+      );
+    });
 
     // client-side errors
     $ws.on("connect_error", (err) => {
-      console.error(err.message); // prints the message associated with the error
+      console.error(`SOCKETS | ${err.message}`); // prints the message associated with the error
       toast.error("sorry...this is our bad...please refresh with cmd + r");
 
       // force refetch of server status as well as these generally go hand in hand
@@ -53,144 +213,6 @@ function useSocketHandler(linesData: MasterLineData[]) {
       queryClient.invalidateQueries("SERVER_CHECK");
     });
   }, []);
-
-  /**
-   * initiate listeners
-   */
-  useEffect(() => {
-    /**
-     * TODO: P0 : notified that someone else added me to a line they created
-     */
-    // 1. get the new line from axios or just from the ws itself
-    // 2. add it to the lines map with all of the right data
-    // 3. make sure to connect to it as if it's inbox material
-
-    // when me or anyone just initially connects to line
-    $ws.on(
-      ServerResponseChannels.SOMEONE_CONNECTED_TO_LINE,
-      (res: SomeoneConnectedResponse) => {
-        console.log(
-          `connected to line...here are all of the updated in the conected line ${res.lineId}...this isn't reliable considering it's not updated later`,
-          res.allConnectedIntoUserIds
-        );
-
-        setLinesMap((prevLinesMap) => {
-          const newMap = { ...prevLinesMap };
-
-          if (newMap[res.lineId])
-            newMap[res.lineId].connectedMemberIds = [
-              ...(newMap[res.lineId]?.connectedMemberIds ?? []),
-              res.userId,
-            ];
-
-          return newMap;
-        });
-      }
-    );
-
-    // someone tuning in, including perhaps me | either toggled in or just temporary
-    $ws.on(
-      ServerResponseChannels.SOMEONE_TUNED_INTO_LINE,
-      (res: SomeoneTunedResponse) => {
-        console.log(
-          `here are all of updated users in the tuned in room`,
-          res.allTunedIntoUserIds
-        );
-
-        // TODO: if toggled in, make sure to update the current line member in the lines map so that
-        // we can know to untune if user selects another line
-
-        // below, we are setting the list of tuned in folks based on fresh list from the server
-        //   better than just adding and removing? i think so, but have to handle not interrupting existing peer connections as this changes
-        setLinesMap((prevLinesMap) => {
-          const newMap = { ...prevLinesMap };
-
-          if (newMap[res.lineId]) {
-            newMap[res.lineId].tunedInMemberIds = res.allTunedIntoUserIds;
-
-            // if user is me, make sure to show me my updated line member association
-            if (
-              newMap[res.lineId].currentUserMember?.userId.toString() ===
-              res.userId
-            ) {
-              newMap[res.lineId].currentUserMember.lastVisitDate = new Date();
-              newMap[res.lineId].currentUserMember.state = res.toggledIn
-                ? LineMemberState.TUNED
-                : LineMemberState.INBOX;
-            }
-
-            // TODO: update the relevant lineMember (based on which userId is given): state and last visit date if current user is joining
-            // and not just if it's the current user toggling in
-            // right now, we just want user to know number of folks tuned and no need to expose who is toggle tuned...that lineMember can be stale
-          }
-
-          return newMap;
-        });
-      }
-    );
-
-    $ws.on(
-      ServerResponseChannels.SOMEONE_UNTUNED_FROM_LINE,
-      (res: SomeoneUntunedFromLineResponse) => {
-        console.log(
-          `here are all of updated users in the tuned in room`,
-          res.allTunedIntoUserIds
-        );
-
-        // TODO: if toggled in, make sure to update the current line member in the lines map so that
-        // we can know to untune if user selects another line
-
-        setLinesMap((prevLinesMap) => {
-          const newMap = { ...prevLinesMap };
-
-          // TODO: update the relevant lineMember (based on which userId is given): state and last visit date if current user is joining
-
-          if (newMap[res.lineId])
-            newMap[res.lineId].tunedInMemberIds = res.allTunedIntoUserIds;
-
-          return newMap;
-        });
-      }
-    );
-
-    $ws.on(
-      ServerResponseChannels.SOMEONE_STARTED_BROADCASTING,
-      (res: UserStartedBroadcastingResponse) => {
-        console.log("someone is starting to broadcast");
-
-        setLinesMap((prevLinesMap) => {
-          const newMap = { ...prevLinesMap };
-
-          if (newMap[res.lineId])
-            newMap[res.lineId].currentBroadcastersUserIds = [
-              ...(newMap[res.lineId].currentBroadcastersUserIds ?? []),
-              res.userId,
-            ];
-
-          return newMap;
-        });
-      }
-    );
-
-    $ws.on(
-      ServerResponseChannels.SOMEONE_STOPPED_BROADCASTING,
-      (res: UserStoppedBroadcastingResponse) => {
-        setLinesMap((prevLinesMap) => {
-          const newMap = { ...prevLinesMap };
-
-          if (newMap[res.lineId]?.currentBroadcastersUserIds) {
-            newMap[res.lineId].currentBroadcastersUserIds = newMap[
-              res.lineId
-            ].currentBroadcastersUserIds.filter(
-              (broadcasterUserId) => broadcasterUserId !== res.userId
-            );
-          }
-
-          return newMap;
-        });
-      }
-    );
-  }, [setLinesMap]);
 
   /** handle initial data coming in and creating the initial line map
    * and doing initial connections/tune ins ?could trigger this later?
