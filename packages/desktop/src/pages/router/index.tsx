@@ -11,7 +11,9 @@ import Channels, {
 import { useCallback, useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 
+import FullMottoLogo from "../../../../components/logo/fullMotto";
 import { LineDataProvider } from "../../controller/lineDataProvider";
+import { LogoType } from "@nirvana/components/logo/full";
 import NirvanaHeader from "../../components/header/index";
 import NirvanaTerminal from "../terminal";
 import Overlay from "../overlay";
@@ -122,12 +124,16 @@ function FlowState() {
   }, []);
 
   return (
-    <div className="flex flex-row flex-1 justify-center items-center">
+    <div className="flex flex-col flex-1 justify-center items-center relative">
       {/* <img src="https://source.unsplash.com/random/?nature" /> */}
+      <FullMottoLogo
+        type={LogoType.small}
+        className={"absolute bottom-2 mx-auto"}
+      />
 
       {quote && (
         <span className="flex flex-col justify-center items-center max-w-screen-sm">
-          <span className="text-xl text-gray-800 font-semibold">
+          <span className="text-xl text-gray-800 font-semibold text-center">
             "{quote.content}"
           </span>
           <span className="tex-md italic text-gray-400">{quote.author}</span>

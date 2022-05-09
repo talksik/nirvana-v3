@@ -7,7 +7,7 @@ export default function FullLogo({
   className,
   type,
 }: {
-  className: string;
+  className?: string;
   type?: LogoType;
 }) {
   if (type === LogoType.small) {

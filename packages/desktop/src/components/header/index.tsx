@@ -129,15 +129,14 @@ export default function NirvanaHeader({
         className="flex flex-row items-center bg-gray-100 p-4 border-b border-b-gray-200"
         id="titlebar"
       >
-        {desktopMode === "flowState" ? (
-          <HorizontalLogo type={LogoType.small} />
-        ) : (
-          <Tooltip title={"connected"} placement="right">
-            <div onClick={onHeaderFocus}>
-              <Logo type="small" />
-            </div>
-          </Tooltip>
-        )}
+        <Tooltip
+          title={desktopMode === "flowState" ? "unplugged" : "connected"}
+          placement="right"
+        >
+          <div onClick={onHeaderFocus}>
+            <Logo type="small" />
+          </div>
+        </Tooltip>
 
         {!shouldHideSearch && (
           <div className="mx-auto flex flex-row items-center space-x-2">

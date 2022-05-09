@@ -7,15 +7,15 @@ export default function FullMottoLogo({
   className,
   type,
 }: {
-  className: string;
+  className?: string;
   type?: LogoType;
 }) {
   if (type === LogoType.small) {
     return (
       <svg
         className={className}
-        width="233"
-        height="204"
+        width="125"
+        height="100"
         viewBox="0 0 233 204"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
