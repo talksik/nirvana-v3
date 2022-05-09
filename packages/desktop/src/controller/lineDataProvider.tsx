@@ -38,7 +38,9 @@ function useSocketHandler(linesData: MasterLineData[]) {
 
   // ! POTENTIAL DIAGNOSIS with socket reconnections on electron idle causing
   // no more event listeners being fired off: potentially because the listeners were for an older manager or instance
-  // so when the client reconnects, with another instance,
+  // so when the client reconnects, with another instance, the old listeners are lost
+  // https://stackoverflow.com/questions/34984980/socket-io-not-receiving-emit-data-after-reconnect
+  // https://socket.io/docs/v4/client-options/#reconnection
 
   useEffect(() => {
     $ws = io("http://localhost:5000", {
