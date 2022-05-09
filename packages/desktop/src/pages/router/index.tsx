@@ -123,8 +123,10 @@ function FlowState() {
 
   return (
     <div className="flex flex-row flex-1 justify-center items-center">
+      {/* <img src="https://source.unsplash.com/random/?nature" /> */}
+
       {quote && (
-        <span className="flex flex-col justify-center items-center">
+        <span className="flex flex-col justify-center items-center max-w-screen-sm">
           <span className="text-xl text-gray-800 font-semibold">
             "{quote.content}"
           </span>
