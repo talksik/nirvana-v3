@@ -96,21 +96,24 @@ export default function NirvanaRouter() {
   );
 }
 
-type Quote = { q: string; a: string; h?: string };
+type Quote = {
+  content: string;
+  author: string;
+  length: number;
+  dateAdded: Date;
+  _id: string;
+  tags: string[];
+};
 function FlowState() {
   const [quote, setQuote] = useState<Quote>(null);
 
   useEffect(() => {
-    fetch("https://zenquotes.io/api/random")
-      .then((res) => {
-        console.log(res);
-
-        return res.json();
-      })
-      .then((data: any) => {
+    fetch("https://api.quotable.io/random")
+      .then((res) => res.json())
+      .then((data: Quote) => {
         console.warn(data);
 
-        // setQuote(res[0]);
+        setQuote(data);
       })
       .catch((error) => {
         // do nothing, don't bother user, just don't show the quote
@@ -122,8 +125,10 @@ function FlowState() {
     <div className="flex flex-row flex-1 justify-center items-center">
       {quote && (
         <span className="flex flex-col justify-center items-center">
-          <span className="text-xl text-gray-800 font-semibold">{quote.q}</span>
-          <span className="tex-md italic text-gray-400">{quote.a}</span>
+          <span className="text-xl text-gray-800 font-semibold">
+            "{quote.content}"
+          </span>
+          <span className="tex-md italic text-gray-400">{quote.author}</span>
         </span>
       )}
     </div>
