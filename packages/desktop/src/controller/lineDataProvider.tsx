@@ -395,6 +395,7 @@ export function LineDataProvider({ children }) {
     basicUserLinesData?.data?.masterLines
   );
 
+  // TODO: not complete...not sure of priority of this
   // if we go into flow state
   // emit flow state message to all of my rooms
   // persist it in my user object
