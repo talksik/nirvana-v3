@@ -166,13 +166,13 @@ export default function LineRow({
       </div>
 
       {/* mounts and unmounts based on if in the room or now */}
-      {isUserTunedIn && (
+      {/* {isUserTunedIn && (
         <StreamRoom
           lineId={masterLineData.lineDetails._id.toString()}
           currentBroadcasters={masterLineData.currentBroadcastersUserIds}
           tunedInUsers={masterLineData.tunedInMemberIds}
         />
-      )}
+      )} */}
     </>
   );
 }
