@@ -197,7 +197,7 @@ function useSocketHandler(linesData: MasterLineData[]) {
 
     $ws.io.on("close", () => {
       console.error(
-        "there was a problem with your app...connection closed likely due to idling"
+        "SOCKET | there was a problem with your app...connection closed likely due to idling or manual disconnect"
       );
       toast.error(
         "SOCKETS | connection closed with websockets!!!! either reload app or manually reconnect here"
@@ -214,6 +214,11 @@ function useSocketHandler(linesData: MasterLineData[]) {
       // this should overall remount this component currently which is what we want for new data
       queryClient.invalidateQueries("SERVER_CHECK");
     });
+
+    // on unmounting this component, we want to disconnect
+    return () => {
+      $ws.disconnect();
+    };
   }, []);
 
   /** handle initial data coming in and creating the initial line map
