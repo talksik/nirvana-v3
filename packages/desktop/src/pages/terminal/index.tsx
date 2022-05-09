@@ -93,7 +93,7 @@ export default function NirvanaTerminal({
 
     setSelectedLineId((prevSelectedLineId) => {
       // ! only want to untune if it's a temporarily tuned line
-      if (selectedLine.currentUserMember?.state === LineMemberState.INBOX)
+      if (selectedLine?.currentUserMember?.state === LineMemberState.INBOX)
         handleUnTuneToLine(prevSelectedLineId);
 
       return null;
