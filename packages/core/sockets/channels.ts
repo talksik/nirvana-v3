@@ -44,6 +44,8 @@ export enum ServerRequestChannels {
 
   RTC_CALL_REQUEST = "RTC_CALL_PREFIX",
   RTC_ANSWER_REQUEST = "RTC_ANSWER_REQUEST_PREFIX",
+
+  GOING_INTO_FLOW_STATE = "GOING_INTO_FLOW_STATE",
 }
 
 export enum ServerResponseChannels {
@@ -59,6 +61,8 @@ export enum ServerResponseChannels {
   // sending to the correct room of tunedin folks AND also making sure it's the right event handler in the right handler for this component
   RTC_NEW_USER_JOINED_RESPONSE_PREFIX = "RTC_NEW_USER_JOINED_RESPONSE_PREFIX",
   RTC_RECEIVING_ANSWER_RESPONSE_PREFIX = "RTC_RECEIVING_ANSWER_RESPONSE_PREFIX",
+
+  SOMEONE_GOING_INTO_FLOW_STATE = "SOMEONE_GOING_INTO_FLOW_STATE",
 }
 
 export default SocketChannels;
@@ -137,4 +141,8 @@ export class RtcAnswerRequest {
 
 export class RtcReceiveAnswerResponse {
   constructor(public answererUserId: string, public simplePeerSignal: any) {}
+}
+
+export class FlowStateRequest {
+  constructor() {}
 }

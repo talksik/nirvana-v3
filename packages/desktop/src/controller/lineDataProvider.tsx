@@ -1,4 +1,4 @@
-import { $jwtToken, $selectedLineId } from "./recoil";
+import { $desktopMode, $jwtToken, $selectedLineId } from "./recoil";
 import {
   ConnectToLineRequest,
   ServerRequestChannels,
@@ -388,11 +388,28 @@ export function LineDataProvider({ children }) {
   // persistent store of lines
   // ?just do simple synchronous axios/fetch in useEffect and manage isLoading ourselves?
   const { data: basicUserLinesData } = useUserLines();
+  const desktopMode = useRecoilValue($desktopMode);
 
   // ! passing in the same data of the query passes reference so changes that happen in socketHandler impact react query cache
   const { linesMap, ...handlers } = useSocketHandler(
     basicUserLinesData?.data?.masterLines
   );
+
+  // if we go into flow state
+  // emit flow state message to all of my rooms
+  // persist it in my user object
+  // and then disconnect
+  useEffect(() => {
+    return () => {
+      if (desktopMode === "flowState" && $ws) {
+        console.log(
+          "SOCKETS | telling all of my connected rooms that I am unplugging"
+        );
+
+        $ws.emit(ServerRequestChannels.GOING_INTO_FLOW_STATE);
+      }
+    };
+  }, [desktopMode, $ws]);
 
   // avoid children rendering if they don't have the ws to make individual calls with
   if (!$ws) {

@@ -264,6 +264,39 @@ export default function InitializeWs(io: any) {
         }
       );
 
+      // TODO: not complete
+      socket.on(ServerRequestChannels.GOING_INTO_FLOW_STATE, () => {
+        // change user object to persist this state
+
+        // get all of the connectedLine rooms of this person, and tell them that user is going into flow state
+
+        for (const roomName of socket.rooms) {
+          if (roomName !== socket.id) {
+            const lineId = roomName.split(":")[1];
+            if (roomName.includes("connectedLine")) {
+              // get fresh list of tuned in folks without me
+              const clientUserIdsInRoom = [
+                ...(io.sockets.adapter.rooms.get(roomName) ?? []),
+              ]
+                .filter((mappedSocketId) => mappedSocketId !== socket.id)
+                .map(
+                  (otherUserSocketId: string) =>
+                    socketIdsToUserIds[otherUserSocketId]
+                );
+
+              // io.in(roomName).emit(
+              //   ServerResponseChannels.SOMEONE_GOING_INTO_FLOW_STATE,
+              //   new SomeoneGoingIntoFlowState(
+
+              //     userInfo.userId
+
+              //   )
+              // );
+            }
+          }
+        }
+      });
+
       // tell all connected people that I am disconnecting
       // tell tuned in folks that I am leaving the room
       // tell the tuned in folks the new list of
