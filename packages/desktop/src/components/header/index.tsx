@@ -175,6 +175,7 @@ export default function NirvanaHeader({
                 <Avatar
                   key={`userHeaderProfilePicture`}
                   className="shadow-md"
+                  size={"large"}
                   alt={userDetailsRes?.user?.givenName}
                   src={userDetailsRes?.user?.picture}
                   shape="square"
