@@ -48,7 +48,7 @@ const createWindow = (): void => {
     // backgroundColor: "#00000000",
 
     frame: false,
-    roundedCorners: false,
+    roundedCorners: true,
   });
 
   // browserWindow.setBackgroundColor("#00000000");

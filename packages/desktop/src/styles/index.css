@@ -16,9 +16,9 @@ body {
   font-family: "IBM Plex Sans", sans-serif;
 }
 
-/* button {
-  @apply transition-all;
-} */
+button {
+  @apply transition-all rounded;
+}
 
 #titlebar {
   -webkit-user-select: none;

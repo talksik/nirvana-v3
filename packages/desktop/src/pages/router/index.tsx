@@ -55,7 +55,7 @@ export default function NirvanaRouter() {
 
     // send the final dimensions to main process
     window.electronAPI.window.resizeWindow({
-      setAlwaysOnTop: true, // TODO: remove, just this for testing
+      setAlwaysOnTop,
       dimensions: {
         height: finalDimensions.height,
         width: finalDimensions.width,

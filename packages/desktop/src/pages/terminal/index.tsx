@@ -7,7 +7,6 @@ import { useGetUserDetails, useUserLines } from "../../controller/index";
 import { useRecoilState, useSetRecoilState } from "recoil";
 
 import { FaPlus } from "react-icons/fa";
-import IconButton from "../../components/Button/IconButton/index";
 import { LineMemberState } from "@nirvana/core/models/line.model";
 import LineRow from "../../components/lines/lineRow.tsx/index";
 import MasterLineData from "@nirvana/core/models/masterLineData.model";
