@@ -16,13 +16,13 @@ import {
 import React, { useContext, useState } from "react";
 import { Socket, io } from "socket.io-client";
 import { useCallback, useEffect } from "react";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 
 import { LineMemberState } from "@nirvana/core/models/line.model";
 import MasterLineData from "@nirvana/core/models/masterLineData.model";
 import { User } from "@nirvana/core/models";
 import { queryClient } from "../pages/nirvanaApp";
 import toast from "react-hot-toast";
-import { useRecoilValue } from "recoil";
 import { useUserLines } from "./index";
 
 let $ws: Socket;
@@ -31,6 +31,7 @@ function useSocketHandler(linesData: MasterLineData[]) {
   const jwtToken = useRecoilValue($jwtToken);
 
   const [linesMap, setLinesMap] = useState<LineIdToMasterLine>({});
+  const setDesktopMode = useSetRecoilState($desktopMode);
 
   /**
    * handle ws connection
@@ -195,10 +196,16 @@ function useSocketHandler(linesData: MasterLineData[]) {
       );
     });
 
+    // on disconnections, just switch it to flow state?
+    // what if there was another problem?
     $ws.io.on("close", () => {
       console.error(
         "SOCKET | there was a problem with your app...connection closed likely due to idling or manual disconnect"
       );
+      toast(
+        "Disconnected due to idling or some other issue. Please reconnect or refresh to fix the problem."
+      );
+      setDesktopMode("flowState");
     });
 
     // client-side errors
