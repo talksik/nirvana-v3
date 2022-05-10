@@ -49,7 +49,7 @@ export const $selectedLineId = atom<string>({
 });
 
 interface MediaSettings {
-  mode: "audio" | "video";
+  mode: "audio" | "video" | "screen";
   isMuted: boolean;
 }
 export const $mediaSettings = atom<MediaSettings>({

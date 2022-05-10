@@ -79,20 +79,22 @@ export default function NirvanaHeader({
 
   if (isLoading) return <>loading</>;
 
+  // todo: do I need a mute mode? isn't that just flow state
+  // might confuse user overall
   const profileMenu = (
     <Menu
       items={[
+        // {
+        //   label: (
+        //     <span onClick={handleMuteToggle}>
+        //       {mediaSettings.isMuted ? "Unmute" : "Mute"}
+        //     </span>
+        //   ),
+        //   icon: <> {mediaSettings.isMuted ? <FiMicOff /> : <FiMic />} </>,
+        //   key: `profile-menu-${1}`,
+        // },
         {
-          label: (
-            <span onClick={handleMuteToggle}>
-              {mediaSettings.isMuted ? "Unmute" : "Mute"}
-            </span>
-          ),
-          icon: <> {mediaSettings.isMuted ? <FiMicOff /> : <FiMic />} </>,
-          key: `profile-menu-${1}`,
-        },
-        {
-          label: <span>Audio Mode</span>,
+          label: <span>Audio Only</span>,
           icon: <> {mediaSettings.mode === "audio" ? <FiCheck /> : <></>} </>,
           disabled: false,
           key: `profile-menu-${2}`,
@@ -100,13 +102,24 @@ export default function NirvanaHeader({
         {
           label: (
             <Tooltip title="coming soon">
-              <span>Video Mode</span>
+              <span>Video</span>
             </Tooltip>
           ),
           icon: <>{mediaSettings.mode === "video" ? <FiCheck /> : <></>} </>,
           disabled: true,
           key: `profile-menu-${3}`,
         },
+        {
+          label: (
+            <Tooltip title="coming soon">
+              <span>Screen</span>
+            </Tooltip>
+          ),
+          icon: <>{mediaSettings.mode === "screen" ? <FiCheck /> : <></>} </>,
+          disabled: true,
+          key: `profile-menu-${3}`,
+        },
+
         {
           type: "divider",
           key: `profile-menu-${4}`,
@@ -174,7 +187,7 @@ export default function NirvanaHeader({
               mediaSettings.mode === "audio" && (
                 <Avatar
                   key={`userHeaderProfilePicture`}
-                  className="shadow-md"
+                  className="shadow-md hover:scale-110 transition-all"
                   size={"large"}
                   alt={userDetailsRes?.user?.givenName}
                   src={userDetailsRes?.user?.picture}
