@@ -1,12 +1,13 @@
 import { $desktopMode, $selectedLineId } from "../../controller/recoil";
+import { Avatar, Skeleton, Tooltip } from "antd";
 import { FiActivity, FiSettings, FiSun } from "react-icons/fi";
 import { GlobalHotKeys, KeyMap } from "react-hotkeys";
-import { Skeleton, Tooltip } from "antd";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useGetUserDetails, useUserLines } from "../../controller/index";
 import { useRecoilState, useSetRecoilState } from "recoil";
 
 import { FaPlus } from "react-icons/fa";
+import LineIcon from "../../components/lines/lineIcon/index";
 import { LineMemberState } from "@nirvana/core/models/line.model";
 import LineRow from "../../components/lines/lineRow.tsx/index";
 import MasterLineData from "@nirvana/core/models/masterLineData.model";
@@ -302,35 +303,81 @@ function LineDetailsTerminal({
     [userDetails, selectedLine]
   );
 
+  // showing all tuned in members...they may not hear me since they might be doing something else
+  // but feeling of presentness
+  const profilePictures = useMemo(() => {
+    const pictureSources: string[] = [];
+
+    selectedLine.tunedInMemberIds?.forEach((tunedInMemberUserId) => {
+      // don't want to see my own picture
+      // TODO: don't show myself!?
+      if (tunedInMemberUserId === userDetails.user._id.toString()) {
+        pictureSources.push(userDetails.user?.picture);
+        return;
+      }
+
+      const otherUserObject = selectedLine.otherUserObjects?.find(
+        (userObj) => userObj._id.toString() === tunedInMemberUserId
+      );
+      if (otherUserObject?.picture)
+        pictureSources.push(otherUserObject.picture);
+    });
+
+    return pictureSources;
+  }, [selectedLine, userDetails]);
+
   return (
     <div
-      className="flex flex-col flex-1 bg-gray-100 relative 
-      border-l border-l-gray-200"
+      className="flex flex-col flex-1 bg-gray-100 
+      border-l border-l-gray-200 relative"
     >
-      {/* controls */}
+      {/* line details */}
       <div
-        className="absolute bottom-0 p-4 shadow-2xl
-        flex flex-row items-center gap-2 justify-end w-full"
+        className="p-4 shadow-2xl
+        flex flex-row items-center gap-2 justify-end"
       >
-        <span className="mr-auto text-teal-800">{`${
-          selectedLine?.tunedInMemberIds?.length ?? 0
-        } on the line`}</span>
+        {profilePictures && (
+          <Avatar.Group
+            maxCount={2}
+            maxPopoverTrigger="click"
+            size="default"
+            maxStyle={{
+              color: "#f56a00",
+              backgroundColor: "#fde3cf",
+              cursor: "pointer",
+              borderRadius: "0",
+            }}
+            className="shadow-lg"
+          >
+            {profilePictures?.map((avatarSrc, index) => (
+              <Avatar
+                key={`lineIcon-${avatarSrc}-${index}`}
+                src={avatarSrc}
+                shape="square"
+                size={"default"}
+              />
+            ))}
+          </Avatar.Group>
+        )}
+
+        <span className="mr-auto text-teal-800">{`on the line`}</span>
 
         <button
-          className={`p-3 flex justify-center items-center hover:bg-gray-300
+          className={`p-2 flex justify-center items-center hover:bg-gray-300
            transition-all hover:scale-105`}
         >
-          <FiSettings className="text-gray-400 text-md" />
+          <FiSettings className="text-gray-400 text-sm" />
         </button>
 
         {/* TODO: move to on hover of line row  */}
         <Tooltip
+          placement="left"
           title={`${
             isUserToggleTuned ? "click to untoggle" : "click to stay tuned in"
           }`}
         >
           <button
-            className={`p-3 flex justify-center items-center shadow-lg
+            className={`p-2 flex justify-center items-center shadow-lg
           hover:scale-105 transition-all animate-pulse ${
             isUserToggleTuned ? "bg-gray-800 text-white" : "text-black"
           }`}
@@ -346,21 +393,27 @@ function LineDetailsTerminal({
                   )
             }
           >
-            <FiActivity className="text-lg" />
+            <FiActivity className="text-md" />
           </button>
         </Tooltip>
+      </div>
 
-        <button
-          className={`p-3 flex justify-center items-center shadow-lg
+      {/* line details */}
+      <div></div>
+
+      {/* line timeline + present moment*/}
+      <div></div>
+
+      <button
+        className={`p-3 absolute right-3 bottom-3 flex justify-center items-center shadow-lg
           hover:scale-105 transition-all ${
             isUserBroadcasting
               ? "bg-teal-800 text-white"
               : "text-teal-800 border-teal-800 border"
           }`}
-        >
-          <FiSun className="text-lg" />
-        </button>
-      </div>
+      >
+        <FiSun className="text-lg" />
+      </button>
     </div>
   );
 }
