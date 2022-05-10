@@ -305,14 +305,19 @@ function LineDetailsTerminal({
 
   // showing all tuned in members...they may not hear me since they might be doing something else
   // but feeling of presentness
-  const profilePictures = useMemo(() => {
-    const pictureSources: string[] = [];
+  const tunedProfiles = useMemo(() => {
+    const pictureSources: { name: string; pictureSrc: string }[] = [];
 
     selectedLine.tunedInMemberIds?.forEach((tunedInMemberUserId) => {
       // don't want to see my own picture
       // TODO: don't show myself!?
       if (tunedInMemberUserId === userDetails.user._id.toString()) {
-        pictureSources.push(userDetails.user?.picture);
+        pictureSources.push();
+
+        pictureSources.push({
+          name: userDetails.user?.givenName,
+          pictureSrc: userDetails.user?.picture,
+        });
         return;
       }
 
@@ -320,7 +325,24 @@ function LineDetailsTerminal({
         (userObj) => userObj._id.toString() === tunedInMemberUserId
       );
       if (otherUserObject?.picture)
-        pictureSources.push(otherUserObject.picture);
+        pictureSources.push({
+          name: otherUserObject.givenName,
+          pictureSrc: otherUserObject.picture,
+        });
+    });
+
+    return pictureSources;
+  }, [selectedLine, userDetails]);
+
+  // pics for the line icons
+  const profilePictures = useMemo(() => {
+    const pictureSources: string[] = [];
+
+    // ?don't add in my image as that's useless contextually?
+    // if (userData?.user?.picture) pictureSources.push(userData.user.picture);
+
+    selectedLine.otherUserObjects?.forEach((otherUser) => {
+      if (otherUser.picture) pictureSources.push(otherUser.picture);
     });
 
     return pictureSources;
@@ -333,41 +355,38 @@ function LineDetailsTerminal({
     >
       {/* line details */}
       <div
-        className="p-4 shadow-2xl
-        flex flex-row items-center gap-2 justify-end"
+        className="p-4
+        flex flex-row items-center gap-2 justify-end border-b-gray-200 border-b"
       >
         {profilePictures && (
-          <Avatar.Group
-            maxCount={2}
-            maxPopoverTrigger="click"
-            size="default"
-            maxStyle={{
-              color: "#f56a00",
-              backgroundColor: "#fde3cf",
-              cursor: "pointer",
-              borderRadius: "0",
-            }}
-            className="shadow-lg"
-          >
-            {profilePictures?.map((avatarSrc, index) => (
-              <Avatar
-                key={`lineIcon-${avatarSrc}-${index}`}
-                src={avatarSrc}
-                shape="square"
-                size={"default"}
-              />
-            ))}
-          </Avatar.Group>
+          <LineIcon grayscale={false} sourceImages={profilePictures} />
         )}
 
-        <span className="mr-auto text-teal-800">{`on the line`}</span>
+        <div className="flex flex-col items-start mr-auto group">
+          <span className="flex flex-row gap-2 items-center">
+            <h2 className={`text-lg text-slate-800 font-semibold`}>
+              {selectedLine.lineDetails.name ||
+                selectedLine.otherUserObjects[0].givenName}
+            </h2>
 
-        <button
-          className={`p-2 flex justify-center items-center hover:bg-gray-300
+            <button
+              className={`p-1 hidden group-hover:flex justify-center items-center hover:bg-gray-300
            transition-all hover:scale-105`}
-        >
-          <FiSettings className="text-gray-400 text-sm" />
-        </button>
+            >
+              <FiSettings className="text-gray-400 text-xs" />
+            </button>
+          </span>
+
+          <span className="flex flex-row gap-2 items-center">
+            <span className="text-gray-300 text-xs">{`${
+              selectedLine.otherMembers?.length ?? 0
+            } members`}</span>
+            <span className="h-1 w-1 bg-gray-800 rounded-full"></span>
+            <span className="text-teal-500 text-xs">{`${
+              selectedLine.tunedInMemberIds?.length ?? 0
+            } on the line`}</span>
+          </span>
+        </div>
 
         {/* TODO: move to on hover of line row  */}
         <Tooltip
@@ -405,7 +424,7 @@ function LineDetailsTerminal({
       <div></div>
 
       <button
-        className={`p-3 absolute right-3 bottom-3 flex justify-center items-center shadow-lg
+        className={`p-3 absolute right-3 bottom-3 flex justify-center items-center shadow-2xl
           hover:scale-105 transition-all ${
             isUserBroadcasting
               ? "bg-teal-800 text-white"
