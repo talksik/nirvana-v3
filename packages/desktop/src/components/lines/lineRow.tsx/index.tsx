@@ -139,7 +139,7 @@ export default function LineRow({
           handleSelectLine(masterLineData.lineDetails._id.toString())
         }
         className={`flex flex-row items-center justify-start gap-2 p-2 px-4 h-14 hover:bg-gray-200 cursor-pointer transition-all
-  last:border-b-0 border-b border-b-gray-200 relative z-50 ${
+  last:border-b-0 border-b border-b-gray-200 relative z-50 rounded ${
     selectedLineId === masterLineData.lineDetails._id.toString() &&
     "bg-gray-200 scale-110 shadow-2xl translate-x-3"
   }`}

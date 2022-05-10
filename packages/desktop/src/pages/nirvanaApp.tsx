@@ -47,7 +47,7 @@ function NirvanaApp() {
         </RecoilRoot>
 
         <Toaster
-          position={"bottom-center"}
+          position={"bottom-right"}
           toastOptions={{
             style: {
               borderRadius: "10px",
