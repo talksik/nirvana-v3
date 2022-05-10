@@ -52,16 +52,12 @@ export default function LineRow({
    * TODO: slowly add to this and fix based on added features
    * */
   const renderActivityIcon = useMemo(() => {
-    if (isUserTunedIn)
-      return (
-        <span className="h-2 w-2">
-          <FiActivity className="text-black" />
-        </span>
-      );
-
     // if there is someone or me broadcasting here
     if (masterLineData.currentBroadcastersUserIds?.length > 0)
-      return <FiSun className="text-xs text-teal-500" />;
+      return <FiSun className="text-teal-500 animate-pulse" />;
+
+    if (isUserTunedIn)
+      return <FiActivity className="text-black animate-pulse" />;
 
     // if there is new activity blocks for me
     if (masterLineData.currentUserMember.lastVisitDate)
