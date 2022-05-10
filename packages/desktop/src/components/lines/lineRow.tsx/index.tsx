@@ -101,7 +101,7 @@ export default function LineRow({
     // if there is new activity/black dot, then show relative time as little bolder? or too much?
 
     // TODO: compare last visit date to latest audio block
-    if (masterLineData.currentUserMember.lastVisitDate)
+    if (false)
       return (
         <span className={`text-gray-400 ml-auto text-xs font-semibold`}>
           {moment(masterLineData.currentUserMember.lastVisitDate).fromNow(true)}
