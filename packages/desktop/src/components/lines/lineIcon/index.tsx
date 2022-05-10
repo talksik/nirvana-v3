@@ -31,7 +31,7 @@ function LineIcon({
                   src={avatarSrc}
                   shape="square"
                   size={"small"}
-                  className={`absolute bottom-0 left-0`}
+                  className={`absolute bottom-0 left-0 bg-slate-200`}
                 />
               );
             } else if (index === 1) {
@@ -41,7 +41,7 @@ function LineIcon({
                   src={avatarSrc}
                   shape="square"
                   size={"small"}
-                  className={`absolute top-0 right-0`}
+                  className={`absolute top-0 right-0  bg-slate-200`}
                 />
               );
             }
