@@ -162,7 +162,7 @@ export default function LineRow({
             masterLineData.otherUserObjects[0].givenName}
         </h2>
 
-        <div className="ml-auto flex-shrink-0 flex">{renderRightActivity}</div>
+        <div className="ml-auto flex-shrink-0">{renderRightActivity}</div>
       </div>
 
       {/* mounts and unmounts based on if in the room or now */}
