@@ -202,9 +202,12 @@ function useSocketHandler(linesData: MasterLineData[]) {
       console.error(
         "SOCKET | there was a problem with your app...connection closed likely due to idling or manual disconnect"
       );
-      toast(
-        "Disconnected due to idling or some other issue. Please reconnect or refresh to fix the problem."
-      );
+      // todo: figure out the right thing based on the situation whether it's a problem or user unplugs
+      // toast(
+      //   "Disconnected due to idling or some other issue. Please reconnect or refresh to fix the problem."
+      // );
+
+      toast("unplugging");
       setDesktopMode("flowState");
     });
 
