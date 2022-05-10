@@ -147,25 +147,20 @@ export default function LineRow({
         {/* status dot */}
         <div className="flex-shrink-0 h-4 w-4">{renderActivityIcon}</div>
 
-        <span className="flex flex-row gap-2 items-center justify-start text-slate-800">
-          {profilePictures && (
-            <LineIcon
-              grayscale={!isUserTunedIn}
-              sourceImages={profilePictures}
-            />
-          )}
+        {profilePictures && (
+          <LineIcon grayscale={!isUserTunedIn} sourceImages={profilePictures} />
+        )}
 
-          <h2
-            className={`text-inherit text-md max-w-[220px] truncate ${
-              masterLineData.currentUserMember.lastVisitDate
-                ? "font-semibold"
-                : ""
-            }`}
-          >
-            {masterLineData.lineDetails.name ||
-              masterLineData.otherUserObjects[0].givenName}
-          </h2>
-        </span>
+        <h2
+          className={`text-inherit text-md max-w-[220px] truncate text-slate-800 ${
+            masterLineData.currentUserMember.lastVisitDate
+              ? "font-semibold"
+              : ""
+          }`}
+        >
+          {masterLineData.lineDetails.name ||
+            masterLineData.otherUserObjects[0].givenName}
+        </h2>
 
         <div className="ml-auto flex-shrink-0">{renderRightActivity}</div>
       </div>
