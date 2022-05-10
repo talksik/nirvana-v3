@@ -52,7 +52,12 @@ export default function LineRow({
    * TODO: slowly add to this and fix based on added features
    * */
   const renderActivityIcon = useMemo(() => {
-    if (isUserTunedIn) return <FiActivity className="text-black" />;
+    if (isUserTunedIn)
+      return (
+        <span className="h-2 w-2">
+          <FiActivity className="text-black" />
+        </span>
+      );
 
     // if there is someone or me broadcasting here
     if (masterLineData.currentBroadcastersUserIds?.length > 0)
@@ -140,7 +145,7 @@ export default function LineRow({
   }`}
       >
         {/* status dot */}
-        {renderActivityIcon}
+        <div className="flex-shrink-0 h-4 w-4">{renderActivityIcon}</div>
 
         <span className="flex flex-row gap-2 items-center justify-start text-slate-800">
           {profilePictures && (
@@ -151,7 +156,7 @@ export default function LineRow({
           )}
 
           <h2
-            className={`text-inherit text-md truncate ${
+            className={`text-inherit text-md max-w-[220px] truncate ${
               masterLineData.currentUserMember.lastVisitDate
                 ? "font-semibold"
                 : ""
@@ -162,7 +167,7 @@ export default function LineRow({
           </h2>
         </span>
 
-        <div className="ml-auto">{renderRightActivity}</div>
+        <div className="ml-auto flex-shrink-0">{renderRightActivity}</div>
       </div>
 
       {/* mounts and unmounts based on if in the room or now */}
