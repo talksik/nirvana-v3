@@ -1,6 +1,6 @@
 import { $desktopMode, $selectedLineId } from "../../controller/recoil";
 import { Avatar, Skeleton, Tooltip } from "antd";
-import { FiActivity, FiSettings, FiSun } from "react-icons/fi";
+import { FiActivity, FiHeadphones, FiSettings, FiSun } from "react-icons/fi";
 import { GlobalHotKeys, KeyMap } from "react-hotkeys";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useGetUserDetails, useUserLines } from "../../controller/index";
@@ -379,7 +379,7 @@ function LineDetailsTerminal({
 
           <span className="flex flex-row gap-2 items-center">
             <span className="text-gray-300 text-xs">{`${
-              selectedLine.otherMembers?.length ?? 0
+              selectedLine.otherMembers?.length + 1 ?? 0
             } members`}</span>
             <span className="h-1 w-1 bg-gray-800 rounded-full"></span>
             <span className="text-teal-500 text-xs">{`${
@@ -417,11 +417,131 @@ function LineDetailsTerminal({
         </Tooltip>
       </div>
 
-      {/* line details */}
-      <div></div>
+      {/* line timeline */}
+      <div className="flex flex-col items-center gap-2 my-2 mx-auto max-w-lg w-full">
+        <span
+          className={"text-gray-300 text-sm cursor-pointer hover:underline"}
+        >
+          load more
+        </span>
 
-      {/* line timeline + present moment*/}
-      <div></div>
+        <span className={"text-gray-300 text-sm"}>yesterday</span>
+
+        <div className={"rounded border border-gray-200 flex flex-col w-full"}>
+          {selectedLine.otherUserObjects.map((otherUser) => (
+            <div
+              className="flex flex-row p-2 gap-2 items-center bg-transparent 
+            border-b border-b-gray-200 last:border-b-0"
+            >
+              <Avatar
+                key={`linehistory-${1}`}
+                src={otherUser.picture}
+                shape="square"
+                size={"default"}
+                // grayscale if not playing?
+                className={`${true && "grayscale"}`}
+              />
+              <span className="text-gray-500">{otherUser.givenName}</span>
+
+              <span className="ml-auto text-sm text-gray-300">{`${
+                Math.floor(Math.random() * 10) + 1
+              }:${Math.floor(Math.random() * 100) + 10}pm |`}</span>
+
+              <span className="text-gray-600 text-md">{`${
+                Math.floor(Math.random() * 60) + 1
+              } seconds`}</span>
+            </div>
+          ))}
+
+          <div
+            className="flex flex-row p-2 gap-2 items-center bg-transparent 
+            border-b border-b-gray-200 last:border-b-0"
+          >
+            <Avatar
+              key={`linehistory-${1}`}
+              src={userDetails.user.picture}
+              shape="square"
+              size={"default"}
+              // grayscale if not playing?
+              className={`${true && "grayscale"}`}
+            />
+            <span className="text-gray-500">{"Arjun Patel"}</span>
+
+            <span className="ml-auto text-sm text-gray-300">{`${
+              Math.floor(Math.random() * 10) + 1
+            }:${Math.floor(Math.random() * 100) + 10}pm |`}</span>
+
+            <span className="text-gray-600 text-md">{`${
+              Math.floor(Math.random() * 60) + 1
+            } seconds`}</span>
+          </div>
+        </div>
+
+        <span className={"text-gray-300 text-sm"}>today</span>
+
+        <div className={"rounded border border-gray-400 flex flex-col w-full"}>
+          {selectedLine.otherUserObjects.map((otherUser) => (
+            // TODO: show the shadow if it's unheard
+            <div
+              className="flex flex-row p-2 gap-2 items-center bg-transparent 
+            border-b border-b-gray-400 last:border-b-0 shadow-xl"
+            >
+              <Avatar
+                key={`linehistory-${1}`}
+                src={otherUser.picture}
+                shape="square"
+                size={"default"}
+                // grayscale if not playing?
+                className={`${true && "grayscale"}`}
+              />
+              <span className="text-gray-500 font-semibold">
+                {otherUser.name}
+              </span>
+
+              <span className="ml-auto text-sm text-gray-300">{`${
+                Math.floor(Math.random() * 10) + 1
+              }:${Math.floor(Math.random() * 100) + 10}pm |`}</span>
+
+              <span className="text-gray-500 text-md">{`${
+                Math.floor(Math.random() * 60) + 1
+              } seconds`}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* live broadcasters */}
+        <span
+          className={"flex flex-row gap-2 items-center text-teal-500 text-sm"}
+        >
+          <FiSun className="animate-ping" />
+          <span>right now</span>
+        </span>
+        <div
+          className={
+            "rounded border border-teal-500 flex flex-col w-full shadow-2xl"
+          }
+        >
+          {selectedLine.otherUserObjects.map((otherUser) => (
+            <div className="flex flex-row p-2 gap-2 items-center bg-transparent">
+              <Avatar
+                key={`linehistory-${1}`}
+                src={otherUser.picture}
+                shape="square"
+                size={"large"}
+                // grayscale if not playing?
+                className={`shadow-lg`}
+              />
+              <span className="text-gray-600 font-semibold">
+                {otherUser.name}
+              </span>
+
+              <Tooltip title={"audio only"}>
+                <FiHeadphones className="text-gray-600 text-md ml-auto" />
+              </Tooltip>
+            </div>
+          ))}
+        </div>
+      </div>
 
       <button
         className={`p-3 absolute right-3 bottom-3 flex justify-center items-center shadow-2xl
