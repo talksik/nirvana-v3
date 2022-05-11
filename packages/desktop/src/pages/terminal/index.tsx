@@ -443,11 +443,11 @@ function LineDetailsTerminal({
               />
               <span className="text-gray-500">{otherUser.givenName}</span>
 
-              <span className="ml-auto text-sm text-gray-300">{`${
+              <span className="ml-auto text-xs text-gray-300">{`${
                 Math.floor(Math.random() * 10) + 1
               }:${Math.floor(Math.random() * 100) + 10}pm |`}</span>
 
-              <span className="text-gray-600 text-md">{`${
+              <span className="text-gray-400 text-md">{`${
                 Math.floor(Math.random() * 60) + 1
               } seconds`}</span>
             </div>
@@ -467,11 +467,11 @@ function LineDetailsTerminal({
             />
             <span className="text-gray-500">{"Arjun Patel"}</span>
 
-            <span className="ml-auto text-sm text-gray-300">{`${
+            <span className="ml-auto text-xs text-gray-300">{`${
               Math.floor(Math.random() * 10) + 1
             }:${Math.floor(Math.random() * 100) + 10}pm |`}</span>
 
-            <span className="text-gray-600 text-md">{`${
+            <span className="text-gray-400 text-md">{`${
               Math.floor(Math.random() * 60) + 1
             } seconds`}</span>
           </div>
@@ -479,12 +479,16 @@ function LineDetailsTerminal({
 
         <span className={"text-gray-300 text-sm"}>today</span>
 
-        <div className={"rounded border border-gray-400 flex flex-col w-full"}>
+        <div
+          className={
+            "rounded border border-gray-400 flex flex-col w-full shadow-xl"
+          }
+        >
           {selectedLine.otherUserObjects.map((otherUser) => (
             // TODO: show the shadow if it's unheard
             <div
               className="flex flex-row p-2 gap-2 items-center bg-transparent 
-            border-b border-b-gray-400 last:border-b-0 shadow-xl"
+            border-b border-b-gray-400 last:border-b-0"
             >
               <Avatar
                 key={`linehistory-${1}`}
@@ -492,13 +496,13 @@ function LineDetailsTerminal({
                 shape="square"
                 size={"default"}
                 // grayscale if not playing?
-                className={`${true && "grayscale"}`}
+                className={`${false && "grayscale"}`}
               />
-              <span className="text-gray-500 font-semibold">
+              <span className="text-gray-600 font-semibold">
                 {otherUser.name}
               </span>
 
-              <span className="ml-auto text-sm text-gray-300">{`${
+              <span className="ml-auto text-xs text-gray-400">{`${
                 Math.floor(Math.random() * 10) + 1
               }:${Math.floor(Math.random() * 100) + 10}pm |`}</span>
 
