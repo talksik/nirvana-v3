@@ -8,7 +8,7 @@
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "workbench.colorTheme": "Default Light+",
   "javascript.format.semicolons": "insert",
-  "window.zoomLevel": 1,
+  "window.zoomLevel": 2,
 
   "eslint.workingDirectories": ["./packages/desktop"]
 }
