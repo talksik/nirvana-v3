@@ -1,29 +1,25 @@
-import { $desktopMode, $selectedLineId } from "../../controller/recoil";
-import { Avatar, Skeleton, Tooltip } from "antd";
-import { FiActivity, FiHeadphones, FiSettings, FiSun } from "react-icons/fi";
-import { GlobalHotKeys, KeyMap } from "react-hotkeys";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useGetUserDetails, useUserLines } from "../../controller/index";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { $desktopMode, $selectedLineId } from '../../controller/recoil';
+import { Avatar, Skeleton, Tooltip } from 'antd';
+import { FiActivity, FiHeadphones, FiSettings, FiSun } from 'react-icons/fi';
+import { GlobalHotKeys, KeyMap } from 'react-hotkeys';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useGetUserDetails, useUserLines } from '../../controller/index';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 
-import { FaPlus } from "react-icons/fa";
-import LineIcon from "../../components/lines/lineIcon/index";
-import { LineMemberState } from "@nirvana/core/models/line.model";
-import LineRow from "../../components/lines/lineRow.tsx/index";
-import MasterLineData from "@nirvana/core/models/masterLineData.model";
-import NewLineModal from "./newLine";
-import toast from "react-hot-toast";
-import { useLineDataProvider } from "../../controller/lineDataProvider";
+import { FaPlus } from 'react-icons/fa';
+import LineIcon from '../../components/lines/lineIcon/index';
+import { LineMemberState } from '@nirvana/core/models/line.model';
+import LineRow from '../../components/lines/lineRow.tsx/index';
+import MasterLineData from '@nirvana/core/models/masterLineData.model';
+import NewLineModal from './newLine';
+import toast from 'react-hot-toast';
+import { useLineDataProvider } from '../../controller/lineDataProvider';
 
 /**
  * Socket Provider
  * Line Data Provider
  */
-export default function NirvanaTerminal({
-  overlayOnly,
-}: {
-  overlayOnly: boolean;
-}) {
+export default function NirvanaTerminal({ overlayOnly }: { overlayOnly: boolean }) {
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
 
   const { data: userDetails } = useGetUserDetails();
@@ -33,8 +29,7 @@ export default function NirvanaTerminal({
   // simply using this query for specific data on loading
   // todo: add these properties in context provider value although more work down the line for control
   const { isLoading: isLoadingInitialLines } = useUserLines();
-  const { linesMap, handleTuneToLine, handleUnTuneToLine } =
-    useLineDataProvider();
+  const { linesMap, handleTuneToLine, handleUnTuneToLine } = useLineDataProvider();
 
   useEffect(() => {
     // console.log("change/update in lines map");
@@ -52,8 +47,7 @@ export default function NirvanaTerminal({
     // TODO: sort based on the audio blocks and currentMember lastActiveDate
 
     return masterLines.filter(
-      (masterLine) =>
-        masterLine.currentUserMember.state === LineMemberState.INBOX
+      (masterLine) => masterLine.currentUserMember.state === LineMemberState.INBOX,
     );
   }, [linesMap]);
 
@@ -61,8 +55,7 @@ export default function NirvanaTerminal({
     const masterLines: MasterLineData[] = Object.values(linesMap);
 
     return masterLines.filter(
-      (masterLine) =>
-        masterLine.currentUserMember.state === LineMemberState.TUNED
+      (masterLine) => masterLine.currentUserMember.state === LineMemberState.TUNED,
     );
   }, [linesMap]);
 
@@ -76,11 +69,7 @@ export default function NirvanaTerminal({
       const foundSelectedLine = linesMap[selectedLineId];
 
       // on mount of this, we want to temporarily tune into the line if we are not already tuned in...which would happen if we toggle tuned in
-      if (
-        !foundSelectedLine.tunedInMemberIds?.includes(
-          userDetails?.user?._id.toString()
-        )
-      ) {
+      if (!foundSelectedLine.tunedInMemberIds?.includes(userDetails?.user?._id.toString())) {
         handleTuneToLine(selectedLineId, false);
       }
 
@@ -93,7 +82,7 @@ export default function NirvanaTerminal({
   // todo: sort/order based on activity and activity date and currently broadcasting/live
 
   const handleEscape = useCallback(() => {
-    console.log("deselecting line");
+    console.log('deselecting line');
 
     setSelectedLineId((prevSelectedLineId) => {
       // ! only want to untune if it's a temporarily tuned line
@@ -111,31 +100,28 @@ export default function NirvanaTerminal({
         setSelectedLineId((prevSelectedLineId) => {
           // untune myself from the previously selected if it was a temporary one/inbox
           // todo: p3: consolidate this logic as it's used in escape but different scenarios sort of so p3
-          if (
-            prevSelectedLineId &&
-            selectedLine.currentUserMember?.state === LineMemberState.INBOX
-          )
+          if (prevSelectedLineId && selectedLine.currentUserMember?.state === LineMemberState.INBOX)
             handleUnTuneToLine(prevSelectedLineId);
 
           return newLineIdToSelect;
         });
       }
     },
-    [setSelectedLineId, selectedLine]
+    [setSelectedLineId, selectedLine],
   );
 
   const handleToggleTuneToLine = useCallback(
     (lineId: string, turnToggleOn: boolean) => {
       // inhibit if they are trying to turn on and already have 3 toggle tuned
       if (toggleTunedLines?.length >= 3 && turnToggleOn) {
-        toast.error("You cannot toggle more than 3 lines!");
+        toast.error('You cannot toggle more than 3 lines!');
 
         return;
       }
 
       handleTuneToLine(lineId, turnToggleOn);
     },
-    [toggleTunedLines, handleTuneToLine]
+    [toggleTunedLines, handleTuneToLine],
   );
 
   const handleStartBroadcast = useCallback(
@@ -146,7 +132,7 @@ export default function NirvanaTerminal({
 
       // if (lineId) handleUserBroadcast(lineId, true);
     },
-    []
+    [],
   );
 
   const handleStopBroadcast = useCallback(
@@ -157,22 +143,22 @@ export default function NirvanaTerminal({
 
       // if (lineId) handleUserBroadcast(lineId, false);
     },
-    []
+    [],
   );
 
   const keyMap: KeyMap = useMemo(
     () => ({
-      DESELECT_LINE: "esc",
+      DESELECT_LINE: 'esc',
       START_BROADCAST: {
-        sequence: "`",
-        action: "keydown",
+        sequence: '`',
+        action: 'keydown',
       },
       STOP_BROADCAST: {
-        sequence: "`",
-        action: "keyup",
+        sequence: '`',
+        action: 'keyup',
       },
     }),
-    []
+    [],
   );
 
   const handlers = useMemo(
@@ -181,7 +167,7 @@ export default function NirvanaTerminal({
       START_BROADCAST: handleStartBroadcast(selectedLineId),
       STOP_BROADCAST: handleStopBroadcast(selectedLineId),
     }),
-    [selectedLineId]
+    [selectedLineId],
   );
 
   return (
@@ -191,25 +177,20 @@ export default function NirvanaTerminal({
       <div className="flex flex-row flex-1">
         <div className="flex flex-col bg-white w-[400px] relative group">
           {/* modal for creating new line */}
-          <NewLineModal
-            open={isModalVisible}
-            handleClose={() => setIsModalVisible(false)}
-          />
+          <NewLineModal open={isModalVisible} handleClose={() => setIsModalVisible(false)} />
 
           {/* tuned in lines block */}
           <div className="bg-gray-100 flex flex-col shadow-lg">
             {/* tuned in header + general controls */}
 
-            <Tooltip placement="right" title={"These are your active rooms..."}>
+            <Tooltip placement="right" title={'These are your active rooms...'}>
               <div className="flex flex-row items-center py-3 px-4 pb-0">
                 <span className="flex flex-row gap-2 items-center justify-start text-gray-400 animate-pulse">
                   <FiActivity className="text-sm" />
 
                   <h2 className="text-inherit text-sm">Rooms</h2>
 
-                  <p className="text-slate-300 text-xs">{`${
-                    toggleTunedLines?.length || 0
-                  }/3`}</p>
+                  <p className="text-slate-300 text-xs">{`${toggleTunedLines?.length || 0}/3`}</p>
                 </span>
               </div>
             </Tooltip>
@@ -228,13 +209,12 @@ export default function NirvanaTerminal({
 
           {!(allLines.length > 0) && !(toggleTunedLines.length > 0) && (
             <span className="text-gray-300 text-sm my-5 text-center">
-              You have no lines! <br /> Create one to connect to your team
-              instantly.
+              You have no lines! <br /> Create one to connect to your team instantly.
             </span>
           )}
 
           {/* rest of the lines */}
-          <div className={"flex flex-col"}>
+          <div className={'flex flex-col'}>
             {isLoadingInitialLines ? (
               <Skeleton />
             ) : (
@@ -273,9 +253,7 @@ export default function NirvanaTerminal({
             className="flex flex-col flex-1 justify-center items-center bg-gray-100 
       border-l border-l-gray-200"
           >
-            <span className="text-xl text-gray-800">
-              {`Hi ${userDetails?.user?.givenName}!`}
-            </span>
+            <span className="text-xl text-gray-800">{`Hi ${userDetails?.user?.givenName}!`}</span>
             <span className="text-md text-gray-400">You're all set!</span>
           </div>
         )}
@@ -293,21 +271,18 @@ function LineDetailsTerminal({
 }) {
   const { data: userDetails } = useGetUserDetails();
 
-  console.log("selected line", selectedLine);
+  console.log('selected line', selectedLine);
 
   const isUserToggleTuned = useMemo(
     () => selectedLine?.currentUserMember?.state === LineMemberState.TUNED,
-    [selectedLine]
+    [selectedLine],
   );
 
   // seeing if I am in the list of broadcasters
   // the source of truth from the socket connections telling me if my clicking actually made a round trip
   const isUserBroadcasting = useMemo(
-    () =>
-      selectedLine?.currentBroadcastersUserIds?.includes(
-        userDetails?.user._id.toString()
-      ),
-    [userDetails, selectedLine]
+    () => selectedLine?.currentBroadcastersUserIds?.includes(userDetails?.user._id.toString()),
+    [userDetails, selectedLine],
   );
 
   // showing all tuned in members...they may not hear me since they might be doing something else
@@ -329,7 +304,7 @@ function LineDetailsTerminal({
       }
 
       const otherUserObject = selectedLine.otherUserObjects?.find(
-        (userObj) => userObj._id.toString() === tunedInMemberUserId
+        (userObj) => userObj._id.toString() === tunedInMemberUserId,
       );
       if (otherUserObject?.picture)
         pictureSources.push({
@@ -365,15 +340,12 @@ function LineDetailsTerminal({
         className="p-4
         flex flex-row items-center gap-2 justify-end border-b-gray-200 border-b"
       >
-        {profilePictures && (
-          <LineIcon grayscale={false} sourceImages={profilePictures} />
-        )}
+        {profilePictures && <LineIcon grayscale={false} sourceImages={profilePictures} />}
 
         <div className="flex flex-col items-start mr-auto group">
           <span className="flex flex-row gap-2 items-center">
             <h2 className={`text-lg text-slate-800 font-semibold`}>
-              {selectedLine.lineDetails.name ||
-                selectedLine.otherUserObjects[0].givenName}
+              {selectedLine.lineDetails.name || selectedLine.otherUserObjects[0].givenName}
             </h2>
 
             <button
@@ -398,25 +370,17 @@ function LineDetailsTerminal({
         {/* TODO: move to on hover of line row  */}
         <Tooltip
           placement="left"
-          title={`${
-            isUserToggleTuned ? "click to untoggle" : "click to stay tuned in"
-          }`}
+          title={`${isUserToggleTuned ? 'click to untoggle' : 'click to stay tuned in'}`}
         >
           <button
             className={`p-2 flex justify-center items-center shadow-lg
           hover:scale-105 transition-all animate-pulse ${
-            isUserToggleTuned ? "bg-gray-800 text-white" : "text-black"
+            isUserToggleTuned ? 'bg-gray-800 text-white' : 'text-black'
           }`}
             onClick={() =>
               isUserToggleTuned
-                ? handleToggleTuneToLine(
-                    selectedLine.lineDetails._id.toString(),
-                    false
-                  )
-                : handleToggleTuneToLine(
-                    selectedLine.lineDetails._id.toString(),
-                    true
-                  )
+                ? handleToggleTuneToLine(selectedLine.lineDetails._id.toString(), false)
+                : handleToggleTuneToLine(selectedLine.lineDetails._id.toString(), true)
             }
           >
             <FiActivity className="text-md" />
@@ -426,15 +390,11 @@ function LineDetailsTerminal({
 
       {/* line timeline */}
       <div className="flex flex-col items-center gap-2 my-2 mx-auto max-w-lg w-full">
-        <span
-          className={"text-gray-300 text-sm cursor-pointer hover:underline"}
-        >
-          load more
-        </span>
+        <span className={'text-gray-300 text-sm cursor-pointer hover:underline'}>load more</span>
 
-        <span className={"text-gray-300 text-sm"}>yesterday</span>
+        <span className={'text-gray-300 text-sm'}>yesterday</span>
 
-        <div className={"rounded border border-gray-200 flex flex-col w-full"}>
+        <div className={'rounded border border-gray-200 flex flex-col w-full'}>
           {selectedLine.otherUserObjects.map((otherUser) => (
             <div
               className="flex flex-row p-2 gap-2 items-center bg-transparent 
@@ -444,9 +404,9 @@ function LineDetailsTerminal({
                 key={`linehistory-${1}`}
                 src={otherUser.picture}
                 shape="square"
-                size={"default"}
+                size={'default'}
                 // grayscale if not playing?
-                className={`${true && "grayscale"}`}
+                className={`${true && 'grayscale'}`}
               />
               <span className="text-gray-500">{otherUser.givenName}</span>
 
@@ -468,11 +428,11 @@ function LineDetailsTerminal({
               key={`linehistory-${1}`}
               src={userDetails.user.picture}
               shape="square"
-              size={"default"}
+              size={'default'}
               // grayscale if not playing?
-              className={`${true && "grayscale"}`}
+              className={`${true && 'grayscale'}`}
             />
-            <span className="text-gray-500">{"Arjun Patel"}</span>
+            <span className="text-gray-500">{'Arjun Patel'}</span>
 
             <span className="ml-auto text-xs text-gray-300">{`${
               Math.floor(Math.random() * 10) + 1
@@ -484,13 +444,9 @@ function LineDetailsTerminal({
           </div>
         </div>
 
-        <span className={"text-gray-300 text-sm"}>today</span>
+        <span className={'text-gray-300 text-sm'}>today</span>
 
-        <div
-          className={
-            "rounded border border-gray-400 flex flex-col w-full shadow-xl"
-          }
-        >
+        <div className={'rounded border border-gray-400 flex flex-col w-full shadow-xl'}>
           {selectedLine.otherUserObjects.map((otherUser) => (
             // TODO: show the shadow if it's unheard
             <div
@@ -501,13 +457,11 @@ function LineDetailsTerminal({
                 key={`linehistory-${1}`}
                 src={otherUser.picture}
                 shape="square"
-                size={"default"}
+                size={'default'}
                 // grayscale if not playing?
-                className={`${false && "grayscale"}`}
+                className={`${false && 'grayscale'}`}
               />
-              <span className="text-gray-600 font-semibold">
-                {otherUser.name}
-              </span>
+              <span className="text-gray-600 font-semibold">{otherUser.name}</span>
 
               <span className="ml-auto text-xs text-gray-400">{`${
                 Math.floor(Math.random() * 10) + 1
@@ -521,32 +475,24 @@ function LineDetailsTerminal({
         </div>
 
         {/* live broadcasters */}
-        <span
-          className={"flex flex-row gap-2 items-center text-teal-500 text-sm"}
-        >
+        <span className={'flex flex-row gap-2 items-center text-teal-500 text-sm'}>
           <FiSun className="animate-ping" />
           <span>right now</span>
         </span>
-        <div
-          className={
-            "rounded border border-teal-500 flex flex-col w-full shadow-2xl"
-          }
-        >
+        <div className={'rounded border border-teal-500 flex flex-col w-full shadow-2xl'}>
           {selectedLine.otherUserObjects.map((otherUser) => (
             <div className="flex flex-row p-2 gap-2 items-center bg-transparent">
               <Avatar
                 key={`linehistory-${1}`}
                 src={otherUser.picture}
                 shape="square"
-                size={"large"}
+                size={'large'}
                 // grayscale if not playing?
                 className={`shadow-lg`}
               />
-              <span className="text-gray-600 font-semibold">
-                {otherUser.name}
-              </span>
+              <span className="text-gray-600 font-semibold">{otherUser.name}</span>
 
-              <Tooltip title={"audio only"}>
+              <Tooltip title={'audio only'}>
                 <FiHeadphones className="text-gray-600 text-md ml-auto" />
               </Tooltip>
             </div>
@@ -557,9 +503,7 @@ function LineDetailsTerminal({
       <button
         className={`p-3 absolute right-3 bottom-3 flex justify-center items-center shadow-2xl
           hover:scale-105 transition-all ${
-            isUserBroadcasting
-              ? "bg-teal-800 text-white"
-              : "text-teal-800 border-teal-800 border"
+            isUserBroadcasting ? 'bg-teal-800 text-white' : 'text-teal-800 border-teal-800 border'
           }`}
       >
         <FiSun className="text-lg" />

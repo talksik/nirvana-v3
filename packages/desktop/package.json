@@ -82,6 +82,8 @@
     "electron": "17.1.2",
     "eslint": "^8.0.1",
     "eslint-plugin-import": "^2.25.0",
+    "eslint-plugin-react": "^7.29.4",
+    "eslint-plugin-react-hooks": "^4.5.0",
     "fork-ts-checker-webpack-plugin": "^6.0.1",
     "mini-css-extract-plugin": "^2.6.0",
     "node-loader": "^2.0.0",
@@ -98,8 +100,8 @@
   },
   "dependencies": {
     "@getstation/electron-google-oauth2": "^2.1.0",
-    "@nirvana/core": "*",
     "@nirvana/components": "*",
+    "@nirvana/core": "*",
     "antd": "^4.20.2",
     "axios": "^0.26.1",
     "electron-squirrel-startup": "^1.0.0",
