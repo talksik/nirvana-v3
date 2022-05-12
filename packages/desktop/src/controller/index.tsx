@@ -32,7 +32,7 @@ export function useAuthCheck(enabled: boolean = true) {
 }
 
 export function useLogin() {
-  return useMutation("LOGIN", ApiCalls.login, {});
+  return useMutation("LOGIN", ApiCalls.login);
 }
 
 export function useGetUserDetails() {
