@@ -9,5 +9,6 @@
   "workbench.colorTheme": "Default Light+",
   "javascript.format.semicolons": "insert",
   "window.zoomLevel": 1,
-  "trunk.trunkGrayOutNonBlockingIssues": false
+
+  "eslint.workingDirectories": ["./packages/desktop"]
 }
