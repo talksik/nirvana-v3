@@ -28,8 +28,6 @@
 
 // import './index.css';
 
-import "./app";
+import './electronApp';
 
-console.log(
-  '👋 This message is being logged by "renderer.js", included via webpack'
-);
+console.log('👋 This message is being logged by "renderer.js", included via webpack');

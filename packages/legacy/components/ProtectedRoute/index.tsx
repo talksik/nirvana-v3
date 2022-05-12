@@ -1,12 +1,12 @@
-import { useAuthCheck, useServerCheck } from "../../controller/index";
+import { useAuthCheck, useServerCheck } from '../../../src/controller/index';
 
-import { $jwtToken } from "../../controller/recoil";
-import Login from "../../pages/Login";
-import NirvanaApi from "../../controller/nirvanaApi";
-import { STORE_ITEMS } from "../../electron/constants";
-import SkeletonLoader from "../loading/skeleton";
-import { useEffect } from "react";
-import { useRecoilState } from "recoil";
+import { $jwtToken } from '../../../src/controller/recoil';
+import Login from '../../Login';
+import NirvanaApi from '../../../src/controller/nirvanaApi';
+import { STORE_ITEMS } from '../../../src/electron/constants';
+import SkeletonLoader from '../loading/skeleton';
+import { useEffect } from 'react';
+import { useRecoilState } from 'recoil';
 
 export default function ProtectedRoute({
   children,
@@ -47,7 +47,7 @@ export default function ProtectedRoute({
   // }, []);
 
   useEffect(() => {
-    console.log("change in jwt token", jwtToken);
+    console.log('change in jwt token', jwtToken);
 
     if (jwtToken) {
       window.electronAPI.store.set(STORE_ITEMS.AUTH_SESSION_JWT, jwtToken);
@@ -64,7 +64,7 @@ export default function ProtectedRoute({
   // first time loading
   if (serverLoading)
     return (
-      <span className="text-md text-gray-400 flex items-center justify-center flex-1 text-center p-5 h-screen">
+      <span className='text-md text-gray-400 flex items-center justify-center flex-1 text-center p-5 h-screen'>
         Sorry...this is our bad. Our servers are loading. We are trying our best
         to back up and running! :) <br /> Please contact me for urgent concerns:
         arjunpatel@berkeley.edu
@@ -73,7 +73,7 @@ export default function ProtectedRoute({
 
   if (isLoading) {
     return (
-      <div className="container h-screen w-screen flex flex-col justify-center mx-10">
+      <div className='container h-screen w-screen flex flex-col justify-center mx-10'>
         <SkeletonLoader />
       </div>
     );

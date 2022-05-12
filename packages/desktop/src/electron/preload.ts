@@ -1,7 +1,6 @@
-import Channels, { Dimensions } from "./constants";
-import { contextBridge, ipcRenderer } from "electron";
-
-import { STORE_ITEMS } from "./constants";
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { contextBridge, ipcRenderer } from 'electron';
+import { Channels, Dimensions, StoreItems } from './constants';
 
 const electronAPI = {
   auth: {
@@ -10,11 +9,11 @@ const electronAPI = {
     },
   },
   store: {
-    get(val: STORE_ITEMS) {
-      return ipcRenderer.invoke("electron-store-get", val);
+    get(val: StoreItems) {
+      return ipcRenderer.invoke('electron-store-get', val);
     },
-    set(property: STORE_ITEMS, val: any) {
-      ipcRenderer.send("electron-store-set", property, val);
+    set(property: StoreItems, val: any) {
+      ipcRenderer.send('electron-store-set', property, val);
     },
     // Other method you want to add like has(), reset(), etc.
   },
@@ -26,7 +25,7 @@ const electronAPI = {
   },
 
   on(channel: Channels, func: any) {
-    const validChannels = ["ipc-example"];
+    // const validChannels = ['ipc-example'];
     // if (validChannels.includes(channel)) {
     //   // Deliberately strip event as it includes `sender`
     //   ipcRenderer.on(channel, (event, ...args) => func(...args));
@@ -45,6 +44,6 @@ const electronAPI = {
   },
 };
 
-contextBridge.exposeInMainWorld("electronAPI", electronAPI);
+contextBridge.exposeInMainWorld('electronAPI', electronAPI);
 
 export default electronAPI;

@@ -1,9 +1,9 @@
-import NirvanaApi, { ApiCalls } from "./nirvanaApi";
-import { useMutation, useQuery } from "react-query";
+import NirvanaApi, { ApiCalls } from './nirvanaApi';
+import { useMutation, useQuery } from 'react-query';
 
-import { $jwtToken } from "./recoil";
-import { queryClient } from "../pages/nirvanaApp";
-import { useRecoilValue } from "recoil";
+import { $jwtToken } from './recoil';
+import { queryClient } from '../../legacy/nirvanaApp';
+import { useRecoilValue } from 'recoil';
 
 // ====== QUERIES
 
@@ -11,7 +11,7 @@ import { useRecoilValue } from "recoil";
  * ensure that the server is up
  */
 export function useServerCheck() {
-  return useQuery("SERVER_CHECK", ApiCalls.serverCheck, {
+  return useQuery('SERVER_CHECK', ApiCalls.serverCheck, {
     retry: true,
     refetchOnWindowFocus: false,
 
@@ -22,7 +22,7 @@ export function useServerCheck() {
 export function useAuthCheck(enabled: boolean = true) {
   const jwtToken = useRecoilValue($jwtToken);
 
-  return useQuery("AUTH_CHECK", ApiCalls.authCheck, {
+  return useQuery('AUTH_CHECK', ApiCalls.authCheck, {
     retry: false,
     refetchOnWindowFocus: false,
 
@@ -32,11 +32,11 @@ export function useAuthCheck(enabled: boolean = true) {
 }
 
 export function useLogin() {
-  return useMutation("LOGIN", ApiCalls.login, {});
+  return useMutation('LOGIN', ApiCalls.login, {});
 }
 
 export function useGetUserDetails() {
-  return useQuery("USER_DETAILS", ApiCalls.getUserDetails, {
+  return useQuery('USER_DETAILS', ApiCalls.getUserDetails, {
     retry: false,
     refetchOnWindowFocus: false,
     onError: (err) => {
@@ -46,7 +46,7 @@ export function useGetUserDetails() {
 }
 
 export function useUserSearch(searchQuery: string) {
-  return useQuery("USER_SEARCH", () => ApiCalls.userSearch(searchQuery), {
+  return useQuery('USER_SEARCH', () => ApiCalls.userSearch(searchQuery), {
     enabled: searchQuery ? true : false,
     refetchOnWindowFocus: false,
   });
@@ -57,7 +57,7 @@ export function useUserLines() {
   // todo: base/source of truth for getting all of the lines for the user
   // merge with sockets + audio clip data + master data + convomember data
 
-  return useQuery("USER_LINES", ApiCalls.getUserLines, {
+  return useQuery('USER_LINES', ApiCalls.getUserLines, {
     refetchOnWindowFocus: false,
     refetchIntervalInBackground: false,
     staleTime: Infinity,
@@ -72,7 +72,7 @@ export function useGetDmByUserId() {
 export function useCreateLine() {
   return useMutation(ApiCalls.createLine, {
     onSuccess: (res, req) => {
-      queryClient.invalidateQueries(["USER_LINES"]);
+      queryClient.invalidateQueries(['USER_LINES']);
     },
   });
 }

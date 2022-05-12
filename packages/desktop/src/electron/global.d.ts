@@ -1,5 +1,5 @@
-import { Dimensions, DimensionChangeRequest } from "./constants";
-import { electronAPI } from "./preload";
+/* eslint-disable no-unused-vars */
+import { DimensionChangeRequest, STORE_ITEMS, Channels } from './constants';
 
 export {};
 declare global {

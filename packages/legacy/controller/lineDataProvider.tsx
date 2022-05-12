@@ -1,4 +1,4 @@
-import { $desktopMode, $jwtToken, $selectedLineId } from "./recoil";
+import { $desktopMode, $jwtToken, $selectedLineId } from './recoil';
 import {
   ConnectToLineRequest,
   ServerRequestChannels,
@@ -12,18 +12,18 @@ import {
   UntuneFromLineRequest,
   UserStartedBroadcastingResponse,
   UserStoppedBroadcastingResponse,
-} from "@nirvana/core/sockets/channels";
-import React, { useContext, useState } from "react";
-import { Socket, io } from "socket.io-client";
-import { useCallback, useEffect } from "react";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+} from '@nirvana/core/sockets/channels';
+import React, { useContext, useState } from 'react';
+import { Socket, io } from 'socket.io-client';
+import { useCallback, useEffect } from 'react';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 
-import { LineMemberState } from "@nirvana/core/models/line.model";
-import MasterLineData from "@nirvana/core/models/masterLineData.model";
-import { User } from "@nirvana/core/models";
-import { queryClient } from "../pages/nirvanaApp";
-import toast from "react-hot-toast";
-import { useUserLines } from "./index";
+import { LineMemberState } from '@nirvana/core/models/line.model';
+import MasterLineData from '@nirvana/core/models/masterLineData.model';
+import { User } from '@nirvana/core/models';
+import { queryClient } from '../../legacy/nirvanaApp';
+import toast from 'react-hot-toast';
+import { useUserLines } from './index';
 
 let $ws: Socket;
 
@@ -44,19 +44,19 @@ function useSocketHandler(linesData: MasterLineData[]) {
   // https://socket.io/docs/v4/client-options/#reconnection
 
   useEffect(() => {
-    $ws = io("http://localhost:5000", {
+    $ws = io('http://localhost:5000', {
       query: { token: jwtToken },
-      transports: ["websocket"],
+      transports: ['websocket'],
       upgrade: false,
       forceNew: true,
       reconnection: false, // ! TESTING THE PROBLEM WITH RECONNECTION CLIENT LISTENERS NOT ACTIVATING
     });
 
-    $ws.on("connect", () => {
+    $ws.on('connect', () => {
       console.log(
-        "SOCKETS | CLIENT CONNECTED in socket handler, setting up client side listeners for requests"
+        'SOCKETS | CLIENT CONNECTED in socket handler, setting up client side listeners for requests'
       );
-      toast.success("you are connected");
+      toast.success('you are connected');
 
       /**
        * initiate listeners
@@ -160,7 +160,7 @@ function useSocketHandler(linesData: MasterLineData[]) {
       $ws.on(
         ServerResponseChannels.SOMEONE_STARTED_BROADCASTING,
         (res: UserStartedBroadcastingResponse) => {
-          console.log("someone is starting to broadcast");
+          console.log('someone is starting to broadcast');
 
           setLinesMap((prevLinesMap) => {
             const newMap = { ...prevLinesMap };
@@ -198,28 +198,28 @@ function useSocketHandler(linesData: MasterLineData[]) {
 
     // on disconnections, just switch it to flow state?
     // what if there was another problem?
-    $ws.io.on("close", () => {
+    $ws.io.on('close', () => {
       console.error(
-        "SOCKET | there was a problem with your app...connection closed likely due to idling or manual disconnect"
+        'SOCKET | there was a problem with your app...connection closed likely due to idling or manual disconnect'
       );
       // todo: figure out the right thing based on the situation whether it's a problem or user unplugs
       // toast(
       //   "Disconnected due to idling or some other issue. Please reconnect or refresh to fix the problem."
       // );
 
-      toast("unplugging");
-      setDesktopMode("flowState");
+      toast('unplugging');
+      setDesktopMode('flowState');
     });
 
     // client-side errors
-    $ws.on("connect_error", (err) => {
+    $ws.on('connect_error', (err) => {
       console.error(`SOCKETS | ${err.message}`); // prints the message associated with the error
-      toast.error("sorry...this is our bad...please refresh with cmd + r");
+      toast.error('sorry...this is our bad...please refresh with cmd + r');
 
       // force refetch of server status as well as these generally go hand in hand
 
       // this should overall remount this component currently which is what we want for new data
-      queryClient.invalidateQueries("SERVER_CHECK");
+      queryClient.invalidateQueries('SERVER_CHECK');
     });
 
     // on unmounting this component, we want to disconnect
@@ -412,9 +412,9 @@ export function LineDataProvider({ children }) {
   // and then disconnect
   useEffect(() => {
     return () => {
-      if (desktopMode === "flowState" && $ws) {
+      if (desktopMode === 'flowState' && $ws) {
         console.log(
-          "SOCKETS | telling all of my connected rooms that I am unplugging"
+          'SOCKETS | telling all of my connected rooms that I am unplugging'
         );
 
         $ws.emit(ServerRequestChannels.GOING_INTO_FLOW_STATE);
