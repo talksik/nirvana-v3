@@ -88,7 +88,7 @@ export default function NirvanaTerminal({
     }
 
     return undefined;
-  }, [selectedLineId, linesMap, userDetails]);
+  }, [selectedLineId, linesMap]);
 
   // todo: sort/order based on activity and activity date and currently broadcasting/live
 

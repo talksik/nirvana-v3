@@ -1,18 +1,16 @@
-import axios, { AxiosRequestConfig, AxiosResponse, Method } from "axios";
+import { Method } from 'axios';
 
-import CreateLineRequest from "@nirvana/core/requests/createLine.request";
-import GetUserLinesResponse from "@nirvana/core/responses/getUserLines.response";
-import { Line } from "@nirvana/core/models/line.model";
-import LoginResponse from "../../../core/responses/login.response";
-import MasterLineData from "@nirvana/core/models/masterLineData.model";
-import NirvanaResponse from "../../../core/responses/nirvanaResponse";
-import { User } from "@nirvana/core/models";
-import UserDetailsResponse from "../../../core/responses/userDetails.response";
-import UserSearchResponse from "../../../core/responses/userSearch.response";
+import CreateLineRequest from '@nirvana/core/requests/createLine.request';
+import GetUserLinesResponse from '@nirvana/core/responses/getUserLines.response';
+import { Line } from '@nirvana/core/models/line.model';
+import LoginResponse from '@nirvana/core/responses/login.response';
+import NirvanaResponse from '@nirvana/core/responses/nirvanaResponse';
+import UserDetailsResponse from '@nirvana/core/responses/userDetails.response';
+import UserSearchResponse from '@nirvana/core/responses/userSearch.response';
 
 // export const localHost = process.env.REACT_APP_API_DOMAIN;
 
-export const localHost = "http://localhost:5000/api";
+export const localHost = 'http://localhost:5000/api';
 
 export default class NirvanaApi {
   // auth token from google that our backend will use
@@ -31,14 +29,14 @@ export default class NirvanaApi {
     const fullUrl = localHost + url;
 
     let res;
-    if (privateRoute && !this._jwtToken) throw Error("No jwt token available!");
+    if (privateRoute && !this._jwtToken) throw Error('No jwt token available!');
 
     if (privateRoute && this._jwtToken) {
       res = await fetch(fullUrl, {
         method: method,
         headers: {
           Authorization: this._jwtToken,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: body ? JSON.stringify(body) : null,
       });
@@ -47,9 +45,9 @@ export default class NirvanaApi {
     }
 
     if (!res.ok) {
-      if (res.status === 401) throw new Error("You are not authorized here");
+      if (res.status === 401) throw new Error('You are not authorized here');
 
-      throw new Error("Something went wrong");
+      throw new Error('Something went wrong');
     }
 
     return await res.json();
@@ -57,7 +55,7 @@ export default class NirvanaApi {
 }
 
 async function serverCheck(): Promise<void> {
-  return await NirvanaApi.fetch(`/status`, "GET", false);
+  return await NirvanaApi.fetch(`/status`, 'GET', false);
 }
 
 async function login(reqLoginTokens: {
@@ -66,23 +64,23 @@ async function login(reqLoginTokens: {
 }): Promise<LoginResponse> {
   return await NirvanaApi.fetch(
     `/user/login?access_token=${reqLoginTokens.accessToken}&id_token=${reqLoginTokens.idToken}`,
-    "GET",
+    'GET',
     false
   );
 }
 
 async function authCheck(): Promise<void> {
-  return await NirvanaApi.fetch(`/user/authcheck`, "GET", true);
+  return await NirvanaApi.fetch(`/user/authcheck`, 'GET', true);
 }
 
 async function getUserDetails(): Promise<UserDetailsResponse> {
-  return await NirvanaApi.fetch(`/user`, "GET", true);
+  return await NirvanaApi.fetch(`/user`, 'GET', true);
 }
 
 async function userSearch(searchQuery: string): Promise<UserSearchResponse> {
   return await NirvanaApi.fetch(
     `/search/users?query=${searchQuery}`,
-    "GET",
+    'GET',
     true
   );
 }
@@ -90,19 +88,19 @@ async function userSearch(searchQuery: string): Promise<UserSearchResponse> {
 async function getUserLines(): Promise<NirvanaResponse<GetUserLinesResponse>> {
   return await NirvanaApi.fetch<NirvanaResponse<GetUserLinesResponse>>(
     `/lines`,
-    "GET",
+    'GET',
     true
   );
 }
 
 async function getDmByUserId(otherUserId: string): Promise<Line> {
-  return await NirvanaApi.fetch(`/lines/dm/${otherUserId}`, "GET", true);
+  return await NirvanaApi.fetch(`/lines/dm/${otherUserId}`, 'GET', true);
 }
 
 async function createLine(
   request: CreateLineRequest
 ): Promise<NirvanaResponse<Line>> {
-  return await NirvanaApi.fetch(`/lines`, "POST", true, request);
+  return await NirvanaApi.fetch(`/lines`, 'POST', true, request);
 }
 
 export const ApiCalls = {
