@@ -15,6 +15,10 @@ import NewLineModal from "./newLine";
 import toast from "react-hot-toast";
 import { useLineDataProvider } from "../../controller/lineDataProvider";
 
+/**
+ * Socket Provider
+ * Line Data Provider
+ */
 export default function NirvanaTerminal({
   overlayOnly,
 }: {

@@ -16,7 +16,6 @@ import { LineDataProvider } from "../../controller/lineDataProvider";
 import { LogoType } from "@nirvana/components/logo/full";
 import NirvanaHeader from "../../components/header/index";
 import NirvanaTerminal from "../terminal";
-import Overlay from "../overlay";
 
 export default function NirvanaRouter() {
   const [selectedLineId, setSelectedLineId] = useRecoilState($selectedLineId);
