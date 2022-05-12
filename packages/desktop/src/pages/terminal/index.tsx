@@ -199,17 +199,20 @@ export default function NirvanaTerminal({
           {/* tuned in lines block */}
           <div className="bg-gray-100 flex flex-col shadow-lg">
             {/* tuned in header + general controls */}
-            <div className="flex flex-row items-center py-3 px-4 pb-0">
-              <span className="flex flex-row gap-2 items-center justify-start text-gray-400 animate-pulse">
-                <FiActivity className="text-sm" />
 
-                <h2 className="text-inherit text-sm">Tuned In</h2>
+            <Tooltip placement="right" title={"These are your active rooms..."}>
+              <div className="flex flex-row items-center py-3 px-4 pb-0">
+                <span className="flex flex-row gap-2 items-center justify-start text-gray-400 animate-pulse">
+                  <FiActivity className="text-sm" />
 
-                <p className="text-slate-300 text-xs">{`${
-                  toggleTunedLines?.length || 0
-                }/3`}</p>
-              </span>
-            </div>
+                  <h2 className="text-inherit text-sm">Rooms</h2>
+
+                  <p className="text-slate-300 text-xs">{`${
+                    toggleTunedLines?.length || 0
+                  }/3`}</p>
+                </span>
+              </div>
+            </Tooltip>
 
             {/* list of toggle tuned lines */}
             <div className="flex flex-col mt-2">
@@ -388,7 +391,7 @@ function LineDetailsTerminal({
             <span className="h-1 w-1 bg-gray-800 rounded-full"></span>
             <span className="text-teal-500 text-xs">{`${
               selectedLine.tunedInMemberIds?.length ?? 0
-            } on the line`}</span>
+            } in this room`}</span>
           </span>
         </div>
 
