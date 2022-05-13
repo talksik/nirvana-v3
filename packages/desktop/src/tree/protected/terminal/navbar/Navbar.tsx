@@ -83,7 +83,7 @@ export default function NavBar() {
               onClick={(e) => {
                 handleLogout();
               }}
-              onKeyPress={this.handleKeyPress}
+              onKeyPress={handleLogout}
             >
               Sign Out
             </button>

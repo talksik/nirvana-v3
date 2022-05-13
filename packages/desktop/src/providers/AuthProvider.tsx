@@ -36,8 +36,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [jwtToken, fetchUser]);
 
   const handleLogout = useCallback(() => {
-    setJwtToken(undefined);
-
     // ?should this be set here? what's a better way of
     NirvanaApi._jwtToken = null;
 
@@ -48,6 +46,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .catch(() => {
         toast.error('logged out');
       });
+
+    setJwtToken(undefined);
   }, [fetchUser, setJwtToken]);
 
   const handleSetJwtToken = useCallback(

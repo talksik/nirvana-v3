@@ -21,6 +21,7 @@ export default function Terminal() {
   const handleSelectLine = useCallback(
     (newLineIdToSelect: string) => {
       toast('selecting line!! NOT IMPLEMENTED');
+      setSelectedLine(roomsMap[newLineIdToSelect]);
     },
     [setSelectedLine],
   );
@@ -31,3 +32,7 @@ export default function Terminal() {
     </div>
   );
 }
+
+// have a socket view component to just connect on mount and disconnect from specific | tunes in and untunes similarly
+// have a socket view component to just tune into tuned in lines
+// have a stream view component to just make peer connections and have stream components available

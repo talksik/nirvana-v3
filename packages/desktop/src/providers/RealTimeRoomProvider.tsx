@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useContext } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import useRooms from './RoomsProvider';
 import useSockets from './SocketProvider';
 
@@ -190,7 +190,7 @@ export function RealTimeRoomProvider({ children }: { children: React.ReactChild 
 
   return (
     <RealTimeRoomContext.Provider value={{ roomsMap: realTimeRoomMap }}>
-      {' '}
+      {children}
     </RealTimeRoomContext.Provider>
   );
 }
