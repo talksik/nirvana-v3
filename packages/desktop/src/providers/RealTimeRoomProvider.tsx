@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useCallback } from 'react';
 import useRooms from './RoomsProvider';
 import useSockets from './SocketProvider';
 
@@ -19,6 +19,7 @@ import {
   UserStartedBroadcastingResponse,
   UserStoppedBroadcastingResponse,
 } from '@nirvana/core/sockets/channels';
+import toast from 'react-hot-toast';
 
 type LineIdToMasterLine = {
   [lineId: string]: MasterLineData;
@@ -26,16 +27,26 @@ type LineIdToMasterLine = {
 
 interface IRealTimeRoomProvider {
   roomsMap: LineIdToMasterLine;
+
+  selectedLine?: MasterLineData;
+  handleSelectLine: (newLineId: string) => void;
 }
 
-const RealTimeRoomContext = React.createContext<IRealTimeRoomProvider>({ roomsMap: {} });
+const RealTimeRoomContext = React.createContext<IRealTimeRoomProvider>({
+  roomsMap: {},
+  handleSelectLine: () => {
+    //
+  },
+});
 
 // handles reads of new data
-// does NOT handle sending socket emissions
+// keeps listening to incoming socket events to make sure that the realtime rooms map is highly available
 export function RealTimeRoomProvider({ children }: { children: React.ReactChild }) {
   const { rooms } = useRooms();
   const { $ws } = useSockets();
   const [realTimeRoomMap, setRealTimeRoomMap] = useState<LineIdToMasterLine>({});
+
+  const [selectedLine, setSelectedLine] = useState<MasterLineData>();
 
   useEffect(() => {
     /**
@@ -188,8 +199,19 @@ export function RealTimeRoomProvider({ children }: { children: React.ReactChild 
     }
   }, [rooms.value, setRealTimeRoomMap]);
 
+  /** show user line details on click of one line */
+  const handleSelectLine = useCallback(
+    (newLineIdToSelect: string) => {
+      toast('selecting line!! NOT IMPLEMENTED');
+      setSelectedLine(realTimeRoomMap[newLineIdToSelect]);
+    },
+    [setSelectedLine, realTimeRoomMap],
+  );
+
   return (
-    <RealTimeRoomContext.Provider value={{ roomsMap: realTimeRoomMap }}>
+    <RealTimeRoomContext.Provider
+      value={{ roomsMap: realTimeRoomMap, handleSelectLine, selectedLine }}
+    >
       {children}
     </RealTimeRoomContext.Provider>
   );
