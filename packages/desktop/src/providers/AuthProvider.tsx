@@ -9,6 +9,7 @@ interface IAuthProvider {
   user?: User;
   jwtToken?: string;
   setJwtToken?: (jwtToken: string) => void;
+  handleLogout?: () => void;
 }
 
 const AuthContext = React.createContext<IAuthProvider>({});
@@ -34,6 +35,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [jwtToken, fetchUser]);
 
+  const handleLogout = useCallback(() => {
+    setJwtToken(undefined);
+
+    // ?should this be set here? what's a better way of
+    NirvanaApi._jwtToken = null;
+
+    fetchUser()
+      .then((response) => {
+        toast.success('authenticated user');
+      })
+      .catch(() => {
+        toast.error('logged out');
+      });
+  }, [fetchUser, setJwtToken]);
+
   const handleSetJwtToken = useCallback(
     (newJwtToken: string) => {
       setJwtToken(newJwtToken);
@@ -43,7 +59,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user: userFetchState.value?.user, setJwtToken: handleSetJwtToken, jwtToken }}
+      value={{
+        user: userFetchState.value?.user,
+        setJwtToken: handleSetJwtToken,
+        jwtToken,
+        handleLogout,
+      }}
     >
       {children}
     </AuthContext.Provider>

@@ -1,16 +1,25 @@
 import React from 'react';
 import { Toaster } from 'react-hot-toast';
+import { RoomsProvider } from '../providers/RoomsProvider';
+import { RealTimeRoomProvider } from '../providers/RealTimeRoomProvider';
 import { AuthProvider } from '../providers/AuthProvider';
 import { ElectronProvider } from '../providers/ElectronProvider';
 import { SocketProvider } from '../providers/SocketProvider';
 import ProtectedRoute from './protected/ProtectedRoute';
+import Terminal from './protected/terminal/Terminal';
 
 export default function ElectronApp() {
   return (
     <ElectronProvider>
       <AuthProvider>
         <ProtectedRoute>
-          <SocketProvider>yo its connected dawg</SocketProvider>
+          <SocketProvider>
+            <RoomsProvider>
+              <RealTimeRoomProvider>
+                <Terminal />
+              </RealTimeRoomProvider>
+            </RoomsProvider>
+          </SocketProvider>
         </ProtectedRoute>
       </AuthProvider>
 

@@ -1,4 +1,4 @@
-import { FiActivity, FiSun } from 'react-icons/fi';
+import { FiActivity, FiSun } from "react-icons/fi";
 import {
   RtcAnswerRequest,
   RtcCallRequest,
@@ -6,19 +6,21 @@ import {
   RtcReceiveAnswerResponse,
   ServerResponseChannels,
   SomeoneUntunedFromLineResponse,
-} from '@nirvana/core/sockets/channels';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+} from "@nirvana/core/sockets/channels";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { Avatar } from 'antd';
-import LineIcon from '../lineIcon';
-import { LineMemberState } from '@nirvana/core/models/line.model';
-import MasterLineData from '@nirvana/core/models/masterLineData.model';
-import Peer from 'simple-peer';
-import { ServerRequestChannels } from '@nirvana/core/sockets/channels';
-import moment from 'moment';
-import toast from 'react-hot-toast';
-import { useRecoilState } from 'recoil';
-import useAuth from '../../../../desktop/src/providers/AuthProvider';
+import { $selectedLineId } from "../../../controller/recoil";
+import { Avatar } from "antd";
+import LineIcon from "../lineIcon";
+import { LineMemberState } from "@nirvana/core/models/line.model";
+import MasterLineData from "@nirvana/core/models/masterLineData.model";
+import Peer from "simple-peer";
+import { ServerRequestChannels } from "../../../../../core/sockets/channels";
+import moment from "moment";
+import toast from "react-hot-toast";
+import { useGetUserDetails } from "../../../controller/index";
+import { useLineDataProvider } from "../../../controller/lineDataProvider";
+import { useRecoilState } from "recoil";
 
 // todo: send a much more comprehensive master line object? or just add properties to the
 // masterLineData object so that we don't have different models to maintain between client and server
@@ -31,18 +33,19 @@ export default function LineRow({
   handleSelectLine: (lineId: string) => void;
 }) {
   const [selectedLineId, setSelectedLineId] = useRecoilState($selectedLineId);
-  const { user } = useAuth();
+  const { data: userData } = useGetUserDetails();
 
   useEffect(() => {
-    console.warn('mounting linerow');
+    console.warn("mounting linerow");
 
-    return () => console.warn('UNMOUNTING line row');
+    return () => console.warn("UNMOUNTING line row");
   }, []);
 
   // take the source of truth list of memeberIds tuned in, and see if I'm in it
   const isUserTunedIn = useMemo(
-    () => masterLineData.tunedInMemberIds?.includes(userData?.user?._id.toString()),
-    [masterLineData.tunedInMemberIds, userData],
+    () =>
+      masterLineData.tunedInMemberIds?.includes(userData?.user?._id.toString()),
+    [masterLineData.tunedInMemberIds, userData]
   );
 
   /**
@@ -53,13 +56,18 @@ export default function LineRow({
     if (masterLineData.currentBroadcastersUserIds?.length > 0)
       return <FiSun className="text-teal-500 animate-pulse" />;
 
-    if (isUserTunedIn) return <FiActivity className="text-black animate-pulse" />;
+    if (isUserTunedIn)
+      return <FiActivity className="text-black animate-pulse" />;
 
     // if there is new activity blocks for me
     if (masterLineData.currentUserMember.lastVisitDate)
-      return <span className="h-2 w-2 rounded-full bg-slate-800 animate-pulse"></span>;
+      return (
+        <span className="h-2 w-2 rounded-full bg-slate-800 animate-pulse"></span>
+      );
 
-    return <span className="h-2 w-2 rounded-full bg-white animate-pulse"></span>;
+    return (
+      <span className="h-2 w-2 rounded-full bg-white animate-pulse"></span>
+    );
   }, [masterLineData, isUserTunedIn]);
 
   const renderRightActivity = useMemo(() => {
@@ -72,19 +80,19 @@ export default function LineRow({
           maxPopoverTrigger="click"
           size="small"
           maxStyle={{
-            color: '#f56a00',
-            backgroundColor: '#fde3cf',
-            cursor: 'pointer',
-            borderRadius: '0',
+            color: "#f56a00",
+            backgroundColor: "#fde3cf",
+            cursor: "pointer",
+            borderRadius: "0",
           }}
           className="shadow-lg"
         >
           {masterLineData.otherUserObjects?.map((otherUser, index) => (
             <Avatar
               key={`lineListActivitySection-${otherUser._id.toString()}-${index}`}
-              src={otherUser.picture ?? ''}
+              src={otherUser.picture ?? ""}
               shape="square"
-              size={'small'}
+              size={"small"}
             />
           ))}
         </Avatar.Group>
@@ -123,24 +131,31 @@ export default function LineRow({
   return (
     <>
       <div
-        onClick={() => handleSelectLine(masterLineData.lineDetails._id.toString())}
+        onClick={() =>
+          handleSelectLine(masterLineData.lineDetails._id.toString())
+        }
         className={`flex flex-row items-center justify-start gap-2 p-2 px-4 h-14 hover:bg-gray-200 cursor-pointer transition-all
   last:border-b-0 border-b border-b-gray-200 relative z-50 rounded ${
     selectedLineId === masterLineData.lineDetails._id.toString() &&
-    'bg-gray-200 scale-110 shadow-2xl translate-x-3'
+    "bg-gray-200 scale-110 shadow-2xl translate-x-3"
   }`}
       >
         {/* status dot */}
         <div className="flex-shrink-0 h-4 w-4">{renderActivityIcon}</div>
 
-        {profilePictures && <LineIcon grayscale={!isUserTunedIn} sourceImages={profilePictures} />}
+        {profilePictures && (
+          <LineIcon grayscale={!isUserTunedIn} sourceImages={profilePictures} />
+        )}
 
         <h2
           className={`text-inherit text-md max-w-[220px] truncate text-slate-800 ${
-            masterLineData.currentUserMember.lastVisitDate ? 'font-semibold' : ''
+            masterLineData.currentUserMember.lastVisitDate
+              ? "font-semibold"
+              : ""
           }`}
         >
-          {masterLineData.lineDetails.name || masterLineData.otherUserObjects[0].givenName}
+          {masterLineData.lineDetails.name ||
+            masterLineData.otherUserObjects[0].givenName}
         </h2>
 
         <div className="ml-auto flex-shrink-0">{renderRightActivity}</div>
@@ -195,7 +210,8 @@ function StreamRoom({
         .then((userStream) => {
           setLocalStream(userStream);
 
-          if (userStreamTagRef?.current) userStreamTagRef.current.srcObject = userStream;
+          if (userStreamTagRef?.current)
+            userStreamTagRef.current.srcObject = userStream;
 
           // alternative to dom element
           // const audio = new Audio();
@@ -216,7 +232,7 @@ function StreamRoom({
 
           // take the initial list of tunedInUsers without my own id
           const everyOtherTunedUserId = tunedInUsers.filter(
-            (tunedUserId) => tunedUserId !== userDetails?.user._id.toString(),
+            (tunedUserId) => tunedUserId !== userDetails?.user._id.toString()
           );
 
           const localPeerConnections: PeerMap = {};
@@ -233,10 +249,10 @@ function StreamRoom({
             localPeerConnections[otherTunedInUserId] = localPeerInitiator;
 
             // notify each one with specific signal
-            localPeerInitiator.on('signal', (signal) => {
+            localPeerInitiator.on("signal", (signal) => {
               $ws.emit(
                 ServerRequestChannels.RTC_CALL_REQUEST,
-                new RtcCallRequest(lineId, otherTunedInUserId, signal),
+                new RtcCallRequest(lineId, otherTunedInUserId, signal)
               );
             });
           });
@@ -250,7 +266,7 @@ function StreamRoom({
               // create a local peer connection for this new user
 
               console.log(
-                'ooo newbie joined room, I guess I will accept it and send him my signal',
+                "ooo newbie joined room, I guess I will accept it and send him my signal"
               );
               console.log(res);
 
@@ -260,13 +276,13 @@ function StreamRoom({
                 stream: userStream, // add in my own stream that I got before
               });
 
-              peerForMeAndNewbie.on('signal', (signal) => {
+              peerForMeAndNewbie.on("signal", (signal) => {
                 console.log(
-                  'as the answerer, I am going to send back my signal so that the newbie can update his local peer for me',
+                  "as the answerer, I am going to send back my signal so that the newbie can update his local peer for me"
                 );
                 $ws.emit(
                   ServerRequestChannels.RTC_ANSWER_REQUEST,
-                  new RtcAnswerRequest(lineId, res.newUserId, signal),
+                  new RtcAnswerRequest(lineId, res.newUserId, signal)
                 );
               });
 
@@ -279,7 +295,7 @@ function StreamRoom({
 
                 return newUserPeers;
               });
-            },
+            }
           );
 
           // take care of answers recevied
@@ -287,7 +303,9 @@ function StreamRoom({
             `${ServerResponseChannels.RTC_RECEIVING_ANSWER_RESPONSE_PREFIX}:${lineId}`,
             (res: RtcReceiveAnswerResponse) => {
               console.log(
-                `oooo some master received my call and accepted it ${JSON.stringify(res)}`,
+                `oooo some master received my call and accepted it ${JSON.stringify(
+                  res
+                )}`
               );
               console.log(res);
 
@@ -296,20 +314,25 @@ function StreamRoom({
               setUserPeers((previousUserPeersMap) => {
                 const newUserPeerMap = { ...previousUserPeersMap };
 
-                console.log('here is the current peers map', previousUserPeersMap);
+                console.log(
+                  "here is the current peers map",
+                  previousUserPeersMap
+                );
 
                 const peerForAnswerer = newUserPeerMap[res.answererUserId];
 
                 if (peerForAnswerer) {
                   peerForAnswerer.signal(res.simplePeerSignal);
                 } else {
-                  console.error('could not find the peer we created before for this master');
+                  console.error(
+                    "could not find the peer we created before for this master"
+                  );
                 }
 
                 // note needed to change state so that the peer object that gets iterated in dom isn't the old referenced one/we trigger refresh for the child component
                 return newUserPeerMap;
               });
-            },
+            }
           );
 
           $ws.on(
@@ -317,13 +340,15 @@ function StreamRoom({
             (res: SomeoneUntunedFromLineResponse) => {
               // find the peer object and remove from our userPeers map
               // will also cause unmounting the child component which destroys peer object but also can destroy here
-            },
+            }
           );
         })
         .catch((error) => {
           console.error(error);
 
-          toast.error('Make sure that you have permissions enabled and microphone connected');
+          toast.error(
+            "Make sure that you have permissions enabled and microphone connected"
+          );
         });
     }
 
@@ -331,9 +356,11 @@ function StreamRoom({
     // ! remove ws handlers so that the same channels don't get triggered twice when I retune into this line
     return () => {
       $ws.removeListener(
-        `${ServerResponseChannels.RTC_RECEIVING_ANSWER_RESPONSE_PREFIX}:${lineId}`,
+        `${ServerResponseChannels.RTC_RECEIVING_ANSWER_RESPONSE_PREFIX}:${lineId}`
       );
-      $ws.removeListener(`${ServerResponseChannels.RTC_NEW_USER_JOINED_RESPONSE_PREFIX}:${lineId}`);
+      $ws.removeListener(
+        `${ServerResponseChannels.RTC_NEW_USER_JOINED_RESPONSE_PREFIX}:${lineId}`
+      );
     };
   }, [userDetails, setUserPeers]);
 
@@ -341,7 +368,7 @@ function StreamRoom({
   useEffect(() => {}, [tunedInUsers]);
 
   useEffect(() => {
-    console.log('keeping an eye on user peers map');
+    console.log("keeping an eye on user peers map");
     console.log(userPeers);
   }, [userPeers]);
 
@@ -349,7 +376,7 @@ function StreamRoom({
 
   // TODO: p1...when the peer map user count > tunedIn.length, then we get rid of the right person from list cuzz they have officially left or disconnected
   useEffect(() => {
-    console.log('change in tuned in users in the streaming room!!!');
+    console.log("change in tuned in users in the streaming room!!!");
 
     setUserPeers((prevUserPeersMap) => {
       // go through the userIds here
@@ -362,7 +389,7 @@ function StreamRoom({
       otherUserIdsPeers.forEach((otherUserId) => {
         // problem if we are trying to show stream of someone who is not tuned in
         if (!tunedInUsers.includes(otherUserId)) {
-          console.log('user left with id:', otherUserId);
+          console.log("user left with id:", otherUserId);
           const disconnectedLocalPeer = newMap[otherUserId];
 
           if (disconnectedLocalPeer) {
@@ -399,13 +426,19 @@ function StreamRoom({
 /**
  * take in the specified peer and whether or not he is broadcasting
  */
-function PeerStreamRenderer({ peer, isBroadcasting }: { peer: Peer; isBroadcasting: boolean }) {
+function PeerStreamRenderer({
+  peer,
+  isBroadcasting,
+}: {
+  peer: Peer;
+  isBroadcasting: boolean;
+}) {
   const streamRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    peer.on('stream', (remotePeerStream: MediaStream) => {
+    peer.on("stream", (remotePeerStream: MediaStream) => {
       console.log(
-        'stream coming in from remote peer...BUT, only going to show once they broadcast',
+        "stream coming in from remote peer...BUT, only going to show once they broadcast"
       );
 
       if (streamRef?.current) streamRef.current.srcObject = remotePeerStream;
