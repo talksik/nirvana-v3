@@ -17,9 +17,11 @@ export default function Terminal() {
     <div className="flex flex-col flex-1">
       <NavBar />
 
-      <SidePanel />
+      <div className="flex flex-row flex-1">
+        <SidePanel />
 
-      {/* <MainPanel /> */}
+        {/* <MainPanel /> */}
+      </div>
     </div>
   );
 }
