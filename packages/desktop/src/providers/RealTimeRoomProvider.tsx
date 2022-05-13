@@ -26,6 +26,10 @@ type LineIdToMasterLine = {
 
 interface IRealTimeRoomProvider {
   roomsMap: LineIdToMasterLine;
+
+  selectedRoom?: MasterLineData;
+  // untunes from previous and tunes into new room
+  handleSelectRoom?: (roomId: string) => void;
 }
 
 const RealTimeRoomContext = React.createContext<IRealTimeRoomProvider>({ roomsMap: {} });
@@ -260,8 +264,15 @@ export function RealTimeRoomProvider({ children }: { children: React.ReactChild 
     }
   }, [rooms.value, handleConnectToLine, handleTuneToLine, setRealTimeRoomMap]);
 
+  const handleSelectRoom = useCallback(
+    (roomId: string) => {
+      return realTimeRoomMap[roomId];
+    },
+    [realTimeRoomMap],
+  );
+
   return (
-    <RealTimeRoomContext.Provider value={{ roomsMap: realTimeRoomMap }}>
+    <RealTimeRoomContext.Provider value={{ roomsMap: realTimeRoomMap, handleSelectRoom }}>
       {' '}
     </RealTimeRoomContext.Provider>
   );
