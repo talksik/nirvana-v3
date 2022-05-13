@@ -15,20 +15,20 @@ import {
   UntuneFromLineRequest,
   UserStartedBroadcastingResponse,
   UserStoppedBroadcastingResponse,
-} from "@nirvana/core/sockets/channels";
+} from '@nirvana/core/sockets/channels';
 
-import GetAllSocketClients from "@nirvana/core/sockets/getAllActiveSocketClients";
-import { JwtClaims } from "../middleware/auth";
-import { LineMemberState } from "@nirvana/core/models/line.model";
-import { LineService } from "../services/line.service";
-import ReceiveSignal from "@nirvana/core/sockets/receiveSignal";
-import SendSignal from "@nirvana/core/sockets/sendSignal";
-import { UserService } from "../services/user.service";
-import { UserStatus } from "@nirvana/core/models/user.model";
-import { client } from "../services/database.service";
-import { loadConfig } from "../config";
+import GetAllSocketClients from '@nirvana/core/sockets/getAllActiveSocketClients';
+import { JwtClaims } from '../middleware/auth';
+import { LineMemberState } from '@nirvana/core/models/line.model';
+import { LineService } from '../services/line.service';
+import ReceiveSignal from '@nirvana/core/sockets/receiveSignal';
+import SendSignal from '@nirvana/core/sockets/sendSignal';
+import { UserService } from '../services/user.service';
+import { UserStatus } from '@nirvana/core/models/user.model';
+import { client } from '../services/database.service';
+import { loadConfig } from '../config';
 
-const jwt = require("jsonwebtoken");
+const jwt = require('jsonwebtoken');
 
 const config = loadConfig();
 
@@ -41,14 +41,15 @@ const userIdsToSocketIds: {
 } = {};
 
 export default function InitializeWs(io: any) {
-  console.log("initializing web sockets");
+  console.log('initializing web sockets');
 
   return io
     .use(function (socket: any, next: any) {
-      console.log("authenticating user...");
+      console.log('authenticating user...');
 
       try {
         const { token } = socket.handshake.query;
+        console.log(token);
 
         // verify jwt token with our api secret
         var decoded: JwtClaims = jwt.verify(token, config.JWT_TOKEN_SECRET);
@@ -58,171 +59,132 @@ export default function InitializeWs(io: any) {
         next();
       } catch (error) {
         console.error(error);
-        next(new Error("WS Authentication Error"));
+        next(new Error('WS Authentication Error'));
       }
     })
-    .on("connection", function (socket: any) {
+    .on('connection', function (socket: any) {
       const userInfo: JwtClaims = socket.userInfo;
 
       socketIdsToUserIds[socket.id] = userInfo.userId.toString();
       userIdsToSocketIds[userInfo.userId.toString()] = socket.id;
 
-      console.log(
-        `a user connected | user Id: ${userInfo.userId} and name: ${userInfo.name}`
-      );
+      console.log(`a user connected | user Id: ${userInfo.userId} and name: ${userInfo.name}`);
 
-      socket.on("test", () => {
-        console.log("asdf");
+      socket.on('test', () => {
+        console.log('asdf');
       });
 
       // ?verification that user is in a particular line to be tuned into it or just generally in it?
 
       /** CONNECT | User wants to subscribe to live emissions of a line */
-      socket.on(
-        ServerRequestChannels.CONNECT_TO_LINE,
-        (req: ConnectToLineRequest) => {
-          // add this user to the room
-          console.log(
-            `${socket.id} user CONNECTED room for line ${Object.keys(
-              socket.rooms
-            )}`
-          );
+      socket.on(ServerRequestChannels.CONNECT_TO_LINE, (req: ConnectToLineRequest) => {
+        // add this user to the room
+        console.log(`${socket.id} user CONNECTED room for line ${Object.keys(socket.rooms)}`);
 
-          const roomName = `connectedLine:${req.lineId}`;
-          socket.join(roomName);
+        const roomName = `connectedLine:${req.lineId}`;
+        socket.join(roomName);
 
-          console.log(`${socket.id} now in rooms ${socket.rooms}`);
+        console.log(`${socket.id} now in rooms ${socket.rooms}`);
 
-          const clientUserIdsInRoom = [
-            ...(io.sockets.adapter.rooms.get(roomName) ?? []),
-          ].map(
-            (otherUserSocketId: string) => socketIdsToUserIds[otherUserSocketId]
-          );
+        const clientUserIdsInRoom = [...(io.sockets.adapter.rooms.get(roomName) ?? [])].map(
+          (otherUserSocketId: string) => socketIdsToUserIds[otherUserSocketId],
+        );
 
-          io.in(roomName).emit(
-            ServerResponseChannels.SOMEONE_CONNECTED_TO_LINE,
-            new SomeoneConnectedResponse(
-              req.lineId,
-              userInfo.userId,
-              clientUserIdsInRoom
-            )
-          );
-        }
-      );
+        io.in(roomName).emit(
+          ServerResponseChannels.SOMEONE_CONNECTED_TO_LINE,
+          new SomeoneConnectedResponse(req.lineId, userInfo.userId, clientUserIdsInRoom),
+        );
+      });
 
       /**
        * TODO: handle when user wants to completely leave a line (delete or removed from one)
        */
-      socket.on(ServerRequestChannels.DISCONNECT_FROM_LINE, () =>
-        console.log("not implemented")
-      );
+      socket.on(ServerRequestChannels.DISCONNECT_FROM_LINE, () => console.log('not implemented'));
 
       /** TUNE | User tunes into the line either temporarily or toggled in  */
-      socket.on(
-        ServerRequestChannels.TUNE_INTO_LINE,
-        async (req: TuneToLineRequest) => {
-          console.log(
-            `${socket.id} user TUNED into room for line ${req.lineId}`
+      socket.on(ServerRequestChannels.TUNE_INTO_LINE, async (req: TuneToLineRequest) => {
+        console.log(`${socket.id} user TUNED into room for line ${req.lineId}`);
+
+        const roomName = `tunedLine:${req.lineId}`;
+        socket.join(roomName);
+
+        console.log(`${socket.id} now in rooms ${Object.keys(socket.rooms)}`);
+
+        // persist tuning in if user is toggle tuning in
+        if (req.keepTunedIn) {
+          await LineService.updateLineMemberState(
+            req.lineId,
+            userInfo.userId,
+            LineMemberState.TUNED,
           );
-
-          const roomName = `tunedLine:${req.lineId}`;
-          socket.join(roomName);
-
-          console.log(`${socket.id} now in rooms ${Object.keys(socket.rooms)}`);
-
-          // persist tuning in if user is toggle tuning in
-          if (req.keepTunedIn) {
-            await LineService.updateLineMemberState(
-              req.lineId,
-              userInfo.userId,
-              LineMemberState.TUNED
-            );
-          } else {
-            await LineService.updateLineMemberState(
-              req.lineId,
-              userInfo.userId,
-              LineMemberState.INBOX
-            );
-          }
-
-          const clientUserIdsInRoom = [
-            ...(io.sockets.adapter.rooms.get(roomName) ?? []),
-          ].map(
-            (otherUserSocketId: string) => socketIdsToUserIds[otherUserSocketId]
-          );
-
-          // we want to notify everyone connected to the line even if they are not tuned in
-          const connectedLineRoomName = `connectedLine:${req.lineId}`;
-
-          io.in(connectedLineRoomName).emit(
-            ServerResponseChannels.SOMEONE_TUNED_INTO_LINE,
-            new SomeoneTunedResponse(
-              req.lineId,
-              userInfo.userId,
-              clientUserIdsInRoom,
-              req.keepTunedIn
-            )
+        } else {
+          await LineService.updateLineMemberState(
+            req.lineId,
+            userInfo.userId,
+            LineMemberState.INBOX,
           );
         }
-      );
+
+        const clientUserIdsInRoom = [...(io.sockets.adapter.rooms.get(roomName) ?? [])].map(
+          (otherUserSocketId: string) => socketIdsToUserIds[otherUserSocketId],
+        );
+
+        // we want to notify everyone connected to the line even if they are not tuned in
+        const connectedLineRoomName = `connectedLine:${req.lineId}`;
+
+        io.in(connectedLineRoomName).emit(
+          ServerResponseChannels.SOMEONE_TUNED_INTO_LINE,
+          new SomeoneTunedResponse(
+            req.lineId,
+            userInfo.userId,
+            clientUserIdsInRoom,
+            req.keepTunedIn,
+          ),
+        );
+      });
 
       /**
        * Notify all connected users when someone UNTUNES from a room
        * ?might not be needed, all users' memory of tuned in users is irrelevant? don't need real time? but UI will show # of users tuned in?
        */
-      socket.on(
-        ServerRequestChannels.UNTUNE_FROM_LINE,
-        async (req: UntuneFromLineRequest) => {
-          const roomName = `tunedLine:${req.lineId}`;
-          socket.leave(roomName);
+      socket.on(ServerRequestChannels.UNTUNE_FROM_LINE, async (req: UntuneFromLineRequest) => {
+        const roomName = `tunedLine:${req.lineId}`;
+        socket.leave(roomName);
 
-          console.log("someone left room");
+        console.log('someone left room');
 
-          const clientUserIdsInRoom = [
-            ...(io.sockets.adapter.rooms.get(roomName) ?? []),
-          ].map(
-            (otherUserSocketId: string) => socketIdsToUserIds[otherUserSocketId]
-          );
+        const clientUserIdsInRoom = [...(io.sockets.adapter.rooms.get(roomName) ?? [])].map(
+          (otherUserSocketId: string) => socketIdsToUserIds[otherUserSocketId],
+        );
 
-          // we want to notify everyone connected to the line even if they are not tuned in
-          const connectedLineRoomName = `connectedLine:${req.lineId}`;
+        // we want to notify everyone connected to the line even if they are not tuned in
+        const connectedLineRoomName = `connectedLine:${req.lineId}`;
 
-          io.in(connectedLineRoomName).emit(
-            ServerResponseChannels.SOMEONE_UNTUNED_FROM_LINE,
-            new SomeoneUntunedFromLineResponse(
-              req.lineId,
-              userInfo.userId,
-              clientUserIdsInRoom
-            )
-          );
-        }
-      );
+        io.in(connectedLineRoomName).emit(
+          ServerResponseChannels.SOMEONE_UNTUNED_FROM_LINE,
+          new SomeoneUntunedFromLineResponse(req.lineId, userInfo.userId, clientUserIdsInRoom),
+        );
+      });
 
       // TODO: use same pattern as tuning and untuning and send updated fresh list of current broadcasters but using another namespace/room for broadcasters in a line
       /** BROADCAST UPDATE | tell all connected, not just tuned into, that there is an update to someone broadcasting */
-      socket.on(
-        ServerRequestChannels.BROADCAST_TO_LINE,
-        (req: StartBroadcastingRequest) => {
-          const roomName = `connectedLine:${req.lineId}`;
+      socket.on(ServerRequestChannels.BROADCAST_TO_LINE, (req: StartBroadcastingRequest) => {
+        const roomName = `connectedLine:${req.lineId}`;
 
-          io.in(roomName).emit(
-            ServerResponseChannels.SOMEONE_STARTED_BROADCASTING,
-            new UserStartedBroadcastingResponse(req.lineId, userInfo.userId)
-          );
-        }
-      );
+        io.in(roomName).emit(
+          ServerResponseChannels.SOMEONE_STARTED_BROADCASTING,
+          new UserStartedBroadcastingResponse(req.lineId, userInfo.userId),
+        );
+      });
 
-      socket.on(
-        ServerRequestChannels.STOP_BROADCAST_TO_LINE,
-        (req: StopBroadcastingRequest) => {
-          const roomName = `connectedLine:${req.lineId}`;
+      socket.on(ServerRequestChannels.STOP_BROADCAST_TO_LINE, (req: StopBroadcastingRequest) => {
+        const roomName = `connectedLine:${req.lineId}`;
 
-          io.in(roomName).emit(
-            ServerResponseChannels.SOMEONE_STOPPED_BROADCASTING,
-            new UserStoppedBroadcastingResponse(req.lineId, userInfo.userId)
-          );
-        }
-      );
+        io.in(roomName).emit(
+          ServerResponseChannels.SOMEONE_STOPPED_BROADCASTING,
+          new UserStoppedBroadcastingResponse(req.lineId, userInfo.userId),
+        );
+      });
 
       // socket.on(SocketChannels.SEND_SIGNAL, async (payload: SendSignal) => {
       //   console.log(payload);
@@ -240,29 +202,23 @@ export default function InitializeWs(io: any) {
       // });
 
       // tell the proper other user to create a local peer object for the one on one mesh connection
-      socket.on(
-        ServerRequestChannels.RTC_CALL_REQUEST,
-        (req: RtcCallRequest) => {
-          const userSocketId = userIdsToSocketIds[req.userIdToCall];
+      socket.on(ServerRequestChannels.RTC_CALL_REQUEST, (req: RtcCallRequest) => {
+        const userSocketId = userIdsToSocketIds[req.userIdToCall];
 
-          io.to(userSocketId).emit(
-            `${ServerResponseChannels.RTC_NEW_USER_JOINED_RESPONSE_PREFIX}:${req.lineId}`,
-            new RtcNewUserResponse(userInfo.userId, req.simplePeerSignal)
-          );
-        }
-      );
+        io.to(userSocketId).emit(
+          `${ServerResponseChannels.RTC_NEW_USER_JOINED_RESPONSE_PREFIX}:${req.lineId}`,
+          new RtcNewUserResponse(userInfo.userId, req.simplePeerSignal),
+        );
+      });
 
-      socket.on(
-        ServerRequestChannels.RTC_ANSWER_REQUEST,
-        (req: RtcAnswerRequest) => {
-          const userSocketId = userIdsToSocketIds[req.userIdToCall];
+      socket.on(ServerRequestChannels.RTC_ANSWER_REQUEST, (req: RtcAnswerRequest) => {
+        const userSocketId = userIdsToSocketIds[req.userIdToCall];
 
-          io.to(userSocketId).emit(
-            `${ServerResponseChannels.RTC_RECEIVING_ANSWER_RESPONSE_PREFIX}:${req.lineId}`,
-            new RtcReceiveAnswerResponse(userInfo.userId, req.simplePeerSignal)
-          );
-        }
-      );
+        io.to(userSocketId).emit(
+          `${ServerResponseChannels.RTC_RECEIVING_ANSWER_RESPONSE_PREFIX}:${req.lineId}`,
+          new RtcReceiveAnswerResponse(userInfo.userId, req.simplePeerSignal),
+        );
+      });
 
       // TODO: not complete
       socket.on(ServerRequestChannels.GOING_INTO_FLOW_STATE, () => {
@@ -272,17 +228,12 @@ export default function InitializeWs(io: any) {
 
         for (const roomName of socket.rooms) {
           if (roomName !== socket.id) {
-            const lineId = roomName.split(":")[1];
-            if (roomName.includes("connectedLine")) {
+            const lineId = roomName.split(':')[1];
+            if (roomName.includes('connectedLine')) {
               // get fresh list of tuned in folks without me
-              const clientUserIdsInRoom = [
-                ...(io.sockets.adapter.rooms.get(roomName) ?? []),
-              ]
+              const clientUserIdsInRoom = [...(io.sockets.adapter.rooms.get(roomName) ?? [])]
                 .filter((mappedSocketId) => mappedSocketId !== socket.id)
-                .map(
-                  (otherUserSocketId: string) =>
-                    socketIdsToUserIds[otherUserSocketId]
-                );
+                .map((otherUserSocketId: string) => socketIdsToUserIds[otherUserSocketId]);
 
               // io.in(roomName).emit(
               //   ServerResponseChannels.SOMEONE_GOING_INTO_FLOW_STATE,
@@ -300,33 +251,24 @@ export default function InitializeWs(io: any) {
       // tell all connected people that I am disconnecting
       // tell tuned in folks that I am leaving the room
       // tell the tuned in folks the new list of
-      socket.on("disconnecting", (reason: any) => {
+      socket.on('disconnecting', (reason: any) => {
         console.log(reason);
 
         console.log(socket.rooms);
         for (const roomName of socket.rooms) {
           if (roomName !== socket.id) {
-            const lineId = roomName.split(":")[1];
-            if (roomName.includes("tunedLine")) {
+            const lineId = roomName.split(':')[1];
+            if (roomName.includes('tunedLine')) {
               // get fresh list of tuned in folks without me
-              const clientUserIdsInRoom = [
-                ...(io.sockets.adapter.rooms.get(roomName) ?? []),
-              ]
+              const clientUserIdsInRoom = [...(io.sockets.adapter.rooms.get(roomName) ?? [])]
                 .filter((mappedSocketId) => mappedSocketId !== socket.id)
-                .map(
-                  (otherUserSocketId: string) =>
-                    socketIdsToUserIds[otherUserSocketId]
-                );
+                .map((otherUserSocketId: string) => socketIdsToUserIds[otherUserSocketId]);
 
               io.in(roomName).emit(
                 ServerResponseChannels.SOMEONE_UNTUNED_FROM_LINE,
-                new SomeoneUntunedFromLineResponse(
-                  lineId,
-                  userInfo.userId,
-                  clientUserIdsInRoom
-                )
+                new SomeoneUntunedFromLineResponse(lineId, userInfo.userId, clientUserIdsInRoom),
               );
-            } else if (roomName.includes("connectedLine")) {
+            } else if (roomName.includes('connectedLine')) {
               //TODO: p3: client doesn't really to know right now in our flow as this list is not really used
               // io.in(roomName).emit(ServerResponseChannels.SOMEONE_UNTUNED_FROM_LINE, new SomeoneDisconnected(lineId, userInfo.userId, clientUserIdsInRoom));
             }
@@ -335,17 +277,15 @@ export default function InitializeWs(io: any) {
       });
 
       // ==== DISCONNECT ====
-      socket.on("disconnect", () => {
+      socket.on('disconnect', () => {
         delete socketIdsToUserIds[socket.id];
         delete userIdsToSocketIds[userInfo.userId];
 
         // get all of the rooms of this socket
         // notify everyone of this disconnection
 
-        console.log("user disconnected");
-        console.log(
-          `list of sockets mappings in memory: ${socketIdsToUserIds}`
-        );
+        console.log('user disconnected');
+        console.log(`list of sockets mappings in memory: ${socketIdsToUserIds}`);
 
         console.log(socket.rooms);
 

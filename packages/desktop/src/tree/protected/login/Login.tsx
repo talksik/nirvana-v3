@@ -1,16 +1,18 @@
-import Channels, { STORE_ITEMS } from '../../electron/constants';
-import { useEffect, useState } from 'react';
-import { useRecoilState, useSetRecoilState } from 'recoil';
+import React, { useEffect, useState } from 'react';
 
-import { $jwtToken } from '../../controller/recoil';
 import { FcGoogle } from 'react-icons/fc';
-import Logo from '../../components/Logo';
-import { useLogin } from '../../controller/index';
+// import Logo from '../../components/Logo';
+import { login } from '../../../api/NirvanaApi';
+import { useAsyncFn } from 'react-use';
+import Channels from '../../../electron/constants';
+import useAuth from '../../../providers/AuthProvider';
 
 export default function Login() {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { setJwtToken } = useAuth();
 
-  const setJwtToken = useSetRecoilState($jwtToken);
+  const [loginState, loginApiHandler] = useAsyncFn(login);
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     window.electronAPI.once(
@@ -19,15 +21,16 @@ export default function Login() {
         console.log('got tokens', tokens);
 
         setIsLoading(true);
-        // todo: implement refresh token procedure in api layer by sending refresh_token and such
-
-        const loginResponse = await mutateAsync({
+        const loginResponse = await loginApiHandler({
           accessToken: tokens.access_token,
           idToken: tokens.id_token,
         });
 
         const { jwtToken, userDetails } = loginResponse;
+
         setJwtToken(jwtToken);
+
+        setIsLoading(false);
       },
     );
 
@@ -35,8 +38,9 @@ export default function Login() {
     // return () => {
     //   window.electronAPI.removeAllListeners(Channels.GOOGLE_AUTH_TOKENS);
     // };
-  }, []);
+  }, [loginApiHandler, setJwtToken]);
 
+  // take user to browser to complete authentication
   const continueAuth = () => {
     setIsLoading(true);
 
@@ -50,7 +54,7 @@ export default function Login() {
     h-screen w-screen
      bg-zinc-700"
     >
-      <Logo className="scale-50" />
+      {/* <Logo className="scale-50" /> */}
 
       {/* ! TESTING PURPOSES */}
       <div className={'text-white flex flex-col gap-5'}>
