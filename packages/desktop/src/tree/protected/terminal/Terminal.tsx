@@ -8,6 +8,7 @@ import MasterLineData from '@nirvana/core/models/masterLineData.model';
 import useRooms from '../../../providers/RoomsProvider';
 import toast from 'react-hot-toast';
 import SidePanel from './panels/SidePanel';
+import MainPanel from './panels/MainPanel';
 
 export default function Terminal() {
   const { roomsMap } = useRealTimeRooms();
@@ -20,7 +21,7 @@ export default function Terminal() {
       <div className="flex flex-row flex-1">
         <SidePanel />
 
-        {/* <MainPanel /> */}
+        <MainPanel />
       </div>
     </div>
   );
