@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Channels, { DEFAULT_APP_PRESET, Dimensions } from '../electron/constants';
 
 interface IElectronProvider {
@@ -12,7 +12,7 @@ const ElectronContext = React.createContext<IElectronProvider>({
   desktopMode: 'mainApp',
 });
 
-export default function ElectronProvider({ children }: { children: React.ReactNode }) {
+export function ElectronProvider({ children }: { children: React.ReactNode }) {
   const [desktopMode, setDesktopMode] = useState<DesktopMode>('mainApp');
 
   // handle all window resizing logic
@@ -61,4 +61,8 @@ export default function ElectronProvider({ children }: { children: React.ReactNo
   }, [setDesktopMode]);
 
   return <ElectronContext.Provider value={{ desktopMode }}>{children}</ElectronContext.Provider>;
+}
+
+export default function useElectron() {
+  return useContext(ElectronContext);
 }
