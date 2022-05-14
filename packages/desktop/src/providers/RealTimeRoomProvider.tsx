@@ -309,8 +309,6 @@ export function RealTimeRoomProvider({ children }: { children: React.ReactChild 
     [setSelectedLineId, handleUntuneFromLine, roomMap, user, handleTuneIntoLine],
   );
 
-  console.warn(roomMap);
-
   return (
     <RealTimeRoomContext.Provider
       value={{ roomsMap: roomMap, handleSelectLine, selectedLineId, handleUpdateLineMemberState }}

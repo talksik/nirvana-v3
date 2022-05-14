@@ -301,7 +301,7 @@ function LineStreams({ broadcasters }: { broadcasters: string[] }) {
   console.log(peerMap);
   return (
     <div className="flex flex-col">
-      {broadcasters.map((userId) => {
+      {broadcasters?.map((userId) => {
         const currentPeer = peerMap[userId];
 
         return currentPeer && <Stream key={`streamDisplay-${userId}`} peer={currentPeer} />;
