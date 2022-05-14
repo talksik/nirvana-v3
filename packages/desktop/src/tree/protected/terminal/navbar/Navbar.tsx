@@ -5,6 +5,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import useAuth from '../../../../providers/AuthProvider';
 import useElectron from '../../../../providers/ElectronProvider';
+import useSockets from '../../../../providers/SocketProvider';
 
 /**
  * TODO: add in video mode
@@ -13,6 +14,8 @@ import useElectron from '../../../../providers/ElectronProvider';
 export default function NavBar() {
   const { user, handleLogout } = useAuth();
   const { desktopMode } = useElectron();
+
+  const { handleFlowState } = useSockets();
 
   const inputRef = useRef<HTMLInputElement>(null);
   const [searchInput, setSearchInput] = useState<string>('');
@@ -120,22 +123,12 @@ export default function NavBar() {
           </div>
         )}
 
-        {/* todo: move this ghost button to components */}
-        {/* {desktopMode === 'flowState' ? (
-          <button
-            onClick={() => setDesktopMode('terminal')}
-            className="ml-auto text-gray-300 text-xs p-3 transition-all hover:bg-gray-200"
-          >
-            connect
-          </button>
-        ) : (
-          <button
-            onClick={() => setDesktopMode('flowState')}
-            className="text-gray-300 text-xs p-3 transition-all hover:bg-gray-200"
-          >
-            flow state
-          </button>
-        )} */}
+        <button
+          onClick={handleFlowState}
+          className="text-gray-300 text-xs p-3 transition-all hover:bg-gray-200"
+        >
+          flow state
+        </button>
 
         <Dropdown overlay={profileMenu}>
           <div className={'cursor-pointer ml-2'}>

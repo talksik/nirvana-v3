@@ -1,10 +1,13 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { io, Socket } from 'socket.io-client';
 import useAuth from './AuthProvider';
+import FlowState from '../tree/protected/FlowState';
 
 interface ISocketProvider {
   $ws: Socket;
+
+  handleFlowState?: () => void;
 }
 
 const SocketContext = React.createContext<ISocketProvider>({
@@ -15,6 +18,8 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
   const { jwtToken } = useAuth();
 
   const [$ws, set$ws] = useState<Socket>(null);
+
+  const [flowState, setFlowState] = useState<boolean>(false);
 
   useEffect(() => {
     if (!jwtToken) {
@@ -52,8 +57,22 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
 
     return () => {
       socketConnection.disconnect();
+      socketConnection.removeAllListeners();
     };
   }, [set$ws, jwtToken]);
+
+  const handleFlowState = useCallback(() => {
+    setFlowState(true);
+
+    $ws.disconnect();
+    $ws.removeAllListeners();
+  }, [setFlowState, $ws]);
+
+  const handleReconnect = useCallback(() => {
+    setFlowState(false);
+
+    $ws.connect();
+  }, [setFlowState, $ws]);
 
   if (!$ws) {
     return (
@@ -63,14 +82,18 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
             "Please wait for a solid connection. If that doesn't work, please click below or restart the application."
           }
         </span>
-        <button onClick={() => console.warn('NOT IMPLEMENTED...manual reconnect button')}>
-          Reconnect
-        </button>
+        <button onClick={handleReconnect}>Reconnect</button>
       </div>
     );
   }
 
-  return <SocketContext.Provider value={{ $ws }}>{children}</SocketContext.Provider>;
+  if (flowState) {
+    return <FlowState handleReconnect={handleReconnect} />;
+  }
+
+  return (
+    <SocketContext.Provider value={{ $ws, handleFlowState }}>{children}</SocketContext.Provider>
+  );
 }
 
 export default function useSockets() {
