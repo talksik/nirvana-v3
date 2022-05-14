@@ -141,6 +141,7 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
         });
 
         localPeerConnection.on('signal', (signal) => {
+          console.log('going to call someone');
           $ws.emit(
             ServerRequestChannels.RTC_CALL_REQUEST,
             new RtcCallRequest(userIdToCall, signal),
@@ -150,7 +151,7 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
         draft[userIdToCall] = localPeerConnection;
       });
     });
-  }, [user, roomsMap, $ws, updatePeerMap]); //TODO: make this not run on EVERY update to roomsMap? only tuned in lists? so the separate map for that?
+  }, [user, roomsMap, $ws, updatePeerMap, userLocalStream]); //TODO: make this not run on EVERY update to roomsMap? only tuned in lists? so the separate map for that?
 
   const prevStream = usePrevious<MediaStream>(userLocalStream);
 
@@ -165,12 +166,16 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
   }, [localStreamRef]);
 
   useEffect(() => {
-    if (prevStream) {
-      Object.values(peerMap).forEach((currentPeer) => {
-        currentPeer.removeStream(prevStream);
-        currentPeer.addStream(userLocalStream);
-      });
-    }
+    // if (userLocalStream) {
+    //   Object.values(peerMap).forEach((currentPeer) => {
+    //     try {
+    //       currentPeer.addStream(userLocalStream);
+    //     } catch (error) {
+    //       toast.error('problem adding stream');
+    //       console.error(error);
+    //     }
+    //   });
+    // }
   }, [userLocalStream, peerMap, prevStream]);
 
   console.log(peerMap);

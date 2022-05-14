@@ -298,19 +298,21 @@ function LineDetails() {
 function LineStreams({ broadcasters }: { broadcasters: string[] }) {
   const { peerMap } = useStreams();
 
+  console.log(peerMap);
   return (
     <div className="flex flex-col">
       {broadcasters.map((userId) => {
         const currentPeer = peerMap[userId];
 
-        return <Stream key={`streamDisplay-${userId}`} peer={currentPeer} />;
+        return currentPeer && <Stream key={`streamDisplay-${userId}`} peer={currentPeer} />;
       })}
+      this is the list of current streams we are going to show
     </div>
   );
 }
 
 function Stream({ peer }: { peer: Peer }) {
-  const streamRef = useRef<HTMLAudioElement>(null);
+  const streamRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     peer.on('stream', (remotePeerStream: MediaStream) => {
@@ -318,13 +320,18 @@ function Stream({ peer }: { peer: Peer }) {
         'stream coming in from remote peer...BUT, only going to show once they broadcast',
       );
 
-      const audio = new Audio();
-      audio.autoplay = true;
-      audio.srcObject = remotePeerStream;
+      // const audio = new Audio();
+      // audio.autoplay = true;
+      // audio.srcObject = remotePeerStream;
 
       if (streamRef?.current) streamRef.current.srcObject = remotePeerStream;
     });
   }, []);
 
-  return <>this is a stream component of one remote peer</>;
+  return (
+    <>
+      this is a stream component of one remote peer
+      <video height={400} width={400} autoPlay muted ref={streamRef} />
+    </>
+  );
 }
