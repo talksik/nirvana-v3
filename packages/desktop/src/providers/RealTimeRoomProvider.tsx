@@ -110,6 +110,7 @@ export function RealTimeRoomProvider({ children }: { children: React.ReactChild 
 
   const [moveLineState, moveLine] = useAsyncFn(updateLineMemberState);
 
+  /** All line listeners */
   useEffect(() => {
     // when me or anyone just initially connects to line
     $ws.on(ServerResponseChannels.SOMEONE_CONNECTED_TO_LINE, (res: SomeoneConnectedResponse) => {

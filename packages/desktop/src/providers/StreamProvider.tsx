@@ -18,3 +18,48 @@
  *
  * listen for any calls to me, as well as any answers back to me
  */
+
+import React, { useEffect } from 'react';
+import Peer from 'simple-peer';
+import useRealTimeRooms from './RealTimeRoomProvider';
+import useAuth from './AuthProvider';
+import { useImmer } from 'use-immer';
+
+type PeerMap = {
+  [userId: string]: Peer;
+};
+interface IStreamProvider {
+  peerMap: PeerMap;
+}
+
+const StreamProviderContext = React.createContext<IStreamProvider>({
+  peerMap: {},
+});
+
+export function StreamProvider({ children }: { children: React.ReactChild }) {
+  const { roomsMap } = useRealTimeRooms();
+  const { user } = useAuth();
+
+  const [peerMap, setPeerMap] = useImmer<PeerMap>({});
+
+  useEffect(() => {
+    // get distinct peers that we need to build a connection with
+    const userIdsSet = new Set<string>();
+
+    Object.values(roomsMap).forEach((line) => {
+      if (!line.tunedInMemberIds?.includes(user._id.toString())) {
+        return;
+      }
+
+      line.tunedInMemberIds.forEach((tunedUserId) => userIdsSet.add(tunedUserId));
+    });
+
+    console.log(userIdsSet);
+
+    // go call all of them
+  }, [user, roomsMap]);
+
+  return (
+    <StreamProviderContext.Provider value={{ peerMap }}>{children}</StreamProviderContext.Provider>
+  );
+}

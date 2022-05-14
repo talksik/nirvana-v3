@@ -7,6 +7,7 @@ import { ElectronProvider } from '../providers/ElectronProvider';
 import { SocketProvider } from '../providers/SocketProvider';
 import ProtectedRoute from './protected/ProtectedRoute';
 import Terminal from './protected/terminal/Terminal';
+import { StreamProvider } from '../providers/StreamProvider';
 
 export default function ElectronApp() {
   return (
@@ -16,7 +17,9 @@ export default function ElectronApp() {
           <SocketProvider>
             <RoomsProvider>
               <RealTimeRoomProvider>
-                <Terminal />
+                <StreamProvider>
+                  <Terminal />
+                </StreamProvider>
               </RealTimeRoomProvider>
             </RoomsProvider>
           </SocketProvider>
