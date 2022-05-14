@@ -19,7 +19,7 @@
  * listen for any calls to me, as well as any answers back to me
  */
 
-import React, { useEffect, useContext, useState, useRef } from 'react';
+import React, { useEffect, useContext, useState, useRef, useMemo } from 'react';
 import Peer from 'simple-peer';
 import useRealTimeRooms from './RealTimeRoomProvider';
 import useAuth from './AuthProvider';
@@ -110,6 +110,9 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
     };
   }, [$ws, updatePeerMap, peerMap]);
 
+  const numberRooms = useMemo(() => Object.keys(roomsMap).length, [roomsMap]);
+
+  // run with initial list of tunedinUsers
   useEffect(() => {
     // get distinct peers that we need to build a connection with
     const userIdsSet = new Set<string>();
@@ -151,7 +154,7 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
         draft[userIdToCall] = localPeerConnection;
       });
     });
-  }, [user, roomsMap, $ws, updatePeerMap, userLocalStream]); //TODO: make this not run on EVERY update to roomsMap? only tuned in lists? so the separate map for that?
+  }, [user, numberRooms, $ws, updatePeerMap]); //TODO: make this not run on EVERY update to roomsMap? only tuned in lists? so the separate map for that?
 
   const prevStream = usePrevious<MediaStream>(userLocalStream);
 
@@ -166,16 +169,16 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
   }, [localStreamRef]);
 
   useEffect(() => {
-    // if (userLocalStream) {
-    //   Object.values(peerMap).forEach((currentPeer) => {
-    //     try {
-    //       currentPeer.addStream(userLocalStream);
-    //     } catch (error) {
-    //       toast.error('problem adding stream');
-    //       console.error(error);
-    //     }
-    //   });
-    // }
+    if (userLocalStream) {
+      Object.values(peerMap).forEach((currentPeer) => {
+        try {
+          currentPeer.addStream(userLocalStream);
+        } catch (error) {
+          toast.error('problem adding stream');
+          console.error(error);
+        }
+      });
+    }
   }, [userLocalStream, peerMap, prevStream]);
 
   console.log(peerMap);

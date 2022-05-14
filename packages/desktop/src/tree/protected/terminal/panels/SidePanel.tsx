@@ -110,8 +110,6 @@ function LineRowTest({
   handleSelectLine: (newLineId: string) => void;
   isSelected: boolean;
 }) {
-  console.warn('re-rendering', line.lineDetails._id.toString());
-
   const { user } = useAuth();
 
   const isUserTunedIn = useMemo(
