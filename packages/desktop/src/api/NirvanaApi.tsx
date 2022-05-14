@@ -3,12 +3,13 @@ import axios, { AxiosRequestConfig, AxiosResponse, Method } from 'axios';
 import CreateLineRequest from '@nirvana/core/requests/createLine.request';
 import GetUserLinesResponse from '@nirvana/core/responses/getUserLines.response';
 import { Line } from '@nirvana/core/models/line.model';
-import LoginResponse from '../../../core/responses/login.response';
+import LoginResponse from '@nirvana/core/responses/login.response';
 import MasterLineData from '@nirvana/core/models/masterLineData.model';
-import NirvanaResponse from '../../../core/responses/nirvanaResponse';
+import NirvanaResponse from '@nirvana/core/responses/nirvanaResponse';
 import { User } from '@nirvana/core/models';
-import UserDetailsResponse from '../../../core/responses/userDetails.response';
-import UserSearchResponse from '../../../core/responses/userSearch.response';
+import UserDetailsResponse from '@nirvana/core/responses/userDetails.response';
+import UserSearchResponse from '@nirvana/core/responses/userSearch.response';
+import UpdateLineMemberState from '@nirvana/core/requests/updateLineMemberState.request';
 
 // export const localHost = process.env.REACT_APP_API_DOMAIN;
 
@@ -80,6 +81,18 @@ export async function userSearch(searchQuery: string): Promise<UserSearchRespons
 
 export async function getUserLines(): Promise<NirvanaResponse<GetUserLinesResponse>> {
   return await NirvanaApi.fetch<NirvanaResponse<GetUserLinesResponse>>(`/lines`, 'GET', true);
+}
+
+export async function updateLineMemberState(
+  request: UpdateLineMemberState,
+  lineId: string,
+): Promise<NirvanaResponse<GetUserLinesResponse>> {
+  return await NirvanaApi.fetch<NirvanaResponse<GetUserLinesResponse>>(
+    `/lines/${lineId}/state`,
+    'POST',
+    true,
+    request,
+  );
 }
 
 export async function getDmByUserId(otherUserId: string): Promise<Line> {

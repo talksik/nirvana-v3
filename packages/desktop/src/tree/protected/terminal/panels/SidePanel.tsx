@@ -1,7 +1,7 @@
 import { LineMemberState } from '@nirvana/core/models/line.model';
 import MasterLineData from '@nirvana/core/models/masterLineData.model';
 import { Avatar, Skeleton, Tooltip } from 'antd';
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo, useEffect } from 'react';
 import { FaPlus } from 'react-icons/fa';
 import { FiActivity, FiSun } from 'react-icons/fi';
 import useRealTimeRooms from '../../../../providers/RealTimeRoomProvider';

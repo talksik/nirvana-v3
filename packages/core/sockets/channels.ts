@@ -78,7 +78,7 @@ export class SomeoneDisconnectedResponse {
   constructor(public lineId: string, public userId: string) {}
 }
 export class TuneToLineRequest {
-  constructor(public lineId: string, public keepTunedIn: boolean = false) {}
+  constructor(public lineId: string) {}
 }
 export class SomeoneTunedResponse {
   constructor(public lineId: string, public userId: string) {}

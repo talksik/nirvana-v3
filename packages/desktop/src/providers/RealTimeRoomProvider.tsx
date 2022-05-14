@@ -5,16 +5,26 @@ import useSockets from './SocketProvider';
 import MasterLineData from '@nirvana/core/models/masterLineData.model';
 
 import {
+  ServerRequestChannels,
   ServerResponseChannels,
   SomeoneConnectedResponse,
   SomeoneDisconnectedResponse,
   SomeoneTunedResponse,
   SomeoneUntunedFromLineResponse,
+  TuneToLineRequest,
   UserStartedBroadcastingResponse,
   UserStoppedBroadcastingResponse,
+  ConnectToLineRequest,
+  UntuneFromLineRequest,
 } from '@nirvana/core/sockets/channels';
 import toast from 'react-hot-toast';
 import { useImmer } from 'use-immer';
+import { LineMemberState } from '@nirvana/core/models/line.model';
+import { useAsyncFn } from 'react-use';
+
+import { updateLineMemberState } from '../api/NirvanaApi';
+import UpdateLineMemberState from '@nirvana/core/requests/updateLineMemberState.request';
+import useAuth from './AuthProvider';
 
 type LineIdToMasterLine = {
   [lineId: string]: MasterLineData;
@@ -24,14 +34,13 @@ interface IRealTimeRoomProvider {
   roomsMap: LineIdToMasterLine;
 
   selectedLineId?: string;
-  handleSelectLine: (newLineId: string) => void;
+  handleSelectLine?: (newLineId: string) => void;
+
+  handleUpdateLineMemberState?: (lineId: string, newState: LineMemberState) => void;
 }
 
 const RealTimeRoomContext = React.createContext<IRealTimeRoomProvider>({
   roomsMap: {},
-  handleSelectLine: () => {
-    //
-  },
 });
 
 /**
@@ -75,10 +84,13 @@ const RealTimeRoomContext = React.createContext<IRealTimeRoomProvider>({
 
 export function RealTimeRoomProvider({ children }: { children: React.ReactChild }) {
   const { rooms } = useRooms();
+  const { user } = useAuth();
   const { $ws } = useSockets();
   const [roomMap, updateRoomMap] = useImmer<LineIdToMasterLine>({});
 
   const [selectedLineId, setSelectedLineId] = useState<string>();
+
+  const [moveLineState, moveLine] = useAsyncFn(updateLineMemberState);
 
   useEffect(() => {
     // when me or anyone just initially connects to line
@@ -199,9 +211,31 @@ export function RealTimeRoomProvider({ children }: { children: React.ReactChild 
 
     return () => {
       // ?perhaps only remove specific ones?
+      // !this will remove all listeners across the app and we want it to?
       $ws.removeAllListeners();
     };
-  }, [roomMap, $ws, updateRoomMap]);
+  }, [$ws, updateRoomMap]);
+
+  const handleConnectToLine = useCallback(
+    (lineId: string) => {
+      $ws.emit(ServerRequestChannels.CONNECT_TO_LINE, new ConnectToLineRequest(lineId));
+    },
+    [$ws],
+  );
+
+  const handleTuneIntoLine = useCallback(
+    (lineId: string) => {
+      $ws.emit(ServerRequestChannels.TUNE_INTO_LINE, new TuneToLineRequest(lineId));
+    },
+    [$ws],
+  );
+
+  const handleUntuneFromLine = useCallback(
+    (lineId: string) => {
+      $ws.emit(ServerRequestChannels.UNTUNE_FROM_LINE, new UntuneFromLineRequest(lineId));
+    },
+    [$ws],
+  );
 
   // converts the initial rooms fetch to a map
   useEffect(() => {
@@ -210,24 +244,64 @@ export function RealTimeRoomProvider({ children }: { children: React.ReactChild 
         rooms.value.data.masterLines.forEach((masterLine) => {
           const lineId = masterLine.lineDetails._id.toString();
           draft[lineId] = masterLine;
+
+          handleConnectToLine(lineId);
+          if (masterLine.currentUserMember.state === LineMemberState.TUNED) {
+            handleTuneIntoLine(lineId);
+          }
         });
       });
     }
-  }, [rooms.value, updateRoomMap]);
+  }, [rooms.value, updateRoomMap, handleConnectToLine, handleTuneIntoLine]);
 
-  /** show user line details on click of one line */
+  // persist whether I want it toggle tuned or not
+  const handleUpdateLineMemberState = useCallback(
+    (lineId: string, newState: LineMemberState) => {
+      moveLine(new UpdateLineMemberState(newState), lineId)
+        .then((_res) => {
+          updateRoomMap((draft) => {
+            draft[lineId].currentUserMember.state = newState;
+          });
+        })
+        .catch((error) => {
+          toast.error('problem in updating line member state');
+          console.error(error);
+        });
+    },
+    [moveLine, updateRoomMap],
+  );
+
+  /**
+   * selection globally
+   * tune into socket room and tell everyone else
+   */
   const handleSelectLine = useCallback(
     (newLineIdToSelect: string) => {
       toast('selecting line!! NOT IMPLEMENTED');
-      setSelectedLineId(newLineIdToSelect);
+
+      setSelectedLineId((prevLineId) => {
+        // untune from the last line if it was just a temporary tuned one
+        if (roomMap[prevLineId]?.currentUserMember.state === LineMemberState.INBOX) {
+          handleUntuneFromLine(prevLineId);
+        }
+
+        return newLineIdToSelect;
+      });
+
+      // tune in if not already tuned into this line
+      if (!roomMap[newLineIdToSelect].tunedInMemberIds.includes(user._id.toString())) {
+        handleTuneIntoLine(newLineIdToSelect);
+      }
     },
-    [setSelectedLineId],
+    [setSelectedLineId, handleUntuneFromLine, roomMap, user, handleTuneIntoLine],
   );
 
   console.warn(roomMap);
 
   return (
-    <RealTimeRoomContext.Provider value={{ roomsMap: roomMap, handleSelectLine, selectedLineId }}>
+    <RealTimeRoomContext.Provider
+      value={{ roomsMap: roomMap, handleSelectLine, selectedLineId, handleUpdateLineMemberState }}
+    >
       {children}
     </RealTimeRoomContext.Provider>
   );

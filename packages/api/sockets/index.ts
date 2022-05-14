@@ -109,7 +109,6 @@ export default function InitializeWs(io: any) {
 
       /**
        * Notify all connected users when someone UNTUNES from a room
-       * ?might not be needed, all users' memory of tuned in users is irrelevant? don't need real time? but UI will show # of users tuned in?
        */
       socket.on(ServerRequestChannels.UNTUNE_FROM_LINE, async (req: UntuneFromLineRequest) => {
         const roomName = `tunedLine:${req.lineId}`;
