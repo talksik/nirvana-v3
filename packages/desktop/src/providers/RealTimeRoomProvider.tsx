@@ -289,7 +289,7 @@ export function RealTimeRoomProvider({ children }: { children: React.ReactChild 
       });
 
       // tune in if not already tuned into this line
-      if (!roomMap[newLineIdToSelect].tunedInMemberIds.includes(user._id.toString())) {
+      if (!roomMap[newLineIdToSelect].tunedInMemberIds?.includes(user._id.toString())) {
         handleTuneIntoLine(newLineIdToSelect);
       }
     },
