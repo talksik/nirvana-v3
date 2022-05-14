@@ -24,6 +24,16 @@ import Peer from 'simple-peer';
 import useRealTimeRooms from './RealTimeRoomProvider';
 import useAuth from './AuthProvider';
 import { useImmer } from 'use-immer';
+import useSockets from './SocketProvider';
+import {
+  RtcAnswerRequest,
+  RtcCallRequest,
+  RtcNewUserResponse,
+  RtcReceiveAnswerResponse,
+  ServerRequestChannels,
+} from '@nirvana/core/sockets/channels';
+import { ServerResponseChannels } from '../../../core/sockets/channels';
+import toast from 'react-hot-toast';
 
 type PeerMap = {
   [userId: string]: Peer;
@@ -40,7 +50,60 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
   const { roomsMap } = useRealTimeRooms();
   const { user } = useAuth();
 
-  const [peerMap, setPeerMap] = useImmer<PeerMap>({});
+  const { $ws } = useSockets();
+
+  const [peerMap, updatePeerMap] = useImmer<PeerMap>({});
+
+  useEffect(() => {
+    $ws.on(
+      ServerResponseChannels.RTC_RECEIVING_ANSWER_RESPONSE,
+      (res: RtcReceiveAnswerResponse) => {
+        console.log(`oooo some master received my call and accepted it ${JSON.stringify(res)}`);
+
+        // find the peer we created earlier for this master
+        // ?is this okay? using the setter to get the current state?
+        updatePeerMap((draft) => {
+          const peerForAnswerer = draft[res.answererUserId];
+
+          if (peerForAnswerer) {
+            peerForAnswerer.signal(res.simplePeerSignal);
+          } else {
+            toast.error('could not find the peer we created before for this master');
+          }
+        });
+      },
+    );
+
+    $ws.on(ServerResponseChannels.RTC_NEW_USER_JOINED_RESPONSE, (res: RtcNewUserResponse) => {
+      console.log('ooo newbie joined room, I guess I will accept it and send him my signal');
+
+      const peerForMeAndNewbie = new Peer({
+        initiator: false,
+        trickle: false, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times
+      });
+
+      peerForMeAndNewbie.on('signal', (signal) => {
+        console.log(
+          'as the answerer, I am going to send back my signal so that the newbie can update his local peer for me',
+        );
+        $ws.emit(
+          ServerRequestChannels.RTC_ANSWER_REQUEST,
+          new RtcAnswerRequest(res.newUserId, signal),
+        );
+      });
+
+      peerForMeAndNewbie.signal(res.simplePeerSignal);
+
+      updatePeerMap((draft) => {
+        draft[res.newUserId] = peerForMeAndNewbie;
+      });
+    });
+
+    return () => {
+      $ws.removeListener(ServerResponseChannels.RTC_RECEIVING_ANSWER_RESPONSE);
+      $ws.removeListener(ServerResponseChannels.RTC_NEW_USER_JOINED_RESPONSE);
+    };
+  }, [$ws, updatePeerMap, peerMap]);
 
   useEffect(() => {
     // get distinct peers that we need to build a connection with
@@ -51,13 +114,39 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
         return;
       }
 
-      line.tunedInMemberIds.forEach((tunedUserId) => userIdsSet.add(tunedUserId));
+      line.tunedInMemberIds.forEach((tunedUserId) => {
+        if (tunedUserId === user._id.toString()) return;
+
+        userIdsSet.add(tunedUserId);
+      });
     });
 
-    console.log(userIdsSet);
+    console.log(`new distinct list of tuned in users`, userIdsSet);
 
-    // go call all of them
-  }, [user, roomsMap]);
+    updatePeerMap((draft) => {
+      // go call all of them, if I'm not already connected
+      userIdsSet.forEach((userIdToCall) => {
+        // ?don't call if we already have a connection?
+        if (draft[userIdToCall]) return;
+
+        const localPeerConnection = new Peer({
+          initiator: true,
+          trickle: false, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times
+        });
+
+        localPeerConnection.on('signal', (signal) => {
+          $ws.emit(
+            ServerRequestChannels.RTC_CALL_REQUEST,
+            new RtcCallRequest(userIdToCall, signal),
+          );
+        });
+
+        draft[userIdToCall] = localPeerConnection;
+      });
+    });
+  }, [user, roomsMap, $ws, updatePeerMap]); //TODO: make this not run on EVERY update to roomsMap? only tuned in lists? so the separate map for that?
+
+  console.log(peerMap);
 
   return (
     <StreamProviderContext.Provider value={{ peerMap }}>{children}</StreamProviderContext.Provider>
