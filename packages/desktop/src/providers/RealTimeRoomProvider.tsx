@@ -277,21 +277,23 @@ export function RealTimeRoomProvider({ children }: { children: React.ReactChild 
    */
   const handleSelectLine = useCallback(
     (newLineIdToSelect: string) => {
-      toast('selecting line!! NOT IMPLEMENTED');
-
       setSelectedLineId((prevLineId) => {
+        if (newLineIdToSelect === prevLineId) {
+          return prevLineId;
+        }
+
         // untune from the last line if it was just a temporary tuned one
         if (roomMap[prevLineId]?.currentUserMember.state === LineMemberState.INBOX) {
           handleUntuneFromLine(prevLineId);
         }
 
+        // tune in if not already tuned into this line
+        if (!roomMap[newLineIdToSelect].tunedInMemberIds?.includes(user._id.toString())) {
+          handleTuneIntoLine(newLineIdToSelect);
+        }
+
         return newLineIdToSelect;
       });
-
-      // tune in if not already tuned into this line
-      if (!roomMap[newLineIdToSelect].tunedInMemberIds?.includes(user._id.toString())) {
-        handleTuneIntoLine(newLineIdToSelect);
-      }
     },
     [setSelectedLineId, handleUntuneFromLine, roomMap, user, handleTuneIntoLine],
   );

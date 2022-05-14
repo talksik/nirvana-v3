@@ -100,58 +100,57 @@ export default function NavBar() {
   );
 
   return (
-    <>
+    <div
+      className="flex flex-row items-center bg-gray-100 p-4 border-b border-b-gray-200"
+      id="titlebar"
+    >
       <div
-        className="flex flex-row items-center bg-gray-100 p-4 border-b border-b-gray-200"
-        id="titlebar"
+        onKeyDown={handleOpenMainApp}
+        onClick={() => {
+          console.log('opening main app');
+        }}
+        role="presentation"
       >
-        <div
-          onKeyDown={handleOpenMainApp}
-          onClick={() => {
-            console.log('opening main app');
-          }}
-          role="presentation"
-        >
-          <NoTextLogo type="small" />
+        <NoTextLogo type="small" />
+      </div>
+
+      {!shouldHideSearch && (
+        <div className="mx-auto flex flex-row items-center space-x-2">
+          <FaSearch className="text-xs text-gray-300" />
+          <input
+            placeholder="Type / to search"
+            className="bg-transparent placeholder-gray-300 placeholder:text-xs focus:outline-none"
+            ref={inputRef}
+            onChange={onSearchChange}
+            value={searchInput}
+          />
         </div>
+      )}
 
-        {!shouldHideSearch && (
-          <div className="mx-auto flex flex-row items-center space-x-2">
-            <FaSearch className="text-xs text-gray-300" />
-            <input
-              placeholder="Type / to search"
-              className="bg-transparent placeholder-gray-300 placeholder:text-xs focus:outline-none"
-              ref={inputRef}
-              onChange={onSearchChange}
-              value={searchInput}
+      <button
+        onClick={handleFlowState}
+        className="text-gray-300 text-xs p-3 transition-all hover:bg-gray-200"
+      >
+        flow state
+      </button>
+
+      <Dropdown overlay={profileMenu}>
+        <div className={'cursor-pointer ml-2'}>
+          {user.picture && (
+            <Avatar
+              key={`userHeaderProfilePicture`}
+              className="shadow-md hover:scale-110 transition-all"
+              size={'large'}
+              alt={user.name}
+              src={user.picture}
+              shape="square"
             />
-          </div>
-        )}
+          )}
+        </div>
+      </Dropdown>
 
-        <button
-          onClick={handleFlowState}
-          className="text-gray-300 text-xs p-3 transition-all hover:bg-gray-200"
-        >
-          flow state
-        </button>
-
-        <Dropdown overlay={profileMenu}>
-          <div className={'cursor-pointer ml-2'}>
-            {user.picture && (
-              <Avatar
-                key={`userHeaderProfilePicture`}
-                className="shadow-md hover:scale-110 transition-all"
-                size={'large'}
-                alt={user.name}
-                src={user.picture}
-                shape="square"
-              />
-            )}
-          </div>
-        </Dropdown>
-
-        {/* menu for the output options */}
-        {/* <Menu
+      {/* menu for the output options */}
+      {/* <Menu
           open={menuOpen}
           id="user-output-selection-menu"
           anchorEl={anchorEl}
@@ -174,7 +173,6 @@ export default function NavBar() {
             <ListItemText>Video</ListItemText>
           </MenuItem>
         </Menu> */}
-      </div>
-    </>
+    </div>
   );
 }
