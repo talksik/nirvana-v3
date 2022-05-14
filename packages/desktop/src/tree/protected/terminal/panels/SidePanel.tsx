@@ -23,7 +23,7 @@ export default function SidePanel() {
     const restLines: MasterLineData[] = [];
 
     masterLines.forEach((masterLine) => {
-      if (masterLine.currentUserMember.state === LineMemberState.TUNED) restLines.push(masterLine);
+      if (masterLine.currentUserMember.state === LineMemberState.TUNED) tunedLines.push(masterLine);
       else restLines.push(masterLine);
     });
 
