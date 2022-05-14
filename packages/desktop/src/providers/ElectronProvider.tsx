@@ -1,9 +1,11 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useCallback } from 'react';
 import Channels, { DEFAULT_APP_PRESET, Dimensions } from '../electron/constants';
 
 interface IElectronProvider {
   // pass handlers and current dimensions?
   desktopMode: DesktopMode;
+
+  handleOpenMainApp?: () => void;
 }
 
 type DesktopMode = 'overlayOnly' | 'mainApp';
@@ -60,7 +62,15 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
     });
   }, [setDesktopMode]);
 
-  return <ElectronContext.Provider value={{ desktopMode }}>{children}</ElectronContext.Provider>;
+  const handleOpenMainApp = useCallback(() => {
+    setDesktopMode('mainApp');
+  }, [setDesktopMode]);
+
+  return (
+    <ElectronContext.Provider value={{ desktopMode, handleOpenMainApp }}>
+      {children}
+    </ElectronContext.Provider>
+  );
 }
 
 export default function useElectron() {

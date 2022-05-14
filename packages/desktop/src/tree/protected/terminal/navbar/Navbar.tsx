@@ -6,6 +6,7 @@ import { FaSearch } from 'react-icons/fa';
 import useAuth from '../../../../providers/AuthProvider';
 import useElectron from '../../../../providers/ElectronProvider';
 import useSockets from '../../../../providers/SocketProvider';
+import NoTextLogo from '@nirvana/components/logo/NoTextLogo';
 
 /**
  * TODO: add in video mode
@@ -13,7 +14,7 @@ import useSockets from '../../../../providers/SocketProvider';
  */
 export default function NavBar() {
   const { user, handleLogout } = useAuth();
-  const { desktopMode } = useElectron();
+  const { desktopMode, handleOpenMainApp } = useElectron();
 
   const { handleFlowState } = useSockets();
 
@@ -104,11 +105,15 @@ export default function NavBar() {
         className="flex flex-row items-center bg-gray-100 p-4 border-b border-b-gray-200"
         id="titlebar"
       >
-        {/* <Tooltip title={desktopMode === 'flowState' ? 'unplugged' : 'connected'} placement="right">
-          <div onClick={onHeaderFocus}>
-            <Logo type="small" />
-          </div>
-        </Tooltip> */}
+        <div
+          onKeyDown={handleOpenMainApp}
+          onClick={() => {
+            console.log('opening main app');
+          }}
+          role="presentation"
+        >
+          <NoTextLogo type="small" />
+        </div>
 
         {!shouldHideSearch && (
           <div className="mx-auto flex flex-row items-center space-x-2">
