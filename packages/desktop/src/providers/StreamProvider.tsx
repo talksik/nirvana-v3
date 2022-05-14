@@ -19,7 +19,7 @@
  * listen for any calls to me, as well as any answers back to me
  */
 
-import React, { useEffect, useContext, useState, useRef, useMemo } from 'react';
+import React, { useEffect, useContext, useState, useRef, useMemo, useCallback } from 'react';
 import Peer from 'simple-peer';
 import useRealTimeRooms from './RealTimeRoomProvider';
 import useAuth from './AuthProvider';
@@ -32,7 +32,6 @@ import {
   ServerResponseChannels,
 } from '@nirvana/core/sockets/channels';
 import toast from 'react-hot-toast';
-import { usePrevious } from 'react-use';
 
 type PeerMap = {
   [userId: string]: Peer;
@@ -106,6 +105,8 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
   // and set signal if we have already gotten it and remove from the signals if used
   useEffect(() => {
     if (Object.keys(incomingSignals).length > 0) {
+      console.log('going to clear queue of incoming signals');
+
       Object.entries(peerMap).map(([userId, peer]) => {
         if (incomingSignals[userId]) {
           peer.signal(incomingSignals[userId]);
@@ -130,16 +131,25 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
     return () => {
       $ws.removeListener(ServerResponseChannels.RTC_RECEIVING_SIGNAL);
     };
-  }, [$ws]);
+  }, [$ws, updateIncomingSignals]);
 
   console.log(`peer map: `, peerMap);
+
+  const handleAddPeer = useCallback(
+    (userId: string, peerObj: Peer) => {
+      updatePeerMap((draft) => {
+        draft[userId] = peerObj;
+      });
+    },
+    [updatePeerMap],
+  );
 
   return (
     <StreamProviderContext.Provider value={{ peerMap }}>
       <div className="flex flex-row">
         <video height={400} width={400} autoPlay muted ref={localStreamRef} />
 
-        <MemoStreamsConnector updatePeerMap={updatePeerMap} membersToCall={distinctPeerUserIds} />
+        <MemoStreamsConnector handleAddPeer={handleAddPeer} membersToCall={distinctPeerUserIds} />
       </div>
 
       {children}
@@ -155,10 +165,10 @@ const MemoStreamsConnector = React.memo(StreamsConnector);
 
 function StreamsConnector({
   membersToCall,
-  updatePeerMap,
+  handleAddPeer,
 }: {
   membersToCall: string[];
-  updatePeerMap: Updater<PeerMap>;
+  handleAddPeer: (userId: string, peerObj: Peer) => void;
 }) {
   console.log('rendering this piece of shit');
   console.log(membersToCall);
@@ -166,7 +176,7 @@ function StreamsConnector({
   return (
     <>
       {membersToCall.map((userId) => (
-        <StreamConnector key={userId} peerUserId={userId} updatePeerMap={updatePeerMap} />
+        <StreamConnector key={userId} peerUserId={userId} handleAddPeer={handleAddPeer} />
       ))}
     </>
   );
@@ -174,10 +184,10 @@ function StreamsConnector({
 
 function StreamConnector({
   peerUserId,
-  updatePeerMap,
+  handleAddPeer,
 }: {
   peerUserId: string;
-  updatePeerMap: Updater<PeerMap>;
+  handleAddPeer: (userId: string, peerObj: Peer) => void;
 }) {
   const { $ws } = useSockets();
 
@@ -203,9 +213,7 @@ function StreamConnector({
         });
 
         // sending back the connection to the parent for everyone
-        updatePeerMap((draft) => {
-          draft[peerUserId] = localPeerConnection;
-        });
+        handleAddPeer(peerUserId, localPeerConnection);
       });
 
     () => {
