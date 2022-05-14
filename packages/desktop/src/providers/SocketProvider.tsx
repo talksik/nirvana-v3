@@ -21,6 +21,23 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
 
   const [flowState, setFlowState] = useState<boolean>(false);
 
+  const initiateSocketStabilityListeners = useCallback((socketConnection: Socket) => {
+    socketConnection.on('connect', () => {
+      toast.success('sockets connected');
+    });
+
+    socketConnection.io.on('close', () => {
+      console.error('SOCKET | connection closed likely due to idling or manual disconnect');
+      toast('unplugging');
+    });
+
+    // client-side errors
+    socketConnection.on('connect_error', (err) => {
+      console.error(`SOCKETS | ${err.message}`);
+      toast.error('sorry...this is our bad...please refresh with cmd + r');
+    });
+  }, []);
+
   useEffect(() => {
     if (!jwtToken) {
       set$ws(undefined);
@@ -37,30 +54,14 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       reconnection: false, // ! TESTING THE PROBLEM WITH RECONNECTION CLIENT LISTENERS NOT ACTIVATING
     });
 
-    socketConnection.on('connect', () => {
-      toast.success('sockets connected');
-    });
-
-    socketConnection.io.on('close', () => {
-      console.error(
-        'SOCKET | there was a problem with your app...connection closed likely due to idling or manual disconnect',
-      );
-    });
-
-    // client-side errors
-    socketConnection.on('connect_error', (err) => {
-      console.error(`SOCKETS | ${err.message}`);
-      toast.error('sorry...this is our bad...please refresh with cmd + r');
-      set$ws(null);
-    });
-
+    initiateSocketStabilityListeners(socketConnection);
     set$ws(socketConnection);
 
     return () => {
       socketConnection.disconnect();
       socketConnection.removeAllListeners();
     };
-  }, [set$ws, jwtToken]);
+  }, [set$ws, jwtToken, initiateSocketStabilityListeners]);
 
   const handleFlowState = useCallback(() => {
     setFlowState(true);
@@ -72,8 +73,9 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
   const handleReconnect = useCallback(() => {
     setFlowState(false);
 
+    initiateSocketStabilityListeners($ws);
     $ws.connect();
-  }, [setFlowState, $ws]);
+  }, [setFlowState, $ws, initiateSocketStabilityListeners]);
 
   if (!$ws) {
     return (
