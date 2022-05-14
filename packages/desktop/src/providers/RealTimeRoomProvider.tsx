@@ -6,16 +6,10 @@ import MasterLineData from '@nirvana/core/models/masterLineData.model';
 import { LineMemberState } from '@nirvana/core/models/line.model';
 
 import {
-  ConnectToLineRequest,
-  ServerRequestChannels,
   ServerResponseChannels,
   SomeoneConnectedResponse,
   SomeoneTunedResponse,
   SomeoneUntunedFromLineResponse,
-  StartBroadcastingRequest,
-  StopBroadcastingRequest,
-  TuneToLineRequest,
-  UntuneFromLineRequest,
   UserStartedBroadcastingResponse,
   UserStoppedBroadcastingResponse,
 } from '@nirvana/core/sockets/channels';
@@ -49,17 +43,6 @@ export function RealTimeRoomProvider({ children }: { children: React.ReactChild 
   const [selectedLineId, setSelectedLineId] = useState<string>();
 
   useEffect(() => {
-    /**
-     * initiate listeners
-     */
-
-    /**
-     * TODO: P0 : notified that someone else added me to a line they created
-     */
-    // 1. get the new line from axios or just from the ws itself
-    // 2. add it to the lines map with all of the right data
-    // 3. make sure to connect to it as if it's inbox material
-
     // when me or anyone just initially connects to line
     $ws.on(ServerResponseChannels.SOMEONE_CONNECTED_TO_LINE, (res: SomeoneConnectedResponse) => {
       console.log(
