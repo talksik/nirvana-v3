@@ -58,8 +58,6 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
   const [userLocalStream, setUserLocalStream] = useState<MediaStream>();
   const localStreamRef = useRef<HTMLVideoElement>(null);
 
-  const numberRooms = useMemo(() => Object.keys(roomsMap).length, [roomsMap]);
-
   useEffect(() => {
     navigator.mediaDevices
       .getUserMedia({ video: true, audio: true })
@@ -95,6 +93,8 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
         line.tunedInMemberIds.forEach((tunedUserId) => {
           if (tunedUserId === user._id.toString()) return;
 
+          if (draft.includes(tunedUserId)) return;
+
           draft.push(tunedUserId);
         });
       });
@@ -103,12 +103,65 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
 
   console.log(`peer map: `, peerMap);
 
+  useEffect(() => {
+    $ws.on(
+      ServerResponseChannels.RTC_RECEIVING_ANSWER_RESPONSE,
+      (res: RtcReceiveAnswerResponse) => {
+        console.log(`oooo some master received my call and accepted it ${JSON.stringify(res)}`);
+
+        // find the peer we created earlier for this master
+        // ?is this okay? using the setter to get the current state?
+        updatePeerMap((draft) => {
+          const peerForAnswerer = draft[res.answererUserId];
+
+          if (peerForAnswerer) {
+            peerForAnswerer.signal(res.simplePeerSignal);
+          } else {
+            toast.error('could not find the peer we created before for this master');
+          }
+        });
+      },
+    );
+
+    $ws.on(ServerResponseChannels.RTC_NEW_USER_JOINED_RESPONSE, (res: RtcNewUserResponse) => {
+      console.log('ooo newbie joined room, I guess I will accept it and send him my signal');
+
+      const peerForMeAndNewbie = new Peer({
+        initiator: false,
+        trickle: false, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times
+      });
+
+      peerForMeAndNewbie.on('signal', (signal) => {
+        console.log(
+          'as the answerer, I am going to send back my signal so that the newbie can update his local peer for me',
+        );
+        $ws.emit(
+          ServerRequestChannels.RTC_ANSWER_REQUEST,
+          new RtcAnswerRequest(res.newUserId, signal),
+        );
+      });
+
+      peerForMeAndNewbie.signal(res.simplePeerSignal);
+
+      updatePeerMap((draft) => {
+        draft[res.newUserId] = peerForMeAndNewbie;
+      });
+    });
+
+    return () => {
+      $ws.removeListener(ServerResponseChannels.RTC_RECEIVING_ANSWER_RESPONSE);
+      $ws.removeListener(ServerResponseChannels.RTC_NEW_USER_JOINED_RESPONSE);
+    };
+  }, [$ws]);
+
+  console.log(`peer map: `, peerMap);
+
   return (
     <StreamProviderContext.Provider value={{ peerMap }}>
       <div className="flex flex-row">
         <video height={400} width={400} autoPlay muted ref={localStreamRef} />
 
-        <MemoListStreams updatePeerMap={updatePeerMap} membersToCall={distinctPeerUserIds} />
+        <MemoStreamsConnector updatePeerMap={updatePeerMap} membersToCall={distinctPeerUserIds} />
       </div>
 
       {children}
@@ -120,19 +173,35 @@ export default function useStreams() {
   return useContext(StreamProviderContext);
 }
 
-const MemoListStreams = React.memo(ListStreams);
+const MemoStreamsConnector = React.memo(StreamsConnector);
 
-function ListStreams({
+function StreamsConnector({
   membersToCall,
   updatePeerMap,
 }: {
   membersToCall: string[];
   updatePeerMap: Updater<PeerMap>;
 }) {
-  const { $ws } = useSockets();
-
   console.log('rendering this piece of shit');
   console.log(membersToCall);
+
+  return (
+    <>
+      {membersToCall.map((userId) => (
+        <StreamConnector key={userId} peerUserId={userId} updatePeerMap={updatePeerMap} />
+      ))}
+    </>
+  );
+}
+
+function StreamConnector({
+  peerUserId,
+  updatePeerMap,
+}: {
+  peerUserId: string;
+  updatePeerMap: Updater<PeerMap>;
+}) {
+  const { $ws } = useSockets();
 
   // call all of the people on the initial load of this
   useEffect(() => {
@@ -141,77 +210,27 @@ function ListStreams({
     navigator.mediaDevices
       .getUserMedia({ video: true, audio: true })
       .then((localMediaStream: MediaStream) => {
-        membersToCall.forEach((userIdToCall) => {
-          const localPeerConnection = new Peer({
-            initiator: true,
-            stream: localMediaStream,
-            trickle: false, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times
-          });
-
-          localPeerConnection.on('signal', (signal) => {
-            console.log('going to call someone');
-            $ws.emit(
-              ServerRequestChannels.RTC_CALL_REQUEST,
-              new RtcCallRequest(userIdToCall, signal),
-            );
-          });
-
-          // need to send this back up the parent to send to people
-          // draft[userIdToCall] = localPeerConnection;
+        const localPeerConnection = new Peer({
+          initiator: true,
+          stream: localMediaStream,
+          trickle: false, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times
         });
 
-        $ws.on(
-          ServerResponseChannels.RTC_RECEIVING_ANSWER_RESPONSE,
-          (res: RtcReceiveAnswerResponse) => {
-            console.log(`oooo some master received my call and accepted it ${JSON.stringify(res)}`);
+        localPeerConnection.on('signal', (signal) => {
+          console.log('going to call someone');
+          $ws.emit(ServerRequestChannels.RTC_CALL_REQUEST, new RtcCallRequest(peerUserId, signal));
+        });
 
-            // find the peer we created earlier for this master
-            // ?is this okay? using the setter to get the current state?
-            updatePeerMap((draft) => {
-              const peerForAnswerer = draft[res.answererUserId];
-
-              if (peerForAnswerer) {
-                peerForAnswerer.signal(res.simplePeerSignal);
-              } else {
-                toast.error('could not find the peer we created before for this master');
-              }
-            });
-          },
-        );
-
-        $ws.on(ServerResponseChannels.RTC_NEW_USER_JOINED_RESPONSE, (res: RtcNewUserResponse) => {
-          console.log('ooo newbie joined room, I guess I will accept it and send him my signal');
-
-          const peerForMeAndNewbie = new Peer({
-            initiator: false,
-            stream: localMediaStream,
-            trickle: false, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times
-          });
-
-          peerForMeAndNewbie.on('signal', (signal) => {
-            console.log(
-              'as the answerer, I am going to send back my signal so that the newbie can update his local peer for me',
-            );
-            $ws.emit(
-              ServerRequestChannels.RTC_ANSWER_REQUEST,
-              new RtcAnswerRequest(res.newUserId, signal),
-            );
-          });
-
-          peerForMeAndNewbie.signal(res.simplePeerSignal);
-
-          updatePeerMap((draft) => {
-            draft[res.newUserId] = peerForMeAndNewbie;
-          });
+        // sending back the connection to the parent for everyone
+        updatePeerMap((draft) => {
+          draft[peerUserId] = localPeerConnection;
         });
       });
 
-    return () => {
-      $ws.removeListener(ServerResponseChannels.RTC_RECEIVING_ANSWER_RESPONSE);
-      $ws.removeListener(ServerResponseChannels.RTC_NEW_USER_JOINED_RESPONSE);
+    () => {
+      // destroy this peer and remove from the parent controller? or happens when someone else leaves the tuned list?
     };
   }, []);
 
-  // on change of the local user stream, take all of the peers and return them
   return <></>;
 }
