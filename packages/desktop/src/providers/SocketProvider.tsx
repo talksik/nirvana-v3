@@ -45,12 +45,17 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       console.error(
         'SOCKET | there was a problem with your app...connection closed likely due to idling or manual disconnect',
       );
+
+      setFlowState(true);
+      socketConnection.disconnect();
+      socketConnection.removeAllListeners();
     });
 
     // client-side errors
     socketConnection.on('connect_error', (err) => {
       console.error(`SOCKETS | ${err.message}`);
       toast.error('sorry...this is our bad...please refresh with cmd + r');
+      set$ws(null);
     });
 
     set$ws(socketConnection);
