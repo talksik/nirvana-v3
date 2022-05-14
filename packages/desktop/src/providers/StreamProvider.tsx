@@ -26,13 +26,11 @@ import useAuth from './AuthProvider';
 import { Updater, useImmer } from 'use-immer';
 import useSockets from './SocketProvider';
 import {
-  RtcAnswerRequest,
-  RtcCallRequest,
-  RtcNewUserResponse,
-  RtcReceiveAnswerResponse,
+  RtcReceiveSignalResponse,
+  RtcSendSignalRequest,
   ServerRequestChannels,
+  ServerResponseChannels,
 } from '@nirvana/core/sockets/channels';
-import { ServerResponseChannels } from '../../../core/sockets/channels';
 import toast from 'react-hot-toast';
 import { usePrevious } from 'react-use';
 
@@ -54,6 +52,7 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
   const { $ws } = useSockets();
 
   const [peerMap, updatePeerMap] = useImmer<PeerMap>({});
+  const [incomingSignals, updateIncomingSignals] = useImmer<{ [peerUserId: string]: any }>({});
 
   const [userLocalStream, setUserLocalStream] = useState<MediaStream>();
   const localStreamRef = useRef<HTMLVideoElement>(null);
@@ -103,54 +102,33 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
 
   console.log(`peer map: `, peerMap);
 
+  // on changes of the peer map ("we called someone and created local peer connection"), see if we have an incoming signal
+  // and set signal if we have already gotten it and remove from the signals if used
   useEffect(() => {
-    $ws.on(
-      ServerResponseChannels.RTC_RECEIVING_ANSWER_RESPONSE,
-      (res: RtcReceiveAnswerResponse) => {
-        console.log(`oooo some master received my call and accepted it ${JSON.stringify(res)}`);
+    if (Object.keys(incomingSignals).length > 0) {
+      Object.entries(peerMap).map(([userId, peer]) => {
+        if (incomingSignals[userId]) {
+          peer.signal(incomingSignals[userId]);
 
-        // find the peer we created earlier for this master
-        // ?is this okay? using the setter to get the current state?
-        updatePeerMap((draft) => {
-          const peerForAnswerer = draft[res.answererUserId];
-
-          if (peerForAnswerer) {
-            peerForAnswerer.signal(res.simplePeerSignal);
-          } else {
-            toast.error('could not find the peer we created before for this master');
-          }
-        });
-      },
-    );
-
-    $ws.on(ServerResponseChannels.RTC_NEW_USER_JOINED_RESPONSE, (res: RtcNewUserResponse) => {
-      console.log('ooo newbie joined room, I guess I will accept it and send him my signal');
-
-      const peerForMeAndNewbie = new Peer({
-        initiator: false,
-        trickle: false, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times
+          updateIncomingSignals((draft) => {
+            delete draft[userId];
+          });
+        }
       });
+    }
+  }, [peerMap, incomingSignals, updateIncomingSignals]);
 
-      peerForMeAndNewbie.on('signal', (signal) => {
-        console.log(
-          'as the answerer, I am going to send back my signal so that the newbie can update his local peer for me',
-        );
-        $ws.emit(
-          ServerRequestChannels.RTC_ANSWER_REQUEST,
-          new RtcAnswerRequest(res.newUserId, signal),
-        );
-      });
+  useEffect(() => {
+    $ws.on(ServerResponseChannels.RTC_RECEIVING_SIGNAL, (res: RtcReceiveSignalResponse) => {
+      console.log(`getting signal from someone`, res);
 
-      peerForMeAndNewbie.signal(res.simplePeerSignal);
-
-      updatePeerMap((draft) => {
-        draft[res.newUserId] = peerForMeAndNewbie;
+      updateIncomingSignals((draft) => {
+        draft[res.senderUserId] = res.simplePeerSignal;
       });
     });
 
     return () => {
-      $ws.removeListener(ServerResponseChannels.RTC_RECEIVING_ANSWER_RESPONSE);
-      $ws.removeListener(ServerResponseChannels.RTC_NEW_USER_JOINED_RESPONSE);
+      $ws.removeListener(ServerResponseChannels.RTC_RECEIVING_SIGNAL);
     };
   }, [$ws]);
 
@@ -218,7 +196,10 @@ function StreamConnector({
 
         localPeerConnection.on('signal', (signal) => {
           console.log('going to call someone');
-          $ws.emit(ServerRequestChannels.RTC_CALL_REQUEST, new RtcCallRequest(peerUserId, signal));
+          $ws.emit(
+            ServerRequestChannels.RTC_SEND_SIGNAL,
+            new RtcSendSignalRequest(peerUserId, signal),
+          );
         });
 
         // sending back the connection to the parent for everyone

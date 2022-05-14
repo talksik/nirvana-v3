@@ -1,9 +1,7 @@
 import {
   ConnectToLineRequest,
-  RtcAnswerRequest,
-  RtcCallRequest,
-  RtcNewUserResponse,
-  RtcReceiveAnswerResponse,
+  RtcReceiveSignalResponse,
+  RtcSendSignalRequest,
   ServerRequestChannels,
   ServerResponseChannels,
   SomeoneConnectedResponse,
@@ -154,21 +152,12 @@ export default function InitializeWs(io: any) {
       });
 
       // tell the proper other user to create a local peer object for the one on one mesh connection
-      socket.on(ServerRequestChannels.RTC_CALL_REQUEST, (req: RtcCallRequest) => {
-        const userSocketId = userIdsToSocketIds[req.userIdToCall];
+      socket.on(ServerRequestChannels.RTC_SEND_SIGNAL, (req: RtcSendSignalRequest) => {
+        const userSocketId = userIdsToSocketIds[req.userToCall];
 
         io.to(userSocketId).emit(
-          ServerResponseChannels.RTC_NEW_USER_JOINED_RESPONSE,
-          new RtcNewUserResponse(userInfo.userId, req.simplePeerSignal),
-        );
-      });
-
-      socket.on(ServerRequestChannels.RTC_ANSWER_REQUEST, (req: RtcAnswerRequest) => {
-        const userSocketId = userIdsToSocketIds[req.userIdToCall];
-
-        io.to(userSocketId).emit(
-          ServerResponseChannels.RTC_RECEIVING_ANSWER_RESPONSE,
-          new RtcReceiveAnswerResponse(userInfo.userId, req.simplePeerSignal),
+          ServerResponseChannels.RTC_RECEIVING_SIGNAL,
+          new RtcReceiveSignalResponse(userInfo.userId, req.simplePeerSignal),
         );
       });
 

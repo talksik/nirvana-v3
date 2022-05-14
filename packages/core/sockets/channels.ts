@@ -42,8 +42,7 @@ export enum ServerRequestChannels {
   BROADCAST_TO_LINE = 'BROADCAST_TO_LINE',
   STOP_BROADCAST_TO_LINE = 'STOP_BROADCAST_TO_LINE',
 
-  RTC_CALL_REQUEST = 'RTC_CALL_PREFIX',
-  RTC_ANSWER_REQUEST = 'RTC_ANSWER_REQUEST_PREFIX',
+  RTC_SEND_SIGNAL = 'RTC_SEND_SIGNAL',
 
   GOING_INTO_FLOW_STATE = 'GOING_INTO_FLOW_STATE',
 }
@@ -59,8 +58,7 @@ export enum ServerResponseChannels {
   SOMEONE_STOPPED_BROADCASTING = 'SOMEONE_STOPPED_BROADCASTING', // stop showing their stream tracks
 
   // sending to the correct room of tunedin folks AND also making sure it's the right event handler in the right handler for this component
-  RTC_NEW_USER_JOINED_RESPONSE = 'RTC_NEW_USER_JOINED_RESPONSE',
-  RTC_RECEIVING_ANSWER_RESPONSE = 'RTC_RECEIVING_ANSWER_RESPONSE',
+  RTC_RECEIVING_SIGNAL = 'RTC_RECEIVING_SIGNAL',
 
   SOMEONE_GOING_INTO_FLOW_STATE = 'SOMEONE_GOING_INTO_FLOW_STATE',
 }
@@ -109,20 +107,12 @@ export class SocketEmitter<T> {
   constructor(public channel: SocketChannels, data: T) {}
 }
 
-export class RtcCallRequest {
-  constructor(public userIdToCall: string, public simplePeerSignal: any) {}
+export class RtcSendSignalRequest {
+  constructor(public userToCall: string, public simplePeerSignal: any) {}
 }
 
-export class RtcNewUserResponse {
-  constructor(public newUserId: string, public simplePeerSignal: any) {}
-}
-
-export class RtcAnswerRequest {
-  constructor(public userIdToCall: string, public simplePeerSignal: any) {}
-}
-
-export class RtcReceiveAnswerResponse {
-  constructor(public answererUserId: string, public simplePeerSignal: any) {}
+export class RtcReceiveSignalResponse {
+  constructor(public senderUserId: string, public simplePeerSignal: any) {}
 }
 
 export class FlowStateRequest {
