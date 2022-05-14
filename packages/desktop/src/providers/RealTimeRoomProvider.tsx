@@ -28,7 +28,7 @@ type LineIdToMasterLine = {
 interface IRealTimeRoomProvider {
   roomsMap: LineIdToMasterLine;
 
-  selectedLine?: MasterLineData;
+  selectedLineId?: string;
   handleSelectLine: (newLineId: string) => void;
 }
 
@@ -46,7 +46,7 @@ export function RealTimeRoomProvider({ children }: { children: React.ReactChild 
   const { $ws } = useSockets();
   const [realTimeRoomMap, setRealTimeRoomMap] = useState<LineIdToMasterLine>({});
 
-  const [selectedLine, setSelectedLine] = useState<MasterLineData>();
+  const [selectedLineId, setSelectedLineId] = useState<string>();
 
   useEffect(() => {
     /**
@@ -203,14 +203,14 @@ export function RealTimeRoomProvider({ children }: { children: React.ReactChild 
   const handleSelectLine = useCallback(
     (newLineIdToSelect: string) => {
       toast('selecting line!! NOT IMPLEMENTED');
-      setSelectedLine(realTimeRoomMap[newLineIdToSelect]);
+      setSelectedLineId(newLineIdToSelect);
     },
-    [setSelectedLine, realTimeRoomMap],
+    [setSelectedLineId],
   );
 
   return (
     <RealTimeRoomContext.Provider
-      value={{ roomsMap: realTimeRoomMap, handleSelectLine, selectedLine }}
+      value={{ roomsMap: realTimeRoomMap, handleSelectLine, selectedLineId }}
     >
       {children}
     </RealTimeRoomContext.Provider>

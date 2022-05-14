@@ -14,7 +14,7 @@ export default function SidePanel() {
   // using merely for loading state...better to add to realtimeroom context?
   const { rooms: initialRoomsFetch } = useRooms();
 
-  const { roomsMap, handleSelectLine, selectedLine } = useRealTimeRooms();
+  const { roomsMap, handleSelectLine, selectedLineId } = useRealTimeRooms();
 
   const [toggleTunedLines, allLines] = useMemo(() => {
     const masterLines: MasterLineData[] = Object.values(roomsMap);
@@ -54,11 +54,8 @@ export default function SidePanel() {
             <LineRow
               key={`terminalListLines-${masterLineData.lineDetails._id.toString()}`}
               line={masterLineData}
-              onClick={() => handleSelectLine(masterLineData.lineDetails._id.toString())}
-              isSelected={
-                selectedLine?.lineDetails._id.toString() ===
-                masterLineData.lineDetails._id.toString()
-              }
+              handleSelectLine={handleSelectLine}
+              isSelected={masterLineData.lineDetails._id.toString() === selectedLineId}
             />
           ))}
         </div>
@@ -79,11 +76,8 @@ export default function SidePanel() {
             <LineRow
               key={`terminalListLines-${masterLineData.lineDetails._id.toString()}`}
               line={masterLineData}
-              onClick={() => handleSelectLine(masterLineData.lineDetails._id.toString())}
-              isSelected={
-                selectedLine?.lineDetails._id.toString() ===
-                masterLineData.lineDetails._id.toString()
-              }
+              handleSelectLine={handleSelectLine}
+              isSelected={masterLineData.lineDetails._id.toString() === selectedLineId}
             />
           ))
         )}
@@ -105,15 +99,19 @@ export default function SidePanel() {
   );
 }
 
-function LineRow({
+const LineRow = React.memo(LineRowTest);
+
+function LineRowTest({
   line,
-  onClick,
+  handleSelectLine,
   isSelected,
 }: {
   line: MasterLineData;
-  onClick: () => void;
+  handleSelectLine: (newLineId: string) => void;
   isSelected: boolean;
 }) {
+  console.warn('re-rendering', line.lineDetails._id.toString());
+
   const { user } = useAuth();
 
   const isUserTunedIn = useMemo(
@@ -198,7 +196,7 @@ function LineRow({
 
   return (
     <div
-      onClick={() => onClick()}
+      onClick={() => handleSelectLine(line.lineDetails._id.toString())}
       role={'presentation'}
       className={`flex flex-row items-center justify-start gap-2 p-2 px-4 h-14 hover:bg-gray-200 cursor-pointer transition-all
 last:border-b-0 border-b border-b-gray-200 relative z-50 rounded ${
