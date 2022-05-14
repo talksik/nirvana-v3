@@ -1,9 +1,9 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, useCallback } from 'react';
 import { User } from '@nirvana/core/models/user.model';
 import { useAsyncFn } from 'react-use';
 import NirvanaApi, { getUserDetails } from '../api/NirvanaApi';
 import toast from 'react-hot-toast';
-import { useCallback } from 'react';
+import { STORE_ITEMS } from '../electron/constants';
 
 interface IAuthProvider {
   user?: User;
@@ -17,6 +17,21 @@ const AuthContext = React.createContext<IAuthProvider>({});
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [jwtToken, setJwtToken] = useState<string>();
   const [userFetchState, fetchUser] = useAsyncFn(getUserDetails);
+
+  // ! REMOVING FOR TESTING MULTIPLE CLIENTS
+  useEffect(() => {
+    // on load of this, if we already have jwt tokens in store,
+    // then try using them with auth check
+    window.electronAPI.store.get(STORE_ITEMS.AUTH_SESSION_JWT).then((jwtToken: string) => {
+      if (jwtToken) {
+        setJwtToken(jwtToken);
+
+        console.log('retrieved jwtToken from storage', jwtToken);
+      } else {
+        console.log('no jwt token in store');
+      }
+    });
+  }, []);
 
   useEffect(() => {
     if (jwtToken) {

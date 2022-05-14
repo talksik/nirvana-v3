@@ -1,8 +1,11 @@
 import React from 'react';
 import useAuth from '../../../../providers/AuthProvider';
+import useRealTimeRooms from '../../../../providers/RealTimeRoomProvider';
 
 export default function MainPanel() {
   const { user } = useAuth();
+
+  const { roomsMap } = useRealTimeRooms();
 
   return (
     <div

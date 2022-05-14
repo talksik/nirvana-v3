@@ -21,7 +21,7 @@ export default function Terminal() {
       <div className="flex flex-row flex-1">
         <SidePanel />
 
-        <MainPanel />
+        {desktopMode === 'mainApp' && <MainPanel />}
       </div>
     </div>
   );

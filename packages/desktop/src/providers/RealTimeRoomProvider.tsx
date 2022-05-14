@@ -3,7 +3,6 @@ import useRooms from './RoomsProvider';
 import useSockets from './SocketProvider';
 
 import MasterLineData from '@nirvana/core/models/masterLineData.model';
-import { LineMemberState } from '@nirvana/core/models/line.model';
 
 import {
   ServerResponseChannels,
@@ -15,7 +14,6 @@ import {
   UserStoppedBroadcastingResponse,
 } from '@nirvana/core/sockets/channels';
 import toast from 'react-hot-toast';
-import { useMap } from 'react-use';
 import { useImmer } from 'use-immer';
 
 type LineIdToMasterLine = {
@@ -226,11 +224,11 @@ export function RealTimeRoomProvider({ children }: { children: React.ReactChild 
     [setSelectedLineId],
   );
 
+  console.warn(roomMap);
+
   return (
     <RealTimeRoomContext.Provider value={{ roomsMap: roomMap, handleSelectLine, selectedLineId }}>
       {children}
-
-      <pre>{JSON.stringify(roomMap)}</pre>
     </RealTimeRoomContext.Provider>
   );
 }
