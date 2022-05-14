@@ -107,6 +107,7 @@
     "axios": "^0.26.1",
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^8.0.1",
+    "immer": "^9.0.14",
     "moment": "^2.29.1",
     "mongodb": "^4.4.1",
     "react": "^17.0.2",
@@ -119,6 +120,7 @@
     "recoil": "^0.6.1",
     "sass": "^1.51.0",
     "simple-peer": "^9.11.1",
-    "socket.io-client": "^4.4.1"
+    "socket.io-client": "^4.4.1",
+    "use-immer": "^0.7.0"
   }
 }

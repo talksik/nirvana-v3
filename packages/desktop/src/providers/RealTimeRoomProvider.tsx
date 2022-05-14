@@ -8,12 +8,15 @@ import { LineMemberState } from '@nirvana/core/models/line.model';
 import {
   ServerResponseChannels,
   SomeoneConnectedResponse,
+  SomeoneDisconnectedResponse,
   SomeoneTunedResponse,
   SomeoneUntunedFromLineResponse,
   UserStartedBroadcastingResponse,
   UserStoppedBroadcastingResponse,
 } from '@nirvana/core/sockets/channels';
 import toast from 'react-hot-toast';
+import { useMap } from 'react-use';
+import { useImmer } from 'use-immer';
 
 type LineIdToMasterLine = {
   [lineId: string]: MasterLineData;
@@ -33,84 +36,125 @@ const RealTimeRoomContext = React.createContext<IRealTimeRoomProvider>({
   },
 });
 
-// handles reads of new data
-// keeps listening to incoming socket events to make sure that the realtime rooms map is highly available
+/**
+ *
+ * handles reads of new data
+ * keeps listening to incoming socket events to make sure that the realtime rooms map is highly available
+ *
+ * on load, we want to grab all of the rooms we are in
+ * put them in a map
+ *
+ * fetch more audio clips, fire off async function to fetch more and add to the room map
+ *
+ * Socket Rooms:
+ * - all people online for a line
+ * - all tuned in folks on a line...have it selected or toggle tuned
+ *
+ * Socket Events:
+ * - someone connected
+ * - someone tuned in
+ * - someone started broadcasting
+ * - someone stopped broadcasting
+ *
+ * - someone disconnected...take them out of the necessary lists
+ * - someone left x room
+ * - someone joined x room
+ *
+ * - someone added me to line
+ *
+ * - someone went into flow state their status
+ *
+ * Socket Emissions:
+ * - join a line
+ * - tune into a line
+ * - send audio clip
+ * - create a line -> send to specific people
+ *
+ * REST endpoints:
+ * - toggle tune or untoggle tune
+ * - fetch content blocks for line history - react query
+ */
+
 export function RealTimeRoomProvider({ children }: { children: React.ReactChild }) {
   const { rooms } = useRooms();
   const { $ws } = useSockets();
-  const [realTimeRoomMap, setRealTimeRoomMap] = useState<LineIdToMasterLine>({});
+  const [roomMap, updateRoomMap] = useImmer<LineIdToMasterLine>({});
 
   const [selectedLineId, setSelectedLineId] = useState<string>();
 
   useEffect(() => {
     // when me or anyone just initially connects to line
     $ws.on(ServerResponseChannels.SOMEONE_CONNECTED_TO_LINE, (res: SomeoneConnectedResponse) => {
-      console.log(
-        `connected to line...here are all of the updated in the conected line ${res.lineId}...this isn't reliable considering it's not updated later`,
-        res.allConnectedIntoUserIds,
-      );
+      console.log(`${res.userId} connected to room ${res.lineId}`);
 
-      setRealTimeRoomMap((prevLinesMap) => {
-        const newMap = { ...prevLinesMap };
+      updateRoomMap((draft) => {
+        if (!draft[res.lineId]) {
+          toast.error('there was a problem updating rooms!!!');
+          return;
+        }
 
-        if (newMap[res.lineId])
-          newMap[res.lineId].connectedMemberIds = [
-            ...(newMap[res.lineId]?.connectedMemberIds ?? []),
-            res.userId,
-          ];
-
-        return newMap;
+        if (draft[res.lineId].connectedMemberIds) {
+          draft[res.lineId].connectedMemberIds.push(res.userId);
+        } else {
+          draft[res.lineId].connectedMemberIds = [res.userId];
+        }
       });
     });
 
     // someone tuning in, including perhaps me | either toggled in or just temporary
     $ws.on(ServerResponseChannels.SOMEONE_TUNED_INTO_LINE, (res: SomeoneTunedResponse) => {
-      console.log(`here are all of updated users in the tuned in room`, res.allTunedIntoUserIds);
+      console.log(`${res.userId} tuned into line ${res.lineId}`);
 
-      // TODO: if toggled in, make sure to update the current line member in the lines map so that
-      // we can know to untune if user selects another line
-
-      // below, we are setting the list of tuned in folks based on fresh list from the server
-      //   better than just adding and removing? i think so, but have to handle not interrupting existing peer connections as this changes
-      setRealTimeRoomMap((prevLinesMap) => {
-        const newMap = { ...prevLinesMap };
-
-        if (newMap[res.lineId]) {
-          newMap[res.lineId].tunedInMemberIds = res.allTunedIntoUserIds;
-
-          // if user is me, make sure to show me my updated line member association
-          if (newMap[res.lineId].currentUserMember?.userId.toString() === res.userId) {
-            newMap[res.lineId].currentUserMember.lastVisitDate = new Date();
-            newMap[res.lineId].currentUserMember.state = res.toggledIn
-              ? LineMemberState.TUNED
-              : LineMemberState.INBOX;
-          }
-
-          // TODO: update the relevant lineMember (based on which userId is given): state and last visit date if current user is joining
-          // and not just if it's the current user toggling in
-          // right now, we just want user to know number of folks tuned and no need to expose who is toggle tuned...that lineMember can be stale
+      updateRoomMap((draft) => {
+        if (!draft[res.lineId]) {
+          toast.error('there was a problem updating rooms!!!');
+          return;
         }
 
-        return newMap;
+        if (draft[res.lineId].tunedInMemberIds) {
+          draft[res.lineId].tunedInMemberIds.push(res.userId);
+        } else {
+          draft[res.lineId].tunedInMemberIds = [res.userId];
+        }
       });
     });
 
     $ws.on(
       ServerResponseChannels.SOMEONE_UNTUNED_FROM_LINE,
       (res: SomeoneUntunedFromLineResponse) => {
-        console.log(`here are all of updated users in the tuned in room`, res.allTunedIntoUserIds);
+        console.log(`${res.userId} untuned from ${res.lineId}`);
 
-        // TODO: if toggled in, make sure to update the current line member in the lines map so that
-        // we can know to untune if user selects another line
+        updateRoomMap((draft) => {
+          if (!draft[res.lineId]) {
+            toast.error('there was a problem updating rooms!!!');
+            return;
+          }
 
-        setRealTimeRoomMap((prevLinesMap) => {
-          const newMap = { ...prevLinesMap };
+          if (draft[res.lineId].tunedInMemberIds) {
+            draft[res.lineId].tunedInMemberIds = draft[res.lineId].tunedInMemberIds.filter(
+              (userId) => userId !== res.userId,
+            );
+          }
+        });
+      },
+    );
 
-          // TODO: update the relevant lineMember (based on which userId is given): state and last visit date if current user is joining
+    // remove them from the line connected list and tuned list if they are there
+    $ws.on(
+      ServerResponseChannels.SOMEONE_DISCONNECTED_FROM_LINE,
+      (res: SomeoneDisconnectedResponse) => {
+        updateRoomMap((draft) => {
+          if (!draft[res.lineId]) {
+            toast.error('there was a problem updating rooms!!!');
+            return;
+          }
 
-          if (newMap[res.lineId]) newMap[res.lineId].tunedInMemberIds = res.allTunedIntoUserIds;
-
-          return newMap;
+          draft[res.lineId].connectedMemberIds = draft[res.lineId].connectedMemberIds?.filter(
+            (userId) => userId !== res.userId,
+          );
+          draft[res.lineId].tunedInMemberIds = draft[res.lineId].tunedInMemberIds?.filter(
+            (userId) => userId !== res.userId,
+          );
         });
       },
     );
@@ -118,18 +162,19 @@ export function RealTimeRoomProvider({ children }: { children: React.ReactChild 
     $ws.on(
       ServerResponseChannels.SOMEONE_STARTED_BROADCASTING,
       (res: UserStartedBroadcastingResponse) => {
-        console.log('someone is starting to broadcast');
+        console.log(`${res.userId} is starting to broadcast in ${res.lineId}`);
 
-        setRealTimeRoomMap((prevLinesMap) => {
-          const newMap = { ...prevLinesMap };
+        updateRoomMap((draft) => {
+          if (!draft[res.lineId]) {
+            toast.error('there was a problem updating rooms!!!');
+            return;
+          }
 
-          if (newMap[res.lineId])
-            newMap[res.lineId].currentBroadcastersUserIds = [
-              ...(newMap[res.lineId].currentBroadcastersUserIds ?? []),
-              res.userId,
-            ];
-
-          return newMap;
+          if (draft[res.lineId].currentBroadcastersUserIds) {
+            draft[res.lineId].currentBroadcastersUserIds.push(res.userId);
+          } else {
+            draft[res.lineId].currentBroadcastersUserIds = [res.userId];
+          }
         });
       },
     );
@@ -137,18 +182,19 @@ export function RealTimeRoomProvider({ children }: { children: React.ReactChild 
     $ws.on(
       ServerResponseChannels.SOMEONE_STOPPED_BROADCASTING,
       (res: UserStoppedBroadcastingResponse) => {
-        setRealTimeRoomMap((prevLinesMap) => {
-          const newMap = { ...prevLinesMap };
+        console.log(`${res.userId} is STOPPED BROADCASTING in ${res.lineId}`);
 
-          if (newMap[res.lineId]?.currentBroadcastersUserIds) {
-            newMap[res.lineId].currentBroadcastersUserIds = newMap[
-              res.lineId
-            ].currentBroadcastersUserIds.filter(
-              (broadcasterUserId) => broadcasterUserId !== res.userId,
-            );
+        updateRoomMap((draft) => {
+          if (!draft[res.lineId]) {
+            toast.error('there was a problem updating rooms!!!');
+            return;
           }
 
-          return newMap;
+          if (draft[res.lineId].currentBroadcastersUserIds) {
+            draft[res.lineId].currentBroadcastersUserIds = draft[
+              res.lineId
+            ].currentBroadcastersUserIds.filter((userId) => userId !== res.userId);
+          }
         });
       },
     );
@@ -157,30 +203,19 @@ export function RealTimeRoomProvider({ children }: { children: React.ReactChild 
       // ?perhaps only remove specific ones?
       $ws.removeAllListeners();
     };
-  }, [realTimeRoomMap, $ws]);
+  }, [roomMap, $ws, updateRoomMap]);
 
-  // converts the initial rooms to a map
+  // converts the initial rooms fetch to a map
   useEffect(() => {
     if (rooms.value?.data?.masterLines?.length > 0) {
-      setRealTimeRoomMap((prevMappings) => {
-        // go through the lines from the persistent store
-
-        // get all of the id's and map assign to the main object
-
-        // ?prolly have no previous at this point...but I'm okay with override since this
-        // ?useeffect is triggered on the refetching of the persistent store so we
-        // ?are prolly looking to do a full app refresh and connection refresh
-        const newMap = { ...prevMappings };
-
+      updateRoomMap((draft) => {
         rooms.value.data.masterLines.forEach((masterLine) => {
           const lineId = masterLine.lineDetails._id.toString();
-          newMap[lineId] = masterLine;
+          draft[lineId] = masterLine;
         });
-
-        return newMap;
       });
     }
-  }, [rooms.value, setRealTimeRoomMap]);
+  }, [rooms.value, updateRoomMap]);
 
   /** show user line details on click of one line */
   const handleSelectLine = useCallback(
@@ -192,10 +227,10 @@ export function RealTimeRoomProvider({ children }: { children: React.ReactChild 
   );
 
   return (
-    <RealTimeRoomContext.Provider
-      value={{ roomsMap: realTimeRoomMap, handleSelectLine, selectedLineId }}
-    >
+    <RealTimeRoomContext.Provider value={{ roomsMap: roomMap, handleSelectLine, selectedLineId }}>
       {children}
+
+      <pre>{JSON.stringify(roomMap)}</pre>
     </RealTimeRoomContext.Provider>
   );
 }
