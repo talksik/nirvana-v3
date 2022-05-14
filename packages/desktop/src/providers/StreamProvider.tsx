@@ -19,7 +19,7 @@
  * listen for any calls to me, as well as any answers back to me
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext, useState, useRef } from 'react';
 import Peer from 'simple-peer';
 import useRealTimeRooms from './RealTimeRoomProvider';
 import useAuth from './AuthProvider';
@@ -34,6 +34,7 @@ import {
 } from '@nirvana/core/sockets/channels';
 import { ServerResponseChannels } from '../../../core/sockets/channels';
 import toast from 'react-hot-toast';
+import { usePrevious } from 'react-use';
 
 type PeerMap = {
   [userId: string]: Peer;
@@ -53,6 +54,9 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
   const { $ws } = useSockets();
 
   const [peerMap, updatePeerMap] = useImmer<PeerMap>({});
+
+  const [userLocalStream, setUserLocalStream] = useState<MediaStream>();
+  const localStreamRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     $ws.on(
@@ -79,6 +83,7 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
 
       const peerForMeAndNewbie = new Peer({
         initiator: false,
+        stream: userLocalStream ?? null,
         trickle: false, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times
       });
 
@@ -131,6 +136,7 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
 
         const localPeerConnection = new Peer({
           initiator: true,
+          stream: userLocalStream ?? null,
           trickle: false, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times
         });
 
@@ -146,9 +152,38 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
     });
   }, [user, roomsMap, $ws, updatePeerMap]); //TODO: make this not run on EVERY update to roomsMap? only tuned in lists? so the separate map for that?
 
+  const prevStream = usePrevious<MediaStream>(userLocalStream);
+
+  useEffect(() => {
+    navigator.mediaDevices
+      .getUserMedia({ video: true, audio: true })
+      .then((localMediaStream: MediaStream) => {
+        setUserLocalStream(localMediaStream);
+
+        if (localStreamRef.current) localStreamRef.current.srcObject = localMediaStream;
+      });
+  }, [localStreamRef]);
+
+  useEffect(() => {
+    if (prevStream) {
+      Object.values(peerMap).forEach((currentPeer) => {
+        currentPeer.removeStream(prevStream);
+        currentPeer.addStream(userLocalStream);
+      });
+    }
+  }, [userLocalStream, peerMap, prevStream]);
+
   console.log(peerMap);
 
   return (
-    <StreamProviderContext.Provider value={{ peerMap }}>{children}</StreamProviderContext.Provider>
+    <StreamProviderContext.Provider value={{ peerMap }}>
+      <video height={400} width={400} autoPlay muted ref={localStreamRef} />
+
+      {children}
+    </StreamProviderContext.Provider>
   );
+}
+
+export default function useStreams() {
+  return useContext(StreamProviderContext);
 }

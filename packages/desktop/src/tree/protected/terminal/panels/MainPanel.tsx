@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect, useRef } from 'react';
 import useAuth from '../../../../providers/AuthProvider';
 import useRealTimeRooms from '../../../../providers/RealTimeRoomProvider';
 
@@ -6,6 +6,8 @@ import { LineMemberState } from '@nirvana/core/models/line.model';
 import LineIcon from '../../../../components/lineIcon';
 import { FiActivity, FiHeadphones, FiSettings, FiSun } from 'react-icons/fi';
 import { Avatar, Tooltip } from 'antd';
+import useStreams from '../../../../providers/StreamProvider';
+import Peer from 'simple-peer';
 
 export default function MainPanel() {
   const { user } = useAuth();
@@ -39,12 +41,12 @@ function LineDetails() {
 
   const selectedLine = useMemo(() => roomsMap[selectedLineId], [selectedLineId, roomsMap]);
 
-  console.log('selected line', selectedLine);
-
   const isUserToggleTuned = useMemo(
     () => selectedLine?.currentUserMember?.state === LineMemberState.TUNED,
     [selectedLine],
   );
+
+  const { peerMap } = useStreams();
 
   // seeing if I am in the list of broadcasters
   // the source of truth from the socket connections telling me if my clicking actually made a round trip
@@ -276,6 +278,9 @@ function LineDetails() {
             </div>
           ))}
         </div>
+
+        {/* change to show only the broadcasters */}
+        <LineStreams broadcasters={selectedLine.tunedInMemberIds} />
       </div>
 
       <button
@@ -288,4 +293,38 @@ function LineDetails() {
       </button>
     </div>
   );
+}
+
+function LineStreams({ broadcasters }: { broadcasters: string[] }) {
+  const { peerMap } = useStreams();
+
+  return (
+    <div className="flex flex-col">
+      {broadcasters.map((userId) => {
+        const currentPeer = peerMap[userId];
+
+        return <Stream key={`streamDisplay-${userId}`} peer={currentPeer} />;
+      })}
+    </div>
+  );
+}
+
+function Stream({ peer }: { peer: Peer }) {
+  const streamRef = useRef<HTMLAudioElement>(null);
+
+  useEffect(() => {
+    peer.on('stream', (remotePeerStream: MediaStream) => {
+      console.log(
+        'stream coming in from remote peer...BUT, only going to show once they broadcast',
+      );
+
+      const audio = new Audio();
+      audio.autoplay = true;
+      audio.srcObject = remotePeerStream;
+
+      if (streamRef?.current) streamRef.current.srcObject = remotePeerStream;
+    });
+  }, []);
+
+  return <>this is a stream component of one remote peer</>;
 }
