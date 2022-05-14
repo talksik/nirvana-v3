@@ -25,9 +25,27 @@ import { useAsyncFn } from 'react-use';
 import { updateLineMemberState } from '../api/NirvanaApi';
 import UpdateLineMemberState from '@nirvana/core/requests/updateLineMemberState.request';
 import useAuth from './AuthProvider';
+import { User } from '@nirvana/core/models/user.model';
 
 type LineIdToMasterLine = {
   [lineId: string]: MasterLineData;
+};
+
+// TODO: implement the below to save renders
+type TunedMembersMap = {
+  [lineId: string]: string[];
+};
+
+type ConnectedMembesMap = {
+  [lineId: string]: string[];
+};
+
+type UserMap = {
+  [userId: string]: User;
+};
+
+type BroadcastersMap = {
+  [lineId: string]: string[];
 };
 
 interface IRealTimeRoomProvider {
@@ -103,11 +121,7 @@ export function RealTimeRoomProvider({ children }: { children: React.ReactChild 
           return;
         }
 
-        if (draft[res.lineId].connectedMemberIds) {
-          draft[res.lineId].connectedMemberIds.push(res.userId);
-        } else {
-          draft[res.lineId].connectedMemberIds = [res.userId];
-        }
+        draft[res.lineId].connectedMemberIds = res.allUsers;
       });
     });
 
@@ -121,11 +135,7 @@ export function RealTimeRoomProvider({ children }: { children: React.ReactChild 
           return;
         }
 
-        if (draft[res.lineId].tunedInMemberIds) {
-          draft[res.lineId].tunedInMemberIds.push(res.userId);
-        } else {
-          draft[res.lineId].tunedInMemberIds = [res.userId];
-        }
+        draft[res.lineId].tunedInMemberIds = res.allUsers;
       });
     });
 

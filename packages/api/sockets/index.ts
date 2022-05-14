@@ -85,9 +85,13 @@ export default function InitializeWs(io: any) {
         const roomName = `connectedLine:${req.lineId}`;
         socket.join(roomName);
 
+        const clientUserIdsInRoom = [...(io.sockets.adapter.rooms.get(roomName) ?? [])].map(
+          (otherUserSocketId: string) => socketIdsToUserIds[otherUserSocketId],
+        );
+
         io.in(roomName).emit(
           ServerResponseChannels.SOMEONE_CONNECTED_TO_LINE,
-          new SomeoneConnectedResponse(req.lineId, userInfo.userId),
+          new SomeoneConnectedResponse(req.lineId, userInfo.userId, clientUserIdsInRoom),
         );
       });
 
@@ -98,12 +102,16 @@ export default function InitializeWs(io: any) {
         const roomName = `tunedLine:${req.lineId}`;
         socket.join(roomName);
 
+        const clientUserIdsInRoom = [...(io.sockets.adapter.rooms.get(roomName) ?? [])].map(
+          (otherUserSocketId: string) => socketIdsToUserIds[otherUserSocketId],
+        );
+
         // we want to notify everyone connected to the line even if they are not tuned in
         const connectedLineRoomName = `connectedLine:${req.lineId}`;
 
         io.in(connectedLineRoomName).emit(
           ServerResponseChannels.SOMEONE_TUNED_INTO_LINE,
-          new SomeoneTunedResponse(req.lineId, userInfo.userId),
+          new SomeoneTunedResponse(req.lineId, userInfo.userId, clientUserIdsInRoom),
         );
       });
 

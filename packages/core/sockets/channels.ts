@@ -71,7 +71,7 @@ export class ConnectToLineRequest {
   constructor(public lineId: string) {}
 }
 export class SomeoneConnectedResponse {
-  constructor(public lineId: string, public userId: string) {}
+  constructor(public lineId: string, public userId: string, public allUsers: string[]) {}
 }
 
 export class SomeoneDisconnectedResponse {
@@ -81,7 +81,7 @@ export class TuneToLineRequest {
   constructor(public lineId: string) {}
 }
 export class SomeoneTunedResponse {
-  constructor(public lineId: string, public userId: string) {}
+  constructor(public lineId: string, public userId: string, public allUsers: string[]) {}
 }
 export class UntuneFromLineRequest {
   constructor(public lineId: string) {}
