@@ -218,7 +218,7 @@ function LineRowTest({
       role={'presentation'}
       className={`flex flex-row items-center justify-start gap-2 px-4 py-4 hover:bg-gray-200 
       cursor-pointer transition-all relative z-50 rounded ${
-        isSelected && 'bg-gray-200 scale-110 shadow-2xl translate-x-2'
+        isSelected && 'bg-gray-200 scale-110 shadow-2xl translate-x-3'
       }`}
     >
       {/* status dot */}

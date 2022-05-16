@@ -181,7 +181,11 @@ function LineDetails() {
           <span>right now</span>
         </span>
 
-        <div className={'rounded flex flex-col items-center gap-2 w-full p-2 shadow-2xl'}>
+        <div
+          className={
+            'rounded flex flex-col items-center gap-2 w-full p-2 shadow-2xl border border-teal-500'
+          }
+        >
           {selectedLine.otherUserObjects.map((otherUser) => (
             <div
               key={`linehistory-${otherUser.name}`}
@@ -189,11 +193,11 @@ function LineDetails() {
             >
               <Avatar src={otherUser.picture} shape="square" size={'large'} />
 
-              <span key={`chunk-${otherUser.name}`} className="text-gray-500">
-                {`${otherUser.givenName}`}
+              <span key={`chunk-${otherUser.name}`} className="text-gray-600 font-semibold">
+                {`${otherUser.name}`}
               </span>
 
-              <span className="text-gray-600 text-md">
+              <span className="text-gray-600 text-md ml-auto">
                 <FiHeadphones />
               </span>
             </div>
