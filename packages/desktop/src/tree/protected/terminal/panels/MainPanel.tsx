@@ -177,7 +177,7 @@ function LineDetails() {
       {/* live broadcasters */}
       <div className="flex flex-col items-center gap-2 mx-auto w-full max-w-lg mt-auto">
         <span className={'flex flex-row gap-2 items-center text-teal-500 text-sm'}>
-          <FiSun className="animate-ping" />
+          <FiSun className="animate-pulse" />
           <span>right now</span>
         </span>
 

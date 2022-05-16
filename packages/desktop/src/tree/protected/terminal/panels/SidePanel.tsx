@@ -1,7 +1,7 @@
 import { LineMemberState } from '@nirvana/core/models/line.model';
 import MasterLineData from '@nirvana/core/models/masterLineData.model';
 import { Avatar, Skeleton, Tooltip } from 'antd';
-import React, { useCallback, useMemo, useEffect } from 'react';
+import React, { useCallback, useMemo, useEffect, useState } from 'react';
 import { FaPlus, FaSearch } from 'react-icons/fa';
 import { FiActivity, FiSearch, FiSun } from 'react-icons/fi';
 import useRealTimeRooms from '../../../../providers/RealTimeRoomProvider';
@@ -15,6 +15,8 @@ import NoTextLogo from '@nirvana/components/logo/NoTextLogo';
 export default function SidePanel() {
   // using merely for loading state...better to add to realtimeroom context?
   const { rooms: initialRoomsFetch } = useRooms();
+
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   const { roomsMap, handleSelectLine, selectedLineId } = useRealTimeRooms();
 
@@ -33,7 +35,7 @@ export default function SidePanel() {
   }, [roomsMap]);
 
   return (
-    <div className="flex flex-col w-[350px] relative group shadow-xl bg-white">
+    <div className="flex flex-col w-[400px] relative group shadow-xl bg-white">
       <NavBar />
 
       <div className="px-4 flex flex-row items-center gap-2">
@@ -42,10 +44,8 @@ export default function SidePanel() {
           <input
             placeholder="Search for people, channels, clips..."
             className="flex-1 bg-transparent placeholder-gray-300 placeholder:text-xs focus:outline-none"
-            onChange={() => {
-              //
-            }}
-            value={''}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            value={searchQuery}
           />
         </div>
 
