@@ -1,4 +1,4 @@
-@import "~antd/dist/antd.css";
+@import '~antd/dist/antd.css';
 
 @tailwind base;
 @tailwind components;
@@ -13,7 +13,7 @@ body {
 #root {
   @apply flex flex-col flex-1;
   padding: 0 !important;
-  font-family: "IBM Plex Sans", sans-serif;
+  font-family: 'IBM Plex Sans', sans-serif;
 }
 
 button {
@@ -41,6 +41,7 @@ button {
 
 .ant-avatar-group .ant-avatar {
   border: none;
+  @apply shadow-lg;
 }
 
 .ant-modal-footer {
