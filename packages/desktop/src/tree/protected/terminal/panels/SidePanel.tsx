@@ -117,23 +117,6 @@ function LineRowTest({
     [line.tunedInMemberIds, user],
   );
 
-  /**
-   * TODO: slowly add to this and fix based on added features
-   * */
-  const renderActivityIcon = useMemo(() => {
-    // if there is someone or me broadcasting here
-    if (line.currentBroadcastersUserIds?.length > 0)
-      return <FiSun className="text-teal-500 animate-pulse" />;
-
-    if (isUserTunedIn) return <FiActivity className="text-black animate-pulse" />;
-
-    // if there is new activity blocks for me
-    if (line.currentUserMember.lastVisitDate)
-      return <span className="h-2 w-2 rounded-full bg-slate-800 animate-pulse"></span>;
-
-    return <span className="h-2 w-2 rounded-full bg-white animate-pulse"></span>;
-  }, [line, isUserTunedIn]);
-
   const renderRightActivity = useMemo(() => {
     // TODO: get the profile pictures of the broadcasters
     if (line.currentBroadcastersUserIds?.length > 0)
@@ -161,6 +144,18 @@ function LineRowTest({
           ))}
         </Avatar.Group>
       );
+
+    // if there is someone or me broadcasting here
+    if (line.currentBroadcastersUserIds?.length > 0)
+      return <FiSun className="text-teal-500 animate-pulse" />;
+
+    if (isUserTunedIn) return <FiActivity className="text-black animate-pulse" />;
+
+    // if there is new activity blocks for me
+    if (line.currentUserMember.lastVisitDate)
+      return <span className="h-2 w-2 rounded-full bg-slate-800 animate-pulse"></span>;
+
+    return <span className="h-2 w-2 rounded-full bg-white animate-pulse"></span>;
 
     // if there is new activity/black dot, then show relative time as little bolder? or too much?
 
@@ -196,14 +191,12 @@ function LineRowTest({
     <div
       onClick={() => handleSelectLine(line.lineDetails._id.toString())}
       role={'presentation'}
-      className={`flex flex-row items-center justify-start gap-2 p-2 px-4 h-14 hover:bg-gray-200 cursor-pointer transition-all
+      className={`flex flex-row items-center justify-start gap-2 px-4 py-6 hover:bg-gray-200 cursor-pointer transition-all
 last:border-b-0 border-b border-b-gray-200 relative z-50 rounded ${
         isSelected && 'bg-gray-200 scale-110 shadow-2xl translate-x-3'
       }`}
     >
       {/* status dot */}
-      <div className="flex-shrink-0 h-4 w-4">{renderActivityIcon}</div>
-
       {profilePictures && <LineIcon grayscale={!isUserTunedIn} sourceImages={profilePictures} />}
 
       <h2

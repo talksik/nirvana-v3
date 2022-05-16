@@ -18,7 +18,7 @@ function LineIcon({
   return (
     <>
       {isMultiple ? (
-        <div className={`relative ${grayscale ? 'grayscale' : ''} h-[32px] w-[32px]`}>
+        <div className={`relative ${grayscale ? 'grayscale' : ''} h-[40px] w-[40px]`}>
           {sourceImages.map((avatarSrc, index) => {
             if (index === 0) {
               return (
@@ -52,7 +52,7 @@ function LineIcon({
             key={`lineIcon-${avatarSrc}-${index}`}
             src={avatarSrc}
             shape="square"
-            size={'default'}
+            size={'large'}
             className={`${grayscale && 'grayscale'} shadow-lg`}
           />
         ))

@@ -280,7 +280,7 @@ function LineDetails() {
         </div>
 
         {/* change to show only the broadcasters */}
-        <LineStreams broadcasters={selectedLine.tunedInMemberIds} />
+        {/* <LineStreams broadcasters={selectedLine.tunedInMemberIds} /> */}
       </div>
 
       <button
