@@ -100,21 +100,25 @@ export default function NavBar() {
   );
 
   return (
-    <div
-      className="flex flex-row items-center bg-gray-100 p-4 border-b border-b-gray-200"
-      id="titlebar"
-    >
-      <div
-        onKeyDown={handleOpenMainApp}
-        onClick={() => {
-          console.log('opening main app');
-        }}
-        role="presentation"
-      >
-        <NoTextLogo type="small" />
-      </div>
+    <div className="flex flex-row items-center bg-white p-4" id="titlebar">
+      <Dropdown overlay={profileMenu}>
+        <div className={'cursor-pointer'}>
+          {user.picture && (
+            <Avatar
+              key={`userHeaderProfilePicture`}
+              className="shadow-md hover:scale-110 transition-all"
+              size={'default'}
+              alt={user.name}
+              src={user.picture}
+              shape="square"
+            />
+          )}
+        </div>
+      </Dropdown>
 
-      {!shouldHideSearch && (
+      <span className="text-gray-600 font-semibold mx-auto">Channels</span>
+
+      {/* {!shouldHideSearch && (
         <div className="mx-auto flex flex-row items-center space-x-2">
           <FaSearch className="text-xs text-gray-300" />
           <input
@@ -125,29 +129,14 @@ export default function NavBar() {
             value={searchInput}
           />
         </div>
-      )}
+      )} */}
 
       <button
         onClick={handleFlowState}
         className="text-gray-300 text-xs p-3 transition-all hover:bg-gray-200"
       >
-        flow state
+        flow
       </button>
-
-      <Dropdown overlay={profileMenu}>
-        <div className={'cursor-pointer ml-2'}>
-          {user.picture && (
-            <Avatar
-              key={`userHeaderProfilePicture`}
-              className="shadow-md hover:scale-110 transition-all"
-              size={'large'}
-              alt={user.name}
-              src={user.picture}
-              shape="square"
-            />
-          )}
-        </div>
-      </Dropdown>
 
       {/* menu for the output options */}
       {/* <Menu

@@ -2,13 +2,15 @@ import { LineMemberState } from '@nirvana/core/models/line.model';
 import MasterLineData from '@nirvana/core/models/masterLineData.model';
 import { Avatar, Skeleton, Tooltip } from 'antd';
 import React, { useCallback, useMemo, useEffect } from 'react';
-import { FaPlus } from 'react-icons/fa';
-import { FiActivity, FiSun } from 'react-icons/fi';
+import { FaPlus, FaSearch } from 'react-icons/fa';
+import { FiActivity, FiSearch, FiSun } from 'react-icons/fi';
 import useRealTimeRooms from '../../../../providers/RealTimeRoomProvider';
 import useRooms from '../../../../providers/RoomsProvider';
 import useAuth from '../../../../providers/AuthProvider';
 import LineIcon from '../../../../components/lineIcon';
 import moment from 'moment';
+import NavBar from '../navbar/Navbar';
+import NoTextLogo from '@nirvana/components/logo/NoTextLogo';
 
 export default function SidePanel() {
   // using merely for loading state...better to add to realtimeroom context?
@@ -31,9 +33,32 @@ export default function SidePanel() {
   }, [roomsMap]);
 
   return (
-    <div className="flex flex-col bg-white w-[400px] relative group">
+    <div className="flex flex-col w-[350px] relative group shadow-xl bg-white">
+      <NavBar />
+
+      <div className="px-4 flex flex-row items-center gap-2">
+        <div className="flex flex-row items-center space-x-2 bg-gray-100 p-2 rounded flex-1">
+          <FiSearch className="text-xs text-gray-300" />
+          <input
+            placeholder="Search for people, channels, clips..."
+            className="flex-1 bg-transparent placeholder-gray-300 placeholder:text-xs focus:outline-none"
+            onChange={() => {
+              //
+            }}
+            value={''}
+          />
+        </div>
+
+        <button
+          className="flex flex-row gap-2 items-center justify-evenly 
+      shadow-xl bg-gray-800 p-2 text-white text-xs"
+        >
+          <FaPlus />
+        </button>
+      </div>
+
       {/* tuned in lines block */}
-      <div className="bg-gray-100 flex flex-col shadow-lg">
+      <div className="flex flex-col border-b border-b-gray-100 mt-5">
         {/* tuned in header + general controls */}
 
         <Tooltip placement="right" title={'These are your active rooms...'}>
@@ -41,9 +66,11 @@ export default function SidePanel() {
             <span className="flex flex-row gap-2 items-center justify-start text-gray-400 animate-pulse">
               <FiActivity className="text-sm" />
 
-              <h2 className="text-inherit text-sm">Tuned In</h2>
+              <h2 className="text-inherit text-xs">Tuned In</h2>
 
-              <p className="text-slate-300 text-xs">{`${toggleTunedLines?.length || 0}/3`}</p>
+              <p className="text-slate-300 text-xs ml-auto">{`${
+                toggleTunedLines?.length || 0
+              }/3`}</p>
             </span>
           </div>
         </Tooltip>
@@ -68,7 +95,7 @@ export default function SidePanel() {
       )}
 
       {/* rest of the lines */}
-      <div className={'flex flex-col'}>
+      <div className={'flex flex-col mt-5'}>
         {initialRoomsFetch.loading ? (
           <Skeleton />
         ) : (
@@ -84,16 +111,16 @@ export default function SidePanel() {
       </div>
 
       <div
-        className="absolute bottom-3 right-3 z-10 scale-0 
-    group-hover:scale-100 ease-in-out hover:transition group-hover:transition delay-100 duration-200"
+        onKeyDown={() => {
+          //
+        }}
+        onClick={() => {
+          console.log('opening main app');
+        }}
+        role="presentation"
+        className="absolute bottom-5 left-5"
       >
-        <button
-          className="flex flex-row gap-2 items-center justify-evenly 
-      shadow-xl bg-gray-800 p-2 text-white text-xs"
-        >
-          <FaPlus />
-          <span>New line</span>
-        </button>
+        <NoTextLogo type="small" />
       </div>
     </div>
   );
@@ -155,8 +182,6 @@ function LineRowTest({
     if (line.currentUserMember.lastVisitDate)
       return <span className="h-2 w-2 rounded-full bg-slate-800 animate-pulse"></span>;
 
-    return <span className="h-2 w-2 rounded-full bg-white animate-pulse"></span>;
-
     // if there is new activity/black dot, then show relative time as little bolder? or too much?
 
     // TODO: compare last visit date to latest audio block
@@ -191,9 +216,9 @@ function LineRowTest({
     <div
       onClick={() => handleSelectLine(line.lineDetails._id.toString())}
       role={'presentation'}
-      className={`flex flex-row items-center justify-start gap-2 px-4 py-6 hover:bg-gray-200 cursor-pointer transition-all
-last:border-b-0 border-b border-b-gray-200 relative z-50 rounded ${
-        isSelected && 'bg-gray-200 scale-110 shadow-2xl translate-x-3'
+      className={`flex flex-row items-center justify-start gap-2 px-4 py-4 hover:bg-gray-200 
+      cursor-pointer transition-all relative z-50 rounded ${
+        isSelected && 'bg-gray-200 scale-110 shadow-2xl translate-x-2'
       }`}
     >
       {/* status dot */}
