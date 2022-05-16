@@ -38,8 +38,8 @@ export default function SidePanel() {
     <div className="flex flex-col w-[400px] relative group shadow-xl bg-white">
       <NavBar />
 
-      <div className="px-4 flex flex-row items-center gap-2">
-        <div className="flex flex-row items-center space-x-2 bg-gray-100 p-2 rounded flex-1">
+      <div className="px-4 flex flex-row items-center gap-2 bg-gray-100">
+        <div className="flex flex-row items-center space-x-2 bg-gray-200 p-2 rounded flex-1">
           <FiSearch className="text-xs text-gray-300" />
           <input
             placeholder="Search for people, channels, clips..."
@@ -58,7 +58,7 @@ export default function SidePanel() {
       </div>
 
       {/* tuned in lines block */}
-      <div className="flex flex-col border-b border-b-gray-100 mt-5">
+      <div className="flex flex-col border-b border-b-gray-100 pt-5 bg-gray-100 shadow-xl">
         {/* tuned in header + general controls */}
 
         <Tooltip placement="right" title={'These are your active rooms...'}>

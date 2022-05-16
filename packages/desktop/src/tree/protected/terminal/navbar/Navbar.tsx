@@ -100,7 +100,7 @@ export default function NavBar() {
   );
 
   return (
-    <div className="flex flex-row items-center bg-white p-4" id="titlebar">
+    <div className="flex flex-row items-center bg-gray-100 p-4" id="titlebar">
       <Dropdown overlay={profileMenu}>
         <div className={'cursor-pointer'}>
           {user.picture && (
