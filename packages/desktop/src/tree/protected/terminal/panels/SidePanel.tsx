@@ -41,7 +41,7 @@ export default function SidePanel() {
             <span className="flex flex-row gap-2 items-center justify-start text-gray-400 animate-pulse">
               <FiActivity className="text-sm" />
 
-              <h2 className="text-inherit text-sm">Rooms</h2>
+              <h2 className="text-inherit text-sm">Tuned In</h2>
 
               <p className="text-slate-300 text-xs">{`${toggleTunedLines?.length || 0}/3`}</p>
             </span>

@@ -170,9 +170,7 @@ function LineDetails() {
 
           <span className={'text-gray-300 text-sm'}>yesterday</span>
 
-          <div
-            className={'rounded border border-gray-200 flex flex-row items-center gap-2 w-full p-2'}
-          >
+          <div className={'rounded flex flex-row items-center gap-2 w-full p-2'}>
             <Avatar.Group key={`lineHistoryMessage-yesterday-afternoon}`}>
               {selectedLine.otherUserObjects.map((otherUser) => (
                 <Avatar
@@ -203,11 +201,7 @@ function LineDetails() {
 
           <span className={'text-gray-300 text-sm'}>today</span>
 
-          <div
-            className={
-              'rounded border border-gray-200 flex flex-row items-center gap-2 w-full p-2  shadow-xl'
-            }
-          >
+          <div className={'rounded flex flex-row items-center gap-2 w-full p-2  shadow-xl'}>
             <Avatar.Group key={`lineHistoryMessage-yesterday-afternoon}`}>
               {selectedLine.otherUserObjects.map((otherUser) => (
                 <Avatar
@@ -246,7 +240,7 @@ function LineDetails() {
           {/* <LineStreams broadcasters={selectedLine.tunedInMemberIds} /> */}
         </div>
 
-        <div className="flex-1 flex flex-col border-l-teal-500 border-l">
+        <div className="flex-1 flex flex-col shadow-2xl p-2">
           {selectedLine.otherUserObjects.map((otherUser) => (
             <div
               key={`rightNowLineHistory-${otherUser._id.toString()}`}
@@ -267,6 +261,21 @@ function LineDetails() {
               </Tooltip>
             </div>
           ))}
+
+          <div
+            key={`rightNowLineHistory-${user._id.toString()}`}
+            className="flex flex-row p-2 gap-2 items-center bg-transparent"
+          >
+            <Avatar
+              key={`linehistory-${1}`}
+              src={user.picture}
+              shape="square"
+              size={'large'}
+              // grayscale if not playing?
+              className={`shadow-lg grayscale`}
+            />
+            <span className="text-gray-400">{user.name}</span>
+          </div>
         </div>
       </div>
 
