@@ -35,7 +35,7 @@ export default function SidePanel() {
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   return (
-    <div className="flex flex-col w-[350px] relative group shadow-2xl bg-white z-20">
+    <div className="flex flex-col w-[350px] relative group shadow-xl bg-white z-20">
       <NavBar />
 
       <div className="flex flex-row p-4 items-center bg-gray-100 gap-2">

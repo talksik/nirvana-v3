@@ -199,7 +199,7 @@ function LineDetails() {
     >
       {/* line details */}
       <div
-        className="p-4
+        className="px-4 py-2
         flex flex-row items-center gap-2 justify-end border-b-gray-200 border-b"
       >
         {/* {profilePictures && <LineIcon grayscale={false} sourceImages={profilePictures} />} */}
@@ -264,11 +264,11 @@ function LineDetails() {
       </div>
 
       {/* main canvas */}
-      <div className="flex flex-row flex-1">
+      <div className="flex flex-row flex-1 overflow-hidden">
         {/* line timeline */}
         <div
           className="flex flex-col justify-end items-center gap-2 p-5 mx-auto
-max-w-lg w-full"
+            max-w-lg w-full"
         >
           <span className={'text-gray-300 text-sm cursor-pointer hover:underline'}>load more</span>
 
@@ -341,8 +341,12 @@ max-w-lg w-full"
           </div>
         </div>
 
-        <div className="max w-[250px] p-4 shadow-2xl flex flex-col">
-          <span className="text-teal-600 text-sm flex flex-row items-center gap-2">
+        {/* people presence panel */}
+        <div
+          className="w-[350px] bg-gray-100 p-4 shadow-2xl flex flex-col z-20
+        hover:scale-105 transition-all"
+        >
+          <span className="text-teal-600 text-sm flex flex-row items-center gap-2 mt-2">
             <FiSun /> <span>Right Now</span>
           </span>
 
@@ -364,7 +368,7 @@ max-w-lg w-full"
             </div>
           ))}
 
-          <span className="text-gray-400 text-sm flex flex-row items-center gap-2">
+          <span className="text-gray-300 text-sm flex flex-row items-center gap-2 mt-5">
             <span>Offline</span>
           </span>
         </div>
