@@ -58,7 +58,7 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
 
   useEffect(() => {
     navigator.mediaDevices
-      .getUserMedia({ video: true, audio: true })
+      .getUserMedia({ video: false, audio: true })
       .then((localMediaStream: MediaStream) => {
         setUserLocalStream(localMediaStream);
 
