@@ -56,9 +56,6 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
   const [userLocalStream, setUserLocalStream] = useState<MediaStream>();
   const localStreamRef = useRef<HTMLVideoElement>(null);
 
-  const [secondUserLocalStream, setSecondLocalStream] = useState<MediaStream>();
-  const secondLocalStreamRef = useRef<HTMLVideoElement>(null);
-
   useEffect(() => {
     navigator.mediaDevices.enumerateDevices().then((devices) => {
       const uniqueDevices = [];
@@ -79,29 +76,15 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
       .then((localMediaStream: MediaStream) => {
         setUserLocalStream(localMediaStream);
 
-        // setTimeout(() => {
-        //   localMediaStream.getTracks().forEach((track) => {
-        //     track.stop();
-        //   });
-        // }, 2000);
+        setTimeout(() => {
+          localMediaStream.getTracks().forEach((track) => {
+            track.stop();
+          });
+        }, 2000);
 
         if (localStreamRef.current) localStreamRef.current.srcObject = localMediaStream;
       });
-
-    navigator.mediaDevices
-      .getUserMedia({ video: false, audio: true })
-      .then((localMediaStream: MediaStream) => {
-        setSecondLocalStream(localMediaStream);
-
-        // setTimeout(() => {
-        //   localMediaStream.getTracks().forEach((track) => {
-        //     track.stop();
-        //   });
-        // }, 2000);
-
-        if (secondLocalStreamRef.current) secondLocalStreamRef.current.srcObject = localMediaStream;
-      });
-  }, [localStreamRef, secondLocalStreamRef]);
+  }, [localStreamRef]);
 
   const handleStartBroadcast = () => {
     userLocalStream.getTracks().forEach((track) => {
@@ -218,13 +201,11 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
       <MemoStreamsConnector handleAddPeer={handleAddPeer} membersToCall={distinctPeerUserIds} />
 
       <div className="flex flex-row gap-5">
-        <button onClick={handleStartBroadcast}>start</button>
+        {/* <button onClick={handleStartBroadcast}>start</button>
 
-        <button onClick={stopBroadcast}>stop</button>
+        <button onClick={stopBroadcast}>stop</button> */}
 
         <audio autoPlay ref={localStreamRef} />
-
-        <audio autoPlay ref={secondLocalStreamRef} />
 
         {Object.values(peerMap).map((peer, index) => (
           <StreamPlayer key={`streamPlayer-${index}`} peer={peer} />
