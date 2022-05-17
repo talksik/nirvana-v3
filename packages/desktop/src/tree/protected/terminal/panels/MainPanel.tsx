@@ -353,7 +353,7 @@ function LineDetails() {
           </div>
 
           {/* live broadcasters */}
-          <div className="flex flex-col w-full gap-2 mt-5 border border-teal-500 rounded shadow-2xl">
+          <div className="flex flex-col w-full gap-2 mt-5 shadow-2xl border border-gray-200">
             {selectedLine.otherUserObjects.map((otherUser) => (
               <div key={otherUser.email} className="flex flex-row items-center gap-2 p-4">
                 <Avatar
@@ -372,7 +372,7 @@ function LineDetails() {
         </div>
 
         {/* canvas action buttons */}
-        <div className="flex flex-row gap-3 p-10 justify-end items-center">
+        <div className="flex flex-row gap-3 p-10 justify-end items-center ">
           <button
             className={`p-3 flex justify-center items-center shadow-2xl
             hover:scale-105 transition-all ${
