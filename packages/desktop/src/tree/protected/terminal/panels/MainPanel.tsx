@@ -199,7 +199,7 @@ function LineDetails() {
       >
         {profilePictures && <LineIcon grayscale={false} sourceImages={profilePictures} />}
 
-        <div className="ml-2 mr-auto flex flex-col items-start group">
+        <div className="ml-2 flex flex-col items-start group">
           <span className="flex flex-row gap-2 items-center">
             <h2 className={`text-md text-gray-800 font-semibold`}>
               {selectedLine.lineDetails.name || selectedLine.otherUserObjects[0].givenName}
@@ -214,32 +214,54 @@ function LineDetails() {
           </span>
         </div>
 
-        <div className="flex flex-row items-center gap-5 animate-pulse">
-          {selectedLine.otherUserObjects.map((otherUser) => (
-            <div key={otherUser.name} className="flex flex-col items-center">
-              <img
-                src={otherUser.picture}
-                // grayscale if not playing?
-                className={`h-[60px] w-[60px] rounded shadow-lg`}
-                alt={otherUser.name}
-              />
+        <Tooltip
+          placement="left"
+          title={`${isUserToggleTuned ? 'click to untoggle' : 'click to stay tuned in'}`}
+        >
+          <button
+            className={`p-2 mr-auto ml-2 flex justify-center items-center shadow-lg
+          hover:scale-105 transition-all animate-pulse ${
+            isUserToggleTuned ? 'bg-gray-800 text-white' : 'text-black'
+          }`}
+            onClick={() =>
+              isUserToggleTuned
+                ? handleUpdateLineMemberState(
+                    selectedLine.lineDetails._id.toString(),
+                    LineMemberState.INBOX,
+                  )
+                : handleUpdateLineMemberState(
+                    selectedLine.lineDetails._id.toString(),
+                    LineMemberState.TUNED,
+                  )
+            }
+          >
+            <FiActivity className="text-md" />
+          </button>
+        </Tooltip>
 
-              <span className="text-teal-500 text-xs">{otherUser.givenName}</span>
-            </div>
-          ))}
-        </div>
-
-        <span className="px-10 text-gray-200"> | </span>
-
-        <Avatar.Group key={`lineHistoryMessage-yesterday-afternoon}`}>
+        <Avatar.Group className={'animate-pulse'} key={`lineHistoryMessage-yesterday-afternoon}`}>
           <Avatar
             key={`linehistory-${1}`}
             src={user.picture}
             shape="square"
-            size={'default'}
+            size={'large'}
             // grayscale if not playing?
-            className={`sepia`}
+            className={`shadow-lg`}
           />
+          {selectedLine.otherUserObjects.map((otherUser) => (
+            <Avatar
+              key={`linehistory-${1}`}
+              src={otherUser.picture}
+              shape="square"
+              size={'large'}
+              className={`shadow-lg`}
+            />
+          ))}
+        </Avatar.Group>
+
+        <span className="px-10 text-gray-200"> | </span>
+
+        <Avatar.Group key={`lineHistoryMessage-yesterday-afternoon}`}>
           {selectedLine.otherUserObjects.map((otherUser) => (
             <Avatar
               key={`linehistory-${1}`}
@@ -274,7 +296,7 @@ function LineDetails() {
                   key={`linehistory-${1}`}
                   src={otherUser.picture}
                   shape="square"
-                  size={'large'}
+                  size={'default'}
                   // grayscale if not playing?
                   className={`${true && 'grayscale'}`}
                 />
@@ -308,7 +330,7 @@ function LineDetails() {
                   key={`linehistory-${1}`}
                   src={otherUser.picture}
                   shape="square"
-                  size={'large'}
+                  size={'default'}
                   // grayscale if not playing?
                   className={`${true && 'grayscale'}`}
                 />
@@ -329,35 +351,28 @@ function LineDetails() {
               Math.floor(Math.random() * 60) + 1
             } seconds`}</span>
           </div>
+
+          {/* live broadcasters */}
+          <div className="flex flex-col w-full gap-2 mt-5 border border-teal-500 rounded shadow-2xl">
+            {selectedLine.otherUserObjects.map((otherUser) => (
+              <div key={otherUser.email} className="flex flex-row items-center gap-2 p-4">
+                <Avatar
+                  key={`linehistory-${1}`}
+                  src={otherUser.picture}
+                  shape="square"
+                  size={'large'}
+                />
+
+                <span className="text-gray-600 font-semibold">{otherUser.name}</span>
+
+                <FiSun className="text-teal-500 ml-auto mr-5 animate-ping" />
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* canvas action buttons */}
         <div className="flex flex-row gap-3 p-10 justify-end items-center">
-          <Tooltip
-            placement="left"
-            title={`${isUserToggleTuned ? 'click to untoggle' : 'click to stay tuned in'}`}
-          >
-            <button
-              className={`p-2 flex justify-center items-center shadow-lg
-          hover:scale-105 transition-all animate-pulse ${
-            isUserToggleTuned ? 'bg-gray-800 text-white' : 'text-black'
-          }`}
-              onClick={() =>
-                isUserToggleTuned
-                  ? handleUpdateLineMemberState(
-                      selectedLine.lineDetails._id.toString(),
-                      LineMemberState.INBOX,
-                    )
-                  : handleUpdateLineMemberState(
-                      selectedLine.lineDetails._id.toString(),
-                      LineMemberState.TUNED,
-                    )
-              }
-            >
-              <FiActivity className="text-md" />
-            </button>
-          </Tooltip>
-
           <button
             className={`p-3 flex justify-center items-center shadow-2xl
             hover:scale-105 transition-all ${
