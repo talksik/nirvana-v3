@@ -57,13 +57,32 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
   const localStreamRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    // navigator.mediaDevices
-    //   .getUserMedia({ video: true, audio: true })
-    //   .then((localMediaStream: MediaStream) => {
-    //     setUserLocalStream(localMediaStream);
-    //     if (localStreamRef.current) localStreamRef.current.srcObject = localMediaStream;
-    //   });
+    navigator.mediaDevices
+      .getUserMedia({ video: true, audio: true })
+      .then((localMediaStream: MediaStream) => {
+        setUserLocalStream(localMediaStream);
+
+        // setTimeout(() => {
+        //   localMediaStream.getTracks().forEach((track) => {
+        //     track.stop();
+        //   });
+        // }, 2000);
+
+        if (localStreamRef.current) localStreamRef.current.srcObject = localMediaStream;
+      });
   }, [localStreamRef]);
+
+  const handleStartBroadcast = () => {
+    userLocalStream.getTracks().forEach((track) => {
+      track.enabled = true;
+    });
+  };
+
+  const stopBroadcast = () => {
+    userLocalStream.getTracks().forEach((track) => {
+      track.enabled = false;
+    });
+  };
 
   useEffect(() => {
     if (userLocalStream) {
@@ -168,7 +187,11 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
       <MemoStreamsConnector handleAddPeer={handleAddPeer} membersToCall={distinctPeerUserIds} />
 
       <div className="flex flex-row">
-        {/* <video height={400} width={400} autoPlay muted ref={localStreamRef} /> */}
+        <button onClick={handleStartBroadcast}>start</button>
+
+        <button onClick={stopBroadcast}>stop</button>
+
+        <video height={400} width={400} autoPlay ref={localStreamRef} />
 
         {Object.values(peerMap).map((peer, index) => (
           <StreamPlayer key={`streamPlayer-${index}`} peer={peer} />
