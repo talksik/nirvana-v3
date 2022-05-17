@@ -35,7 +35,7 @@ export default function SidePanel() {
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   return (
-    <div className="flex flex-col w-[350px] relative group border-r border-r-gray-200 shadow-xl bg-gray-100 z-20">
+    <div className="flex flex-col w-[350px] relative group border-r border-r-gray-200 shadow-xl bg-white z-20">
       <NavBar />
 
       <div className="flex flex-row p-4 items-center bg-gray-100 gap-2">
@@ -58,7 +58,7 @@ export default function SidePanel() {
       </div>
 
       {/* tuned in lines block */}
-      <div className="flex flex-col shadow-xl">
+      <div className="flex flex-col shadow-xl bg-gray-100">
         {/* tuned in header + general controls */}
 
         <Tooltip placement="right" title={'These are your active rooms...'}>
