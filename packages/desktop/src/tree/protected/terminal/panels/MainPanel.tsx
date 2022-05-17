@@ -347,7 +347,7 @@ function LineDetails() {
         hover:scale-105 transition-all"
         >
           <span className="text-teal-600 text-sm flex flex-row items-center gap-2 mt-2">
-            <FiSun /> <span>Right Now</span>
+            <FiSun /> <span>Right now</span>
           </span>
 
           {selectedLine.otherUserObjects.map((otherUser) => (
@@ -367,6 +367,10 @@ function LineDetails() {
               </span>
             </div>
           ))}
+
+          <span className="text-pink-500 text-sm flex flex-row items-center gap-2 mt-5">
+            <span>Flow state</span>
+          </span>
 
           <span className="text-gray-300 text-sm flex flex-row items-center gap-2 mt-5">
             <span>Offline</span>
