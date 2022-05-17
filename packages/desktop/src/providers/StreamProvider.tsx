@@ -56,6 +56,9 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
   const [userLocalStream, setUserLocalStream] = useState<MediaStream>();
   const localStreamRef = useRef<HTMLVideoElement>(null);
 
+  const [secondUserLocalStream, setSecondLocalStream] = useState<MediaStream>();
+  const secondLocalStreamRef = useRef<HTMLVideoElement>(null);
+
   useEffect(() => {
     navigator.mediaDevices
       .getUserMedia({ video: false, audio: true })
@@ -70,7 +73,21 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
 
         if (localStreamRef.current) localStreamRef.current.srcObject = localMediaStream;
       });
-  }, [localStreamRef]);
+
+    navigator.mediaDevices
+      .getUserMedia({ video: false, audio: true })
+      .then((localMediaStream: MediaStream) => {
+        setSecondLocalStream(localMediaStream);
+
+        // setTimeout(() => {
+        //   localMediaStream.getTracks().forEach((track) => {
+        //     track.stop();
+        //   });
+        // }, 2000);
+
+        if (secondLocalStreamRef.current) secondLocalStreamRef.current.srcObject = localMediaStream;
+      });
+  }, [localStreamRef, secondLocalStreamRef]);
 
   const handleStartBroadcast = () => {
     userLocalStream.getTracks().forEach((track) => {
@@ -186,12 +203,14 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
       {/* handles stream connections */}
       <MemoStreamsConnector handleAddPeer={handleAddPeer} membersToCall={distinctPeerUserIds} />
 
-      <div className="flex flex-row">
+      <div className="flex flex-row gap-5">
         <button onClick={handleStartBroadcast}>start</button>
 
         <button onClick={stopBroadcast}>stop</button>
 
-        <video height={400} width={400} autoPlay ref={localStreamRef} />
+        <audio autoPlay ref={localStreamRef} />
+
+        <audio autoPlay ref={secondLocalStreamRef} />
 
         {Object.values(peerMap).map((peer, index) => (
           <StreamPlayer key={`streamPlayer-${index}`} peer={peer} />
