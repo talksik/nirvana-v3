@@ -57,13 +57,12 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
   const localStreamRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    navigator.mediaDevices
-      .getUserMedia({ video: true, audio: true })
-      .then((localMediaStream: MediaStream) => {
-        setUserLocalStream(localMediaStream);
-
-        if (localStreamRef.current) localStreamRef.current.srcObject = localMediaStream;
-      });
+    // navigator.mediaDevices
+    //   .getUserMedia({ video: true, audio: true })
+    //   .then((localMediaStream: MediaStream) => {
+    //     setUserLocalStream(localMediaStream);
+    //     if (localStreamRef.current) localStreamRef.current.srcObject = localMediaStream;
+    //   });
   }, [localStreamRef]);
 
   useEffect(() => {

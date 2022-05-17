@@ -32,10 +32,33 @@ export default function SidePanel() {
     return [tunedLines, restLines];
   }, [roomsMap]);
 
+  const [searchQuery, setSearchQuery] = useState<string>('');
+
   return (
-    <div className="flex flex-col w-[400px] relative group shadow-xl bg-white">
+    <div className="flex flex-col w-[350px] relative group shadow-2xl bg-white">
+      <NavBar />
+
+      <div className="flex flex-row p-4 items-center bg-gray-100 gap-2">
+        <div className="flex-1 flex flex-row items-center space-x-2 bg-gray-200 p-2 rounded">
+          <FiSearch className="text-xs text-gray-400" />
+          <input
+            placeholder="Search for people, channels, clips..."
+            className="flex-1 bg-transparent placeholder-gray-400 text-gray-500 placeholder:text-xs focus:outline-none"
+            onChange={(e) => setSearchQuery(e.target.value)}
+            value={searchQuery}
+          />
+        </div>
+
+        <button
+          className="ml-auto flex flex-row items-center justify-evenly 
+      shadow-xl bg-gray-800 p-2 text-white text-xs"
+        >
+          <FaPlus />
+        </button>
+      </div>
+
       {/* tuned in lines block */}
-      <div className="flex flex-col border-b border-b-gray-100 bg-gray-100 shadow-xl">
+      <div className="flex flex-col bg-gray-100 shadow-xl">
         {/* tuned in header + general controls */}
 
         <Tooltip placement="right" title={'These are your active rooms...'}>
@@ -49,13 +72,6 @@ export default function SidePanel() {
                 toggleTunedLines?.length || 0
               }/3`}</p>
             </span>
-
-            <button
-              className="ml-auto flex flex-row items-center justify-evenly 
-      shadow-xl bg-gray-800 p-2 text-white text-xs"
-            >
-              <FaPlus />
-            </button>
           </div>
         </Tooltip>
 
@@ -79,7 +95,7 @@ export default function SidePanel() {
       )}
 
       {/* rest of the lines */}
-      <div className={'flex flex-col mt-5'}>
+      <div className={'flex flex-col'}>
         {initialRoomsFetch.loading ? (
           <Skeleton />
         ) : (
@@ -92,6 +108,19 @@ export default function SidePanel() {
             />
           ))
         )}
+      </div>
+
+      <div
+        className="absolute bottom-4 left-4"
+        onKeyDown={() => {
+          //
+        }}
+        onClick={() => {
+          console.log('opening main app');
+        }}
+        role="presentation"
+      >
+        <NoTextLogo type="small" />
       </div>
     </div>
   );

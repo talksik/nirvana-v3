@@ -96,46 +96,14 @@ export default function NavBar() {
   );
 
   return (
-    <div
-      className="flex flex-row gap-3 items-center bg-gray-100 border-b border-b-200 p-4"
-      id="titlebar"
-    >
-      <div
-        onKeyDown={() => {
-          //
-        }}
-        onClick={() => {
-          console.log('opening main app');
-        }}
-        role="presentation"
-      >
-        <NoTextLogo type="small" />
-      </div>
-
-      <div className="mx-auto flex flex-row items-center space-x-2 bg-gray-200 p-2 rounded w-[400px]">
-        <FiSearch className="text-xs text-gray-300" />
-        <input
-          placeholder="Search for people, channels, clips..."
-          className="flex-1 bg-transparent placeholder-gray-300 placeholder:text-xs focus:outline-none"
-          onChange={(e) => setSearchQuery(e.target.value)}
-          value={searchQuery}
-        />
-      </div>
-
-      <button
-        onClick={handleFlowState}
-        className="text-gray-300 text-xs p-3 transition-all hover:bg-gray-200"
-      >
-        flow state
-      </button>
-
+    <div className="flex flex-row gap-3 items-center bg-gray-100 p-4 pb-0" id="titlebar">
       <Dropdown overlay={profileMenu}>
         <div className={'cursor-pointer'}>
           {user.picture && (
             <Avatar
               key={`userHeaderProfilePicture`}
               className="shadow-md hover:scale-110 transition-all"
-              size={'large'}
+              size={'default'}
               alt={user.name}
               src={user.picture}
               shape="square"
@@ -143,6 +111,15 @@ export default function NavBar() {
           )}
         </div>
       </Dropdown>
+
+      <span className="font-semibold mx-auto">Channels</span>
+
+      <button
+        onClick={handleFlowState}
+        className="text-gray-300 text-xs p-3 transition-all hover:bg-gray-200"
+      >
+        flow
+      </button>
 
       {/* menu for the output options */}
       {/* <Menu

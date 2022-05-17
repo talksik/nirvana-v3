@@ -104,7 +104,7 @@ function LineDetails() {
   const showCreateChannel = false;
   if (showCreateChannel)
     return (
-      <div className="flex flex-col flex-1 items-center p-10 bg-gray-100 border-l border-l-gray-200">
+      <div className="flex flex-col flex-1 items-center pt-10 bg-gray-100 border-l border-l-gray-200">
         <div className="flex flex-col gap-2 max-w-lg w-full">
           {/* people search */}
           <span className="text-gray-500">People</span>
@@ -185,115 +185,36 @@ function LineDetails() {
   return (
     <div
       className="flex flex-col flex-1 bg-gray-100 
-      border-l border-l-gray-200 relative p-5"
+      border-l border-l-gray-200 relative"
     >
-      {/* line timeline */}
-      <div className="flex flex-col items-center gap-2 my-2 mx-auto max-w-lg w-full">
-        <span className={'text-gray-300 text-sm cursor-pointer hover:underline'}>load more</span>
+      {/* line details */}
+      <div
+        className="p-4
+        flex flex-row items-center gap-2 justify-end border-b-gray-200 border-b"
+      >
+        {/* {profilePictures && <LineIcon grayscale={false} sourceImages={profilePictures} />} */}
 
-        <span className={'text-gray-300 text-sm'}>yesterday</span>
+        <div className="flex flex-col items-start mr-auto group">
+          <span className="flex flex-row gap-2 items-center">
+            <h2 className={`text-md text-gray-800 font-semibold`}>
+              {selectedLine.lineDetails.name || selectedLine.otherUserObjects[0].givenName}
+            </h2>
 
-        <div className={'rounded flex flex-row items-center gap-2 w-full p-5'}>
-          <Avatar.Group key={`lineHistoryMessage-yesterday-afternoon}`}>
-            {selectedLine.otherUserObjects.map((otherUser) => (
-              <Avatar
-                key={`linehistory-${1}`}
-                src={otherUser.picture}
-                shape="square"
-                size={'large'}
-                // grayscale if not playing?
-                className={`${true && 'grayscale'}`}
-              />
-            ))}
-          </Avatar.Group>
-
-          {selectedLine.otherUserObjects.map((otherUser) => (
-            <span key={`chunk-${otherUser.name}`} className="text-gray-500">
-              {`${otherUser.givenName}, `}
-            </span>
-          ))}
-
-          <span className="ml-auto text-xs text-gray-300">{`${Math.floor(Math.random() * 10) + 1}:${
-            Math.floor(Math.random() * 100) + 10
-          }pm |`}</span>
-
-          <span className="text-gray-400 text-md">{`${
-            Math.floor(Math.random() * 60) + 1
-          } seconds`}</span>
-        </div>
-
-        <span className={'text-gray-300 text-sm'}>today</span>
-
-        <div className={'rounded flex flex-row items-center gap-2 w-full shadow-lg p-5'}>
-          <Avatar.Group key={`lineHistoryMessage-yesterday-afternoon}`}>
-            {selectedLine.otherUserObjects.map((otherUser) => (
-              <Avatar
-                key={`linehistory-${1}`}
-                src={otherUser.picture}
-                shape="square"
-                size={'large'}
-                // grayscale if not playing?
-                className={`${true && 'grayscale'}`}
-              />
-            ))}
-          </Avatar.Group>
-
-          {selectedLine.otherUserObjects.map((otherUser) => (
-            <span key={`chunk-${otherUser.name}`} className="text-gray-500">
-              {`${otherUser.givenName}, `}
-            </span>
-          ))}
-
-          <span className="ml-auto text-xs text-gray-300">{`${Math.floor(Math.random() * 10) + 1}:${
-            Math.floor(Math.random() * 100) + 10
-          }pm |`}</span>
-
-          <span className="text-gray-400 text-md">{`${
-            Math.floor(Math.random() * 60) + 1
-          } seconds`}</span>
-        </div>
-
-        {/* <LineStreams broadcasters={selectedLine.tunedInMemberIds} /> */}
-      </div>
-
-      {/* live broadcasters */}
-      <div className="flex flex-col items-center gap-2 mx-auto w-full max-w-lg mt-auto">
-        <span className={'flex flex-row gap-2 items-center text-teal-500 text-sm'}>
-          <FiSun className="animate-pulse" />
-          <span>right now</span>
-        </span>
-
-        <div
-          className={
-            'rounded flex flex-col items-center gap-2 w-full p-2 shadow-2xl border border-teal-500'
-          }
-        >
-          {selectedLine.otherUserObjects.map((otherUser) => (
-            <div
-              key={`linehistory-${otherUser.name}`}
-              className={'flex flex-row gap-2 w-full items-center animate-pulse p-5'}
+            <button
+              className={`p-1 hidden group-hover:flex justify-center items-center hover:bg-gray-300
+           transition-all hover:scale-105`}
             >
-              <Avatar src={otherUser.picture} shape="square" size={'large'} />
-
-              <span key={`chunk-${otherUser.name}`} className="text-gray-600 font-semibold">
-                {`${otherUser.name}`}
-              </span>
-
-              <span className="text-gray-600 text-md ml-auto">
-                <FiHeadphones />
-              </span>
-            </div>
-          ))}
+              <FiSettings className="text-gray-400 text-xs" />
+            </button>
+          </span>
         </div>
-      </div>
 
-      <div className="absolute right-3 bottom-3 flex flex-row gap-3 ">
         <Tooltip
           placement="left"
           title={`${isUserToggleTuned ? 'click to untoggle' : 'click to stay tuned in'}`}
         >
           <button
-            className={`p-3 flex justify-center items-center shadow-lg
+            className={`ml-2 p-2 flex justify-center items-center shadow-lg
           hover:scale-105 transition-all animate-pulse ${
             isUserToggleTuned ? 'bg-gray-800 text-white' : 'text-black'
           }`}
@@ -309,14 +230,118 @@ function LineDetails() {
                   )
             }
           >
-            <FiActivity className="text-lg" />
+            <FiActivity className="text-md" />
           </button>
         </Tooltip>
+      </div>
+
+      {/* main canvas */}
+      <div className="flex flex-row flex-1">
+        {/* line timeline */}
+        <div
+          className="flex flex-col justify-end items-center gap-2 p-5 mx-auto
+         max-w-lg w-full"
+        >
+          <span className={'text-gray-300 text-sm cursor-pointer hover:underline'}>load more</span>
+
+          <span className={'text-gray-300 text-sm'}>yesterday</span>
+
+          <div className={'rounded flex flex-row items-center gap-2 w-full p-5'}>
+            <Avatar.Group key={`lineHistoryMessage-yesterday-afternoon}`}>
+              {selectedLine.otherUserObjects.map((otherUser) => (
+                <Avatar
+                  key={`linehistory-${1}`}
+                  src={otherUser.picture}
+                  shape="square"
+                  size={'large'}
+                  // grayscale if not playing?
+                  className={`${true && 'grayscale'}`}
+                />
+              ))}
+            </Avatar.Group>
+
+            {selectedLine.otherUserObjects.map((otherUser) => (
+              <span key={`chunk-${otherUser.name}`} className="text-gray-500">
+                {`${otherUser.givenName}, `}
+              </span>
+            ))}
+
+            <span className="ml-auto text-xs text-gray-300">{`${
+              Math.floor(Math.random() * 10) + 1
+            }:${Math.floor(Math.random() * 100) + 10}pm |`}</span>
+
+            <span className="text-gray-400 text-md">{`${
+              Math.floor(Math.random() * 60) + 1
+            } seconds`}</span>
+          </div>
+
+          <span className={'text-gray-300 text-sm'}>today</span>
+
+          <div className={'rounded flex flex-row items-center gap-2 w-full shadow-lg p-5'}>
+            <Avatar.Group key={`lineHistoryMessage-yesterday-afternoon}`}>
+              {selectedLine.otherUserObjects.map((otherUser) => (
+                <Avatar
+                  key={`linehistory-${1}`}
+                  src={otherUser.picture}
+                  shape="square"
+                  size={'large'}
+                  // grayscale if not playing?
+                  className={`${true && 'grayscale'}`}
+                />
+              ))}
+            </Avatar.Group>
+
+            {selectedLine.otherUserObjects.map((otherUser) => (
+              <span key={`chunk-${otherUser.name}`} className="text-gray-500">
+                {`${otherUser.givenName}, `}
+              </span>
+            ))}
+
+            <span className="ml-auto text-xs text-gray-300">{`${
+              Math.floor(Math.random() * 10) + 1
+            }:${Math.floor(Math.random() * 100) + 10}pm |`}</span>
+
+            <span className="text-gray-400 text-md">{`${
+              Math.floor(Math.random() * 60) + 1
+            } seconds`}</span>
+          </div>
+        </div>
+
+        <div className="max w-[250px] p-4 shadow-2xl flex flex-col">
+          <span className="text-teal-600 text-sm flex flex-row items-center gap-2">
+            <FiSun /> <span>Right Now</span>
+          </span>
+
+          {selectedLine.otherUserObjects.map((otherUser) => (
+            <div
+              key={otherUser.email}
+              className="flex flex-row gap-2 items-center p-2 
+                hover:bg-gray-200 cursor-pointer rounded"
+            >
+              <Avatar
+                src={otherUser.picture}
+                size={'large'}
+                shape={'square'}
+                className={'shadow-lg'}
+              />
+              <span className="flex flex-col gap-1">
+                <span className="text-md font-semibold text-gray-600">{otherUser.name}</span>
+              </span>
+            </div>
+          ))}
+
+          <span className="text-gray-400 text-sm flex flex-row items-center gap-2">
+            <span>Offline</span>
+          </span>
+        </div>
+      </div>
+
+      <div className="absolute right-5 bottom-5 flex flex-row gap-3">
         <button
           className={`p-3 flex justify-center items-center shadow-2xl
-          hover:scale-105 transition-all ${
-            isUserBroadcasting ? 'bg-teal-800 text-white' : 'text-teal-800 border-teal-800 border'
-          }`}
+            hover:scale-105 transition-all ${
+              isUserBroadcasting ? 'bg-teal-800 text-white' : 'text-teal-800 border-teal-800 border'
+            }`}
         >
           <FiSun className="text-lg" />
         </button>

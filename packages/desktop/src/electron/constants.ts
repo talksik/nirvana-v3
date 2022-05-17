@@ -3,26 +3,26 @@
 // SINCE IT's NOT A NODE PROCESS
 
 enum Channels {
-  ACTIVATE_LOG_IN = "ACTIVATE_LOG_IN",
-  GOOGLE_AUTH_TOKENS = "GOOGLE_AUTH_TOKENS",
-  RESIZE_WINDOW = "RESIZE_WINDOW",
-  ON_WINDOW_BLUR = "ON_WINDOW_BLUR",
+  ACTIVATE_LOG_IN = 'ACTIVATE_LOG_IN',
+  GOOGLE_AUTH_TOKENS = 'GOOGLE_AUTH_TOKENS',
+  RESIZE_WINDOW = 'RESIZE_WINDOW',
+  ON_WINDOW_BLUR = 'ON_WINDOW_BLUR',
 }
 
 export enum STORE_ITEMS {
-  AUTH_SESSION_JWT = "AUTH_SESSION_JWT",
+  AUTH_SESSION_JWT = 'AUTH_SESSION_JWT',
 }
 
 export type Dimensions = { height: number; width: number };
 
 export interface DimensionChangeRequest {
   setAlwaysOnTop: boolean;
-  setPosition?: "topRight" | "center";
+  setPosition?: 'topRight' | 'center';
   dimensions: Dimensions;
   addDimensions: boolean;
 }
 
-export const DEFAULT_APP_PRESET: Dimensions = { height: 875, width: 1210 };
+export const DEFAULT_APP_PRESET: Dimensions = { height: 750, width: 1210 };
 
 export const OVERLAY_ONLY_INITIAL_PRESET: Dimensions = {
   height: 50,
