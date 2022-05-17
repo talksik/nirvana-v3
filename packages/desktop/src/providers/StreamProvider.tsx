@@ -205,7 +205,7 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
 
         <button onClick={stopBroadcast}>stop</button> */}
 
-        <audio autoPlay ref={localStreamRef} />
+        {/* <audio autoPlay ref={localStreamRef} /> */}
 
         {Object.values(peerMap).map((peer, index) => (
           <StreamPlayer key={`streamPlayer-${index}`} peer={peer} />

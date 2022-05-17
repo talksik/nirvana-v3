@@ -18,6 +18,7 @@ import {
 import { Avatar, Tooltip } from 'antd';
 import useStreams from '../../../../providers/StreamProvider';
 import Peer from 'simple-peer';
+
 export default function MainPanel() {
   const { user } = useAuth();
 
@@ -33,10 +34,7 @@ export default function MainPanel() {
   // else show the stale state
 
   return (
-    <div
-      className="flex flex-col flex-1 justify-center items-center bg-gray-100 
-border-l border-l-gray-200"
-    >
+    <div className="flex flex-col flex-1 justify-center items-center bg-white">
       <span className="text-xl text-gray-800">{`Hi ${user.givenName}!`}</span>
       <span className="text-md text-gray-400">{"You're all set!"}</span>
     </div>
@@ -114,7 +112,7 @@ function LineDetails() {
   const showCreateChannel = false;
   if (showCreateChannel)
     return (
-      <div className="flex flex-col flex-1 items-center pt-10 bg-gray-100 border-l border-l-gray-200">
+      <div className="flex flex-col flex-1 items-center pt-10 bg-white">
         <div className="flex flex-col gap-2 max-w-lg w-full">
           {/* people search */}
           <span className="text-gray-500">People</span>
@@ -193,18 +191,15 @@ function LineDetails() {
     );
 
   return (
-    <div
-      className="flex flex-col flex-1 bg-gray-100 
-      border-l border-l-gray-200 relative"
-    >
+    <div className="flex flex-col flex-1 bg-white relative">
       {/* line details */}
       <div
-        className="px-4 py-2
-        flex flex-row items-center justify-end border-b-gray-200 border-b"
+        className="p-5 z-30
+        flex flex-row items-center justify-end border-b-gray-200 border-b shadow-2xl"
       >
-        {/* {profilePictures && <LineIcon grayscale={false} sourceImages={profilePictures} />} */}
+        {profilePictures && <LineIcon grayscale={false} sourceImages={profilePictures} />}
 
-        <div className="flex flex-col items-start group">
+        <div className="ml-2 mr-auto flex flex-col items-start group">
           <span className="flex flex-row gap-2 items-center">
             <h2 className={`text-md text-gray-800 font-semibold`}>
               {selectedLine.lineDetails.name || selectedLine.otherUserObjects[0].givenName}
@@ -219,56 +214,51 @@ function LineDetails() {
           </span>
         </div>
 
-        <Tooltip
-          placement="left"
-          title={`${isUserToggleTuned ? 'click to untoggle' : 'click to stay tuned in'}`}
-        >
-          <button
-            className={`mr-auto ml-2 p-2 flex justify-center items-center shadow-lg
-          hover:scale-105 transition-all animate-pulse ${
-            isUserToggleTuned ? 'bg-gray-800 text-white' : 'text-black'
-          }`}
-            onClick={() =>
-              isUserToggleTuned
-                ? handleUpdateLineMemberState(
-                    selectedLine.lineDetails._id.toString(),
-                    LineMemberState.INBOX,
-                  )
-                : handleUpdateLineMemberState(
-                    selectedLine.lineDetails._id.toString(),
-                    LineMemberState.TUNED,
-                  )
-            }
-          >
-            <FiActivity className="text-md" />
-          </button>
-        </Tooltip>
+        <div className="flex flex-row items-center gap-5 animate-pulse">
+          {selectedLine.otherUserObjects.map((otherUser) => (
+            <div key={otherUser.name} className="flex flex-col items-center">
+              <img
+                src={otherUser.picture}
+                // grayscale if not playing?
+                className={`h-[60px] w-[60px] rounded shadow-lg`}
+                alt={otherUser.name}
+              />
 
-        <button
-          className={`p-2 flex justify-center items-center shadow-lg
-          hover:scale-105 transition-all text-black
-          `}
-        >
-          <FiImage className="text-md" />
-        </button>
+              <span className="text-teal-500 text-xs">{otherUser.givenName}</span>
+            </div>
+          ))}
+        </div>
 
-        <button
-          className={`ml-2 p-2 flex justify-center items-center shadow-lg
-          hover:scale-105 transition-all text-black
-          `}
-        >
-          <FiVideo className="text-md" />
-        </button>
+        <span className="px-10 text-gray-200"> | </span>
 
-        <FiMoreVertical className="ml-2" />
+        <Avatar.Group key={`lineHistoryMessage-yesterday-afternoon}`}>
+          <Avatar
+            key={`linehistory-${1}`}
+            src={user.picture}
+            shape="square"
+            size={'default'}
+            // grayscale if not playing?
+            className={`sepia`}
+          />
+          {selectedLine.otherUserObjects.map((otherUser) => (
+            <Avatar
+              key={`linehistory-${1}`}
+              src={otherUser.picture}
+              shape="square"
+              size={'default'}
+              // grayscale if not playing?
+              className={`${true && 'grayscale'}`}
+            />
+          ))}
+        </Avatar.Group>
       </div>
 
       {/* main canvas */}
-      <div className="flex flex-row flex-1 overflow-hidden">
+      <div className="flex flex-col flex-1">
         {/* line timeline */}
         <div
-          className="flex flex-col justify-end items-center gap-2 p-5 mx-auto
-            max-w-lg w-full"
+          className="flex-1 flex flex-col justify-start items-center gap-2 p-5 mx-auto
+            max-w-lg w-full bg-white"
         >
           <span className={'text-gray-300 text-sm cursor-pointer hover:underline'}>load more</span>
 
@@ -341,52 +331,42 @@ function LineDetails() {
           </div>
         </div>
 
-        {/* people presence panel */}
-        <div
-          className="w-[350px] bg-gray-100 p-4 shadow-2xl flex flex-col
-        hover:scale-105 transition-all"
-        >
-          <span className="text-teal-600 text-sm flex flex-row items-center gap-2 mt-2">
-            <FiSun /> <span>Right now</span>
-          </span>
-
-          {selectedLine.otherUserObjects.map((otherUser) => (
-            <div
-              key={otherUser.email}
-              className="flex flex-row gap-2 items-center p-2 
-                hover:bg-gray-200 cursor-pointer rounded"
+        {/* canvas action buttons */}
+        <div className="flex flex-row gap-3 p-10 justify-end items-center">
+          <Tooltip
+            placement="left"
+            title={`${isUserToggleTuned ? 'click to untoggle' : 'click to stay tuned in'}`}
+          >
+            <button
+              className={`p-2 flex justify-center items-center shadow-lg
+          hover:scale-105 transition-all animate-pulse ${
+            isUserToggleTuned ? 'bg-gray-800 text-white' : 'text-black'
+          }`}
+              onClick={() =>
+                isUserToggleTuned
+                  ? handleUpdateLineMemberState(
+                      selectedLine.lineDetails._id.toString(),
+                      LineMemberState.INBOX,
+                    )
+                  : handleUpdateLineMemberState(
+                      selectedLine.lineDetails._id.toString(),
+                      LineMemberState.TUNED,
+                    )
+              }
             >
-              <Avatar
-                src={otherUser.picture}
-                size={'large'}
-                shape={'square'}
-                className={'shadow-lg'}
-              />
-              <span className="flex flex-col gap-1">
-                <span className="text-md font-semibold text-gray-600">{otherUser.name}</span>
-              </span>
-            </div>
-          ))}
+              <FiActivity className="text-md" />
+            </button>
+          </Tooltip>
 
-          <span className="text-pink-500 text-sm flex flex-row items-center gap-2 mt-5">
-            <span>Flow state</span>
-          </span>
-
-          <span className="text-gray-300 text-sm flex flex-row items-center gap-2 mt-5">
-            <span>Offline</span>
-          </span>
-        </div>
-      </div>
-
-      <div className="absolute right-5 bottom-5 flex flex-row gap-3">
-        <button
-          className={`p-3 flex justify-center items-center shadow-2xl
+          <button
+            className={`p-3 flex justify-center items-center shadow-2xl
             hover:scale-105 transition-all ${
               isUserBroadcasting ? 'bg-teal-800 text-white' : 'text-teal-800 border-teal-800 border'
             }`}
-        >
-          <FiSun className="text-lg" />
-        </button>
+          >
+            <FiSun className="text-lg" />
+          </button>
+        </div>
       </div>
     </div>
   );
