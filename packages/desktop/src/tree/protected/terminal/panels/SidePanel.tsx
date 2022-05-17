@@ -16,8 +16,6 @@ export default function SidePanel() {
   // using merely for loading state...better to add to realtimeroom context?
   const { rooms: initialRoomsFetch } = useRooms();
 
-  const [searchQuery, setSearchQuery] = useState<string>('');
-
   const { roomsMap, handleSelectLine, selectedLineId } = useRealTimeRooms();
 
   const [toggleTunedLines, allLines] = useMemo(() => {
@@ -36,29 +34,8 @@ export default function SidePanel() {
 
   return (
     <div className="flex flex-col w-[400px] relative group shadow-xl bg-white">
-      <NavBar />
-
-      <div className="px-4 flex flex-row items-center gap-2 bg-gray-100">
-        <div className="flex flex-row items-center space-x-2 bg-gray-200 p-2 rounded flex-1">
-          <FiSearch className="text-xs text-gray-300" />
-          <input
-            placeholder="Search for people, channels, clips..."
-            className="flex-1 bg-transparent placeholder-gray-300 placeholder:text-xs focus:outline-none"
-            onChange={(e) => setSearchQuery(e.target.value)}
-            value={searchQuery}
-          />
-        </div>
-
-        <button
-          className="flex flex-row gap-2 items-center justify-evenly 
-      shadow-xl bg-gray-800 p-2 text-white text-xs"
-        >
-          <FaPlus />
-        </button>
-      </div>
-
       {/* tuned in lines block */}
-      <div className="flex flex-col border-b border-b-gray-100 pt-5 bg-gray-100 shadow-xl">
+      <div className="flex flex-col border-b border-b-gray-100 bg-gray-100 shadow-xl">
         {/* tuned in header + general controls */}
 
         <Tooltip placement="right" title={'These are your active rooms...'}>
@@ -72,6 +49,13 @@ export default function SidePanel() {
                 toggleTunedLines?.length || 0
               }/3`}</p>
             </span>
+
+            <button
+              className="ml-auto flex flex-row items-center justify-evenly 
+      shadow-xl bg-gray-800 p-2 text-white text-xs"
+            >
+              <FaPlus />
+            </button>
           </div>
         </Tooltip>
 
@@ -108,19 +92,6 @@ export default function SidePanel() {
             />
           ))
         )}
-      </div>
-
-      <div
-        onKeyDown={() => {
-          //
-        }}
-        onClick={() => {
-          console.log('opening main app');
-        }}
-        role="presentation"
-        className="absolute bottom-5 left-5"
-      >
-        <NoTextLogo type="small" />
       </div>
     </div>
   );

@@ -1,8 +1,8 @@
 import { Avatar, Dropdown, Menu } from 'antd';
-import { FiLogOut } from 'react-icons/fi';
+import { FiLogOut, FiSearch } from 'react-icons/fi';
 import React, { useMemo, useRef, useState } from 'react';
 
-import { FaSearch } from 'react-icons/fa';
+import { FaPlus, FaSearch } from 'react-icons/fa';
 import useAuth from '../../../../providers/AuthProvider';
 import useElectron from '../../../../providers/ElectronProvider';
 import useSockets from '../../../../providers/SocketProvider';
@@ -19,7 +19,7 @@ export default function NavBar() {
   const { handleFlowState } = useSockets();
 
   const inputRef = useRef<HTMLInputElement>(null);
-  const [searchInput, setSearchInput] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   /** hide the search bar in the header so that it's cleaner for these two modes */
   const shouldHideSearch = useMemo(() => {
@@ -30,10 +30,6 @@ export default function NavBar() {
 
   const selectSearch = () => {
     inputRef.current?.focus();
-  };
-
-  const onSearchChange = (e) => {
-    setSearchInput(e.target.value);
   };
 
   // todo: do I need a mute mode? isn't that just flow state
@@ -100,14 +96,46 @@ export default function NavBar() {
   );
 
   return (
-    <div className="flex flex-row items-center bg-gray-100 p-4" id="titlebar">
+    <div
+      className="flex flex-row gap-3 items-center bg-gray-100 border-b border-b-200 p-4"
+      id="titlebar"
+    >
+      <div
+        onKeyDown={() => {
+          //
+        }}
+        onClick={() => {
+          console.log('opening main app');
+        }}
+        role="presentation"
+      >
+        <NoTextLogo type="small" />
+      </div>
+
+      <div className="mx-auto flex flex-row items-center space-x-2 bg-gray-200 p-2 rounded w-[400px]">
+        <FiSearch className="text-xs text-gray-300" />
+        <input
+          placeholder="Search for people, channels, clips..."
+          className="flex-1 bg-transparent placeholder-gray-300 placeholder:text-xs focus:outline-none"
+          onChange={(e) => setSearchQuery(e.target.value)}
+          value={searchQuery}
+        />
+      </div>
+
+      <button
+        onClick={handleFlowState}
+        className="text-gray-300 text-xs p-3 transition-all hover:bg-gray-200"
+      >
+        flow state
+      </button>
+
       <Dropdown overlay={profileMenu}>
         <div className={'cursor-pointer'}>
           {user.picture && (
             <Avatar
               key={`userHeaderProfilePicture`}
               className="shadow-md hover:scale-110 transition-all"
-              size={'default'}
+              size={'large'}
               alt={user.name}
               src={user.picture}
               shape="square"
@@ -115,28 +143,6 @@ export default function NavBar() {
           )}
         </div>
       </Dropdown>
-
-      <span className="text-gray-600 font-semibold mx-auto">Channels</span>
-
-      {/* {!shouldHideSearch && (
-        <div className="mx-auto flex flex-row items-center space-x-2">
-          <FaSearch className="text-xs text-gray-300" />
-          <input
-            placeholder="Type / to search"
-            className="bg-transparent placeholder-gray-300 placeholder:text-xs focus:outline-none"
-            ref={inputRef}
-            onChange={onSearchChange}
-            value={searchInput}
-          />
-        </div>
-      )} */}
-
-      <button
-        onClick={handleFlowState}
-        className="text-gray-300 text-xs p-3 transition-all hover:bg-gray-200"
-      >
-        flow
-      </button>
 
       {/* menu for the output options */}
       {/* <Menu

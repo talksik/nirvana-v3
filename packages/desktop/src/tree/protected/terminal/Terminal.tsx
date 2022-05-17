@@ -16,6 +16,8 @@ export default function Terminal() {
 
   return (
     <div className="flex flex-col flex-1">
+      <NavBar />
+
       <div className="flex flex-row flex-1">
         <SidePanel />
 
