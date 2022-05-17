@@ -200,7 +200,7 @@ function LineDetails() {
       {/* line details */}
       <div
         className="px-4 py-2
-        flex flex-row items-center gap-2 justify-end border-b-gray-200 border-b"
+        flex flex-row items-center justify-end border-b-gray-200 border-b"
       >
         {/* {profilePictures && <LineIcon grayscale={false} sourceImages={profilePictures} />} */}
 
@@ -224,7 +224,7 @@ function LineDetails() {
           title={`${isUserToggleTuned ? 'click to untoggle' : 'click to stay tuned in'}`}
         >
           <button
-            className={`mr-auto p-2 flex justify-center items-center shadow-lg
+            className={`mr-auto ml-2 p-2 flex justify-center items-center shadow-lg
           hover:scale-105 transition-all animate-pulse ${
             isUserToggleTuned ? 'bg-gray-800 text-white' : 'text-black'
           }`}
@@ -260,7 +260,7 @@ function LineDetails() {
           <FiVideo className="text-md" />
         </button>
 
-        <FiMoreVertical />
+        <FiMoreVertical className="ml-2" />
       </div>
 
       {/* main canvas */}
