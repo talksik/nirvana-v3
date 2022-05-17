@@ -60,6 +60,20 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
   const secondLocalStreamRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
+    navigator.mediaDevices.enumerateDevices().then((devices) => {
+      const uniqueDevices = [];
+
+      const uniqueGroupIds = [];
+      devices.forEach((device) => {
+        if (!uniqueGroupIds.includes(device.groupId)) {
+          uniqueDevices.push(device);
+          uniqueGroupIds.push(device.groupId);
+        }
+      });
+
+      console.log(uniqueDevices);
+    });
+
     navigator.mediaDevices
       .getUserMedia({ video: false, audio: true })
       .then((localMediaStream: MediaStream) => {
