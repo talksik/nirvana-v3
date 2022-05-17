@@ -352,8 +352,13 @@ function LineDetails() {
             } seconds`}</span>
           </div>
 
+          <span className={'text-teal-500 text-sm flex flex-row gap-2 items-center mt-5'}>
+            <FiSun />
+            <span>right now</span>
+          </span>
+
           {/* live broadcasters */}
-          <div className="flex flex-col w-full gap-2 mt-5 shadow-2xl border border-gray-200">
+          <div className="flex flex-col w-full gap-2 shadow-2xl border border-teal-500 rounded">
             {selectedLine.otherUserObjects.map((otherUser) => (
               <div key={otherUser.email} className="flex flex-row items-center gap-2 p-4">
                 <Avatar
@@ -365,7 +370,7 @@ function LineDetails() {
 
                 <span className="text-gray-600 font-semibold">{otherUser.name}</span>
 
-                <FiSun className="text-teal-500 ml-auto mr-5 animate-ping" />
+                <FiHeadphones className="ml-auto text-lg" />
               </div>
             ))}
           </div>
