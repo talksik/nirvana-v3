@@ -4,7 +4,17 @@ import useRealTimeRooms from '../../../../providers/RealTimeRoomProvider';
 
 import { LineMemberState } from '@nirvana/core/models/line.model';
 import LineIcon from '../../../../components/lineIcon';
-import { FiActivity, FiHeadphones, FiSearch, FiSettings, FiSun, FiUsers } from 'react-icons/fi';
+import {
+  FiActivity,
+  FiHeadphones,
+  FiImage,
+  FiMoreVertical,
+  FiSearch,
+  FiSettings,
+  FiSun,
+  FiUsers,
+  FiVideo,
+} from 'react-icons/fi';
 import { Avatar, Tooltip } from 'antd';
 import useStreams from '../../../../providers/StreamProvider';
 import Peer from 'simple-peer';
@@ -194,7 +204,7 @@ function LineDetails() {
       >
         {/* {profilePictures && <LineIcon grayscale={false} sourceImages={profilePictures} />} */}
 
-        <div className="flex flex-col items-start mr-auto group">
+        <div className="flex flex-col items-start group">
           <span className="flex flex-row gap-2 items-center">
             <h2 className={`text-md text-gray-800 font-semibold`}>
               {selectedLine.lineDetails.name || selectedLine.otherUserObjects[0].givenName}
@@ -214,7 +224,7 @@ function LineDetails() {
           title={`${isUserToggleTuned ? 'click to untoggle' : 'click to stay tuned in'}`}
         >
           <button
-            className={`ml-2 p-2 flex justify-center items-center shadow-lg
+            className={`mr-auto p-2 flex justify-center items-center shadow-lg
           hover:scale-105 transition-all animate-pulse ${
             isUserToggleTuned ? 'bg-gray-800 text-white' : 'text-black'
           }`}
@@ -233,6 +243,24 @@ function LineDetails() {
             <FiActivity className="text-md" />
           </button>
         </Tooltip>
+
+        <button
+          className={`p-2 flex justify-center items-center shadow-lg
+          hover:scale-105 transition-all text-black
+          `}
+        >
+          <FiImage className="text-md" />
+        </button>
+
+        <button
+          className={`ml-2 p-2 flex justify-center items-center shadow-lg
+          hover:scale-105 transition-all text-black
+          `}
+        >
+          <FiVideo className="text-md" />
+        </button>
+
+        <FiMoreVertical />
       </div>
 
       {/* main canvas */}
@@ -240,13 +268,16 @@ function LineDetails() {
         {/* line timeline */}
         <div
           className="flex flex-col justify-end items-center gap-2 p-5 mx-auto
-         max-w-lg w-full"
+max-w-lg w-full"
         >
           <span className={'text-gray-300 text-sm cursor-pointer hover:underline'}>load more</span>
 
           <span className={'text-gray-300 text-sm'}>yesterday</span>
 
-          <div className={'rounded flex flex-row items-center gap-2 w-full p-5'}>
+          <div
+            className={`rounded flex flex-row items-center gap-2 w-full 
+            p-5 border-gray-200 border`}
+          >
             <Avatar.Group key={`lineHistoryMessage-yesterday-afternoon}`}>
               {selectedLine.otherUserObjects.map((otherUser) => (
                 <Avatar
@@ -277,7 +308,10 @@ function LineDetails() {
 
           <span className={'text-gray-300 text-sm'}>today</span>
 
-          <div className={'rounded flex flex-row items-center gap-2 w-full shadow-lg p-5'}>
+          <div
+            className={`rounded flex flex-row items-center gap-2 w-full shadow-lg p-5
+          border-gray-200 border`}
+          >
             <Avatar.Group key={`lineHistoryMessage-yesterday-afternoon}`}>
               {selectedLine.otherUserObjects.map((otherUser) => (
                 <Avatar
