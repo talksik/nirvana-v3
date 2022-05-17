@@ -343,7 +343,7 @@ function LineDetails() {
 
         {/* people presence panel */}
         <div
-          className="w-[350px] bg-gray-100 p-4 shadow-2xl flex flex-col z-20
+          className="w-[350px] bg-gray-100 p-4 shadow-2xl flex flex-col
         hover:scale-105 transition-all"
         >
           <span className="text-teal-600 text-sm flex flex-row items-center gap-2 mt-2">
