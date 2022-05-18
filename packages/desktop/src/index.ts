@@ -43,9 +43,9 @@ const createWindow = (): void => {
     },
     icon: './assets/1024x1024.icns',
 
-    // transparent: true,
+    transparent: true,
 
-    // backgroundColor: "#00000000",
+    backgroundColor: '#00000000',
 
     frame: false,
     roundedCorners: true,

@@ -22,7 +22,7 @@ export default function SidePanel() {
 
   const { handleFlowState } = useSockets();
 
-  const { handleToggleDesktopMode, desktopMode } = useElectron();
+  const { handleToggleDesktopMode, desktopMode, isWindowFocused } = useElectron();
 
   // todo: sort
   const allChannels = useMemo(() => {
@@ -65,15 +65,16 @@ export default function SidePanel() {
 
   return (
     <div
-      className="flex flex-col w-[350px] group 
-    border-r border-r-gray-200 shadow-xl bg-white z-20 "
+      className={`flex flex-col w-[350px] group 
+    border-r border-r-gray-200 shadow-xl bg-white z-20
+    ${!isWindowFocused && ' opacity-20 '}`}
     >
       {/* user control panel */}
       <div
         className={`bg-gray-100 flex flex-row items-center gap-2
        p-4 pb-2 z-50 w-full titlebar ${
          desktopMode === 'overlayOnly' && 'border-b border-b-gray-200'
-       }`}
+       } `}
       >
         <button onClick={handleToggleDesktopMode} className={'mr-auto animate-pulse'}>
           <NoTextLogo type="small" />
