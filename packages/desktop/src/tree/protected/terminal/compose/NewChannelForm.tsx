@@ -1,19 +1,23 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { FiPlusSquare, FiUsers, FiXSquare } from 'react-icons/fi';
-import { useAsyncFn, useDebounce } from 'react-use';
-import { userSearch } from '../../../../api/NirvanaApi';
+import { FiPlusSquare, FiUsers, FiX, FiXSquare } from 'react-icons/fi';
+import { useAsyncFn, useDebounce, useKeyPressEvent } from 'react-use';
+import { createLine, userSearch } from '../../../../api/NirvanaApi';
 import toast from 'react-hot-toast';
-import { Avatar, Skeleton, Spin } from 'antd';
+import { Avatar, Divider, Skeleton, Spin } from 'antd';
 import { User } from '@nirvana/core/models/user.model';
+import CreateLineRequest from '@nirvana/core/requests/createLine.request';
 
-export default function NewChannelForm() {
+export default function NewChannelForm({ handleClose }: { handleClose: () => void }) {
   const [peopleSearchQuery, setPeopleSearchQuery] = useState<string>('');
 
   const [userSearchRes, fetchUsers] = useAsyncFn(userSearch);
+  const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
 
   const [isSearchingUsers, setSearchingUsers] = useState<boolean>(false);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  const [createChannelRes, triggerCreateChannel] = useAsyncFn(createLine);
 
   useEffect(() => {
     if (searchInputRef) searchInputRef.current.focus();
@@ -21,6 +25,10 @@ export default function NewChannelForm() {
 
   const [_, cancel] = useDebounce(
     async () => {
+      if (!peopleSearchQuery) {
+        return;
+      }
+
       try {
         await fetchUsers(peopleSearchQuery);
 
@@ -42,17 +50,15 @@ export default function NewChannelForm() {
     [setPeopleSearchQuery, setSearchingUsers],
   );
 
-  const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
-
   // ensuring that we haven't already selected this user
   // changing search results so that we don't see the selected user in the search results anymore
   const addUser = useCallback(
     (newUser: User) => {
       setSelectedUsers((prevUsers) => {
         if (prevUsers.find((currUser) => currUser.email === newUser.email)) {
-          return [...prevUsers, newUser];
+          return prevUsers;
         }
-        return prevUsers;
+        return [...prevUsers, newUser];
       });
 
       if (userSearchRes.value?.users) {
@@ -70,8 +76,49 @@ export default function NewChannelForm() {
     );
   }, []);
 
+  // TODO: prevent creating one-on-one line if already exists with x person?
+  // ensure that we don't have a one on one chat already with x person if it's one person selected
+
+  // upon success,
+  // make sure that the list of lines updates for this client and others so that it shows this new line
+  // select the line so that it shows up in the line details for this client
+  const handleCreateChannel = useCallback(async () => {
+    console.log('trying to create line now!');
+
+    try {
+      if (!selectedUsers?.length) {
+        toast.error('you must select at least one person');
+        return;
+      }
+
+      const selectedMemberIds = selectedUsers.map((selectedPerson) =>
+        selectedPerson._id.toString(),
+      );
+
+      await triggerCreateChannel(new CreateLineRequest(selectedMemberIds));
+
+      toast.success('created channel!');
+
+      // handle close once the new line is created
+      handleClose();
+    } catch (error) {
+      toast.error(error);
+      console.error(error);
+    } finally {
+      console.log('done');
+    }
+  }, [handleClose, selectedUsers, triggerCreateChannel]);
+
+  useKeyPressEvent('Enter', handleCreateChannel);
+  useKeyPressEvent('Escape', handleClose);
+
   return (
-    <div className="flex flex-col flex-1 items-center pt-10 bg-white">
+    <div className="flex flex-col flex-1 items-center pt-10 bg-white relative">
+      <span className="flex flex-col items-center gap-2 absolute top-5 right-5 cursor-pointer">
+        <FiX onClick={handleClose} className="text-gray-300 text-xl" />
+        <span className="text-gray-300 text-xs p-1 bg-gray-100">`esc`</span>
+      </span>
+
       <div className="flex flex-col gap-2 max-w-lg w-full">
         {/* people search */}
         <span className="text-gray-500">People</span>
@@ -89,9 +136,10 @@ export default function NewChannelForm() {
         {/* dropdown search results */}
         <div className="flex flex-col shadow-lg max-h-[500px] overflow-auto">
           {(userSearchRes.loading || isSearchingUsers) && <Spin />}
-          {(!userSearchRes.value || userSearchRes.value?.users.length === 0) && (
-            <span className="p-10 text-gray-300">{`Can't find someone? Invite them and tell them the secret passcode!`}</span>
-          )}
+          {(!userSearchRes.value || userSearchRes.value?.users.length === 0) &&
+            selectedUsers?.length === 0 && (
+              <span className="p-10 text-gray-300">{`Can't find someone? Invite them and tell them the secret passcode!`}</span>
+            )}
           {userSearchRes.value?.users.map((searchedUser) => {
             return (
               <div
@@ -139,6 +187,21 @@ export default function NewChannelForm() {
             </div>
           );
         })}
+
+        <Divider />
+
+        <div className="flex flex-row justify-end items-start gap-2">
+          <button onClick={handleClose} className="p-2 text-gray-300 hover:bg-gray-100">
+            Cancel
+          </button>
+
+          <span className="flex flex-col items-center gap-2">
+            <button onClick={handleCreateChannel} className="p-2 bg-gray-800 text-white">
+              Tune In
+            </button>
+            <span className="text-gray-300 text-xs p-1 bg-gray-100">`enter`</span>
+          </span>
+        </div>
       </div>
     </div>
   );

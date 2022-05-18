@@ -23,13 +23,14 @@ import NewChannelForm from '../compose/NewChannelForm';
 export default function MainPanel() {
   const { user } = useAuth();
 
-  const { selectedLineId, showNewChannelForm } = useRealTimeRooms();
+  const { selectedLineId, showNewChannelForm, handleShowNewChannelForm } = useRealTimeRooms();
 
   // already won't see stuff for overlay only mode as per parent configuration
 
   // TODO: if there is stuff in search, show that first
 
-  if (showNewChannelForm) return <NewChannelForm />;
+  if (showNewChannelForm)
+    return <NewChannelForm handleClose={() => handleShowNewChannelForm('hide')} />;
 
   // if selected line, show line details
   if (selectedLineId) return <LineDetails />;
