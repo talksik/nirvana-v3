@@ -67,7 +67,7 @@ export default function SidePanel() {
     <div
       className={`flex flex-col w-[350px] group 
     border-r border-r-gray-200 shadow-xl bg-white z-20
-    ${!isWindowFocused && ' opacity-20 '}`}
+    ${!isWindowFocused && desktopMode === 'overlayOnly' && ' opacity-20 '}`}
     >
       {/* user control panel */}
       <div
