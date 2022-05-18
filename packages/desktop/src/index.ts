@@ -128,6 +128,10 @@ app
     browserWindow.on('blur', () => {
       browserWindow.webContents.send(Channels.ON_WINDOW_BLUR);
     });
+
+    browserWindow.on('focus', () => {
+      browserWindow.webContents.send(Channels.ON_WINDOW_FOCUS);
+    });
   });
 
 // Quit when all windows are closed, except on macOS. There, it's common

@@ -22,7 +22,7 @@ export default function SidePanel() {
 
   const { handleFlowState } = useSockets();
 
-  const { handleOpenMainApp, desktopMode } = useElectron();
+  const { handleToggleDesktopMode, desktopMode } = useElectron();
 
   // todo: sort
   const allChannels = useMemo(() => {
@@ -75,7 +75,7 @@ export default function SidePanel() {
          desktopMode === 'overlayOnly' && 'border-b border-b-gray-200'
        }`}
       >
-        <button onClick={handleOpenMainApp} className={'mr-auto'}>
+        <button onClick={handleToggleDesktopMode} className={'mr-auto'}>
           <NoTextLogo type="small" />
         </button>
 

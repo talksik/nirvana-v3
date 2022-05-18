@@ -5,17 +5,22 @@ interface IElectronProvider {
   // pass handlers and current dimensions?
   desktopMode: DesktopMode;
 
-  handleOpenMainApp?: () => void;
+  handleToggleDesktopMode?: () => void;
+
+  isWindowFocused: boolean;
 }
 
 type DesktopMode = 'overlayOnly' | 'mainApp';
 
 const ElectronContext = React.createContext<IElectronProvider>({
   desktopMode: 'mainApp',
+
+  isWindowFocused: false,
 });
 
 export function ElectronProvider({ children }: { children: React.ReactNode }) {
   const [desktopMode, setDesktopMode] = useState<DesktopMode>('mainApp');
+  const [isWindowFocused, setIsWindowFocused] = useState<boolean>(false);
 
   // handle all window resizing logic
   useEffect(() => {
@@ -55,21 +60,28 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
       console.log(
         'window blurring now, should be always on top and then ill tell main process to change dimensions',
       );
+      setIsWindowFocused(false);
+
       // TODO: testing mode... uncomment both instructions below
-      setDesktopMode('overlayOnly');
+      // setDesktopMode('overlayOnly');
 
       // todo: make sure that if I am toggle broadcasted into a line, then don't deselect selected line
       // the overlay should be showing selected line if I am broadcasting toggled into it as well as of course all other toggle tuned ones
       // setSelectedLineId(null);
     });
-  }, [setDesktopMode]);
 
-  const handleOpenMainApp = useCallback(() => {
-    setDesktopMode('mainApp');
+    window.electronAPI.on(Channels.ON_WINDOW_FOCUS, () => {
+      console.log('window focusing now');
+      setIsWindowFocused(true);
+    });
+  }, [setDesktopMode, setIsWindowFocused]);
+
+  const handleToggleDesktopMode = useCallback(() => {
+    setDesktopMode((prevMode) => (prevMode === 'mainApp' ? 'overlayOnly' : 'mainApp'));
   }, [setDesktopMode]);
 
   return (
-    <ElectronContext.Provider value={{ desktopMode, handleOpenMainApp }}>
+    <ElectronContext.Provider value={{ desktopMode, handleToggleDesktopMode, isWindowFocused }}>
       {children}
     </ElectronContext.Provider>
   );

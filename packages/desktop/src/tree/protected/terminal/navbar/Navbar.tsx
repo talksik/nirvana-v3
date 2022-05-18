@@ -14,7 +14,7 @@ import NoTextLogo from '@nirvana/components/logo/NoTextLogo';
  */
 export default function NavBar() {
   const { user, handleLogout } = useAuth();
-  const { desktopMode, handleOpenMainApp } = useElectron();
+  const { desktopMode, handleToggleDesktopMode } = useElectron();
 
   const { handleFlowState } = useSockets();
 
