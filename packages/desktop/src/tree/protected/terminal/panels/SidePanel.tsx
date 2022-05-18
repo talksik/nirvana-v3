@@ -1,5 +1,5 @@
 import { LineMemberState } from '@nirvana/core/models/line.model';
-import { Skeleton, Tooltip } from 'antd';
+import { Avatar, Dropdown, Skeleton, Tooltip } from 'antd';
 import React, { useCallback, useMemo, useState } from 'react';
 import { FiActivity, FiPlus, FiSearch } from 'react-icons/fi';
 import useRooms from '../../../../providers/RoomsProvider';
@@ -7,13 +7,19 @@ import NavBar from '../navbar/Navbar';
 import NoTextLogo from '@nirvana/components/logo/NoTextLogo';
 import LineRow from '../line/LineRow';
 import useTerminalProvider from '../../../../providers/TerminalProvider';
+import useAuth from '../../../../providers/AuthProvider';
+import useSockets from '../../../../providers/SocketProvider';
 
 export default function SidePanel() {
   // using merely for loading state...better to add to realtimeroom context?
   const { rooms: initialRoomsFetch } = useRooms();
 
+  const { user } = useAuth();
+
   const { roomsMap, handleSelectLine, selectedLineId, handleShowNewChannelForm } =
     useTerminalProvider();
+
+  const { handleFlowState } = useSockets();
 
   // todo: sort
   const allChannels = useMemo(() => {
@@ -53,8 +59,42 @@ export default function SidePanel() {
       className="flex flex-col w-[350px] group 
     border-r border-r-gray-200 shadow-xl bg-white z-20 "
     >
-      <NavBar />
+      {/* user control panel */}
+      <div
+        className="bg-gray-100 flex flex-row items-center gap-2
+       p-4 z-50 w-full"
+      >
+        <button
+          onClick={() => {
+            console.log('opening main app');
+          }}
+          className={'mr-auto'}
+        >
+          <NoTextLogo type="small" />
+        </button>
 
+        <span className="text-gray-800 font-semibold mx-auto">Channels</span>
+
+        <button
+          onClick={handleFlowState}
+          className="text-gray-300 text-xs px-3 py-2 transition-all hover:bg-gray-200"
+        >
+          flow
+        </button>
+
+        {user.picture && (
+          <Avatar
+            key={`userHeaderProfilePicture`}
+            className="shadow-md hover:scale-110 transition-all"
+            size={'default'}
+            alt={user.name}
+            src={user.picture}
+            shape="square"
+          />
+        )}
+      </div>
+
+      {/* secondary header with search and create */}
       <div className="flex flex-row p-4 items-center bg-gray-100 gap-2">
         <div className="flex-1 flex flex-row items-center space-x-2 bg-gray-200 p-2 rounded">
           <FiSearch className="text-xs text-gray-400" />
@@ -115,20 +155,6 @@ export default function SidePanel() {
             ))
           )}
         </div>
-      </div>
-
-      {/* user control panel */}
-      <div
-        className="bg-gray-100
-       border-t border-t-gray-200 p-4 shadow-2xl z-50 w-full"
-      >
-        <button
-          onClick={() => {
-            console.log('opening main app');
-          }}
-        >
-          <NoTextLogo type="small" />
-        </button>
       </div>
     </div>
   );
