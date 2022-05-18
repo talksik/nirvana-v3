@@ -51,7 +51,7 @@ type BroadcastersMap = {
   [lineId: string]: string[];
 };
 
-interface IRealTimeRoomProvider {
+interface ITerminalProvider {
   roomsMap: LineIdToMasterLine;
 
   selectedLineId?: string;
@@ -63,7 +63,7 @@ interface IRealTimeRoomProvider {
   handleShowNewChannelForm?: (showOrHide: 'show' | 'hide') => void;
 }
 
-const RealTimeRoomContext = React.createContext<IRealTimeRoomProvider>({
+const TerminalContext = React.createContext<ITerminalProvider>({
   roomsMap: {},
 
   showNewChannelForm: false,
@@ -110,7 +110,7 @@ const RealTimeRoomContext = React.createContext<IRealTimeRoomProvider>({
 
 // TODO: many of this can be done in a HOC like <Terminal /> but it doesn't matter, they both just
 // re-render, just make sure to pass in lighter props to children like main panel or lineRow
-export function RealTimeRoomProvider({ children }: { children: React.ReactChild }) {
+export function TerminalProvider({ children }: { children: React.ReactChild }) {
   const { rooms } = useRooms();
   const { user } = useAuth();
   const { $ws } = useSockets();
@@ -348,7 +348,7 @@ export function RealTimeRoomProvider({ children }: { children: React.ReactChild 
   useKeyPressEvent('Escape', clearMind);
 
   return (
-    <RealTimeRoomContext.Provider
+    <TerminalContext.Provider
       value={{
         roomsMap: roomMap,
         handleSelectLine,
@@ -358,19 +358,17 @@ export function RealTimeRoomProvider({ children }: { children: React.ReactChild 
         handleShowNewChannelForm,
       }}
     >
-      <div className="flex flex-col flex-1">
-        <div className="flex flex-row flex-1">
-          <SidePanel />
+      <div className="flex flex-row flex-1 h-full w-full">
+        <SidePanel />
 
-          {desktopMode === 'mainApp' && <MainPanel />}
-        </div>
+        {desktopMode === 'mainApp' && <MainPanel />}
       </div>
 
       {children}
-    </RealTimeRoomContext.Provider>
+    </TerminalContext.Provider>
   );
 }
 
 export default function useTerminalProvider() {
-  return useContext(RealTimeRoomContext);
+  return useContext(TerminalContext);
 }

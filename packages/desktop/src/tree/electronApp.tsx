@@ -1,7 +1,7 @@
 import React from 'react';
 import { Toaster } from 'react-hot-toast';
 import { RoomsProvider } from '../providers/RoomsProvider';
-import { RealTimeRoomProvider } from '../providers/TerminalProvider';
+import { TerminalProvider } from '../providers/TerminalProvider';
 import { AuthProvider } from '../providers/AuthProvider';
 import { ElectronProvider } from '../providers/ElectronProvider';
 import { SocketProvider } from '../providers/SocketProvider';
@@ -16,9 +16,9 @@ export default function ElectronApp() {
           <SocketProvider>
             <RoomsProvider>
               <StreamProvider>
-                <RealTimeRoomProvider>
+                <TerminalProvider>
                   <></>
-                </RealTimeRoomProvider>
+                </TerminalProvider>
               </StreamProvider>
             </RoomsProvider>
           </SocketProvider>

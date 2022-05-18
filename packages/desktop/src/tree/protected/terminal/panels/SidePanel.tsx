@@ -49,7 +49,10 @@ export default function SidePanel() {
   }, [handleShowNewChannelForm]);
 
   return (
-    <div className="flex flex-col w-[350px] relative group border-r border-r-gray-200 shadow-xl bg-white z-20">
+    <div
+      className="flex flex-col w-[350px] relative group 
+    border-r border-r-gray-200 shadow-xl bg-white z-20 overflow-y-auto"
+    >
       <NavBar />
 
       <div className="flex flex-row p-4 items-center bg-gray-100 gap-2">
@@ -96,7 +99,7 @@ export default function SidePanel() {
       )}
 
       {/* rest of the lines */}
-      <div className={'flex flex-col'}>
+      <div className={'flex flex-col flex-1 overflow-y-auto'}>
         {initialRoomsFetch.loading ? (
           <Skeleton />
         ) : (
@@ -112,17 +115,18 @@ export default function SidePanel() {
         )}
       </div>
 
+      {/* user control panel */}
       <div
-        className="absolute bottom-4 left-4"
-        onKeyDown={() => {
-          //
-        }}
-        onClick={() => {
-          console.log('opening main app');
-        }}
-        role="presentation"
+        className="bg-gray-100
+       border-t border-t-gray-200 p-4 shadow-2xl z-50 w-full"
       >
-        <NoTextLogo type="small" />
+        <button
+          onClick={() => {
+            console.log('opening main app');
+          }}
+        >
+          <NoTextLogo type="small" />
+        </button>
       </div>
     </div>
   );
