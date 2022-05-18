@@ -75,7 +75,7 @@ export default function SidePanel() {
          desktopMode === 'overlayOnly' && 'border-b border-b-gray-200'
        }`}
       >
-        <button onClick={handleToggleDesktopMode} className={'mr-auto'}>
+        <button onClick={handleToggleDesktopMode} className={'mr-auto animate-pulse'}>
           <NoTextLogo type="small" />
         </button>
 
