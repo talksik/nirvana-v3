@@ -54,7 +54,7 @@ export default React.memo(function LineRow({
       return (
         <Tooltip title={'esc'}>
           <span className="flex flex-col items-center gap-2 cursor-pointer">
-            <FiX className="text-gray-100 text-xl" />
+            <FiX className="text-gray-400 text-xl" />
           </span>
         </Tooltip>
       );
@@ -131,7 +131,7 @@ export default React.memo(function LineRow({
       onClick={handleActivateLine}
       role={'presentation'}
       className={`flex flex-row items-center justify-start gap-2 px-4 py-4 hover:bg-gray-200 
-      cursor-pointer transition-all relative z-50 rounded direction-ltr 
+      cursor-pointer transition-all relative z-50 rounded 
       ${isUserToggleTuned && ' bg-gray-100 shadow-2xl '}
       ${isSelected && ' bg-gray-200 scale-110 shadow-2xl translate-x-3 '}
       `}

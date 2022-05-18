@@ -99,7 +99,7 @@ export default function SidePanel() {
       )}
 
       {/* rest of the lines */}
-      <div className={'flex flex-col flex-1 mr-[-100px] pr-[100px] overflow-y-auto scrollbar-left'}>
+      <div className={'flex flex-col flex-1 mr-[-100px] pr-[100px] overflow-y-auto'}>
         {initialRoomsFetch.loading ? (
           <Skeleton />
         ) : (
@@ -116,7 +116,7 @@ export default function SidePanel() {
       </div>
 
       {/* user control panel */}
-      <div
+      {/* <div
         className="bg-gray-100
        border-t border-t-gray-200 p-4 shadow-2xl z-50 w-full"
       >
@@ -127,7 +127,7 @@ export default function SidePanel() {
         >
           <NoTextLogo type="small" />
         </button>
-      </div>
+      </div> */}
     </div>
   );
 }
