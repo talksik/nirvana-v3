@@ -195,11 +195,11 @@ function LineDetails() {
       {/* line details */}
       <div
         className="p-5 z-30
-        flex flex-row items-center justify-end border-b-gray-200 border-b shadow-2xl"
+        flex flex-row items-center justify-end border-b-gray-200 border-b shadow-2xl group"
       >
         {profilePictures && <LineIcon grayscale={false} sourceImages={profilePictures} />}
 
-        <div className="ml-2 flex flex-col items-start group">
+        <div className="ml-2 mr-auto flex flex-col items-start ">
           <span className="flex flex-row gap-2 items-center">
             <h2 className={`text-md text-gray-800 font-semibold`}>
               {selectedLine.lineDetails.name || selectedLine.otherUserObjects[0].givenName}
