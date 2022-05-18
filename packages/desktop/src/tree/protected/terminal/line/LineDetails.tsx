@@ -149,103 +149,10 @@ export default function LineDetails() {
       {/* main canvas */}
       <div className="flex flex-col flex-1">
         {/* line timeline */}
-        <div
-          className="flex-1 flex flex-col justify-start items-center gap-2 p-5 mx-auto
-            max-w-lg w-full bg-white"
-        >
-          <span className={'text-gray-300 text-sm cursor-pointer hover:underline'}>load more</span>
+        {/* <LineHistory /> */}
 
-          <span className={'text-gray-300 text-sm'}>yesterday</span>
-
-          <div
-            className={`rounded flex flex-row items-center gap-2 w-full 
-            p-5 border-gray-200 border`}
-          >
-            <Avatar.Group key={`lineHistoryMessage-yesterday-afternoon}`}>
-              {selectedLine.otherUserObjects.map((otherUser) => (
-                <Avatar
-                  key={`linehistory-${1}`}
-                  src={otherUser.picture}
-                  shape="square"
-                  size={'default'}
-                  // grayscale if not playing?
-                  className={`${true && 'grayscale'}`}
-                />
-              ))}
-            </Avatar.Group>
-
-            {selectedLine.otherUserObjects.map((otherUser) => (
-              <span key={`chunk-${otherUser.name}`} className="text-gray-500">
-                {`${otherUser.givenName}, `}
-              </span>
-            ))}
-
-            <span className="ml-auto text-xs text-gray-300">{`${
-              Math.floor(Math.random() * 10) + 1
-            }:${Math.floor(Math.random() * 100) + 10}pm |`}</span>
-
-            <span className="text-gray-400 text-md">{`${
-              Math.floor(Math.random() * 60) + 1
-            } seconds`}</span>
-          </div>
-
-          <span className={'text-gray-300 text-sm'}>today</span>
-
-          <div
-            className={`rounded flex flex-row items-center gap-2 w-full shadow-lg p-5
-          border-gray-200 border`}
-          >
-            <Avatar.Group key={`lineHistoryMessage-yesterday-afternoon}`}>
-              {selectedLine.otherUserObjects.map((otherUser) => (
-                <Avatar
-                  key={`linehistory-${1}`}
-                  src={otherUser.picture}
-                  shape="square"
-                  size={'default'}
-                  // grayscale if not playing?
-                  className={`${true && 'grayscale'}`}
-                />
-              ))}
-            </Avatar.Group>
-
-            {selectedLine.otherUserObjects.map((otherUser) => (
-              <span key={`chunk-${otherUser.name}`} className="text-gray-500">
-                {`${otherUser.givenName}, `}
-              </span>
-            ))}
-
-            <span className="ml-auto text-xs text-gray-300">{`${
-              Math.floor(Math.random() * 10) + 1
-            }:${Math.floor(Math.random() * 100) + 10}pm |`}</span>
-
-            <span className="text-gray-400 text-md">{`${
-              Math.floor(Math.random() * 60) + 1
-            } seconds`}</span>
-          </div>
-
-          <span className={'text-teal-500 text-sm flex flex-row gap-2 items-center mt-5'}>
-            <FiSun />
-            <span>right now</span>
-          </span>
-
-          {/* live broadcasters */}
-          <div className="flex flex-col w-full gap-2 shadow-2xl border border-teal-500 rounded">
-            {selectedLine.otherUserObjects.map((otherUser) => (
-              <div key={otherUser.email} className="flex flex-row items-center gap-2 p-4">
-                <Avatar
-                  key={`linehistory-${1}`}
-                  src={otherUser.picture}
-                  shape="square"
-                  size={'large'}
-                />
-
-                <span className="text-gray-600 font-semibold">{otherUser.name}</span>
-
-                <FiHeadphones className="ml-auto text-lg" />
-              </div>
-            ))}
-          </div>
-        </div>
+        {/* live line */}
+        <div className="flex flex-col"></div>
 
         {/* canvas action buttons */}
         <div className="flex flex-row gap-3 p-10 justify-end items-center ">
@@ -287,3 +194,105 @@ export default function LineDetails() {
     </div>
   );
 }
+
+// function LineHistory() {
+//   return (
+//     <div
+//       className="flex-1 flex flex-col justify-start items-center gap-2 p-5 mx-auto
+//     max-w-lg w-full bg-white"
+//     >
+//       <span className={'text-gray-300 text-sm cursor-pointer hover:underline'}>load more</span>
+
+//       <span className={'text-gray-300 text-sm'}>yesterday</span>
+
+//       <div
+//         className={`rounded flex flex-row items-center gap-2 w-full
+//     p-5 border-gray-200 border`}
+//       >
+//         <Avatar.Group key={`lineHistoryMessage-yesterday-afternoon}`}>
+//           {selectedLine.otherUserObjects.map((otherUser) => (
+//             <Avatar
+//               key={`linehistory-${1}`}
+//               src={otherUser.picture}
+//               shape="square"
+//               size={'default'}
+//               // grayscale if not playing?
+//               className={`${true && 'grayscale'}`}
+//             />
+//           ))}
+//         </Avatar.Group>
+
+//         {selectedLine.otherUserObjects.map((otherUser) => (
+//           <span key={`chunk-${otherUser.name}`} className="text-gray-500">
+//             {`${otherUser.givenName}, `}
+//           </span>
+//         ))}
+
+//         <span className="ml-auto text-xs text-gray-300">{`${Math.floor(Math.random() * 10) + 1}:${
+//           Math.floor(Math.random() * 100) + 10
+//         }pm |`}</span>
+
+//         <span className="text-gray-400 text-md">{`${
+//           Math.floor(Math.random() * 60) + 1
+//         } seconds`}</span>
+//       </div>
+
+//       <span className={'text-gray-300 text-sm'}>today</span>
+
+//       <div
+//         className={`rounded flex flex-row items-center gap-2 w-full shadow-lg p-5
+//   border-gray-200 border`}
+//       >
+//         <Avatar.Group key={`lineHistoryMessage-yesterday-afternoon}`}>
+//           {selectedLine.otherUserObjects.map((otherUser) => (
+//             <Avatar
+//               key={`linehistory-${1}`}
+//               src={otherUser.picture}
+//               shape="square"
+//               size={'default'}
+//               // grayscale if not playing?
+//               className={`${true && 'grayscale'}`}
+//             />
+//           ))}
+//         </Avatar.Group>
+
+//         {selectedLine.otherUserObjects.map((otherUser) => (
+//           <span key={`chunk-${otherUser.name}`} className="text-gray-500">
+//             {`${otherUser.givenName}, `}
+//           </span>
+//         ))}
+
+//         <span className="ml-auto text-xs text-gray-300">{`${Math.floor(Math.random() * 10) + 1}:${
+//           Math.floor(Math.random() * 100) + 10
+//         }pm |`}</span>
+
+//         <span className="text-gray-400 text-md">{`${
+//           Math.floor(Math.random() * 60) + 1
+//         } seconds`}</span>
+//       </div>
+
+//       <span className={'text-teal-500 text-sm flex flex-row gap-2 items-center mt-5'}>
+//         <FiSun />
+//         <span>right now</span>
+//       </span>
+
+//       {/* live broadcasters */}
+//       <div className="flex flex-col w-full gap-2 shadow-2xl border border-teal-500 rounded">
+//         {selectedLine.otherUserObjects.map((otherUser) => (
+//           <div key={otherUser.email} className="flex flex-row items-center gap-2 p-4">
+//             <Avatar
+//               key={`linehistory-${1}`}
+//               src={otherUser.picture}
+//               shape="square"
+//               size={'large'}
+//             />
+
+//             <span className="text-gray-600 font-semibold">{otherUser.name}</span>
+
+//             <FiHeadphones className="ml-auto text-lg" />
+//           </div>
+//         ))}
+//       </div>
+//     </div>
+//   );
+// }
