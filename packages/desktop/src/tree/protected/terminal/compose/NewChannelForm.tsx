@@ -7,6 +7,8 @@ import { Avatar, Divider, Skeleton, Spin } from 'antd';
 import { User } from '@nirvana/core/models/user.model';
 import CreateLineRequest from '@nirvana/core/requests/createLine.request';
 
+const maxUserCount = 8;
+
 export default function NewChannelForm({ handleClose }: { handleClose: () => void }) {
   const [peopleSearchQuery, setPeopleSearchQuery] = useState<string>('');
 
@@ -58,6 +60,13 @@ export default function NewChannelForm({ handleClose }: { handleClose: () => voi
         if (prevUsers.find((currUser) => currUser.email === newUser.email)) {
           return prevUsers;
         }
+
+        if (prevUsers.length === maxUserCount - 1) {
+          toast.error('you can only have 8 people per channel!');
+
+          return prevUsers;
+        }
+
         return [...prevUsers, newUser];
       });
 
@@ -88,6 +97,12 @@ export default function NewChannelForm({ handleClose }: { handleClose: () => voi
     try {
       if (!selectedUsers?.length) {
         toast.error('you must select at least one person');
+        return;
+      }
+
+      if (selectedUsers.length === maxUserCount - 1) {
+        toast.error('you can only have 8 people per channel!');
+
         return;
       }
 
@@ -136,6 +151,7 @@ export default function NewChannelForm({ handleClose }: { handleClose: () => voi
         {/* dropdown search results */}
         <div className="flex flex-col shadow-lg max-h-[500px] overflow-auto">
           {(userSearchRes.loading || isSearchingUsers) && <Spin />}
+
           {(!userSearchRes.value || userSearchRes.value?.users.length === 0) &&
             selectedUsers?.length === 0 && (
               <span className="p-10 text-gray-300">{`Can't find someone? Invite them and tell them the secret passcode!`}</span>
