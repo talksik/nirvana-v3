@@ -134,17 +134,12 @@ export default React.memo(function LineRow({
       role={'presentation'}
       className={`flex flex-row items-center justify-start gap-2 px-4 py-4 hover:bg-gray-200 
       cursor-pointer transition-all relative z-50  
-      ${isUserToggleTuned && ' bg-gray-100 shadow-2xl '}
-      ${isSelected && ' bg-gray-200 shadow-2xl'}
+      ${isUserToggleTuned && isWindowFocused && ' bg-gray-100 shadow-2xl'}
+      ${isUserToggleTuned && !isWindowFocused && ' bg-transparent '}
+      ${isSelected && isWindowFocused && ' bg-gray-200 shadow-2xl '}
+      ${isSelected && !isWindowFocused && ' bg-transparent '}
 
-      ${
-        !isWindowFocused &&
-        desktopMode === 'overlayOnly' &&
-        isSelected &&
-        ' bg-transparent opacity-100 '
-      }
-      ${!isWindowFocused && desktopMode === 'overlayOnly' && !isSelected && ' bg-transparent '}
-      `}
+      ${!isWindowFocused && desktopMode === 'overlayOnly' && !isSelected && ' bg-transparent '}`}
     >
       {/* channel picture */}
       {profilePictures && (
@@ -162,7 +157,7 @@ export default React.memo(function LineRow({
         {line.lineDetails.name || line.otherUserObjects[0].givenName}
       </h2>
 
-      {isUserToggleTuned && (
+      {isUserToggleTuned && isWindowFocused && (
         <span className="ml-2 text-gray-300 text-xs p-1 px-2 bg-gray-100">{`${index + 1}`}</span>
       )}
 
