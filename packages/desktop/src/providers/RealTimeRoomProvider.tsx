@@ -105,6 +105,8 @@ const RealTimeRoomContext = React.createContext<IRealTimeRoomProvider>({
  * - fetch content blocks for line history - react query
  */
 
+// TODO: many of this can be done in a HOC like <Terminal /> but it doesn't matter, they both just
+// re-render, just make sure to pass in lighter props to children like main panel or lineRow
 export function RealTimeRoomProvider({ children }: { children: React.ReactChild }) {
   const { rooms } = useRooms();
   const { user } = useAuth();
@@ -332,6 +334,7 @@ export function RealTimeRoomProvider({ children }: { children: React.ReactChild 
     [setShowNewChannelForm, setSelectedLineId],
   );
 
+  // handle shortcuts
   const clearMind = useCallback(() => {
     setSelectedLineId(undefined);
     setShowNewChannelForm(false);
