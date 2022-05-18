@@ -124,6 +124,8 @@ export default React.memo(function LineRow({
     return pictureSources;
   }, [line, user]);
 
+  // TODO: low priority: scale the whole thing and make it pop out nad translate...
+  // doesn't work right now because no workaround for overflow scroll for y and visible for x
   return (
     <div
       onClick={handleActivateLine}
@@ -136,7 +138,7 @@ export default React.memo(function LineRow({
     >
       {/* channel picture */}
       {profilePictures && (
-        <span className={`${isSelected && ' scale-110 transition-all'}`}>
+        <span className={`${isSelected && ' scale-125 transition-all'}`}>
           <LineIcon grayscale={!isUserTunedIn} sourceImages={profilePictures} />
         </span>
       )}
