@@ -9,6 +9,7 @@ import moment from 'moment';
 import { useKeyPressEvent } from 'react-use';
 import toast from 'react-hot-toast';
 import { LineMemberState } from '@nirvana/core/models/line.model';
+import useElectron from '../../../../providers/ElectronProvider';
 
 export default React.memo(function LineRow({
   index,
@@ -22,6 +23,7 @@ export default React.memo(function LineRow({
   isSelected: boolean;
 }) {
   const { user } = useAuth();
+  const { desktopMode, isWindowFocused } = useElectron();
 
   const isUserTunedIn = useMemo(
     () => line.tunedInMemberIds?.includes(user._id.toString()),
@@ -131,9 +133,17 @@ export default React.memo(function LineRow({
       onClick={handleActivateLine}
       role={'presentation'}
       className={`flex flex-row items-center justify-start gap-2 px-4 py-4 hover:bg-gray-200 
-      cursor-pointer transition-all relative z-50 rounded  
+      cursor-pointer transition-all relative z-50  
       ${isUserToggleTuned && ' bg-gray-100 shadow-2xl '}
       ${isSelected && ' bg-gray-200 shadow-2xl'}
+
+      ${
+        !isWindowFocused &&
+        desktopMode === 'overlayOnly' &&
+        isSelected &&
+        ' bg-transparent opacity-100 '
+      }
+      ${!isWindowFocused && desktopMode === 'overlayOnly' && !isSelected && ' bg-transparent '}
       `}
     >
       {/* channel picture */}

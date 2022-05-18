@@ -27,7 +27,7 @@ export default function FlowState({ handleReconnect }: { handleReconnect: () => 
   }, []);
 
   return (
-    <div className="flex flex-col flex-1 justify-center items-center relative">
+    <div className="flex flex-col flex-1 justify-center items-center relative bg-gray-100">
       {/* <img src="https://source.unsplash.com/random/?nature" /> */}
       <FullMottoLogo type={LogoType.small} className={'absolute bottom-5 mx-auto'} />
 
