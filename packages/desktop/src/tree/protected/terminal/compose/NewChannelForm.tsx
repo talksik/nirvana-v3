@@ -40,7 +40,7 @@ export default function NewChannelForm({ handleClose }: { handleClose: () => voi
         console.error(error);
       }
     },
-    1000,
+    200,
     [peopleSearchQuery, setSearchingUsers, fetchUsers],
   );
 
