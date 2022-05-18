@@ -90,7 +90,7 @@ export default function LineDetails() {
     <div className="flex flex-col flex-1 bg-white relative">
       {/* line details */}
       <div
-        className="p-5 z-30
+        className="p-5 z-30 titlebar
         flex flex-row items-center justify-end border-b-gray-200 border-b shadow-2xl group"
       >
         {profilePictures && <LineIcon grayscale={false} sourceImages={profilePictures} />}

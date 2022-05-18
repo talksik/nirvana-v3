@@ -9,6 +9,7 @@ import LineRow from '../line/LineRow';
 import useTerminalProvider from '../../../../providers/TerminalProvider';
 import useAuth from '../../../../providers/AuthProvider';
 import useSockets from '../../../../providers/SocketProvider';
+import useElectron from '../../../../providers/ElectronProvider';
 
 export default function SidePanel() {
   // using merely for loading state...better to add to realtimeroom context?
@@ -21,9 +22,17 @@ export default function SidePanel() {
 
   const { handleFlowState } = useSockets();
 
+  const { handleOpenMainApp, desktopMode } = useElectron();
+
   // todo: sort
   const allChannels = useMemo(() => {
-    const channels = Object.values(roomsMap);
+    let channels = Object.values(roomsMap);
+
+    if (desktopMode === 'overlayOnly') {
+      channels = channels.filter((currentChannel) =>
+        currentChannel.tunedInMemberIds?.includes(user._id.toString()),
+      );
+    }
 
     channels.sort((channelA, channelB) => {
       if (
@@ -46,7 +55,7 @@ export default function SidePanel() {
     });
 
     return channels;
-  }, [roomsMap]);
+  }, [roomsMap, desktopMode, user]);
 
   const [searchQuery, setSearchQuery] = useState<string>('');
 
@@ -61,19 +70,18 @@ export default function SidePanel() {
     >
       {/* user control panel */}
       <div
-        className="bg-gray-100 flex flex-row items-center gap-2
-       p-4 z-50 w-full"
+        className={`bg-gray-100 flex flex-row items-center gap-2
+       p-4 pb-2 z-50 w-full titlebar ${
+         desktopMode === 'overlayOnly' && 'border-b border-b-gray-200'
+       }`}
       >
-        <button
-          onClick={() => {
-            console.log('opening main app');
-          }}
-          className={'mr-auto'}
-        >
+        <button onClick={handleOpenMainApp} className={'mr-auto'}>
           <NoTextLogo type="small" />
         </button>
 
-        <span className="text-gray-800 font-semibold mx-auto">Channels</span>
+        {desktopMode === 'mainApp' && (
+          <span className="text-gray-800 font-semibold mx-auto">Channels</span>
+        )}
 
         <button
           onClick={handleFlowState}
@@ -94,43 +102,48 @@ export default function SidePanel() {
         )}
       </div>
 
-      {/* secondary header with search and create */}
-      <div className="flex flex-row p-4 items-center bg-gray-100 gap-2">
-        <div className="flex-1 flex flex-row items-center space-x-2 bg-gray-200 p-2 rounded">
-          <FiSearch className="text-xs text-gray-400" />
-          <input
-            placeholder="Search or start a conversation"
-            className="flex-1 bg-transparent placeholder-gray-400 text-gray-500 placeholder:text-xs focus:outline-none"
-            onChange={(e) => setSearchQuery(e.target.value)}
-            value={searchQuery}
-          />
-        </div>
+      {/* search + other stuff  */}
+      {desktopMode === 'mainApp' && (
+        <>
+          <div className="flex flex-row p-4 items-center bg-gray-100 gap-2">
+            <div className="flex-1 flex flex-row items-center space-x-2 bg-gray-200 p-2 rounded">
+              <FiSearch className="text-xs text-gray-400" />
+              <input
+                placeholder="Search or start a conversation"
+                className="flex-1 bg-transparent placeholder-gray-400 text-gray-500 placeholder:text-xs focus:outline-none"
+                onChange={(e) => setSearchQuery(e.target.value)}
+                value={searchQuery}
+              />
+            </div>
 
-        <Tooltip title={'New channel'}>
-          <button
-            onClick={handleCreateNewChannel}
-            className="ml-auto flex flex-row items-center justify-evenly 
-      shadow-xl bg-gray-800 p-2 text-white text-xs"
-          >
-            <FiPlus />
-          </button>
-        </Tooltip>
-      </div>
-
-      {/* tuned in header + general controls */}
-      <div className="flex flex-col shadow-xl bg-gray-100 pb-2">
-        <Tooltip placement="right" title={'These are your active rooms...'}>
-          <div className="flex flex-row items-center py-3 px-4 pb-0">
-            <span className="flex flex-row gap-2 items-center justify-start text-gray-400 animate-pulse">
-              <FiActivity className="text-sm" />
-
-              <h2 className="text-inherit text-xs">Tuned In</h2>
-
-              <p className="text-slate-300 text-xs ml-auto">{`${allChannels?.length || 0}/3`}</p>
-            </span>
+            <Tooltip title={'New channel'}>
+              <button
+                onClick={handleCreateNewChannel}
+                className="ml-auto flex flex-row items-center justify-evenly 
+shadow-xl bg-gray-800 p-2 text-white text-xs"
+              >
+                <FiPlus />
+              </button>
+            </Tooltip>
           </div>
-        </Tooltip>
-      </div>
+
+          <div className="flex flex-col shadow-xl bg-gray-100 pb-2">
+            <Tooltip placement="right" title={'These are your active rooms...'}>
+              <div className="flex flex-row items-center py-3 px-4 pb-0">
+                <span className="flex flex-row gap-2 items-center justify-start text-gray-400 animate-pulse">
+                  <FiActivity className="text-sm" />
+
+                  <h2 className="text-inherit text-xs">Tuned In</h2>
+
+                  <p className="text-slate-300 text-xs ml-auto">{`${
+                    allChannels?.length || 0
+                  }/3`}</p>
+                </span>
+              </div>
+            </Tooltip>
+          </div>
+        </>
+      )}
 
       {!(allChannels.length > 0) && (
         <span className="text-gray-300 text-sm my-5 text-center">

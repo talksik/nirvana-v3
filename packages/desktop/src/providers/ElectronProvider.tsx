@@ -27,12 +27,14 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
     if (desktopMode === 'mainApp') {
       stayOnTop = false;
       finalDimensions = DEFAULT_APP_PRESET;
+      finalPosition = 'center';
     } else if (desktopMode === 'overlayOnly') {
       stayOnTop = true;
       finalDimensions = {
-        height: 668,
-        width: 360,
+        height: 273,
+        width: 350,
       };
+      finalPosition = 'topRight';
     }
 
     // send the final dimensions to main process
@@ -54,7 +56,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
         'window blurring now, should be always on top and then ill tell main process to change dimensions',
       );
       // TODO: testing mode... uncomment both instructions below
-      // setDesktopMode("overlayOnly");
+      setDesktopMode('overlayOnly');
 
       // todo: make sure that if I am toggle broadcasted into a line, then don't deselect selected line
       // the overlay should be showing selected line if I am broadcasting toggled into it as well as of course all other toggle tuned ones

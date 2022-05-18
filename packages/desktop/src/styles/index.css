@@ -22,7 +22,7 @@ button {
   @apply transition-all rounded;
 }
 
-#titlebar {
+.titlebar {
   -webkit-user-select: none;
   -webkit-app-region: drag;
 
