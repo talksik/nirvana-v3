@@ -178,7 +178,7 @@ function UserProfileAvatar() {
     if (videoRef.current && userLocalStream) videoRef.current.srcObject = userLocalStream;
   }, [userLocalStream]);
 
-  if (userLocalStream) return <video ref={videoRef} muted height={'60'} width={'60'} autoPlay />;
+  if (userLocalStream) return <video ref={videoRef} muted height={'50'} width={'50'} autoPlay />;
 
   return (
     <>
