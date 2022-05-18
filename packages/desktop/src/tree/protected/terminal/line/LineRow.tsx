@@ -34,8 +34,6 @@ export default React.memo(function LineRow({
   );
 
   const handleActivateLine = useCallback(() => {
-    toast('selected channel');
-
     handleSelectLine(line.lineDetails._id.toString());
   }, [handleSelectLine, line.lineDetails, index]);
 
@@ -133,7 +131,7 @@ export default React.memo(function LineRow({
       className={`flex flex-row items-center justify-start gap-2 px-4 py-4 hover:bg-gray-200 
       cursor-pointer transition-all relative z-50 rounded 
       ${isUserToggleTuned && ' bg-gray-100 shadow-2xl '}
-      ${isSelected && ' bg-gray-200 scale-110 shadow-2xl translate-x-3 '}
+      ${isSelected && ' bg-gray-200 shadow-2xl'}
       `}
     >
       {/* channel picture */}

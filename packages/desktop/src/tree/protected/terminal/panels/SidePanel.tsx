@@ -99,20 +99,22 @@ export default function SidePanel() {
       )}
 
       {/* rest of the lines */}
-      <div className={'flex flex-col flex-1 mr-[-100px] pr-[100px] overflow-y-auto'}>
-        {initialRoomsFetch.loading ? (
-          <Skeleton />
-        ) : (
-          allChannels.map((masterLineData, index) => (
-            <LineRow
-              index={index}
-              key={`terminalListLines-${masterLineData.lineDetails._id.toString()}`}
-              line={masterLineData}
-              handleSelectLine={handleSelectLine}
-              isSelected={masterLineData.lineDetails._id.toString() === selectedLineId}
-            />
-          ))
-        )}
+      <div className={'flex-1 overflow-y-auto flipped'}>
+        <div className="flex flex-col direction-ltr">
+          {initialRoomsFetch.loading ? (
+            <Skeleton />
+          ) : (
+            allChannels.map((masterLineData, index) => (
+              <LineRow
+                index={index}
+                key={`terminalListLines-${masterLineData.lineDetails._id.toString()}`}
+                line={masterLineData}
+                handleSelectLine={handleSelectLine}
+                isSelected={masterLineData.lineDetails._id.toString() === selectedLineId}
+              />
+            ))
+          )}
+        </div>
       </div>
 
       {/* user control panel */}

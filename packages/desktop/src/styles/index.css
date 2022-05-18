@@ -50,22 +50,31 @@ button {
   padding: 0 !important;
 }
 
-/* custom scrollbar */
+/* Designing for scroll-bar */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 4px;
 }
 
+/* Track */
 ::-webkit-scrollbar-track {
-  background-color: transparent;
+  background: gainsboro;
+  border-radius: 5px;
 }
 
+/* Handle */
 ::-webkit-scrollbar-thumb {
-  background-color: #d6dee1;
-  border-radius: 20px;
-  border: 6px solid transparent;
-  background-clip: content-box;
+  @apply bg-gray-400;
+  border-radius: 5px;
 }
 
+/* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background-color: #a8bbbf;
+  background: #555;
+}
+
+.direction-ltr {
+  direction: ltr;
+}
+.flipped {
+  direction: rtl;
 }
