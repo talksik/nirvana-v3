@@ -293,26 +293,39 @@ export function RealTimeRoomProvider({ children }: { children: React.ReactChild 
    * tune into socket room and tell everyone else
    */
   const handleSelectLine = useCallback(
-    (newLineIdToSelect: string) => {
-      setSelectedLineId((prevLineId) => {
-        if (newLineIdToSelect === prevLineId) {
-          return prevLineId;
-        }
+    (newLineIdToSelect: string | undefined) => {
+      if (!newLineIdToSelect) {
+        setSelectedLineId(undefined);
+      } else {
+        setSelectedLineId((prevLineId) => {
+          if (newLineIdToSelect === prevLineId) {
+            return prevLineId;
+          }
 
-        // untune from the last line if it was just a temporary tuned one
-        if (roomMap[prevLineId]?.currentUserMember.state === LineMemberState.INBOX) {
-          handleUntuneFromLine(prevLineId);
-        }
+          // untune from the last line if it was just a temporary tuned one
+          if (roomMap[prevLineId]?.currentUserMember.state === LineMemberState.INBOX) {
+            handleUntuneFromLine(prevLineId);
+          }
 
-        // tune in if not already tuned into this line
-        if (!roomMap[newLineIdToSelect].tunedInMemberIds?.includes(user._id.toString())) {
-          handleTuneIntoLine(newLineIdToSelect);
-        }
+          // tune in if not already tuned into this line
+          if (!roomMap[newLineIdToSelect].tunedInMemberIds?.includes(user._id.toString())) {
+            handleTuneIntoLine(newLineIdToSelect);
+          }
 
-        return newLineIdToSelect;
-      });
+          return newLineIdToSelect;
+        });
+      }
+
+      setShowNewChannelForm(false);
     },
-    [setSelectedLineId, handleUntuneFromLine, roomMap, user, handleTuneIntoLine],
+    [
+      setSelectedLineId,
+      handleUntuneFromLine,
+      roomMap,
+      user,
+      handleTuneIntoLine,
+      setShowNewChannelForm,
+    ],
   );
 
   const handleShowNewChannelForm = useCallback(
