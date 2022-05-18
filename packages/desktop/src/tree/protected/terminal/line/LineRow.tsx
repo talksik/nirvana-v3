@@ -139,6 +139,8 @@ export default React.memo(function LineRow({
       ${isSelected && isWindowFocused && ' bg-gray-200 shadow-2xl '}
       ${isSelected && !isWindowFocused && ' bg-transparent '}
 
+      ${desktopMode === 'overlayOnly' && !isWindowFocused && ' opacity-20 '}
+
       ${!isWindowFocused && desktopMode === 'overlayOnly' && !isSelected && ' bg-transparent '}`}
     >
       {/* channel picture */}
