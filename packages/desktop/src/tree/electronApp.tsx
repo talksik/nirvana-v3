@@ -1,12 +1,11 @@
 import React from 'react';
 import { Toaster } from 'react-hot-toast';
 import { RoomsProvider } from '../providers/RoomsProvider';
-import { RealTimeRoomProvider } from '../providers/RealTimeRoomProvider';
+import { RealTimeRoomProvider } from '../providers/TerminalProvider';
 import { AuthProvider } from '../providers/AuthProvider';
 import { ElectronProvider } from '../providers/ElectronProvider';
 import { SocketProvider } from '../providers/SocketProvider';
 import ProtectedRoute from './protected/ProtectedRoute';
-import Terminal from './protected/terminal/Terminal';
 import { StreamProvider } from '../providers/StreamProvider';
 
 export default function ElectronApp() {
@@ -16,11 +15,11 @@ export default function ElectronApp() {
         <ProtectedRoute>
           <SocketProvider>
             <RoomsProvider>
-              <RealTimeRoomProvider>
-                <StreamProvider>
-                  <Terminal />
-                </StreamProvider>
-              </RealTimeRoomProvider>
+              <StreamProvider>
+                <RealTimeRoomProvider>
+                  <></>
+                </RealTimeRoomProvider>
+              </StreamProvider>
             </RoomsProvider>
           </SocketProvider>
         </ProtectedRoute>

@@ -2,18 +2,18 @@ import { LineMemberState } from '@nirvana/core/models/line.model';
 import { Skeleton, Tooltip } from 'antd';
 import React, { useCallback, useMemo, useState } from 'react';
 import { FiActivity, FiPlus, FiSearch } from 'react-icons/fi';
-import useRealTimeRooms from '../../../../providers/RealTimeRoomProvider';
 import useRooms from '../../../../providers/RoomsProvider';
 import NavBar from '../navbar/Navbar';
 import NoTextLogo from '@nirvana/components/logo/NoTextLogo';
 import LineRow from '../line/LineRow';
+import useTerminalProvider from '../../../../providers/TerminalProvider';
 
 export default function SidePanel() {
   // using merely for loading state...better to add to realtimeroom context?
   const { rooms: initialRoomsFetch } = useRooms();
 
   const { roomsMap, handleSelectLine, selectedLineId, handleShowNewChannelForm } =
-    useRealTimeRooms();
+    useTerminalProvider();
 
   // todo: sort
   const allChannels = useMemo(() => {
@@ -75,7 +75,7 @@ export default function SidePanel() {
       </div>
 
       {/* tuned in header + general controls */}
-      <div className="flex flex-col shadow-xl bg-gray-100">
+      <div className="flex flex-col shadow-xl bg-gray-100 pb-2">
         <Tooltip placement="right" title={'These are your active rooms...'}>
           <div className="flex flex-row items-center py-3 px-4 pb-0">
             <span className="flex flex-row gap-2 items-center justify-start text-gray-400 animate-pulse">

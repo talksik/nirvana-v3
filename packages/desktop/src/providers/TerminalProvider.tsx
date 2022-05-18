@@ -26,6 +26,9 @@ import { updateLineMemberState } from '../api/NirvanaApi';
 import UpdateLineMemberState from '@nirvana/core/requests/updateLineMemberState.request';
 import useAuth from './AuthProvider';
 import { User } from '@nirvana/core/models/user.model';
+import SidePanel from '../tree/protected/terminal/panels/SidePanel';
+import MainPanel from '../tree/protected/terminal/panels/MainPanel';
+import useElectron from './ElectronProvider';
 
 type LineIdToMasterLine = {
   [lineId: string]: MasterLineData;
@@ -112,6 +115,8 @@ export function RealTimeRoomProvider({ children }: { children: React.ReactChild 
   const { user } = useAuth();
   const { $ws } = useSockets();
   const [roomMap, updateRoomMap] = useImmer<LineIdToMasterLine>({});
+
+  const { desktopMode } = useElectron();
 
   const [selectedLineId, setSelectedLineId] = useState<string>();
 
@@ -353,11 +358,19 @@ export function RealTimeRoomProvider({ children }: { children: React.ReactChild 
         handleShowNewChannelForm,
       }}
     >
+      <div className="flex flex-col flex-1">
+        <div className="flex flex-row flex-1">
+          <SidePanel />
+
+          {desktopMode === 'mainApp' && <MainPanel />}
+        </div>
+      </div>
+
       {children}
     </RealTimeRoomContext.Provider>
   );
 }
 
-export default function useRealTimeRooms() {
+export default function useTerminalProvider() {
   return useContext(RealTimeRoomContext);
 }

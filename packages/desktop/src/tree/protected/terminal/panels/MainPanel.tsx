@@ -1,6 +1,5 @@
 import React, { useMemo, useEffect, useRef, useState } from 'react';
 import useAuth from '../../../../providers/AuthProvider';
-import useRealTimeRooms from '../../../../providers/RealTimeRoomProvider';
 
 import { LineMemberState } from '@nirvana/core/models/line.model';
 import LineIcon from '../../../../components/lineIcon';
@@ -20,11 +19,12 @@ import useStreams from '../../../../providers/StreamProvider';
 import Peer from 'simple-peer';
 import NewChannelForm from '../compose/NewChannelForm';
 import LineDetails from '../line/LineDetails';
+import useTerminalProvider from '../../../../providers/TerminalProvider';
 
 export default function MainPanel() {
   const { user } = useAuth();
 
-  const { selectedLineId, showNewChannelForm, handleShowNewChannelForm } = useRealTimeRooms();
+  const { selectedLineId, showNewChannelForm, handleShowNewChannelForm } = useTerminalProvider();
 
   // already won't see stuff for overlay only mode as per parent configuration
 

@@ -40,7 +40,11 @@ export default React.memo(function LineRow({
   }, [handleSelectLine, line.lineDetails, index]);
 
   const hotkeyActivateLine = useCallback(() => {
-    if (isUserToggleTuned) handleActivateLine();
+    // TODO: disable for higher numbers? ehh maybe hidden easter egg to select more?
+
+    // if (isUserToggleTuned) handleActivateLine();
+
+    handleActivateLine();
   }, [isUserToggleTuned, handleActivateLine]);
 
   useKeyPressEvent((index + 1).toString(), hotkeyActivateLine);

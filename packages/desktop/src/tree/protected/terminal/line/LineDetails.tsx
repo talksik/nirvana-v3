@@ -1,6 +1,5 @@
 import React, { useMemo, useEffect, useState, useCallback } from 'react';
 import useAuth from '../../../../providers/AuthProvider';
-import useRealTimeRooms from '../../../../providers/RealTimeRoomProvider';
 import useStreams from '../../../../providers/StreamProvider';
 
 import { LineMemberState } from '@nirvana/core/models/line.model';
@@ -19,11 +18,12 @@ import {
 } from 'react-icons/fi';
 import { Avatar, Tooltip } from 'antd';
 import { useKeyPressEvent } from 'react-use';
+import useTerminalProvider from '../../../../providers/TerminalProvider';
 
 export default function LineDetails() {
   const { user } = useAuth();
 
-  const { selectedLineId, roomsMap, handleUpdateLineMemberState } = useRealTimeRooms();
+  const { selectedLineId, roomsMap, handleUpdateLineMemberState } = useTerminalProvider();
 
   const selectedLine = useMemo(() => roomsMap[selectedLineId], [selectedLineId, roomsMap]);
 

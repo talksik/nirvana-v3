@@ -21,9 +21,8 @@
 
 import React, { useEffect, useContext, useState, useRef, useMemo, useCallback } from 'react';
 import Peer from 'simple-peer';
-import useRealTimeRooms from './RealTimeRoomProvider';
 import useAuth from './AuthProvider';
-import { Updater, useImmer } from 'use-immer';
+import { useImmer } from 'use-immer';
 import useSockets from './SocketProvider';
 import {
   RtcReceiveSignalResponse,
@@ -32,6 +31,7 @@ import {
   ServerResponseChannels,
 } from '@nirvana/core/sockets/channels';
 import toast from 'react-hot-toast';
+import useTerminalProvider from './TerminalProvider';
 
 type PeerMap = {
   [userId: string]: Peer;
@@ -45,7 +45,7 @@ const StreamProviderContext = React.createContext<IStreamProvider>({
 });
 
 export function StreamProvider({ children }: { children: React.ReactChild }) {
-  const { roomsMap } = useRealTimeRooms();
+  const { roomsMap } = useTerminalProvider();
   const { user } = useAuth();
 
   const { $ws } = useSockets();
