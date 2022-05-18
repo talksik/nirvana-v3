@@ -1,6 +1,6 @@
 import { LineMemberState } from '@nirvana/core/models/line.model';
 import { Avatar, Dropdown, Skeleton, Tooltip } from 'antd';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState, useEffect } from 'react';
 import { FiActivity, FiPlus, FiSearch } from 'react-icons/fi';
 import useRooms from '../../../../providers/RoomsProvider';
 import NavBar from '../navbar/Navbar';
@@ -10,6 +10,7 @@ import useTerminalProvider from '../../../../providers/TerminalProvider';
 import useAuth from '../../../../providers/AuthProvider';
 import useSockets from '../../../../providers/SocketProvider';
 import useElectron from '../../../../providers/ElectronProvider';
+import useStreams from '../../../../providers/StreamProvider';
 
 export default function SidePanel() {
   // using merely for loading state...better to add to realtimeroom context?
@@ -91,16 +92,7 @@ export default function SidePanel() {
           flow
         </button>
 
-        {user.picture && (
-          <Avatar
-            key={`userHeaderProfilePicture`}
-            className="shadow-md hover:scale-110 transition-all"
-            size={'default'}
-            alt={user.name}
-            src={user.picture}
-            shape="square"
-          />
-        )}
+        <UserProfileAvatar />
       </div>
 
       {/* search + other stuff  */}
@@ -171,5 +163,35 @@ shadow-xl bg-gray-800 p-2 text-white text-xs"
         </div>
       </div>
     </div>
+  );
+}
+
+// todo if audio only mode, show avatar
+// if problem, show error
+function UserProfileAvatar() {
+  const { user } = useAuth();
+  const { userLocalStream } = useStreams();
+
+  const videoRef = useRef<HTMLVideoElement>();
+
+  useEffect(() => {
+    if (videoRef.current && userLocalStream) videoRef.current.srcObject = userLocalStream;
+  }, [userLocalStream]);
+
+  if (userLocalStream) return <video ref={videoRef} muted height={'60'} width={'60'} autoPlay />;
+
+  return (
+    <>
+      {user.picture && (
+        <Avatar
+          key={`userHeaderProfilePicture`}
+          className="shadow-md hover:scale-110 transition-all"
+          size={'default'}
+          alt={user.name}
+          src={user.picture}
+          shape="square"
+        />
+      )}
+    </>
   );
 }
