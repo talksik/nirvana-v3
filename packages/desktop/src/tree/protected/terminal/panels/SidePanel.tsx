@@ -50,8 +50,8 @@ export default function SidePanel() {
 
   return (
     <div
-      className="flex flex-col w-[350px] relative group 
-    border-r border-r-gray-200 shadow-xl bg-white z-20 overflow-y-auto"
+      className="flex flex-col w-[350px] group 
+    border-r border-r-gray-200 shadow-xl bg-white z-20 "
     >
       <NavBar />
 
