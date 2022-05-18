@@ -99,7 +99,7 @@ export default function SidePanel() {
       )}
 
       {/* rest of the lines */}
-      <div className={'flex flex-col flex-1 mr-[-100px] pr-[100px] overflow-y-auto'}>
+      <div className={'flex flex-col flex-1 mr-[-100px] pr-[100px] overflow-y-auto scrollbar-left'}>
         {initialRoomsFetch.loading ? (
           <Skeleton />
         ) : (
