@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useState, useCallback } from 'react';
+import React, { useMemo, useEffect, useState, useCallback, useRef } from 'react';
 import useAuth from '../../../../providers/AuthProvider';
 import useStreams from '../../../../providers/StreamProvider';
 
@@ -19,6 +19,7 @@ import {
 import { Avatar, Tooltip } from 'antd';
 import { useKeyPressEvent } from 'react-use';
 import useTerminalProvider from '../../../../providers/TerminalProvider';
+import Peer from 'simple-peer';
 
 export default function LineDetails() {
   const { user } = useAuth();
@@ -152,7 +153,11 @@ export default function LineDetails() {
         {/* <LineHistory /> */}
 
         {/* live line */}
-        <div className="flex flex-col"></div>
+        <div className="flex flex-col">
+          {Object.values(peerMap).map((peer, index) => (
+            <StreamPlayer key={`streamPlayer-${index}`} peer={peer} />
+          ))}
+        </div>
 
         {/* canvas action buttons */}
         <div className="flex flex-row gap-3 p-10 justify-end items-center ">
@@ -192,6 +197,28 @@ export default function LineDetails() {
         </div>
       </div>
     </div>
+  );
+}
+
+function StreamPlayer({ peer }: { peer: Peer }) {
+  const streamRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    peer.on('stream', (remotePeerStream: MediaStream) => {
+      console.log('stream coming in from remote peer');
+      console.log(remotePeerStream);
+
+      if (streamRef?.current) streamRef.current.srcObject = remotePeerStream;
+    });
+
+    () => peer.destroy();
+  }, [peer]);
+
+  return (
+    <>
+      this is a stream component of one remote peer
+      <video ref={streamRef} height={600} width={600} autoPlay muted />
+    </>
   );
 }
 

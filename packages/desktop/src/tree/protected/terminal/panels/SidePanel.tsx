@@ -16,7 +16,7 @@ export default function SidePanel() {
   // using merely for loading state...better to add to realtimeroom context?
   const { rooms: initialRoomsFetch } = useRooms();
 
-  const { user } = useAuth();
+  const { user, handleLogout } = useAuth();
 
   const { roomsMap, handleSelectLine, selectedLineId, handleShowNewChannelForm } =
     useTerminalProvider();
@@ -84,6 +84,13 @@ export default function SidePanel() {
         {desktopMode === 'mainApp' && (
           <span className="text-gray-800 font-semibold mx-auto">Channels</span>
         )}
+
+        <button
+          onClick={handleLogout}
+          className="text-gray-300 text-xs px-3 py-2 transition-all hover:bg-gray-200"
+        >
+          log out
+        </button>
 
         <button
           onClick={handleFlowState}

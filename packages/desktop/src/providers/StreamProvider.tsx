@@ -31,7 +31,6 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
   const { $ws } = useSockets();
 
   const [peerMap, updatePeerMap] = useImmer<PeerMap>({});
-  const [incomingSignals, updateIncomingSignals] = useImmer<{ [peerUserId: string]: any }>({});
 
   const [userLocalStream, setUserLocalStream] = useState<MediaStream>();
 
@@ -92,59 +91,6 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
 
   console.log(`peer map: `, peerMap);
 
-  // on changes of the peer map ("we called someone and created local peer connection"), see if we have an incoming signal
-  // and set signal if we have already gotten it and remove from the signals if used
-  useEffect(() => {
-    if (Object.keys(incomingSignals).length > 0) {
-      console.log('going to clear queue of incoming signals');
-
-      Object.entries(peerMap).map(([userId, peer]) => {
-        if (incomingSignals[userId]) {
-          // ! hack: if they are alphabetically higher, then they are initiator
-          if (userId > user._id.toString()) {
-            console.log('creating a local peer as the receiver and replacing mine');
-
-            peer.destroy();
-
-            const peerForMeAndNewbie = new Peer({
-              initiator: false,
-              trickle: false, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times
-            });
-
-            peerForMeAndNewbie.signal(incomingSignals[userId]);
-
-            updatePeerMap((draft) => {
-              draft[userId] = peerForMeAndNewbie;
-            });
-          } else {
-            console.log('I won, just adding the signal to my local peer with that person');
-            peer.signal(incomingSignals[userId]);
-          }
-
-          updateIncomingSignals((draft) => {
-            delete draft[userId];
-          });
-        }
-      });
-    }
-  }, [peerMap, incomingSignals, updateIncomingSignals, user, updatePeerMap]);
-
-  useEffect(() => {
-    $ws.on(ServerResponseChannels.RTC_RECEIVING_SIGNAL, (res: RtcReceiveSignalResponse) => {
-      console.log(`getting signal from someone`, res);
-
-      updateIncomingSignals((draft) => {
-        draft[res.senderUserId] = res.simplePeerSignal;
-      });
-    });
-
-    return () => {
-      $ws.removeListener(ServerResponseChannels.RTC_RECEIVING_SIGNAL);
-    };
-  }, [$ws, updateIncomingSignals]);
-
-  console.log(`peer map: `, peerMap);
-
   const handleAddPeer = useCallback(
     (userId: string, peerObj: Peer) => {
       updatePeerMap((draft) => {
@@ -157,13 +103,9 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
   return (
     <StreamProviderContext.Provider value={{ peerMap, userLocalStream }}>
       {/* handles stream connections */}
-      <MemoStreamsConnector handleAddPeer={handleAddPeer} membersToCall={distinctPeerUserIds} />
-
-      <div className="flex flex-row gap-5">
-        {Object.values(peerMap).map((peer, index) => (
-          <StreamPlayer key={`streamPlayer-${index}`} peer={peer} />
-        ))}
-      </div>
+      {distinctPeerUserIds?.length > 0 && (
+        <MemoStreamsConnector handleAddPeer={handleAddPeer} membersToCall={distinctPeerUserIds} />
+      )}
 
       {children}
     </StreamProviderContext.Provider>
@@ -172,35 +114,6 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
 
 export default function useStreams() {
   return useContext(StreamProviderContext);
-}
-
-function StreamPlayer({ peer }: { peer: Peer }) {
-  const streamRef = useRef<HTMLVideoElement>(null);
-
-  console.log('re-rendering the stream player since peer likely changed', peer);
-
-  useEffect(() => {
-    peer.on('stream', (remotePeerStream: MediaStream) => {
-      console.log('stream coming in from remote peer');
-
-      console.log(remotePeerStream);
-
-      const audio = new Audio();
-      audio.autoplay = true;
-      audio.srcObject = remotePeerStream;
-
-      // if (streamRef?.current) streamRef.current.srcObject = remotePeerStream;
-    });
-
-    () => peer.destroy();
-  }, [peer]);
-
-  return (
-    <>
-      this is a stream component of one remote peer
-      {/* <video ref={streamRef} height={400} width={400} autoPlay muted /> */}
-    </>
-  );
 }
 
 const MemoStreamsConnector = React.memo(StreamsConnector);
