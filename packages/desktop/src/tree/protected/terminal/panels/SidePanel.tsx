@@ -3,7 +3,7 @@ import MasterLineData from '@nirvana/core/models/masterLineData.model';
 import { Avatar, Skeleton, Tooltip } from 'antd';
 import React, { useCallback, useMemo, useEffect, useState } from 'react';
 import { FaPlus, FaSearch } from 'react-icons/fa';
-import { FiActivity, FiPlus, FiSearch, FiSun } from 'react-icons/fi';
+import { FiActivity, FiPlus, FiSearch, FiSun, FiX } from 'react-icons/fi';
 import useRealTimeRooms from '../../../../providers/RealTimeRoomProvider';
 import useRooms from '../../../../providers/RoomsProvider';
 import useAuth from '../../../../providers/AuthProvider';
@@ -153,6 +153,15 @@ function LineRowTest({
   );
 
   const renderRightActivity = useMemo(() => {
+    if (isSelected) {
+      return (
+        <Tooltip title={'esc'}>
+          <span className="ml-5 flex flex-col items-center gap-2 cursor-pointer">
+            <FiX className="text-gray-300 text-xl" />
+          </span>
+        </Tooltip>
+      );
+    }
     // TODO: get the profile pictures of the broadcasters
     if (line.currentBroadcastersUserIds?.length > 0)
       return (
@@ -205,7 +214,7 @@ function LineRowTest({
         {moment(line.currentUserMember.lastVisitDate).fromNow(true)}
       </span>
     );
-  }, [line]);
+  }, [line, isSelected]);
 
   const profilePictures = useMemo(() => {
     const pictureSources: string[] = [];

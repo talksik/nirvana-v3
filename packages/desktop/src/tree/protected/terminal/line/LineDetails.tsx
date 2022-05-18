@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useState } from 'react';
+import React, { useMemo, useEffect, useState, useCallback } from 'react';
 import useAuth from '../../../../providers/AuthProvider';
 import useRealTimeRooms from '../../../../providers/RealTimeRoomProvider';
 import useStreams from '../../../../providers/StreamProvider';
@@ -15,8 +15,10 @@ import {
   FiSun,
   FiUsers,
   FiVideo,
+  FiX,
 } from 'react-icons/fi';
 import { Avatar, Tooltip } from 'antd';
+import { useKeyPressEvent } from 'react-use';
 
 export default function LineDetails() {
   const { user } = useAuth();

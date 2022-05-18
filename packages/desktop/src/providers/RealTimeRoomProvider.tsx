@@ -20,7 +20,7 @@ import {
 import toast from 'react-hot-toast';
 import { useImmer } from 'use-immer';
 import { LineMemberState } from '@nirvana/core/models/line.model';
-import { useAsyncFn } from 'react-use';
+import { useAsyncFn, useKeyPressEvent } from 'react-use';
 
 import { updateLineMemberState } from '../api/NirvanaApi';
 import UpdateLineMemberState from '@nirvana/core/requests/updateLineMemberState.request';
@@ -293,28 +293,24 @@ export function RealTimeRoomProvider({ children }: { children: React.ReactChild 
    * tune into socket room and tell everyone else
    */
   const handleSelectLine = useCallback(
-    (newLineIdToSelect: string | undefined) => {
-      if (!newLineIdToSelect) {
-        setSelectedLineId(undefined);
-      } else {
-        setSelectedLineId((prevLineId) => {
-          if (newLineIdToSelect === prevLineId) {
-            return prevLineId;
-          }
+    (newLineIdToSelect: string) => {
+      setSelectedLineId((prevLineId) => {
+        if (newLineIdToSelect === prevLineId) {
+          return prevLineId;
+        }
 
-          // untune from the last line if it was just a temporary tuned one
-          if (roomMap[prevLineId]?.currentUserMember.state === LineMemberState.INBOX) {
-            handleUntuneFromLine(prevLineId);
-          }
+        // untune from the last line if it was just a temporary tuned one
+        if (roomMap[prevLineId]?.currentUserMember.state === LineMemberState.INBOX) {
+          handleUntuneFromLine(prevLineId);
+        }
 
-          // tune in if not already tuned into this line
-          if (!roomMap[newLineIdToSelect].tunedInMemberIds?.includes(user._id.toString())) {
-            handleTuneIntoLine(newLineIdToSelect);
-          }
+        // tune in if not already tuned into this line
+        if (!roomMap[newLineIdToSelect].tunedInMemberIds?.includes(user._id.toString())) {
+          handleTuneIntoLine(newLineIdToSelect);
+        }
 
-          return newLineIdToSelect;
-        });
-      }
+        return newLineIdToSelect;
+      });
 
       setShowNewChannelForm(false);
     },
@@ -335,6 +331,13 @@ export function RealTimeRoomProvider({ children }: { children: React.ReactChild 
     },
     [setShowNewChannelForm, setSelectedLineId],
   );
+
+  const clearMind = useCallback(() => {
+    setSelectedLineId(undefined);
+    setShowNewChannelForm(false);
+  }, [setSelectedLineId, setShowNewChannelForm]);
+
+  useKeyPressEvent('Escape', clearMind);
 
   return (
     <RealTimeRoomContext.Provider
