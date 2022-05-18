@@ -3,7 +3,7 @@ import MasterLineData from '@nirvana/core/models/masterLineData.model';
 import { Avatar, Skeleton, Tooltip } from 'antd';
 import React, { useCallback, useMemo, useEffect, useState } from 'react';
 import { FaPlus, FaSearch } from 'react-icons/fa';
-import { FiActivity, FiSearch, FiSun } from 'react-icons/fi';
+import { FiActivity, FiPlus, FiSearch, FiSun } from 'react-icons/fi';
 import useRealTimeRooms from '../../../../providers/RealTimeRoomProvider';
 import useRooms from '../../../../providers/RoomsProvider';
 import useAuth from '../../../../providers/AuthProvider';
@@ -16,7 +16,8 @@ export default function SidePanel() {
   // using merely for loading state...better to add to realtimeroom context?
   const { rooms: initialRoomsFetch } = useRooms();
 
-  const { roomsMap, handleSelectLine, selectedLineId } = useRealTimeRooms();
+  const { roomsMap, handleSelectLine, selectedLineId, handleShowNewChannelForm } =
+    useRealTimeRooms();
 
   const [toggleTunedLines, allLines] = useMemo(() => {
     const masterLines: MasterLineData[] = Object.values(roomsMap);
@@ -34,6 +35,10 @@ export default function SidePanel() {
 
   const [searchQuery, setSearchQuery] = useState<string>('');
 
+  const handleCreateNewChannel = useCallback(() => {
+    handleShowNewChannelForm('show');
+  }, [handleShowNewChannelForm]);
+
   return (
     <div className="flex flex-col w-[350px] relative group border-r border-r-gray-200 shadow-xl bg-white z-20">
       <NavBar />
@@ -49,12 +54,15 @@ export default function SidePanel() {
           />
         </div>
 
-        <button
-          className="ml-auto flex flex-row items-center justify-evenly 
+        <Tooltip title={'New channel'}>
+          <button
+            onClick={handleCreateNewChannel}
+            className="ml-auto flex flex-row items-center justify-evenly 
       shadow-xl bg-gray-800 p-2 text-white text-xs"
-        >
-          <FaPlus />
-        </button>
+          >
+            <FiPlus />
+          </button>
+        </Tooltip>
       </div>
 
       {/* tuned in lines block */}

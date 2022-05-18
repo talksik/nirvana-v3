@@ -55,10 +55,15 @@ interface IRealTimeRoomProvider {
   handleSelectLine?: (newLineId: string) => void;
 
   handleUpdateLineMemberState?: (lineId: string, newState: LineMemberState) => void;
+
+  showNewChannelForm: boolean;
+  handleShowNewChannelForm?: (showOrHide: 'show' | 'hide') => void;
 }
 
 const RealTimeRoomContext = React.createContext<IRealTimeRoomProvider>({
   roomsMap: {},
+
+  showNewChannelForm: false,
 });
 
 /**
@@ -109,6 +114,7 @@ export function RealTimeRoomProvider({ children }: { children: React.ReactChild 
   const [selectedLineId, setSelectedLineId] = useState<string>();
 
   const [moveLineState, moveLine] = useAsyncFn(updateLineMemberState);
+  const [showNewChannelForm, setShowNewChannelForm] = useState<boolean>(false);
 
   /** All line listeners */
   useEffect(() => {
@@ -309,9 +315,24 @@ export function RealTimeRoomProvider({ children }: { children: React.ReactChild 
     [setSelectedLineId, handleUntuneFromLine, roomMap, user, handleTuneIntoLine],
   );
 
+  const handleShowNewChannelForm = useCallback(
+    (showOrHide: 'show' | 'hide' = 'show') => {
+      setSelectedLineId(undefined);
+      setShowNewChannelForm(showOrHide === 'show');
+    },
+    [setShowNewChannelForm, setSelectedLineId],
+  );
+
   return (
     <RealTimeRoomContext.Provider
-      value={{ roomsMap: roomMap, handleSelectLine, selectedLineId, handleUpdateLineMemberState }}
+      value={{
+        roomsMap: roomMap,
+        handleSelectLine,
+        selectedLineId,
+        handleUpdateLineMemberState,
+        showNewChannelForm,
+        handleShowNewChannelForm,
+      }}
     >
       {children}
     </RealTimeRoomContext.Provider>

@@ -18,15 +18,18 @@ import {
 import { Avatar, Tooltip } from 'antd';
 import useStreams from '../../../../providers/StreamProvider';
 import Peer from 'simple-peer';
+import NewChannelForm from '../compose/NewChannelForm';
 
 export default function MainPanel() {
   const { user } = useAuth();
 
-  const { selectedLineId } = useRealTimeRooms();
+  const { selectedLineId, showNewChannelForm } = useRealTimeRooms();
 
   // already won't see stuff for overlay only mode as per parent configuration
 
   // TODO: if there is stuff in search, show that first
+
+  if (showNewChannelForm) return <NewChannelForm />;
 
   // if selected line, show line details
   if (selectedLineId) return <LineDetails />;
@@ -106,89 +109,6 @@ function LineDetails() {
 
     return pictureSources;
   }, [selectedLine]);
-
-  const [peopleSearch, setPeopleSearch] = useState<string>('');
-
-  const showCreateChannel = false;
-  if (showCreateChannel)
-    return (
-      <div className="flex flex-col flex-1 items-center pt-10 bg-white">
-        <div className="flex flex-col gap-2 max-w-lg w-full">
-          {/* people search */}
-          <span className="text-gray-500">People</span>
-          <div
-            className="flex flex-row items-center space-x-2 bg-transparent
-         bg-gray-200 p-3 rounded"
-          >
-            <FiUsers className="text-lg text-gray-400" />
-            <input
-              placeholder="Search by name or email"
-              className="flex-1 text-lg bg-transparent placeholder-gray-300 focus:outline-none"
-              onChange={(e) => setPeopleSearch(e.target.value)}
-              value={peopleSearch}
-            />
-          </div>
-
-          {/* dropdown search results */}
-          <div className="flex flex-col shadow-lg max-h-[500px] overflow-auto">
-            {selectedLine.otherUserObjects.map((otherUser) => {
-              return (
-                <div
-                  key={otherUser.email}
-                  className="flex flex-row gap-2 items-center p-2 border border-gray-200
-                hover:bg-gray-200 cursor-pointer"
-                >
-                  <Avatar src={otherUser.picture} size={'large'} shape={'square'} />
-                  <span className="flex flex-col gap-1">
-                    <span className="text-md font-semibold text-gray-600">{otherUser.name}</span>
-                    <span className="text-sm text-gray-400">{otherUser.email}</span>
-                  </span>
-                </div>
-              );
-            })}
-
-            {selectedLine.otherUserObjects.map((otherUser) => {
-              return (
-                <div
-                  key={otherUser.email}
-                  className="flex flex-row gap-2 items-center p-2 border border-gray-200
-                hover:bg-gray-200 cursor-pointer"
-                >
-                  <Avatar src={otherUser.picture} size={'large'} shape={'square'} />
-                  <span className="flex flex-col gap-1">
-                    <span className="text-md font-semibold text-gray-600">{otherUser.name}</span>
-                    <span className="text-sm text-gray-400">{otherUser.email}</span>
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* selected people */}
-          <span className="flex flex-row justify-between mt-5">
-            <span className="text-gray-500 ">{`Selected`}</span>
-
-            <span className="text-gray-400">{selectedLine.otherMembers.length}/7</span>
-          </span>
-
-          {selectedLine.otherUserObjects.map((otherUser) => {
-            return (
-              <div
-                key={otherUser.email}
-                className="flex flex-row gap-2 items-center p-2 border border-gray-200
-                hover:bg-gray-200 cursor-pointer"
-              >
-                <Avatar src={otherUser.picture} size={'large'} shape={'square'} />
-                <span className="flex flex-col gap-1">
-                  <span className="text-md font-semibold text-gray-600">{otherUser.name}</span>
-                  <span className="text-sm text-gray-400">{otherUser.email}</span>
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    );
 
   return (
     <div className="flex flex-col flex-1 bg-white relative">
