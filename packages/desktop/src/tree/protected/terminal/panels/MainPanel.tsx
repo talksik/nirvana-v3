@@ -214,31 +214,6 @@ function LineDetails() {
           </span>
         </div>
 
-        <Tooltip
-          placement="left"
-          title={`${isUserToggleTuned ? 'click to untoggle' : 'click to stay tuned in'}`}
-        >
-          <button
-            className={`p-2 mr-auto ml-2 flex justify-center items-center shadow-lg
-          hover:scale-105 transition-all animate-pulse ${
-            isUserToggleTuned ? 'bg-gray-800 text-white' : 'text-black'
-          }`}
-            onClick={() =>
-              isUserToggleTuned
-                ? handleUpdateLineMemberState(
-                    selectedLine.lineDetails._id.toString(),
-                    LineMemberState.INBOX,
-                  )
-                : handleUpdateLineMemberState(
-                    selectedLine.lineDetails._id.toString(),
-                    LineMemberState.TUNED,
-                  )
-            }
-          >
-            <FiActivity className="text-md" />
-          </button>
-        </Tooltip>
-
         <Avatar.Group className={'animate-pulse'} key={`lineHistoryMessage-yesterday-afternoon}`}>
           <Avatar
             key={`linehistory-${1}`}
@@ -378,6 +353,31 @@ function LineDetails() {
 
         {/* canvas action buttons */}
         <div className="flex flex-row gap-3 p-10 justify-end items-center ">
+          <Tooltip
+            placement="left"
+            title={`${isUserToggleTuned ? 'click to untoggle' : 'click to stay tuned in'}`}
+          >
+            <button
+              className={`p-2 flex justify-center items-center shadow-lg
+          hover:scale-105 transition-all animate-pulse ${
+            isUserToggleTuned ? 'bg-gray-800 text-white' : 'text-black'
+          }`}
+              onClick={() =>
+                isUserToggleTuned
+                  ? handleUpdateLineMemberState(
+                      selectedLine.lineDetails._id.toString(),
+                      LineMemberState.INBOX,
+                    )
+                  : handleUpdateLineMemberState(
+                      selectedLine.lineDetails._id.toString(),
+                      LineMemberState.TUNED,
+                    )
+              }
+            >
+              <FiActivity className="text-md" />
+            </button>
+          </Tooltip>
+
           <button
             className={`p-3 flex justify-center items-center shadow-2xl
             hover:scale-105 transition-all ${
