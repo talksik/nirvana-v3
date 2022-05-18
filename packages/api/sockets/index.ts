@@ -161,6 +161,11 @@ export default function InitializeWs(io: any) {
         );
       });
 
+      // tell everyone in the channel to
+      // socket.on(ServerRequestChannels.CREATED_CHANNEL, (req: CreatedLineRequest) => {
+
+      // })
+
       // tell all people in all my lines that I am disconnecting or untuning
       // tell the tuned in folks the new list of
       socket.on('disconnecting', (reason: any) => {
