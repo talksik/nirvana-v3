@@ -1,20 +1,22 @@
 import MasterLineData from '@nirvana/core/models/masterLineData.model';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useCallback } from 'react';
 
-import { Avatar, Skeleton, Tooltip } from 'antd';
-import { FaPlus, FaSearch } from 'react-icons/fa';
-import { FiActivity, FiPlus, FiSearch, FiSun, FiX } from 'react-icons/fi';
-import useRealTimeRooms from '../../../../providers/RealTimeRoomProvider';
-import useRooms from '../../../../providers/RoomsProvider';
+import { Avatar, Tooltip } from 'antd';
+import { FiActivity, FiSun, FiX } from 'react-icons/fi';
 import useAuth from '../../../../providers/AuthProvider';
 import LineIcon from '../../../../components/lineIcon';
 import moment from 'moment';
+import { useKeyPressEvent } from 'react-use';
+import toast from 'react-hot-toast';
+import { LineMemberState } from '@nirvana/core/models/line.model';
 
 export default React.memo(function LineRow({
+  index,
   line,
   handleSelectLine,
   isSelected,
 }: {
+  index: number; // the order of this one in the list (for this view to know the shortcut to register)
   line: MasterLineData;
   handleSelectLine: (newLineId: string) => void;
   isSelected: boolean;
@@ -25,6 +27,23 @@ export default React.memo(function LineRow({
     () => line.tunedInMemberIds?.includes(user._id.toString()),
     [line.tunedInMemberIds, user],
   );
+
+  const isUserToggleTuned = useMemo(
+    () => line?.currentUserMember?.state === LineMemberState.TUNED,
+    [line],
+  );
+
+  const handleActivateLine = useCallback(() => {
+    toast('selected channel');
+
+    handleSelectLine(line.lineDetails._id.toString());
+  }, [handleSelectLine, line.lineDetails, index]);
+
+  const hotkeyActivateLine = useCallback(() => {
+    if (isUserToggleTuned) handleActivateLine();
+  }, [isUserToggleTuned, handleActivateLine]);
+
+  useKeyPressEvent((index + 1).toString(), hotkeyActivateLine);
 
   const renderRightActivity = useMemo(() => {
     if (isSelected) {
@@ -105,23 +124,28 @@ export default React.memo(function LineRow({
 
   return (
     <div
-      onClick={() => handleSelectLine(line.lineDetails._id.toString())}
+      onClick={handleActivateLine}
       role={'presentation'}
       className={`flex flex-row items-center justify-start gap-2 px-4 py-4 hover:bg-gray-200 
       cursor-pointer transition-all relative z-50 rounded ${
         isSelected && 'bg-gray-200 scale-110 shadow-2xl translate-x-3'
       }`}
     >
-      {/* status dot */}
+      {/* channel picture */}
       {profilePictures && <LineIcon grayscale={!isUserTunedIn} sourceImages={profilePictures} />}
 
+      {/* channel name */}
       <h2
-        className={`text-inherit text-md max-w-[220px] truncate text-slate-800 ${
+        className={`text-inherit text-md max-w-[180px] truncate text-slate-800 ${
           line.currentUserMember.lastVisitDate ? 'font-semibold' : ''
         }`}
       >
         {line.lineDetails.name || line.otherUserObjects[0].givenName}
       </h2>
+
+      {isUserToggleTuned && (
+        <span className="ml-2 text-gray-300 text-xs p-1 px-2 bg-gray-100">{`${index + 1}`}</span>
+      )}
 
       <div className="ml-auto flex-shrink-0">{renderRightActivity}</div>
     </div>

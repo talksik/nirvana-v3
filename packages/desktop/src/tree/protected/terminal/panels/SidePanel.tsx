@@ -1,14 +1,9 @@
 import { LineMemberState } from '@nirvana/core/models/line.model';
-import MasterLineData from '@nirvana/core/models/masterLineData.model';
-import { Avatar, Skeleton, Tooltip } from 'antd';
-import React, { useCallback, useMemo, useEffect, useState } from 'react';
-import { FaPlus, FaSearch } from 'react-icons/fa';
-import { FiActivity, FiPlus, FiSearch, FiSun, FiX } from 'react-icons/fi';
+import { Skeleton, Tooltip } from 'antd';
+import React, { useCallback, useMemo, useState } from 'react';
+import { FiActivity, FiPlus, FiSearch } from 'react-icons/fi';
 import useRealTimeRooms from '../../../../providers/RealTimeRoomProvider';
 import useRooms from '../../../../providers/RoomsProvider';
-import useAuth from '../../../../providers/AuthProvider';
-import LineIcon from '../../../../components/lineIcon';
-import moment from 'moment';
 import NavBar from '../navbar/Navbar';
 import NoTextLogo from '@nirvana/components/logo/NoTextLogo';
 import LineRow from '../line/LineRow';
@@ -20,18 +15,31 @@ export default function SidePanel() {
   const { roomsMap, handleSelectLine, selectedLineId, handleShowNewChannelForm } =
     useRealTimeRooms();
 
-  const [toggleTunedLines, allLines] = useMemo(() => {
-    const masterLines: MasterLineData[] = Object.values(roomsMap);
+  // todo: sort
+  const allChannels = useMemo(() => {
+    const channels = Object.values(roomsMap);
 
-    const tunedLines: MasterLineData[] = [];
-    const restLines: MasterLineData[] = [];
+    channels.sort((channelA, channelB) => {
+      if (
+        channelA.currentUserMember.state === LineMemberState.TUNED &&
+        channelB.currentUserMember.state === LineMemberState.INBOX
+      )
+        return -1;
 
-    masterLines.forEach((masterLine) => {
-      if (masterLine.currentUserMember.state === LineMemberState.TUNED) tunedLines.push(masterLine);
-      else restLines.push(masterLine);
+      if (
+        channelB.currentUserMember.state === LineMemberState.TUNED &&
+        channelA.currentUserMember.state === LineMemberState.INBOX
+      )
+        return 1;
+
+      if (channelA.lineDetails.createdDate > channelB.lineDetails.createdDate) return 1;
+
+      // sort also by activity
+
+      return -1;
     });
 
-    return [tunedLines, restLines];
+    return channels;
   }, [roomsMap]);
 
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -66,10 +74,8 @@ export default function SidePanel() {
         </Tooltip>
       </div>
 
-      {/* tuned in lines block */}
+      {/* tuned in header + general controls */}
       <div className="flex flex-col shadow-xl bg-gray-100">
-        {/* tuned in header + general controls */}
-
         <Tooltip placement="right" title={'These are your active rooms...'}>
           <div className="flex flex-row items-center py-3 px-4 pb-0">
             <span className="flex flex-row gap-2 items-center justify-start text-gray-400 animate-pulse">
@@ -77,27 +83,13 @@ export default function SidePanel() {
 
               <h2 className="text-inherit text-xs">Tuned In</h2>
 
-              <p className="text-slate-300 text-xs ml-auto">{`${
-                toggleTunedLines?.length || 0
-              }/3`}</p>
+              <p className="text-slate-300 text-xs ml-auto">{`${allChannels?.length || 0}/3`}</p>
             </span>
           </div>
         </Tooltip>
-
-        {/* list of toggle tuned lines */}
-        <div className="flex flex-col mt-2">
-          {toggleTunedLines.map((masterLineData) => (
-            <LineRow
-              key={`terminalListLines-${masterLineData.lineDetails._id.toString()}`}
-              line={masterLineData}
-              handleSelectLine={handleSelectLine}
-              isSelected={masterLineData.lineDetails._id.toString() === selectedLineId}
-            />
-          ))}
-        </div>
       </div>
 
-      {!(allLines.length > 0) && !(toggleTunedLines.length > 0) && (
+      {!(allChannels.length > 0) && (
         <span className="text-gray-300 text-sm my-5 text-center">
           You have no lines! <br /> Create one to connect to your team instantly.
         </span>
@@ -108,8 +100,9 @@ export default function SidePanel() {
         {initialRoomsFetch.loading ? (
           <Skeleton />
         ) : (
-          allLines.map((masterLineData) => (
+          allChannels.map((masterLineData, index) => (
             <LineRow
+              index={index}
               key={`terminalListLines-${masterLineData.lineDetails._id.toString()}`}
               line={masterLineData}
               handleSelectLine={handleSelectLine}
