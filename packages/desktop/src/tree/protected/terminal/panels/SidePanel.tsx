@@ -118,7 +118,7 @@ export default function SidePanel() {
       </div>
 
       {/* user control panel */}
-      {/* <div
+      <div
         className="bg-gray-100
        border-t border-t-gray-200 p-4 shadow-2xl z-50 w-full"
       >
@@ -129,7 +129,7 @@ export default function SidePanel() {
         >
           <NoTextLogo type="small" />
         </button>
-      </div> */}
+      </div>
     </div>
   );
 }
