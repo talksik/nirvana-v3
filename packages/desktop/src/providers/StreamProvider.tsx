@@ -117,7 +117,9 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
           (currPeerRelationship) => currPeerRelationship.userId === res.masterUserId,
         );
 
-        if (localPeerForMasterAndMe) localPeerForMasterAndMe.peer.signal(res.simplePeerSignal);
+        // hacking little bug!
+        if (localPeerForMasterAndMe && !localPeerForMasterAndMe.peer.destroyed)
+          localPeerForMasterAndMe.peer.signal(res.simplePeerSignal);
       });
     });
 
@@ -174,6 +176,8 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
 
   // ! BUG..we need to clean up peer map based on users leaving certain channels as well..
   // not just an all inclusive list for all tuned in users...list for each channel
+
+  // ? are we deleting our peer wiht another person if we untune?
   useEffect(() => {
     const tunedUsersForLines: { [lineId: string]: string[] } = {};
     Object.values(roomsMap).map((currentLine) => {
@@ -185,6 +189,19 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
       // go through peer map
       // if there is someone in it who is not in a tuned in line, then destroy peer and remove
       Object.entries(draft).map(([lineId, peerRelationsForLine]) => {
+        // if I left this channel, then I want to make sure to destroy and delete all relations
+        if (
+          roomsMap[lineId]?.tunedInMemberIds &&
+          !roomsMap[lineId]?.tunedInMemberIds.includes(user._id.toString())
+        ) {
+          peerRelationsForLine?.forEach((peerRelation) => {
+            peerRelation.peer.destroy();
+          });
+
+          delete draft[lineId];
+          return;
+        }
+
         const usersToRemove = [];
         peerRelationsForLine?.forEach((peerRelation) => {
           if (!tunedUsersForLines[lineId].includes(peerRelation.userId)) {
