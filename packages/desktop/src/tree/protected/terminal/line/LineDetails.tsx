@@ -51,8 +51,6 @@ export default function LineDetails() {
       // don't want to see my own picture
       // TODO: don't show myself!?
       if (tunedInMemberUserId === user._id.toString()) {
-        pictureSources.push();
-
         pictureSources.push({
           name: user.givenName,
           pictureSrc: user.picture,
@@ -112,18 +110,10 @@ export default function LineDetails() {
         </div>
 
         <Avatar.Group className={'animate-pulse'} key={`lineHistoryMessage-yesterday-afternoon}`}>
-          <Avatar
-            key={`linehistory-${1}`}
-            src={user.picture}
-            shape="square"
-            size={'large'}
-            // grayscale if not playing?
-            className={`shadow-lg`}
-          />
-          {selectedLine.otherUserObjects.map((otherUser) => (
+          {tunedProfiles.map((otherUser) => (
             <Avatar
-              key={`linehistory-${1}`}
-              src={otherUser.picture}
+              key={`tunedUser-${otherUser.name}`}
+              src={otherUser.pictureSrc}
               shape="square"
               size={'large'}
               className={`shadow-lg`}
