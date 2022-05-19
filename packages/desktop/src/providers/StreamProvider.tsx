@@ -16,6 +16,35 @@ import useTerminalProvider from './TerminalProvider';
 import MasterLineData from '@nirvana/core/models/masterLineData.model';
 import { useEffectOnce } from 'react-use';
 
+const iceServers = [
+  { urls: 'stun:stun.l.google.com:19302' },
+  { urls: 'stun:stun.l.google.com:19302' },
+  { urls: 'stun:stun1.l.google.com:19302' },
+  { urls: 'stun:stun2.l.google.com:19302' },
+  { urls: 'stun:stun3.l.google.com:19302' },
+  { urls: 'stun:stun4.l.google.com:19302' },
+  {
+    url: 'turn:numb.viagenie.ca',
+    credential: 'muazkh',
+    username: 'webrtc@live.com',
+  },
+  {
+    url: 'turn:numb.viagenie.ca',
+    credential: 'muazkh',
+    username: 'webrtc@live.com',
+  },
+  {
+    url: 'turn:192.158.29.39:3478?transport=udp',
+    credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+    username: '28224511:1379330808',
+  },
+  {
+    url: 'turn:192.158.29.39:3478?transport=tcp',
+    credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+    username: '28224511:1379330808',
+  },
+];
+
 type LinePeerMap = {
   [lineId: string]: { userId: string; peer: Peer; mediaStream?: MediaStream }[];
 };
@@ -46,18 +75,10 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
 
       const peerForMeAndNewbie = new Peer({
         initiator: false,
-        trickle: true, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times
+        trickle: false, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times
         stream: userLocalStream,
         config: {
-          iceServers: [
-            { urls: 'stun:stun.l.google.com:19302' },
-            { urls: 'stun:global.stun.twilio.com:3478?transport=udp' },
-            {
-              url: 'turn:numb.viagenie.ca',
-              credential: 'muazkh',
-              username: 'webrtc@live.com',
-            },
-          ],
+          iceServers,
         },
       });
 
@@ -223,19 +244,11 @@ function LineConnector({
           const connectingToast = toast.loading('calling peer for a snappy experience');
 
           const localPeerConnection = new Peer({
-            initiator: true,
+            initiator: false,
             stream: localMediaStream,
             trickle: true, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times,
             config: {
-              iceServers: [
-                { urls: 'stun:stun.l.google.com:19302' },
-                { urls: 'stun:global.stun.twilio.com:3478?transport=udp' },
-                {
-                  url: 'turn:numb.viagenie.ca',
-                  credential: 'muazkh',
-                  username: 'webrtc@live.com',
-                },
-              ],
+              iceServers,
             },
           });
 
@@ -248,11 +261,11 @@ function LineConnector({
             );
 
             toast.dismiss(connectingToast);
-          });
 
-          // sending back the connection to the parent
-          // so that we can accept the answer later on
-          handleAddPeer(lineId, memberId, localPeerConnection, localMediaStream);
+            // sending back the connection to the parent
+            // so that we can accept the answer later on
+            handleAddPeer(lineId, memberId, localPeerConnection, localMediaStream);
+          });
         });
       });
   });
