@@ -70,6 +70,7 @@ function Stream({ peer }: { peer: Peer }) {
       console.log(
         'stream coming in from remote peer...BUT, only going to show once they broadcast',
       );
+      console.log(peer);
 
       // const audio = new Audio();
       // audio.autoplay = true;
