@@ -205,7 +205,7 @@ function StreamPlayer({ peer }: { peer: Peer }) {
       if (streamRef?.current) streamRef.current.srcObject = remotePeerStream;
     });
 
-    () => peer.destroy();
+    return () => peer.destroy();
   }, [peer]);
 
   return (
