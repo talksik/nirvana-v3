@@ -109,10 +109,10 @@ export default function LineDetails() {
           </span>
         </div>
 
-        <Avatar.Group className={'animate-pulse'} key={`lineHistoryMessage-yesterday-afternoon}`}>
+        <Avatar.Group className={'animate-pulse'}>
           {tunedProfiles.map((otherUser) => (
             <Avatar
-              key={`tunedUser-${otherUser.name}`}
+              key={`lineTunedInUserAvatar-${otherUser.name}`}
               src={otherUser.pictureSrc}
               shape="square"
               size={'large'}
@@ -123,10 +123,10 @@ export default function LineDetails() {
 
         <span className="px-10 text-gray-200"> | </span>
 
-        <Avatar.Group key={`lineHistoryMessage-yesterday-afternoon}`}>
+        <Avatar.Group>
           {selectedLine.otherUserObjects.map((otherUser) => (
             <Avatar
-              key={`linehistory-${1}`}
+              key={`lineOfflineUserAvatar-${1}`}
               src={otherUser.picture}
               shape="square"
               size={'default'}
