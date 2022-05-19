@@ -46,7 +46,7 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
 
       const peerForMeAndNewbie = new Peer({
         initiator: false,
-        trickle: false, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times
+        trickle: true, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times
         stream: userLocalStream,
         config: {
           iceServers: [
@@ -63,13 +63,7 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
 
       peerForMeAndNewbie.signal(res.simplePeerSignal);
 
-      updatePeerMap((draft) => {
-        if (draft[res.lineId]) {
-          draft[res.lineId].push({ userId: res.userWhoCalled, peer: peerForMeAndNewbie });
-        } else {
-          draft[res.lineId] = [{ userId: res.userWhoCalled, peer: peerForMeAndNewbie }];
-        }
-      });
+      handleAddPeer(res.lineId, res.userWhoCalled, peerForMeAndNewbie, userLocalStream);
 
       peerForMeAndNewbie.on('signal', (signal) => {
         console.log('sending an answer to the slave', res);
@@ -102,7 +96,7 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
           (currPeerRelationship) => currPeerRelationship.userId === res.masterUserId,
         );
 
-        localPeerForMasterAndMe.peer.signal(res.simplePeerSignal);
+        if (localPeerForMasterAndMe) localPeerForMasterAndMe.peer.signal(res.simplePeerSignal);
       });
     });
 
@@ -139,6 +133,14 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
   const handleAddPeer = useCallback(
     (lineId: string, userId: string, peerObj: Peer, mediaStream?: MediaStream) => {
       updatePeerMap((draft) => {
+        // for trickling, if we already have a peer for this line and user, then just replace
+        const existingUserLinePeerRelation = draft[lineId]?.find(
+          (currPeerRelation) => currPeerRelation.userId === userId,
+        );
+        if (existingUserLinePeerRelation) {
+          return draft;
+        }
+
         if (draft[lineId]) {
           draft[lineId].push({ userId, peer: peerObj, mediaStream });
         } else {
@@ -223,7 +225,7 @@ function LineConnector({
           const localPeerConnection = new Peer({
             initiator: true,
             stream: localMediaStream,
-            trickle: false, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times,
+            trickle: true, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times,
             config: {
               iceServers: [
                 { urls: 'stun:stun.l.google.com:19302' },
@@ -238,6 +240,8 @@ function LineConnector({
           });
 
           localPeerConnection.on('signal', (signal) => {
+            console.log('have a signal to make call to someone ');
+
             $ws.emit(
               ServerRequestChannels.RTC_CALL_SOMEONE_FOR_LINE,
               new RtcCallRequest(memberId, lineId, signal),
