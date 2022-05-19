@@ -148,7 +148,7 @@ export default function LineDetails() {
             if (lineId !== selectedLine.lineDetails._id.toString()) return <></>;
 
             return peerMap[lineId].map((linePeer) => (
-              <StreamPlayer key={`streamPlayer-${index}`} peer={linePeer.peer} />
+              <StreamPlayer key={`streamPlayer-${index}`} peerStream={linePeer.peerMediaStream} />
             ));
           })}
         </div>
@@ -194,19 +194,12 @@ export default function LineDetails() {
   );
 }
 
-function StreamPlayer({ peer }: { peer: Peer }) {
+function StreamPlayer({ peerStream }: { peerStream: MediaStream }) {
   const streamRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    peer.on('stream', (remotePeerStream: MediaStream) => {
-      console.log('stream coming in from remote peer');
-      console.log(remotePeerStream);
-
-      if (streamRef?.current) streamRef.current.srcObject = remotePeerStream;
-    });
-
-    () => peer.destroy();
-  }, [peer]);
+    if (streamRef?.current) streamRef.current.srcObject = peerStream;
+  }, [peerStream]);
 
   return (
     <>

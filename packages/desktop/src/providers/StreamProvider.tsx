@@ -46,7 +46,12 @@ const iceServers = [
 ];
 
 type LinePeerMap = {
-  [lineId: string]: { userId: string; peer: Peer; mediaStream?: MediaStream }[];
+  [lineId: string]: {
+    userId: string;
+    peer: Peer;
+    myMediaStream?: MediaStream;
+    peerMediaStream?: MediaStream;
+  }[];
 };
 interface IStreamProvider {
   peerMap: LinePeerMap;
@@ -93,6 +98,10 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
           ServerRequestChannels.RTC_ANSWER_SOMEONE_FOR_LINE,
           new RtcAnswerSomeoneRequest(res.userWhoCalled, res.lineId, signal),
         );
+      });
+
+      peerForMeAndNewbie.on('stream', (remoteStream: MediaStream) => {
+        handleGotPeerRemoteStream(res.lineId, res.userWhoCalled, remoteStream);
       });
 
       // !adding stream here causes race condition of the signal event just running over and over again
@@ -152,7 +161,7 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
   console.log(`peer map: `, peerMap);
 
   const handleAddPeer = useCallback(
-    (lineId: string, userId: string, peerObj: Peer, mediaStream?: MediaStream) => {
+    (lineId: string, userId: string, peerObj: Peer, myMediaStream?: MediaStream) => {
       updatePeerMap((draft) => {
         // for trickling, if we already have a peer for this line and user, then just replace
         const existingUserLinePeerRelation = draft[lineId]?.find(
@@ -163,9 +172,24 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
         }
 
         if (draft[lineId]) {
-          draft[lineId].push({ userId, peer: peerObj, mediaStream });
+          draft[lineId].push({ userId, peer: peerObj, myMediaStream });
         } else {
-          draft[lineId] = [{ userId, peer: peerObj, mediaStream }];
+          draft[lineId] = [{ userId, peer: peerObj, myMediaStream }];
+        }
+      });
+    },
+    [updatePeerMap],
+  );
+
+  const handleGotPeerRemoteStream = useCallback(
+    (lineId: string, userId: string, remoteStream: MediaStream) => {
+      updatePeerMap((draft) => {
+        // for trickling, if we already have a peer for this line and user, then just replace
+        const existingUserLinePeerRelation = draft[lineId]?.find(
+          (currPeerRelation) => currPeerRelation.userId === userId,
+        );
+        if (existingUserLinePeerRelation) {
+          existingUserLinePeerRelation.peerMediaStream = remoteStream;
         }
       });
     },
@@ -185,6 +209,7 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
               membersToCall={line.tunedInMemberIds.filter(
                 (currMemberId) => currMemberId !== user._id.toString(),
               )}
+              handleGotPeerRemoteStream={handleGotPeerRemoteStream}
             />
           );
       })}
@@ -205,10 +230,17 @@ function LineConnector({
   lineId,
   membersToCall,
   handleAddPeer,
+  handleGotPeerRemoteStream,
 }: {
   lineId: string;
   membersToCall: string[];
-  handleAddPeer: (lineId: string, userId: string, peerObj: Peer, mediaStream?: MediaStream) => void;
+  handleAddPeer: (
+    lineId: string,
+    userId: string,
+    peerObj: Peer,
+    myMediaStream?: MediaStream,
+  ) => void;
+  handleGotPeerRemoteStream: (lineId: string, userId: string, remoteStream: MediaStream) => void;
 }) {
   const { $ws } = useSockets();
 
@@ -265,6 +297,10 @@ function LineConnector({
             // sending back the connection to the parent
             // so that we can accept the answer later on
             handleAddPeer(lineId, memberId, localPeerConnection, localMediaStream);
+          });
+
+          localPeerConnection.on('stream', (remoteStream: MediaStream) => {
+            handleGotPeerRemoteStream(lineId, memberId, remoteStream);
           });
         });
       });
