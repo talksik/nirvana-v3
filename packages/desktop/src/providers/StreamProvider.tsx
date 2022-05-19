@@ -61,7 +61,11 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
       peerForMeAndNewbie.signal(res.simplePeerSignal);
 
       updatePeerMap((draft) => {
-        draft[res.lineId].push({ userId: res.userWhoCalled, peer: peerForMeAndNewbie });
+        if (draft[res.lineId]) {
+          draft[res.lineId].push({ userId: res.userWhoCalled, peer: peerForMeAndNewbie });
+        } else {
+          draft[res.lineId] = [{ userId: res.userWhoCalled, peer: peerForMeAndNewbie }];
+        }
       });
 
       peerForMeAndNewbie.on('signal', (signal) => {
