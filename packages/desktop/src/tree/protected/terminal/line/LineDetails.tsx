@@ -215,7 +215,14 @@ function StreamPlayer({ peerStream }: { peerStream: MediaStream }) {
   return (
     <>
       this is a stream component of one remote peer
-      <video ref={streamRef} height={400} width={400} className={'shadow-xl'} autoPlay muted />
+      <video
+        ref={streamRef}
+        height={400}
+        width={400}
+        className={'shadow-xl rounded'}
+        autoPlay
+        muted
+      />
     </>
   );
 }
