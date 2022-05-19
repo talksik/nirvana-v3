@@ -158,34 +158,36 @@ export default function LineDetails() {
             );
           })}
         </div>
+      </div>
 
-        {/* canvas action buttons */}
-        <div className="flex flex-row gap-3 p-10 justify-end items-center ">
-          <Tooltip
-            placement="left"
-            title={`${isUserToggleTuned ? 'click to untoggle' : 'click to stay tuned in'}`}
-          >
-            <button
-              className={`p-2 flex justify-center items-center shadow-lg
+      {/* canvas action buttons */}
+      <div className="absolute right-5 bottom-5 flex flex-row gap-3 p-10 justify-end items-center ">
+        <Tooltip
+          placement="left"
+          title={`${isUserToggleTuned ? 'click to untoggle' : 'click to stay tuned in'}`}
+        >
+          <button
+            className={`p-2 flex justify-center items-center shadow-lg
           hover:scale-105 transition-all animate-pulse ${
             isUserToggleTuned ? 'bg-gray-800 text-white' : 'text-black'
           }`}
-              onClick={() =>
-                isUserToggleTuned
-                  ? handleUpdateLineMemberState(
-                      selectedLine.lineDetails._id.toString(),
-                      LineMemberState.INBOX,
-                    )
-                  : handleUpdateLineMemberState(
-                      selectedLine.lineDetails._id.toString(),
-                      LineMemberState.TUNED,
-                    )
-              }
-            >
-              <FiActivity className="text-md" />
-            </button>
-          </Tooltip>
+            onClick={() =>
+              isUserToggleTuned
+                ? handleUpdateLineMemberState(
+                    selectedLine.lineDetails._id.toString(),
+                    LineMemberState.INBOX,
+                  )
+                : handleUpdateLineMemberState(
+                    selectedLine.lineDetails._id.toString(),
+                    LineMemberState.TUNED,
+                  )
+            }
+          >
+            <FiActivity className="text-md" />
+          </button>
+        </Tooltip>
 
+        <Tooltip title={'Press and hold ` or click to join the room'}>
           <button
             className={`p-3 flex justify-center items-center shadow-2xl
             hover:scale-105 transition-all ${
@@ -194,7 +196,7 @@ export default function LineDetails() {
           >
             <FiSun className="text-lg" />
           </button>
-        </div>
+        </Tooltip>
       </div>
     </div>
   );

@@ -118,8 +118,7 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
         );
 
         // hacking little bug!
-        if (localPeerForMasterAndMe && !localPeerForMasterAndMe.peer.destroyed)
-          localPeerForMasterAndMe.peer.signal(res.simplePeerSignal);
+        if (localPeerForMasterAndMe) localPeerForMasterAndMe.peer.signal(res.simplePeerSignal);
       });
     });
 

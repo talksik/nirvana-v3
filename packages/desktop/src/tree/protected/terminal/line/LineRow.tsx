@@ -133,15 +133,9 @@ export default React.memo(function LineRow({
       onClick={handleActivateLine}
       role={'presentation'}
       className={`flex flex-row items-center justify-start gap-2 px-4 py-4 hover:bg-gray-200 
-      cursor-pointer transition-all relative z-50  
-      ${isUserToggleTuned && isWindowFocused && ' bg-gray-100 shadow-2xl'}
-      ${isUserToggleTuned && !isWindowFocused && ' bg-transparent '}
-      ${isSelected && isWindowFocused && ' bg-gray-200 shadow-2xl '}
-      ${isSelected && !isWindowFocused && ' bg-transparent '}
-
-      ${desktopMode === 'overlayOnly' && !isWindowFocused && ' opacity-20 '}
-
-      ${!isWindowFocused && desktopMode === 'overlayOnly' && !isSelected && ' bg-transparent '}`}
+      cursor-pointer transition-all relative z-50 
+      
+      ${isUserToggleTuned && ' bg-gray-100 shadow-2xl'}`}
     >
       {/* channel picture */}
       {profilePictures && (

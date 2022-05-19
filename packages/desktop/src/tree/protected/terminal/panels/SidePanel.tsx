@@ -67,14 +67,16 @@ export default function SidePanel() {
   return (
     <div
       className={`flex flex-col w-[350px] group 
-    border-r border-r-gray-200 shadow-xl z-20  ${desktopMode === 'mainApp' && ' bg-white '}`}
+    border-r border-r-gray-200 shadow-xl z-20 bg-white
+    
+    ${!isWindowFocused && desktopMode === 'overlayOnly' && ' opacity-20 '}`}
     >
       {/* user control panel */}
       <div
         className={`bg-gray-100 flex flex-row items-center gap-2
        p-4 pb-2 z-50 w-full titlebar ${
          desktopMode === 'overlayOnly' && 'border-b border-b-gray-200'
-       } ${!isWindowFocused && desktopMode === 'overlayOnly' && ' opacity-20 '}
+       } 
       `}
       >
         <button onClick={handleToggleDesktopMode} className={'mr-auto animate-pulse'}>
