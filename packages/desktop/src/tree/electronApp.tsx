@@ -6,8 +6,6 @@ import { AuthProvider } from '../providers/AuthProvider';
 import { ElectronProvider } from '../providers/ElectronProvider';
 import { SocketProvider } from '../providers/SocketProvider';
 import ProtectedRoute from './protected/ProtectedRoute';
-import { StreamProvider } from '../providers/StreamProvider';
-
 export default function ElectronApp() {
   return (
     <ElectronProvider>

@@ -73,7 +73,7 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
     <StreamProviderContext.Provider value={{ peerMap, userLocalStream }}>
       {/* handles stream connections */}
       {Object.values(roomsMap).map((line) => {
-        if (line.tunedInMemberIds.includes(user._id.toString()))
+        if (line.tunedInMemberIds?.includes(user._id.toString()))
           return (
             <MemoLineConnector
               key={`streamConnector-${line.lineDetails._id.toString()}`}
@@ -81,8 +81,6 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
               line={line}
             />
           );
-
-        console.log(line.tunedInMemberIds);
       })}
 
       {children}
@@ -104,7 +102,6 @@ function LineConnector({
   handleAddPeer: (userId: string, peerObj: Peer) => void;
 }) {
   console.log('rendering this piece of shit');
-  console.log(line);
 
   useEffectOnce(() => {
     console.log('got initial list for this channel that I am tuned into');
@@ -112,13 +109,7 @@ function LineConnector({
     console.log(line.tunedInMemberIds);
   });
 
-  return (
-    <>
-      {line.tunedInMemberIds.map((userId) => (
-        <StreamConnector key={userId} peerUserId={userId} handleAddPeer={handleAddPeer} />
-      ))}
-    </>
-  );
+  return <></>;
 }
 
 function StreamConnector({
@@ -133,10 +124,6 @@ function StreamConnector({
   // call all of the people on the initial load of this
   useEffect(() => {
     console.log('calling all of the initials until this component unmounts');
-
-    setInterval(() => {
-      console.log('still have this mediadevice in memory!');
-    });
 
     navigator.mediaDevices
       .getUserMedia({ video: false, audio: true })
