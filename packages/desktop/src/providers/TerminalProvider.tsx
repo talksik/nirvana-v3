@@ -29,6 +29,7 @@ import { User } from '@nirvana/core/models/user.model';
 import SidePanel from '../tree/protected/terminal/panels/SidePanel';
 import MainPanel from '../tree/protected/terminal/panels/MainPanel';
 import useElectron from './ElectronProvider';
+import { StreamProvider } from './StreamProvider';
 
 type LineIdToMasterLine = {
   [lineId: string]: MasterLineData;
@@ -358,13 +359,17 @@ export function TerminalProvider({ children }: { children: React.ReactChild }) {
         handleShowNewChannelForm,
       }}
     >
-      <div className="flex flex-row flex-1 h-full w-full">
-        <SidePanel />
+      <StreamProvider>
+        <>
+          <div className="flex flex-row flex-1 h-full w-full">
+            <SidePanel />
 
-        {desktopMode === 'mainApp' && <MainPanel />}
-      </div>
+            {desktopMode === 'mainApp' && <MainPanel />}
+          </div>
 
-      {children}
+          {children}
+        </>
+      </StreamProvider>
     </TerminalContext.Provider>
   );
 }

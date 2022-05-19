@@ -15,11 +15,9 @@ export default function ElectronApp() {
         <ProtectedRoute>
           <SocketProvider>
             <RoomsProvider>
-              <StreamProvider>
-                <TerminalProvider>
-                  <></>
-                </TerminalProvider>
-              </StreamProvider>
+              <TerminalProvider>
+                <></>
+              </TerminalProvider>
             </RoomsProvider>
           </SocketProvider>
         </ProtectedRoute>

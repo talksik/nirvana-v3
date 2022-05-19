@@ -81,6 +81,8 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
               line={line}
             />
           );
+
+        console.log(line.tunedInMemberIds);
       })}
 
       {children}
