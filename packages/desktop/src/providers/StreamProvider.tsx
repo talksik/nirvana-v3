@@ -41,6 +41,7 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
   useEffect(() => {
     $ws.on(ServerResponseChannels.RTC_NEW_USER_JOINED, (res: RtcNewUserJoinedResponse) => {
       toast.success('NEWBIE JOINED!!!');
+      console.log('someone calling me', res);
 
       const peerForMeAndNewbie = new Peer({
         initiator: false,
@@ -69,6 +70,8 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
       });
 
       peerForMeAndNewbie.on('signal', (signal) => {
+        console.log('sending an answer to the slave', res);
+
         $ws.emit(
           ServerRequestChannels.RTC_ANSWER_SOMEONE_FOR_LINE,
           new RtcAnswerSomeoneRequest(res.userWhoCalled, res.lineId, signal),
@@ -78,6 +81,9 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
 
     $ws.on(ServerResponseChannels.RTC_RECEIVING_MASTER_ANSWER, (res: RtcReceiveAnswerResponse) => {
       toast.success('MASTER gave me an answer!!!');
+
+      console.log('master gave me this answer: ', res);
+
       // find this person in peer map
       updatePeerMap((draft) => {
         const localPeerForMasterAndMe = draft[res.lineId].find(
@@ -85,8 +91,6 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
         );
 
         localPeerForMasterAndMe.peer.signal(res.simplePeerSignal);
-
-        return;
       });
     });
 
@@ -214,6 +218,8 @@ function LineConnector({
         // stream in two at same time anyway
 
         toast.success('CALLING bunch of people!!!');
+        console.log('Calling these folks', membersToCall);
+        console.log('for line', lineId);
 
         membersToCall.map((memberId) => {
           localPeerConnection.on('signal', (signal) => {
