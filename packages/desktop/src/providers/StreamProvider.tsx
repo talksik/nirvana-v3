@@ -37,6 +37,7 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
   const [peerMap, updatePeerMap] = useImmer<LinePeerMap>({});
 
   const [userLocalStream, setUserLocalStream] = useState<MediaStream>();
+  const [localUserStreams, setLocalUserStreams] = useImmer<{ [lineId: string]: MediaStream }>({});
 
   useEffect(() => {
     $ws.on(ServerResponseChannels.RTC_NEW_USER_JOINED, (res: RtcNewUserJoinedResponse) => {
@@ -46,6 +47,7 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
       const peerForMeAndNewbie = new Peer({
         initiator: false,
         trickle: false, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times
+        stream: userLocalStream,
         config: {
           iceServers: [
             { urls: 'stun:stun.l.google.com:19302' },
@@ -77,6 +79,14 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
           new RtcAnswerSomeoneRequest(res.userWhoCalled, res.lineId, signal),
         );
       });
+
+      // see if I have a stream for this channel or line
+      // create one if not, and add to stream
+      // navigator.mediaDevices
+      //   .getUserMedia({ video: true, audio: true })
+      //   .then((currStream: MediaStream) => {
+      //     peerForMeAndNewbie.addStream(currStream);
+      //   });
     });
 
     $ws.on(ServerResponseChannels.RTC_RECEIVING_MASTER_ANSWER, (res: RtcReceiveAnswerResponse) => {
@@ -98,7 +108,7 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
       $ws.removeAllListeners(ServerResponseChannels.RTC_NEW_USER_JOINED);
       $ws.removeAllListeners(ServerResponseChannels.RTC_RECEIVING_MASTER_ANSWER);
     };
-  }, [updatePeerMap]);
+  }, [updatePeerMap, $ws, userLocalStream]);
 
   useEffect(() => {
     navigator.mediaDevices.enumerateDevices().then((devices) => {
@@ -193,23 +203,6 @@ function LineConnector({
     navigator.mediaDevices
       .getUserMedia({ video: true, audio: true })
       .then((localMediaStream: MediaStream) => {
-        const localPeerConnection = new Peer({
-          initiator: true,
-          stream: localMediaStream,
-          trickle: false, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times,
-          config: {
-            iceServers: [
-              { urls: 'stun:stun.l.google.com:19302' },
-              { urls: 'stun:global.stun.twilio.com:3478?transport=udp' },
-              {
-                url: 'turn:numb.viagenie.ca',
-                credential: 'muazkh',
-                username: 'webrtc@live.com',
-              },
-            ],
-          },
-        });
-
         // todo check if already in peer map? keeping it simple for now
         // a peer relationship between me and someone for this particular channel so that I can just enable or disable this particular stream
         // object instead of managing different ones
@@ -221,12 +214,34 @@ function LineConnector({
         console.log('Calling these folks', membersToCall);
         console.log('for line', lineId);
 
+        // todo...call in parallel
         membersToCall.map((memberId) => {
+          const connectingToast = toast.loading('calling peer for a snappy experience');
+
+          const localPeerConnection = new Peer({
+            initiator: true,
+            stream: localMediaStream,
+            trickle: false, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times,
+            config: {
+              iceServers: [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:global.stun.twilio.com:3478?transport=udp' },
+                {
+                  url: 'turn:numb.viagenie.ca',
+                  credential: 'muazkh',
+                  username: 'webrtc@live.com',
+                },
+              ],
+            },
+          });
+
           localPeerConnection.on('signal', (signal) => {
             $ws.emit(
               ServerRequestChannels.RTC_CALL_SOMEONE_FOR_LINE,
               new RtcCallRequest(memberId, lineId, signal),
             );
+
+            toast.dismiss(connectingToast);
           });
 
           // sending back the connection to the parent

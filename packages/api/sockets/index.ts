@@ -154,6 +154,8 @@ export default function InitializeWs(io: any) {
       });
 
       socket.on(ServerRequestChannels.RTC_CALL_SOMEONE_FOR_LINE, (req: RtcCallRequest) => {
+        console.log('slave calling a master');
+
         const userSocketId = userIdsToSocketIds[req.userToCall];
 
         io.to(userSocketId).emit(
@@ -165,6 +167,8 @@ export default function InitializeWs(io: any) {
       socket.on(
         ServerRequestChannels.RTC_ANSWER_SOMEONE_FOR_LINE,
         (req: RtcAnswerSomeoneRequest) => {
+          console.log('master answering slave');
+
           const userSocketId = userIdsToSocketIds[req.newbieUserId];
 
           io.to(userSocketId).emit(

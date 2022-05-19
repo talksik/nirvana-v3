@@ -144,10 +144,12 @@ export default function LineDetails() {
 
         {/* live line */}
         <div className="flex flex-col">
-          {Object.values(peerMap).map((linePeers, index) => {
-            return linePeers.map((linePeer) => {
-              return <StreamPlayer key={`streamPlayer-${index}`} peer={linePeer.peer} />;
-            });
+          {Object.keys(peerMap).map((lineId, index) => {
+            if (lineId !== selectedLine.lineDetails._id.toString()) return <></>;
+
+            return peerMap[lineId].map((linePeer) => (
+              <StreamPlayer key={`streamPlayer-${index}`} peer={linePeer.peer} />
+            ));
           })}
         </div>
 
