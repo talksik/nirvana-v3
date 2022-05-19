@@ -23,11 +23,7 @@ const iceServers = [
   { urls: 'stun:stun2.l.google.com:19302' },
   { urls: 'stun:stun3.l.google.com:19302' },
   { urls: 'stun:stun4.l.google.com:19302' },
-  {
-    url: 'turn:numb.viagenie.ca',
-    credential: 'muazkh',
-    username: 'webrtc@live.com',
-  },
+  { urls: 'stun:global.stun.twilio.com:3478?transport=udp' },
   {
     url: 'turn:numb.viagenie.ca',
     credential: 'muazkh',
@@ -35,11 +31,6 @@ const iceServers = [
   },
   {
     url: 'turn:192.158.29.39:3478?transport=udp',
-    credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
-    username: '28224511:1379330808',
-  },
-  {
-    url: 'turn:192.158.29.39:3478?transport=tcp',
     credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
     username: '28224511:1379330808',
   },
@@ -181,11 +172,13 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
     [updatePeerMap],
   );
 
+  // ! BUG..we need to clean up peer map based on users leaving certain channels as well..
+  // not just an all inclusive list for all tuned in users...list for each channel
   useEffect(() => {
-    let allTunedInUsers = [];
+    const tunedUsersForLines: { [lineId: string]: string[] } = {};
     Object.values(roomsMap).map((currentLine) => {
       if (currentLine.tunedInMemberIds)
-        allTunedInUsers = [...currentLine.tunedInMemberIds, ...allTunedInUsers];
+        tunedUsersForLines[currentLine.lineDetails._id.toString()] = currentLine.tunedInMemberIds;
     });
 
     updatePeerMap((draft) => {
@@ -194,7 +187,7 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
       Object.entries(draft).map(([lineId, peerRelationsForLine]) => {
         const usersToRemove = [];
         peerRelationsForLine?.forEach((peerRelation) => {
-          if (!allTunedInUsers.includes(peerRelation.userId)) {
+          if (!tunedUsersForLines[lineId].includes(peerRelation.userId)) {
             peerRelation.peer.destroy();
 
             usersToRemove.push(peerRelation.userId);
