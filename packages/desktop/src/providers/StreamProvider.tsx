@@ -4,8 +4,10 @@ import useAuth from './AuthProvider';
 import { useImmer } from 'use-immer';
 import useSockets from './SocketProvider';
 import {
-  RtcReceiveSignalResponse,
-  RtcSendSignalRequest,
+  RtcAnswerSomeoneRequest,
+  RtcCallRequest,
+  RtcNewUserJoinedResponse,
+  RtcReceiveAnswerResponse,
   ServerRequestChannels,
   ServerResponseChannels,
 } from '@nirvana/core/sockets/channels';
@@ -15,7 +17,7 @@ import MasterLineData from '@nirvana/core/models/masterLineData.model';
 import { useEffectOnce } from 'react-use';
 
 type LinePeerMap = {
-  [lineId: string]: { userId: string; peer: Peer }[];
+  [lineId: string]: { userId: string; peer: Peer; mediaStream?: MediaStream }[];
 };
 interface IStreamProvider {
   peerMap: LinePeerMap;
@@ -35,6 +37,60 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
   const [peerMap, updatePeerMap] = useImmer<LinePeerMap>({});
 
   const [userLocalStream, setUserLocalStream] = useState<MediaStream>();
+
+  useEffect(() => {
+    $ws.on(ServerResponseChannels.RTC_NEW_USER_JOINED, (res: RtcNewUserJoinedResponse) => {
+      toast.success('NEWBIE JOINED!!!');
+
+      const peerForMeAndNewbie = new Peer({
+        initiator: false,
+        trickle: false, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times
+        config: {
+          iceServers: [
+            { urls: 'stun:stun.l.google.com:19302' },
+            { urls: 'stun:global.stun.twilio.com:3478?transport=udp' },
+            {
+              url: 'turn:numb.viagenie.ca',
+              credential: 'muazkh',
+              username: 'webrtc@live.com',
+            },
+          ],
+        },
+      });
+
+      peerForMeAndNewbie.signal(res.simplePeerSignal);
+
+      updatePeerMap((draft) => {
+        draft[res.lineId].push({ userId: res.userWhoCalled, peer: peerForMeAndNewbie });
+      });
+
+      peerForMeAndNewbie.on('signal', (signal) => {
+        $ws.emit(
+          ServerRequestChannels.RTC_ANSWER_SOMEONE_FOR_LINE,
+          new RtcAnswerSomeoneRequest(res.userWhoCalled, res.lineId, signal),
+        );
+      });
+    });
+
+    $ws.on(ServerResponseChannels.RTC_RECEIVING_MASTER_ANSWER, (res: RtcReceiveAnswerResponse) => {
+      toast.success('MASTER gave me an answer!!!');
+      // find this person in peer map
+      updatePeerMap((draft) => {
+        const localPeerForMasterAndMe = draft[res.lineId].find(
+          (currPeerRelationship) => currPeerRelationship.userId === res.masterUserId,
+        );
+
+        localPeerForMasterAndMe.peer.signal(res.simplePeerSignal);
+
+        return;
+      });
+    });
+
+    return () => {
+      $ws.removeAllListeners(ServerResponseChannels.RTC_NEW_USER_JOINED);
+      $ws.removeAllListeners(ServerResponseChannels.RTC_RECEIVING_MASTER_ANSWER);
+    };
+  }, [updatePeerMap]);
 
   useEffect(() => {
     navigator.mediaDevices.enumerateDevices().then((devices) => {
@@ -61,9 +117,13 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
   console.log(`peer map: `, peerMap);
 
   const handleAddPeer = useCallback(
-    (userId: string, peerObj: Peer) => {
+    (lineId: string, userId: string, peerObj: Peer, mediaStream?: MediaStream) => {
       updatePeerMap((draft) => {
-        draft[userId] = peerObj;
+        if (draft[lineId]) {
+          draft[lineId].push({ userId, peer: peerObj, mediaStream });
+        } else {
+          draft[lineId] = [{ userId, peer: peerObj, mediaStream }];
+        }
       });
     },
     [updatePeerMap],
@@ -77,6 +137,7 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
           return (
             <MemoLineConnector
               key={`streamConnector-${line.lineDetails._id.toString()}`}
+              lineId={line.lineDetails._id.toString()}
               handleAddPeer={handleAddPeer}
               membersToCall={line.tunedInMemberIds.filter(
                 (currMemberId) => currMemberId !== user._id.toString(),
@@ -96,13 +157,18 @@ export default function useStreams() {
 
 const MemoLineConnector = React.memo(LineConnector);
 
+// handle managing stream connections for one line
 function LineConnector({
+  lineId,
   membersToCall,
   handleAddPeer,
 }: {
+  lineId: string;
   membersToCall: string[];
-  handleAddPeer: (userId: string, peerObj: Peer) => void;
+  handleAddPeer: (lineId: string, userId: string, peerObj: Peer, mediaStream?: MediaStream) => void;
 }) {
+  const { $ws } = useSockets();
+
   console.log('rendering this piece of shit');
 
   useEffectOnce(() => {
@@ -114,49 +180,51 @@ function LineConnector({
     // also so that I can signal for the peer object relationship between me and this other person for this particular channel
 
     // then add in the stream to this local peer relationship object
-  });
 
-  return <></>;
-}
-
-function StreamConnector({
-  peerUserId,
-  handleAddPeer,
-}: {
-  peerUserId: string;
-  handleAddPeer: (userId: string, peerObj: Peer) => void;
-}) {
-  const { $ws } = useSockets();
-
-  // call all of the people on the initial load of this
-  useEffect(() => {
-    console.log('calling all of the initials until this component unmounts');
-
+    // todo get the user media selections
     navigator.mediaDevices
-      .getUserMedia({ video: false, audio: true })
+      .getUserMedia({ video: true, audio: true })
       .then((localMediaStream: MediaStream) => {
         const localPeerConnection = new Peer({
           initiator: true,
           stream: localMediaStream,
-          trickle: false, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times
+          trickle: false, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times,
+          config: {
+            iceServers: [
+              { urls: 'stun:stun.l.google.com:19302' },
+              { urls: 'stun:global.stun.twilio.com:3478?transport=udp' },
+              {
+                url: 'turn:numb.viagenie.ca',
+                credential: 'muazkh',
+                username: 'webrtc@live.com',
+              },
+            ],
+          },
         });
 
-        localPeerConnection.on('signal', (signal) => {
-          console.log('going to call someone');
-          $ws.emit(
-            ServerRequestChannels.RTC_SEND_SIGNAL,
-            new RtcSendSignalRequest(peerUserId, signal),
-          );
-        });
+        // todo check if already in peer map? keeping it simple for now
+        // a peer relationship between me and someone for this particular channel so that I can just enable or disable this particular stream
+        // object instead of managing different ones
 
-        // sending back the connection to the parent for everyone
-        handleAddPeer(peerUserId, localPeerConnection);
+        // bandwidth wise, would be uploading stream to one room at a time but downloading a x b streams but someone can't
+        // stream in two at same time anyway
+
+        toast.success('CALLING bunch of people!!!');
+
+        membersToCall.map((memberId) => {
+          localPeerConnection.on('signal', (signal) => {
+            $ws.emit(
+              ServerRequestChannels.RTC_CALL_SOMEONE_FOR_LINE,
+              new RtcCallRequest(memberId, lineId, signal),
+            );
+          });
+
+          // sending back the connection to the parent
+          // so that we can accept the answer later on
+          handleAddPeer(lineId, memberId, localPeerConnection, localMediaStream);
+        });
       });
-
-    () => {
-      // destroy this peer and remove from the parent controller? or happens when someone else leaves the tuned list?
-    };
-  }, []);
+  });
 
   return <></>;
 }
