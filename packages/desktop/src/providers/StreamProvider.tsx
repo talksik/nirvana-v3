@@ -16,8 +16,42 @@ import useTerminalProvider from './TerminalProvider';
 import MasterLineData from '@nirvana/core/models/masterLineData.model';
 import { useEffectOnce } from 'react-use';
 
+const iceServers = [
+  { urls: 'stun:stun.l.google.com:19302' },
+  { urls: 'stun:stun.l.google.com:19302' },
+  { urls: 'stun:stun1.l.google.com:19302' },
+  { urls: 'stun:stun2.l.google.com:19302' },
+  { urls: 'stun:stun3.l.google.com:19302' },
+  { urls: 'stun:stun4.l.google.com:19302' },
+  {
+    url: 'turn:numb.viagenie.ca',
+    credential: 'muazkh',
+    username: 'webrtc@live.com',
+  },
+  {
+    url: 'turn:numb.viagenie.ca',
+    credential: 'muazkh',
+    username: 'webrtc@live.com',
+  },
+  {
+    url: 'turn:192.158.29.39:3478?transport=udp',
+    credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+    username: '28224511:1379330808',
+  },
+  {
+    url: 'turn:192.158.29.39:3478?transport=tcp',
+    credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+    username: '28224511:1379330808',
+  },
+];
+
 type LinePeerMap = {
-  [lineId: string]: { userId: string; peer: Peer; mediaStream?: MediaStream }[];
+  [lineId: string]: {
+    userId: string;
+    peer: Peer;
+    myMediaStream?: MediaStream;
+    peerMediaStream?: MediaStream;
+  }[];
 };
 interface IStreamProvider {
   peerMap: LinePeerMap;
@@ -49,27 +83,13 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
         trickle: false, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times
         stream: userLocalStream,
         config: {
-          iceServers: [
-            { urls: 'stun:stun.l.google.com:19302' },
-            { urls: 'stun:global.stun.twilio.com:3478?transport=udp' },
-            {
-              url: 'turn:numb.viagenie.ca',
-              credential: 'muazkh',
-              username: 'webrtc@live.com',
-            },
-          ],
+          iceServers,
         },
       });
 
       peerForMeAndNewbie.signal(res.simplePeerSignal);
 
-      updatePeerMap((draft) => {
-        if (draft[res.lineId]) {
-          draft[res.lineId].push({ userId: res.userWhoCalled, peer: peerForMeAndNewbie });
-        } else {
-          draft[res.lineId] = [{ userId: res.userWhoCalled, peer: peerForMeAndNewbie }];
-        }
-      });
+      handleAddPeer(res.lineId, res.userWhoCalled, peerForMeAndNewbie, userLocalStream);
 
       peerForMeAndNewbie.on('signal', (signal) => {
         console.log('sending an answer to the slave', res);
@@ -78,6 +98,10 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
           ServerRequestChannels.RTC_ANSWER_SOMEONE_FOR_LINE,
           new RtcAnswerSomeoneRequest(res.userWhoCalled, res.lineId, signal),
         );
+      });
+
+      peerForMeAndNewbie.on('stream', (remoteStream: MediaStream) => {
+        handleGotPeerRemoteStream(res.lineId, res.userWhoCalled, remoteStream);
       });
 
       // !adding stream here causes race condition of the signal event just running over and over again
@@ -102,7 +126,7 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
           (currPeerRelationship) => currPeerRelationship.userId === res.masterUserId,
         );
 
-        localPeerForMasterAndMe.peer.signal(res.simplePeerSignal);
+        if (localPeerForMasterAndMe) localPeerForMasterAndMe.peer.signal(res.simplePeerSignal);
       });
     });
 
@@ -137,12 +161,35 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
   console.log(`peer map: `, peerMap);
 
   const handleAddPeer = useCallback(
-    (lineId: string, userId: string, peerObj: Peer, mediaStream?: MediaStream) => {
+    (lineId: string, userId: string, peerObj: Peer, myMediaStream?: MediaStream) => {
       updatePeerMap((draft) => {
+        // for trickling, if we already have a peer for this line and user, then just replace
+        const existingUserLinePeerRelation = draft[lineId]?.find(
+          (currPeerRelation) => currPeerRelation.userId === userId,
+        );
+        if (existingUserLinePeerRelation) {
+          return draft;
+        }
+
         if (draft[lineId]) {
-          draft[lineId].push({ userId, peer: peerObj, mediaStream });
+          draft[lineId].push({ userId, peer: peerObj, myMediaStream });
         } else {
-          draft[lineId] = [{ userId, peer: peerObj, mediaStream }];
+          draft[lineId] = [{ userId, peer: peerObj, myMediaStream }];
+        }
+      });
+    },
+    [updatePeerMap],
+  );
+
+  const handleGotPeerRemoteStream = useCallback(
+    (lineId: string, userId: string, remoteStream: MediaStream) => {
+      updatePeerMap((draft) => {
+        // for trickling, if we already have a peer for this line and user, then just replace
+        const existingUserLinePeerRelation = draft[lineId]?.find(
+          (currPeerRelation) => currPeerRelation.userId === userId,
+        );
+        if (existingUserLinePeerRelation) {
+          existingUserLinePeerRelation.peerMediaStream = remoteStream;
         }
       });
     },
@@ -162,6 +209,7 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
               membersToCall={line.tunedInMemberIds.filter(
                 (currMemberId) => currMemberId !== user._id.toString(),
               )}
+              handleGotPeerRemoteStream={handleGotPeerRemoteStream}
             />
           );
       })}
@@ -182,10 +230,17 @@ function LineConnector({
   lineId,
   membersToCall,
   handleAddPeer,
+  handleGotPeerRemoteStream,
 }: {
   lineId: string;
   membersToCall: string[];
-  handleAddPeer: (lineId: string, userId: string, peerObj: Peer, mediaStream?: MediaStream) => void;
+  handleAddPeer: (
+    lineId: string,
+    userId: string,
+    peerObj: Peer,
+    myMediaStream?: MediaStream,
+  ) => void;
+  handleGotPeerRemoteStream: (lineId: string, userId: string, remoteStream: MediaStream) => void;
 }) {
   const { $ws } = useSockets();
 
@@ -225,30 +280,28 @@ function LineConnector({
             stream: localMediaStream,
             trickle: false, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times,
             config: {
-              iceServers: [
-                { urls: 'stun:stun.l.google.com:19302' },
-                { urls: 'stun:global.stun.twilio.com:3478?transport=udp' },
-                {
-                  url: 'turn:numb.viagenie.ca',
-                  credential: 'muazkh',
-                  username: 'webrtc@live.com',
-                },
-              ],
+              iceServers,
             },
           });
 
           localPeerConnection.on('signal', (signal) => {
+            console.log('have a signal to make call to someone ');
+
             $ws.emit(
               ServerRequestChannels.RTC_CALL_SOMEONE_FOR_LINE,
               new RtcCallRequest(memberId, lineId, signal),
             );
 
             toast.dismiss(connectingToast);
+
+            // sending back the connection to the parent
+            // so that we can accept the answer later on
+            handleAddPeer(lineId, memberId, localPeerConnection, localMediaStream);
           });
 
-          // sending back the connection to the parent
-          // so that we can accept the answer later on
-          handleAddPeer(lineId, memberId, localPeerConnection, localMediaStream);
+          localPeerConnection.on('stream', (remoteStream: MediaStream) => {
+            handleGotPeerRemoteStream(lineId, memberId, remoteStream);
+          });
         });
       });
   });

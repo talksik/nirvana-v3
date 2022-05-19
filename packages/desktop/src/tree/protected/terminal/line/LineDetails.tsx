@@ -109,10 +109,10 @@ export default function LineDetails() {
           </span>
         </div>
 
-        <Avatar.Group className={'animate-pulse'} key={`lineHistoryMessage-yesterday-afternoon}`}>
+        <Avatar.Group className={'animate-pulse'}>
           {tunedProfiles.map((otherUser) => (
             <Avatar
-              key={`tunedUser-${otherUser.name}`}
+              key={`lineTunedInUserAvatar-${otherUser.name}`}
               src={otherUser.pictureSrc}
               shape="square"
               size={'large'}
@@ -123,10 +123,10 @@ export default function LineDetails() {
 
         <span className="px-10 text-gray-200"> | </span>
 
-        <Avatar.Group key={`lineHistoryMessage-yesterday-afternoon}`}>
+        <Avatar.Group>
           {selectedLine.otherUserObjects.map((otherUser) => (
             <Avatar
-              key={`linehistory-${1}`}
+              key={`lineOfflineUserAvatar-${1}`}
               src={otherUser.picture}
               shape="square"
               size={'default'}
@@ -147,9 +147,15 @@ export default function LineDetails() {
           {Object.keys(peerMap).map((lineId, index) => {
             if (lineId !== selectedLine.lineDetails._id.toString()) return <></>;
 
-            return peerMap[lineId].map((linePeer) => (
-              <StreamPlayer key={`streamPlayer-${index}`} peer={linePeer.peer} />
-            ));
+            return peerMap[lineId].map(
+              (linePeer) =>
+                linePeer.peerMediaStream && (
+                  <StreamPlayer
+                    key={`streamPlayer-${index}`}
+                    peerStream={linePeer.peerMediaStream}
+                  />
+                ),
+            );
           })}
         </div>
 
@@ -194,19 +200,12 @@ export default function LineDetails() {
   );
 }
 
-function StreamPlayer({ peer }: { peer: Peer }) {
+function StreamPlayer({ peerStream }: { peerStream: MediaStream }) {
   const streamRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    peer.on('stream', (remotePeerStream: MediaStream) => {
-      console.log('stream coming in from remote peer');
-      console.log(remotePeerStream);
-
-      if (streamRef?.current) streamRef.current.srcObject = remotePeerStream;
-    });
-
-    return () => peer.destroy();
-  }, [peer]);
+    if (streamRef?.current) streamRef.current.srcObject = peerStream;
+  }, [peerStream]);
 
   return (
     <>
