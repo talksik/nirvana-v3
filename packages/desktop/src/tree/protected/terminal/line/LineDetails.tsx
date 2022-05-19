@@ -144,9 +144,11 @@ export default function LineDetails() {
 
         {/* live line */}
         <div className="flex flex-col">
-          {Object.values(peerMap).map((peer, index) => (
-            <StreamPlayer key={`streamPlayer-${index}`} peer={peer} />
-          ))}
+          {Object.values(peerMap).map((linePeers, index) => {
+            return linePeers.map((linePeer) => {
+              return <StreamPlayer key={`streamPlayer-${index}`} peer={linePeer.peer} />;
+            });
+          })}
         </div>
 
         {/* canvas action buttons */}
