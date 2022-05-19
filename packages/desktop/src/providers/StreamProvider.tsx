@@ -80,6 +80,8 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
         );
       });
 
+      // !adding stream here causes race condition of the signal event just running over and over again
+
       // see if I have a stream for this channel or line
       // create one if not, and add to stream
       // navigator.mediaDevices
