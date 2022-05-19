@@ -86,7 +86,7 @@ export default function LineDetails() {
   }, [selectedLine]);
 
   return (
-    <div className="flex flex-col flex-1 bg-white relative">
+    <div className="flex flex-col flex-1 bg-white relative overflow-auto">
       {/* line details */}
       <div
         className="p-5 z-30 titlebar
@@ -143,7 +143,10 @@ export default function LineDetails() {
         {/* <LineHistory /> */}
 
         {/* live line */}
-        <div className="flex flex-col">
+        <div
+          className="flex-1 flex flex-col justify-start items-center 
+        gap-2 p-5 mx-auto max-w-lg w-full"
+        >
           {Object.keys(peerMap).map((lineId, index) => {
             if (lineId !== selectedLine.lineDetails._id.toString()) return <></>;
 
@@ -212,7 +215,7 @@ function StreamPlayer({ peerStream }: { peerStream: MediaStream }) {
   return (
     <>
       this is a stream component of one remote peer
-      <video ref={streamRef} height={600} width={600} autoPlay muted />
+      <video ref={streamRef} height={400} width={400} className={'shadow-xl'} autoPlay muted />
     </>
   );
 }
