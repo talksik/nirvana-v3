@@ -11,12 +11,14 @@ import {
 } from '@nirvana/core/sockets/channels';
 import toast from 'react-hot-toast';
 import useTerminalProvider from './TerminalProvider';
+import MasterLineData from '@nirvana/core/models/masterLineData.model';
+import { useEffectOnce } from 'react-use';
 
-type PeerMap = {
-  [userId: string]: Peer;
+type LinePeerMap = {
+  [lineId: string]: { userId: string; peer: Peer }[];
 };
 interface IStreamProvider {
-  peerMap: PeerMap;
+  peerMap: LinePeerMap;
   userLocalStream?: MediaStream;
 }
 
@@ -30,7 +32,7 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
 
   const { $ws } = useSockets();
 
-  const [peerMap, updatePeerMap] = useImmer<PeerMap>({});
+  const [peerMap, updatePeerMap] = useImmer<LinePeerMap>({});
 
   const [userLocalStream, setUserLocalStream] = useState<MediaStream>();
 
@@ -56,39 +58,6 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
       });
   }, []);
 
-  useEffect(() => {
-    if (userLocalStream) {
-      Object.values(peerMap).forEach((currentPeer) => {
-        try {
-          currentPeer.addStream(userLocalStream);
-        } catch (error) {
-          toast.error('problem adding stream');
-          console.error(error);
-        }
-      });
-    }
-  }, [userLocalStream, peerMap]);
-
-  const [distinctPeerUserIds, setDistinctPeerUserIds] = useImmer<string[]>([]);
-
-  useEffect(() => {
-    setDistinctPeerUserIds((draft) => {
-      Object.values(roomsMap).forEach((line) => {
-        if (!line.tunedInMemberIds?.includes(user._id.toString())) {
-          return;
-        }
-
-        line.tunedInMemberIds.forEach((tunedUserId) => {
-          if (tunedUserId === user._id.toString()) return;
-
-          if (draft.includes(tunedUserId)) return;
-
-          draft.push(tunedUserId);
-        });
-      });
-    });
-  }, [roomsMap, setDistinctPeerUserIds, user?._id]);
-
   console.log(`peer map: `, peerMap);
 
   const handleAddPeer = useCallback(
@@ -103,9 +72,16 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
   return (
     <StreamProviderContext.Provider value={{ peerMap, userLocalStream }}>
       {/* handles stream connections */}
-      {distinctPeerUserIds?.length > 0 && (
-        <MemoStreamsConnector handleAddPeer={handleAddPeer} membersToCall={distinctPeerUserIds} />
-      )}
+      {Object.values(roomsMap).map((line) => {
+        if (line.tunedInMemberIds.includes(user._id.toString()))
+          return (
+            <MemoLineConnector
+              key={`streamConnector-${line.lineDetails._id.toString()}`}
+              handleAddPeer={handleAddPeer}
+              line={line}
+            />
+          );
+      })}
 
       {children}
     </StreamProviderContext.Provider>
@@ -116,21 +92,27 @@ export default function useStreams() {
   return useContext(StreamProviderContext);
 }
 
-const MemoStreamsConnector = React.memo(StreamsConnector);
+const MemoLineConnector = React.memo(LineConnector);
 
-function StreamsConnector({
-  membersToCall,
+function LineConnector({
+  line,
   handleAddPeer,
 }: {
-  membersToCall: string[];
+  line: MasterLineData;
   handleAddPeer: (userId: string, peerObj: Peer) => void;
 }) {
   console.log('rendering this piece of shit');
-  console.log(membersToCall);
+  console.log(line);
+
+  useEffectOnce(() => {
+    console.log('got initial list for this channel that I am tuned into');
+
+    console.log(line.tunedInMemberIds);
+  });
 
   return (
     <>
-      {membersToCall.map((userId) => (
+      {line.tunedInMemberIds.map((userId) => (
         <StreamConnector key={userId} peerUserId={userId} handleAddPeer={handleAddPeer} />
       ))}
     </>
