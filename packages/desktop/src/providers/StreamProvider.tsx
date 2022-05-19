@@ -78,7 +78,9 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
             <MemoLineConnector
               key={`streamConnector-${line.lineDetails._id.toString()}`}
               handleAddPeer={handleAddPeer}
-              line={line}
+              membersToCall={line.tunedInMemberIds.filter(
+                (currMemberId) => currMemberId !== user._id.toString(),
+              )}
             />
           );
       })}
@@ -95,10 +97,10 @@ export default function useStreams() {
 const MemoLineConnector = React.memo(LineConnector);
 
 function LineConnector({
-  line,
+  membersToCall,
   handleAddPeer,
 }: {
-  line: MasterLineData;
+  membersToCall: string[];
   handleAddPeer: (userId: string, peerObj: Peer) => void;
 }) {
   console.log('rendering this piece of shit');
@@ -106,7 +108,12 @@ function LineConnector({
   useEffectOnce(() => {
     console.log('got initial list for this channel that I am tuned into');
 
-    console.log(line.tunedInMemberIds);
+    console.log(membersToCall);
+    // call these people
+    // tell them what line I'm calling about, so that they can use the signal for the right peer object
+    // also so that I can signal for the peer object relationship between me and this other person for this particular channel
+
+    // then add in the stream to this local peer relationship object
   });
 
   return <></>;
