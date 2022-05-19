@@ -244,9 +244,9 @@ function LineConnector({
           const connectingToast = toast.loading('calling peer for a snappy experience');
 
           const localPeerConnection = new Peer({
-            initiator: false,
+            initiator: true,
             stream: localMediaStream,
-            trickle: true, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times,
+            trickle: false, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times,
             config: {
               iceServers,
             },
