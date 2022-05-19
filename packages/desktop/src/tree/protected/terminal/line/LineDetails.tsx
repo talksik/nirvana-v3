@@ -149,7 +149,7 @@ export default function LineDetails() {
 
             return peerMap[lineId].map(
               (linePeer) =>
-                linePeer.peerMediaStream && (
+                linePeer?.peerMediaStream && (
                   <StreamPlayer
                     key={`streamPlayer-${index}`}
                     peerStream={linePeer.peerMediaStream}

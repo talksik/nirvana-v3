@@ -181,6 +181,33 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
     [updatePeerMap],
   );
 
+  useEffect(() => {
+    let allTunedInUsers = [];
+    Object.values(roomsMap).map((currentLine) => {
+      if (currentLine.tunedInMemberIds)
+        allTunedInUsers = [...currentLine.tunedInMemberIds, ...allTunedInUsers];
+    });
+
+    updatePeerMap((draft) => {
+      // go through peer map
+      // if there is someone in it who is not in a tuned in line, then destroy peer and remove
+      Object.entries(draft).map(([lineId, peerRelationsForLine]) => {
+        const usersToRemove = [];
+        peerRelationsForLine?.forEach((peerRelation, index) => {
+          if (!allTunedInUsers.includes(peerRelation.userId)) {
+            peerRelation.peer.destroy();
+
+            usersToRemove.push(peerRelation.userId);
+          }
+        });
+
+        draft[lineId] = draft[lineId].filter(
+          (peerRelation) => !usersToRemove.includes(peerRelation.userId),
+        );
+      });
+    });
+  }, [roomsMap, updatePeerMap]);
+
   const handleGotPeerRemoteStream = useCallback(
     (lineId: string, userId: string, remoteStream: MediaStream) => {
       updatePeerMap((draft) => {
