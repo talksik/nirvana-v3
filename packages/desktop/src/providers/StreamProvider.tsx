@@ -80,7 +80,7 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
 
       const peerForMeAndNewbie = new Peer({
         initiator: false,
-        trickle: false, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times
+        trickle: true, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times
         stream: userLocalStream,
         config: {
           iceServers,
@@ -193,7 +193,7 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
       // if there is someone in it who is not in a tuned in line, then destroy peer and remove
       Object.entries(draft).map(([lineId, peerRelationsForLine]) => {
         const usersToRemove = [];
-        peerRelationsForLine?.forEach((peerRelation, index) => {
+        peerRelationsForLine?.forEach((peerRelation) => {
           if (!allTunedInUsers.includes(peerRelation.userId)) {
             peerRelation.peer.destroy();
 
@@ -305,7 +305,7 @@ function LineConnector({
           const localPeerConnection = new Peer({
             initiator: true,
             stream: localMediaStream,
-            trickle: false, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times,
+            trickle: true, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times,
             config: {
               iceServers,
             },
