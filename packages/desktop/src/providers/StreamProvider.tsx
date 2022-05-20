@@ -134,11 +134,10 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
 
       // find this person in peer map
       updatePeerMap((draft) => {
-        const localPeerForMasterAndMe = draft[res.lineId].find(
+        const localPeerForMasterAndMe = draft[res.lineId]?.find(
           (currPeerRelationship) => currPeerRelationship.userId === res.masterUserId,
         );
 
-        // hacking little bug!
         if (localPeerForMasterAndMe) localPeerForMasterAndMe.peer.signal(res.simplePeerSignal);
       });
     });
