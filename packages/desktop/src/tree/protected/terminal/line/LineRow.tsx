@@ -138,7 +138,7 @@ export default React.memo(function LineRow({
       );
 
     return (
-      <span className={`text-gray-300 ml-auto text-xs `}>
+      <span className={`text-gray-400 ml-auto text-xs `}>
         {moment(line.currentUserMember.lastVisitDate).fromNow(true)}
       </span>
     );
@@ -182,7 +182,7 @@ export default React.memo(function LineRow({
         <span className="ml-2 text-gray-300 text-xs p-1 px-2 bg-gray-100">{`${index + 1}`}</span>
       )}
 
-      <div className="ml-auto flex-shrink-0">{renderRightActivity}</div>
+      <div className="ml-auto flex flex-shrink-0">{renderRightActivity}</div>
     </div>
   );
 });
