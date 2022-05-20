@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useCallback } from 'react';
+import React, { useEffect, useState, useContext, useCallback, useMemo } from 'react';
 import useRooms from './RoomsProvider';
 import useSockets from './SocketProvider';
 
@@ -54,6 +54,7 @@ type BroadcastersMap = {
 
 interface ITerminalProvider {
   roomsMap: LineIdToMasterLine;
+  allChannels: MasterLineData[];
 
   selectedLineId?: string;
   handleSelectLine?: (newLineId: string) => void;
@@ -62,10 +63,15 @@ interface ITerminalProvider {
 
   showNewChannelForm: boolean;
   handleShowNewChannelForm?: (showOrHide: 'show' | 'hide') => void;
+
+  tunedChannelsCount: number;
 }
 
 const TerminalContext = React.createContext<ITerminalProvider>({
   roomsMap: {},
+  allChannels: [],
+
+  tunedChannelsCount: 0,
 
   showNewChannelForm: false,
 });
@@ -355,10 +361,53 @@ export function TerminalProvider({ children }: { children: React.ReactChild }) {
 
   useKeyPressEvent('Escape', clearMind);
 
+  // todo: sort based on content blocks and my last activity date
+  const allChannels = useMemo(() => {
+    let channels = Object.values(roomMap);
+
+    if (desktopMode === 'overlayOnly') {
+      channels = channels.filter((currentChannel) =>
+        currentChannel.tunedInMemberIds?.includes(user._id.toString()),
+      );
+    }
+
+    channels.sort((channelA, channelB) => {
+      if (
+        channelA.currentUserMember.state === LineMemberState.TUNED &&
+        channelB.currentUserMember.state === LineMemberState.INBOX
+      )
+        return -1;
+
+      if (
+        channelB.currentUserMember.state === LineMemberState.TUNED &&
+        channelA.currentUserMember.state === LineMemberState.INBOX
+      )
+        return 1;
+
+      if (channelA.lineDetails.createdDate > channelB.lineDetails.createdDate) return 1;
+
+      // sort also by activity
+
+      return -1;
+    });
+
+    return channels;
+  }, [roomMap, desktopMode, user]);
+
+  const tunedChannelsCount = useMemo(
+    () =>
+      allChannels?.filter(
+        (currChannel) => currChannel.currentUserMember.state === LineMemberState.TUNED,
+      )?.length,
+    [allChannels],
+  );
+
   return (
     <TerminalContext.Provider
       value={{
         roomsMap: roomMap,
+        allChannels,
+        tunedChannelsCount,
         handleSelectLine,
         selectedLineId,
         handleUpdateLineMemberState,

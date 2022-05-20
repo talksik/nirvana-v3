@@ -51,6 +51,7 @@ export default React.memo(function LineRow({
 
   const profilePictures = useMemo(() => {
     const allMembers: string[] = [];
+    const allMembersWithoutMe: string[] = [];
     const tunedMembers: string[] = [];
     const broadcastMembers: string[] = [];
     const untunedMembers: string[] = [];
@@ -61,6 +62,7 @@ export default React.memo(function LineRow({
     line.otherUserObjects?.forEach((otherUser) => {
       if (otherUser.picture) {
         allMembers.push(otherUser.picture);
+        allMembersWithoutMe.push(otherUser.picture);
 
         if (line.tunedInMemberIds?.includes(otherUser._id.toString())) {
           tunedMembers.push(otherUser.picture);
@@ -80,6 +82,7 @@ export default React.memo(function LineRow({
       allMembers,
       tunedMembers,
       broadcastMembers,
+      allMembersWithoutMe,
     };
   }, [line, user]);
 
@@ -160,7 +163,7 @@ export default React.memo(function LineRow({
             sourceImages={
               profilePictures.tunedMembers.length > 0
                 ? profilePictures.tunedMembers
-                : profilePictures.allMembers
+                : profilePictures.allMembersWithoutMe
             }
           />
         </span>

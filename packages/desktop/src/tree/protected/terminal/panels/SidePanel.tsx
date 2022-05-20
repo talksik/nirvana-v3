@@ -11,6 +11,7 @@ import useAuth from '../../../../providers/AuthProvider';
 import useSockets from '../../../../providers/SocketProvider';
 import useElectron from '../../../../providers/ElectronProvider';
 import useStreams from '../../../../providers/StreamProvider';
+import { maxToggleTunedChannelCount } from '../rules';
 
 export default function SidePanel() {
   // using merely for loading state...better to add to realtimeroom context?
@@ -18,45 +19,17 @@ export default function SidePanel() {
 
   const { user, handleLogout } = useAuth();
 
-  const { roomsMap, handleSelectLine, selectedLineId, handleShowNewChannelForm } =
-    useTerminalProvider();
+  const {
+    allChannels,
+    tunedChannelsCount,
+    handleSelectLine,
+    selectedLineId,
+    handleShowNewChannelForm,
+  } = useTerminalProvider();
 
   const { handleFlowState } = useSockets();
 
   const { handleToggleDesktopMode, desktopMode, isWindowFocused } = useElectron();
-
-  // todo: sort based on content blocks and my last activity date
-  const allChannels = useMemo(() => {
-    let channels = Object.values(roomsMap);
-
-    if (desktopMode === 'overlayOnly') {
-      channels = channels.filter((currentChannel) =>
-        currentChannel.tunedInMemberIds?.includes(user._id.toString()),
-      );
-    }
-
-    channels.sort((channelA, channelB) => {
-      if (
-        channelA.currentUserMember.state === LineMemberState.TUNED &&
-        channelB.currentUserMember.state === LineMemberState.INBOX
-      )
-        return -1;
-
-      if (
-        channelB.currentUserMember.state === LineMemberState.TUNED &&
-        channelA.currentUserMember.state === LineMemberState.INBOX
-      )
-        return 1;
-
-      if (channelA.lineDetails.createdDate > channelB.lineDetails.createdDate) return 1;
-
-      // sort also by activity
-
-      return -1;
-    });
-
-    return channels;
-  }, [roomsMap, desktopMode, user]);
 
   const [searchQuery, setSearchQuery] = useState<string>('');
 
@@ -138,8 +111,8 @@ shadow-xl bg-gray-800 p-2 text-white text-xs"
                   <h2 className="text-inherit text-xs">Tuned In</h2>
 
                   <p className="text-slate-300 text-xs ml-auto">{`${
-                    allChannels?.length || 0
-                  }/3`}</p>
+                    tunedChannelsCount || 0
+                  }/${maxToggleTunedChannelCount}`}</p>
                 </span>
               </div>
             </Tooltip>
