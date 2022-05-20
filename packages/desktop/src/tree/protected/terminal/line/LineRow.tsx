@@ -25,16 +25,6 @@ export default React.memo(function LineRow({
   const { user } = useAuth();
   const { desktopMode, isWindowFocused } = useElectron();
 
-  const isUserTunedIn = useMemo(
-    () => line.tunedInMemberIds?.includes(user._id.toString()),
-    [line.tunedInMemberIds, user],
-  );
-
-  const isUserToggleTuned = useMemo(
-    () => line?.currentUserMember?.state === LineMemberState.TUNED,
-    [line],
-  );
-
   const handleActivateLine = useCallback(() => {
     handleSelectLine(line.lineDetails._id.toString());
   }, [handleSelectLine, line.lineDetails, index]);
@@ -49,43 +39,6 @@ export default React.memo(function LineRow({
 
   useKeyPressEvent((index + 1).toString(), hotkeyActivateLine);
 
-  const profilePictures = useMemo(() => {
-    const allMembers: string[] = [];
-    const allMembersWithoutMe: string[] = [];
-    const tunedMembers: string[] = [];
-    const broadcastMembers: string[] = [];
-    const untunedMembers: string[] = [];
-
-    // ?don't add in my image as that's useless contextually?
-    if (user.picture) allMembers.push(user.picture);
-
-    line.otherUserObjects?.forEach((otherUser) => {
-      if (otherUser.picture) {
-        allMembers.push(otherUser.picture);
-        allMembersWithoutMe.push(otherUser.picture);
-
-        if (line.tunedInMemberIds?.includes(otherUser._id.toString())) {
-          tunedMembers.push(otherUser.picture);
-          return;
-        }
-        if (line.currentBroadcastersUserIds?.includes(otherUser._id.toString())) {
-          broadcastMembers.push(otherUser.picture);
-          return;
-        }
-
-        untunedMembers.push(otherUser.picture);
-      }
-    });
-
-    return {
-      untunedMembers,
-      allMembers,
-      tunedMembers,
-      broadcastMembers,
-      allMembersWithoutMe,
-    };
-  }, [line, user]);
-
   const renderRightActivity = useMemo(() => {
     if (isSelected) {
       return (
@@ -97,7 +50,7 @@ export default React.memo(function LineRow({
       );
     }
 
-    if (profilePictures.broadcastMembers.length > 0)
+    if (line.profilePictures.broadcastMembers.length > 0)
       return (
         <Avatar.Group
           maxCount={2}
@@ -111,7 +64,7 @@ export default React.memo(function LineRow({
           }}
           className="shadow-lg"
         >
-          {profilePictures.broadcastMembers.map((pictureSrc, index) => (
+          {line.profilePictures.broadcastMembers.map((pictureSrc, index) => (
             <Avatar
               key={`lineRowActiveBroadcasters-${index}`}
               src={pictureSrc}
@@ -122,7 +75,7 @@ export default React.memo(function LineRow({
         </Avatar.Group>
       );
 
-    if (profilePictures.tunedMembers.length > 0)
+    if (line.profilePictures.tunedMembers.length > 0)
       return <FiSun className="text-teal-500 animate-pulse" />;
 
     // if there is new activity blocks for me
@@ -142,7 +95,7 @@ export default React.memo(function LineRow({
         {moment(line.currentUserMember.lastVisitDate).fromNow(true)}
       </span>
     );
-  }, [line, isSelected, profilePictures]);
+  }, [line, isSelected]);
 
   // TODO: low priority: scale the whole thing and make it pop out nad translate...
   // doesn't work right now because no workaround for overflow scroll for y and visible for x
@@ -153,19 +106,19 @@ export default React.memo(function LineRow({
       className={`flex flex-row items-center justify-start gap-2 px-4 py-4 hover:bg-gray-200 
       cursor-pointer transition-all relative z-50 
 
-      ${isUserToggleTuned && ' bg-gray-100'}
+      ${line.isUserToggleTuned && ' bg-gray-100'}
       
-      ${isUserTunedIn && isSelected && ' bg-gray-100 shadow-2xl'}`}
+      ${line.isUserTunedIn && isSelected && ' bg-gray-100 shadow-2xl'}`}
     >
       {/* channel picture */}
-      {profilePictures && (
+      {line.profilePictures && (
         <span className={`${isSelected && ' scale-125 transition-all'}`}>
           <LineIcon
-            grayscale={!isUserTunedIn}
+            grayscale={!line.isUserTunedIn}
             sourceImages={
-              profilePictures.tunedMembers.length > 0
-                ? profilePictures.tunedMembers
-                : profilePictures.allMembersWithoutMe
+              line.profilePictures.tunedMembers.length > 0
+                ? line.profilePictures.tunedMembers
+                : line.profilePictures.allMembersWithoutMe
             }
           />
         </span>
@@ -180,7 +133,7 @@ export default React.memo(function LineRow({
         {line.lineDetails.name || line.otherUserObjects[0].givenName}
       </h2>
 
-      {isUserToggleTuned && isWindowFocused && (
+      {line.isUserToggleTuned && isWindowFocused && (
         <span className="ml-2 text-gray-300 text-xs p-1 px-2 bg-gray-100">{`${index + 1}`}</span>
       )}
 

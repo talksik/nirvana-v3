@@ -54,6 +54,7 @@ type BroadcastersMap = {
 
 interface ITerminalProvider {
   roomsMap: LineIdToMasterLine;
+
   allChannels: MasterLineData[];
 
   selectedLineId?: string;
@@ -363,7 +364,9 @@ export function TerminalProvider({ children }: { children: React.ReactChild }) {
 
   // todo: sort based on content blocks and my last activity date
   const allChannels = useMemo(() => {
-    let channels = Object.values(roomMap);
+    let channels: MasterLineData[] = Object.values(roomMap);
+
+    channels = channels.map((currChann) => Object.assign({}, currChann, MasterLineData));
 
     if (desktopMode === 'overlayOnly') {
       channels = channels.filter((currentChannel) =>
@@ -391,6 +394,49 @@ export function TerminalProvider({ children }: { children: React.ReactChild }) {
       return -1;
     });
 
+    channels.forEach((currChannel) => {
+      currChannel.isUserTunedIn = currChannel.tunedInMemberIds?.includes(user._id.toString())
+        ? true
+        : false;
+
+      currChannel.isUserToggleTuned = currChannel.currentUserMember.state === LineMemberState.TUNED;
+
+      const allMembers: string[] = [];
+      const allMembersWithoutMe: string[] = [];
+      const tunedMembers: string[] = [];
+      const broadcastMembers: string[] = [];
+      const untunedMembers: string[] = [];
+
+      // ?don't add in my image as that's useless contextually?
+      if (user.picture) allMembers.push(user.picture);
+
+      currChannel.otherUserObjects?.forEach((otherUser) => {
+        if (otherUser.picture) {
+          allMembers.push(otherUser.picture);
+          allMembersWithoutMe.push(otherUser.picture);
+
+          if (currChannel.tunedInMemberIds?.includes(otherUser._id.toString())) {
+            tunedMembers.push(otherUser.picture);
+            return;
+          }
+          if (currChannel.currentBroadcastersUserIds?.includes(otherUser._id.toString())) {
+            broadcastMembers.push(otherUser.picture);
+            return;
+          }
+
+          untunedMembers.push(otherUser.picture);
+        }
+      });
+
+      currChannel.profilePictures = {
+        untunedMembers,
+        allMembers,
+        tunedMembers,
+        broadcastMembers,
+        allMembersWithoutMe,
+      };
+    });
+
     return channels;
   }, [roomMap, desktopMode, user]);
 
@@ -402,6 +448,7 @@ export function TerminalProvider({ children }: { children: React.ReactChild }) {
     [allChannels],
   );
 
+  // !Caution: the roommap won't have the additional properties as allChannels does
   return (
     <TerminalContext.Provider
       value={{

@@ -24,9 +24,13 @@ import Peer from 'simple-peer';
 export default function LineDetails() {
   const { user } = useAuth();
 
-  const { selectedLineId, roomsMap, handleUpdateLineMemberState } = useTerminalProvider();
+  const { selectedLineId, allChannels, handleUpdateLineMemberState } = useTerminalProvider();
 
-  const selectedLine = useMemo(() => roomsMap[selectedLineId], [selectedLineId, roomsMap]);
+  const selectedLine = useMemo(
+    () =>
+      allChannels.find((currChannel) => currChannel.lineDetails._id.toString() === selectedLineId),
+    [selectedLineId, allChannels],
+  );
 
   const isUserToggleTuned = useMemo(
     () => selectedLine?.currentUserMember?.state === LineMemberState.TUNED,
@@ -35,55 +39,10 @@ export default function LineDetails() {
 
   const { peerMap } = useStreams();
 
-  // seeing if I am in the list of broadcasters
-  // the source of truth from the socket connections telling me if my clicking actually made a round trip
   const isUserBroadcasting = useMemo(
     () => selectedLine?.currentBroadcastersUserIds?.includes(user._id.toString()),
     [user, selectedLine],
   );
-
-  // showing all tuned in members...they may not hear me since they might be doing something else
-  // but feeling of presentness
-  const tunedProfiles = useMemo(() => {
-    const pictureSources: { name: string; pictureSrc: string }[] = [];
-
-    selectedLine.tunedInMemberIds?.forEach((tunedInMemberUserId) => {
-      // don't want to see my own picture
-      // TODO: don't show myself!?
-      if (tunedInMemberUserId === user._id.toString()) {
-        pictureSources.push({
-          name: user.givenName,
-          pictureSrc: user.picture,
-        });
-        return;
-      }
-
-      const otherUserObject = selectedLine.otherUserObjects?.find(
-        (userObj) => userObj._id.toString() === tunedInMemberUserId,
-      );
-      if (otherUserObject?.picture)
-        pictureSources.push({
-          name: otherUserObject.givenName,
-          pictureSrc: otherUserObject.picture,
-        });
-    });
-
-    return pictureSources;
-  }, [selectedLine, user]);
-
-  // pics for the line icons
-  const profilePictures = useMemo(() => {
-    const pictureSources: string[] = [];
-
-    // ?don't add in my image as that's useless contextually?
-    // if (userData?.user?.picture) pictureSources.push(userData.user.picture);
-
-    selectedLine.otherUserObjects?.forEach((otherUser) => {
-      if (otherUser.picture) pictureSources.push(otherUser.picture);
-    });
-
-    return pictureSources;
-  }, [selectedLine]);
 
   return (
     <div className="flex flex-col flex-1 bg-white relative overflow-auto">
@@ -92,7 +51,17 @@ export default function LineDetails() {
         className="p-5 z-30 titlebar
         flex flex-row items-center justify-end border-b-gray-200 border-b shadow-2xl group"
       >
-        {profilePictures && <LineIcon grayscale={false} sourceImages={profilePictures} />}
+        {/* channel picture */}
+        {selectedLine.profilePictures && (
+          <LineIcon
+            grayscale={!selectedLine.isUserTunedIn}
+            sourceImages={
+              selectedLine.profilePictures.tunedMembers.length > 0
+                ? selectedLine.profilePictures.tunedMembers
+                : selectedLine.profilePictures.allMembersWithoutMe
+            }
+          />
+        )}
 
         <div className="ml-2 mr-auto flex flex-col items-start ">
           <span className="flex flex-row gap-2 items-center">
@@ -110,10 +79,10 @@ export default function LineDetails() {
         </div>
 
         <Avatar.Group className={'animate-pulse'}>
-          {tunedProfiles.map((otherUser) => (
+          {selectedLine.profilePictures?.tunedMembers?.map((pictureSrc, index) => (
             <Avatar
-              key={`lineTunedInUserAvatar-${otherUser.name}`}
-              src={otherUser.pictureSrc}
+              key={`lineTunedInUserAvatar-${index}`}
+              src={pictureSrc}
               shape="square"
               size={'large'}
               className={`shadow-lg`}
@@ -124,14 +93,14 @@ export default function LineDetails() {
         <span className="px-10 text-gray-200"> | </span>
 
         <Avatar.Group>
-          {selectedLine.otherUserObjects.map((otherUser) => (
+          {selectedLine.profilePictures.untunedMembers.map((pictureSrc, index) => (
             <Avatar
-              key={`lineOfflineUserAvatar-${1}`}
-              src={otherUser.picture}
+              key={`lineOfflineUserAvatar-${index}`}
+              src={pictureSrc}
               shape="square"
               size={'default'}
               // grayscale if not playing?
-              className={`${true && 'grayscale'}`}
+              className={`grayscale`}
             />
           ))}
         </Avatar.Group>
