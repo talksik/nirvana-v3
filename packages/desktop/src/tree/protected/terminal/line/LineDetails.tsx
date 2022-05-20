@@ -175,7 +175,7 @@ export default function LineDetails() {
 }
 
 function StreamPlayer({ peerStream }: { peerStream: MediaStream }) {
-  const streamRef = useRef<HTMLVideoElement>(null);
+  const streamRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     if (streamRef?.current) streamRef.current.srcObject = peerStream;
@@ -183,14 +183,15 @@ function StreamPlayer({ peerStream }: { peerStream: MediaStream }) {
 
   return (
     <>
-      <video
+      {/* <video
         ref={streamRef}
         height={300}
         width={400}
         className={'shadow-xl rounded'}
         autoPlay
         muted
-      />
+      /> */}
+      <audio ref={streamRef} className={'shadow-xl rounded'} autoPlay controls />
     </>
   );
 }

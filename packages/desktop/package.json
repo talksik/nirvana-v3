@@ -42,8 +42,8 @@
         [
           "@electron-forge/plugin-webpack",
           {
-            "port": "4000",
-            "loggerPort": "9000",
+            "port": "4005",
+            "loggerPort": "9005",
             "mainConfig": "./webpack.main.config.js",
             "devContentSecurityPolicy": "connect-src 'self' http://localhost:5000 ws://localhost:5000 https://api.quotable.io/random 'unsafe-eval'",
             "renderer": {

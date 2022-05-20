@@ -16,11 +16,13 @@ import useTerminalProvider from './TerminalProvider';
 import MasterLineData from '@nirvana/core/models/masterLineData.model';
 import { useEffectOnce } from 'react-use';
 
-const videoConstraints = {
-  frameRate: 30,
-  width: { max: 100 },
-  height: { max: 200 },
-};
+const videoConstraints = false;
+
+// {
+//   frameRate: 30,
+//   width: { max: 100 },
+//   height: { max: 200 },
+// };
 
 const iceServers = [
   // { urls: 'stun:stun.l.google.com:19302' },
