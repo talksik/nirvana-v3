@@ -106,7 +106,7 @@ export default React.memo(function LineRow({
 
       ${line.isUserToggleTuned && ' bg-gray-100'}
       
-      ${line.isUserTunedIn && isSelected && ' bg-gray-100 shadow-2xl'}`}
+      ${line.isUserTunedIn && isSelected && ' bg-gray-200 shadow-2xl'}`}
     >
       {/* channel picture */}
       {line.profilePictures && (
