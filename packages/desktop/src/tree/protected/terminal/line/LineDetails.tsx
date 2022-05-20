@@ -111,6 +111,11 @@ export default function LineDetails() {
           className="flex-1 flex flex-col justify-start items-center 
         gap-2 p-5 mx-auto max-w-lg w-full"
         >
+          <span className="flex flex-row gap-2 items-center mx-auto text-center mt-5 text-teal-500">
+            <FiSun />
+            <span>Right now</span>
+          </span>
+
           {Object.keys(peerMap).map((lineId, index) => {
             if (lineId !== selectedLine.lineDetails._id.toString()) return <></>;
 
@@ -177,17 +182,14 @@ function StreamPlayer({ peerStream }: { peerStream: MediaStream }) {
   }, [peerStream]);
 
   return (
-    <>
-      this is a stream component of one remote peer
-      <video
-        ref={streamRef}
-        height={400}
-        width={400}
-        className={'shadow-xl rounded'}
-        autoPlay
-        muted
-      />
-    </>
+    <video
+      ref={streamRef}
+      height={350}
+      width={400}
+      className={'shadow-xl rounded'}
+      autoPlay
+      muted
+    />
   );
 }
 
