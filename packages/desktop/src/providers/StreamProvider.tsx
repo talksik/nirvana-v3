@@ -57,13 +57,17 @@ const iceServers = [
   },
 ];
 
-type LinePeerMap = {
-  [lineId: string]: {
+type LineStreamData = {
+  localStreamForLine?: MediaStream;
+  peerRelations: {
     userId: string;
     peer: Peer;
-    myMediaStream?: MediaStream;
     peerMediaStream?: MediaStream;
   }[];
+};
+
+type LinePeerMap = {
+  [lineId: string]: LineStreamData;
 };
 interface IStreamProvider {
   peerMap: LinePeerMap;
@@ -83,7 +87,51 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
   const [peerMap, updatePeerMap] = useImmer<LinePeerMap>({});
 
   const [userLocalStream, setUserLocalStream] = useState<MediaStream>();
-  const [localUserStreams, setLocalUserStreams] = useImmer<{ [lineId: string]: MediaStream }>({});
+
+  const handleGotPeerRemoteStream = useCallback(
+    (lineId: string, userId: string, remoteStream: MediaStream) => {
+      updatePeerMap((draft) => {
+        // for trickling, if we already have a peer for this line and user, then just replace
+        const existingUserLinePeerRelation = draft[lineId]?.peerRelations?.find(
+          (currPeerRelation) => currPeerRelation.userId === userId,
+        );
+        if (existingUserLinePeerRelation) {
+          existingUserLinePeerRelation.peerMediaStream = remoteStream;
+        }
+      });
+    },
+    [updatePeerMap],
+  );
+
+  const setLocalStreamForLine = useCallback(
+    (lineId: string, localStreamForLine: MediaStream) => {
+      updatePeerMap((draft) => {
+        draft[lineId] = { ...draft[lineId], localStreamForLine };
+      });
+    },
+    [updatePeerMap],
+  );
+
+  const handleAddPeer = useCallback(
+    (lineId: string, userId: string, peerObj: Peer) => {
+      updatePeerMap((draft) => {
+        // for trickling, if we already have a peer for this line and user, then just replace
+        const existingUserLinePeerRelation = draft[lineId]?.peerRelations?.find(
+          (currPeerRelation) => currPeerRelation.userId === userId,
+        );
+        if (existingUserLinePeerRelation) {
+          return draft;
+        }
+
+        if (draft[lineId]?.peerRelations) {
+          draft[lineId].peerRelations.push({ userId, peer: peerObj });
+        } else {
+          draft[lineId] = { ...draft[lineId], peerRelations: [{ userId, peer: peerObj }] };
+        }
+      });
+    },
+    [updatePeerMap],
+  );
 
   useEffect(() => {
     $ws.on(ServerResponseChannels.RTC_NEW_USER_JOINED, (res: RtcNewUserJoinedResponse) => {
@@ -93,7 +141,7 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
       const peerForMeAndNewbie = new Peer({
         initiator: false,
         trickle: true, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times
-        stream: userLocalStream,
+        stream: peerMap[res.lineId]?.localStreamForLine,
         config: {
           iceServers,
         },
@@ -101,8 +149,9 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
 
       peerForMeAndNewbie.signal(res.simplePeerSignal);
 
-      handleAddPeer(res.lineId, res.userWhoCalled, peerForMeAndNewbie, userLocalStream);
+      handleAddPeer(res.lineId, res.userWhoCalled, peerForMeAndNewbie);
 
+      // make sure this peer gets destroyed to remove this listener
       peerForMeAndNewbie.on('signal', (signal) => {
         console.log('sending an answer to the slave', res);
 
@@ -115,16 +164,6 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
       peerForMeAndNewbie.on('stream', (remoteStream: MediaStream) => {
         handleGotPeerRemoteStream(res.lineId, res.userWhoCalled, remoteStream);
       });
-
-      // !adding stream here causes race condition of the signal event just running over and over again
-
-      // see if I have a stream for this channel or line
-      // create one if not, and add to stream
-      // navigator.mediaDevices
-      //   .getUserMedia({ video: true, audio: true })
-      //   .then((currStream: MediaStream) => {
-      //     peerForMeAndNewbie.addStream(currStream);
-      //   });
     });
 
     $ws.on(ServerResponseChannels.RTC_RECEIVING_MASTER_ANSWER, (res: RtcReceiveAnswerResponse) => {
@@ -134,7 +173,7 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
 
       // find this person in peer map
       updatePeerMap((draft) => {
-        const localPeerForMasterAndMe = draft[res.lineId]?.find(
+        const localPeerForMasterAndMe = draft[res.lineId]?.peerRelations?.find(
           (currPeerRelationship) => currPeerRelationship.userId === res.masterUserId,
         );
 
@@ -146,7 +185,7 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
       $ws.removeAllListeners(ServerResponseChannels.RTC_NEW_USER_JOINED);
       $ws.removeAllListeners(ServerResponseChannels.RTC_RECEIVING_MASTER_ANSWER);
     };
-  }, [updatePeerMap, $ws, userLocalStream]);
+  }, [updatePeerMap, $ws, userLocalStream, peerMap, handleGotPeerRemoteStream, handleAddPeer]);
 
   useEffect(() => {
     navigator.mediaDevices.enumerateDevices().then((devices) => {
@@ -175,31 +214,7 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
 
   console.log(`peer map: `, peerMap);
 
-  const handleAddPeer = useCallback(
-    (lineId: string, userId: string, peerObj: Peer, myMediaStream?: MediaStream) => {
-      updatePeerMap((draft) => {
-        // for trickling, if we already have a peer for this line and user, then just replace
-        const existingUserLinePeerRelation = draft[lineId]?.find(
-          (currPeerRelation) => currPeerRelation.userId === userId,
-        );
-        if (existingUserLinePeerRelation) {
-          return draft;
-        }
-
-        if (draft[lineId]) {
-          draft[lineId].push({ userId, peer: peerObj, myMediaStream });
-        } else {
-          draft[lineId] = [{ userId, peer: peerObj, myMediaStream }];
-        }
-      });
-    },
-    [updatePeerMap],
-  );
-
-  // ! BUG..we need to clean up peer map based on users leaving certain channels as well..
-  // not just an all inclusive list for all tuned in users...list for each channel
-
-  // ? are we deleting our peer wiht another person if we untune?
+  // manage untuning including myself
   useEffect(() => {
     const tunedUsersForLines: { [lineId: string]: string[] } = {};
     Object.values(roomsMap).map((currentLine) => {
@@ -210,13 +225,13 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
     updatePeerMap((draft) => {
       // go through peer map
       // if there is someone in it who is not in a tuned in line, then destroy peer and remove
-      Object.entries(draft).map(([lineId, peerRelationsForLine]) => {
+      Object.entries(draft).map(([lineId, lineStreamData]) => {
         // if I left this channel, then I want to make sure to destroy and delete all relations
         if (
           roomsMap[lineId]?.tunedInMemberIds &&
           !roomsMap[lineId]?.tunedInMemberIds.includes(user._id.toString())
         ) {
-          peerRelationsForLine?.forEach((peerRelation) => {
+          lineStreamData?.peerRelations.forEach((peerRelation) => {
             peerRelation.peer.destroy();
           });
 
@@ -225,7 +240,7 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
         }
 
         const usersToRemove = [];
-        peerRelationsForLine?.forEach((peerRelation) => {
+        lineStreamData?.peerRelations?.forEach((peerRelation) => {
           if (!tunedUsersForLines[lineId].includes(peerRelation.userId)) {
             peerRelation.peer.destroy();
 
@@ -233,27 +248,12 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
           }
         });
 
-        draft[lineId] = draft[lineId].filter(
+        draft[lineId].peerRelations = draft[lineId]?.peerRelations?.filter(
           (peerRelation) => !usersToRemove.includes(peerRelation.userId),
         );
       });
     });
-  }, [roomsMap, updatePeerMap]);
-
-  const handleGotPeerRemoteStream = useCallback(
-    (lineId: string, userId: string, remoteStream: MediaStream) => {
-      updatePeerMap((draft) => {
-        // for trickling, if we already have a peer for this line and user, then just replace
-        const existingUserLinePeerRelation = draft[lineId]?.find(
-          (currPeerRelation) => currPeerRelation.userId === userId,
-        );
-        if (existingUserLinePeerRelation) {
-          existingUserLinePeerRelation.peerMediaStream = remoteStream;
-        }
-      });
-    },
-    [updatePeerMap],
-  );
+  }, [roomsMap, updatePeerMap, user]);
 
   return (
     <StreamProviderContext.Provider value={{ peerMap, userLocalStream }}>
@@ -269,6 +269,7 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
                 (currMemberId) => currMemberId !== user._id.toString(),
               )}
               handleGotPeerRemoteStream={handleGotPeerRemoteStream}
+              setLocalStreamForLine={setLocalStreamForLine}
             />
           );
       })}
@@ -290,15 +291,12 @@ function LineConnector({
   membersToCall,
   handleAddPeer,
   handleGotPeerRemoteStream,
+  setLocalStreamForLine,
 }: {
   lineId: string;
   membersToCall: string[];
-  handleAddPeer: (
-    lineId: string,
-    userId: string,
-    peerObj: Peer,
-    myMediaStream?: MediaStream,
-  ) => void;
+  handleAddPeer: (lineId: string, userId: string, peerObj: Peer) => void;
+  setLocalStreamForLine: (lineId: string, localStreamForLine: MediaStream) => void;
   handleGotPeerRemoteStream: (lineId: string, userId: string, remoteStream: MediaStream) => void;
 }) {
   const { $ws } = useSockets();
@@ -309,22 +307,20 @@ function LineConnector({
     console.log('got initial list for this channel that I am tuned into');
 
     console.log(membersToCall);
-    // call these people
-    // tell them what line I'm calling about, so that they can use the signal for the right peer object
-    // also so that I can signal for the peer object relationship between me and this other person for this particular channel
-
-    // then add in the stream to this local peer relationship object
 
     // todo get the user media selections
+
+    // todo check if already in peer map? keeping it simple for now
+    // a peer relationship between me and someone for this particular channel so that I can just enable or disable this particular stream
+    // object instead of managing different ones
+
+    // bandwidth wise, would be uploading stream to one room at a time but downloading a x b streams but someone can't
+    // stream in two at same time anyway
+
     navigator.mediaDevices
       .getUserMedia({ video: videoConstraints, audio: true })
       .then((localMediaStream: MediaStream) => {
-        // todo check if already in peer map? keeping it simple for now
-        // a peer relationship between me and someone for this particular channel so that I can just enable or disable this particular stream
-        // object instead of managing different ones
-
-        // bandwidth wise, would be uploading stream to one room at a time but downloading a x b streams but someone can't
-        // stream in two at same time anyway
+        setLocalStreamForLine(lineId, localMediaStream);
 
         toast.success('CALLING bunch of people!!!');
         console.log('Calling these folks', membersToCall);
@@ -334,6 +330,7 @@ function LineConnector({
         membersToCall.map((memberId) => {
           const connectingToast = toast.loading('calling peer for a snappy experience');
 
+          // make sure this peer gets destroyed when it's time to remove this listener
           const localPeerConnection = new Peer({
             initiator: true,
             stream: localMediaStream,
@@ -355,7 +352,7 @@ function LineConnector({
 
             // sending back the connection to the parent
             // so that we can accept the answer later on
-            handleAddPeer(lineId, memberId, localPeerConnection, localMediaStream);
+            handleAddPeer(lineId, memberId, localPeerConnection);
           });
 
           localPeerConnection.on('stream', (remoteStream: MediaStream) => {

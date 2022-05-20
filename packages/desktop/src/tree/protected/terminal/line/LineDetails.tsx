@@ -119,7 +119,7 @@ export default function LineDetails() {
           {Object.keys(peerMap).map((lineId, index) => {
             if (lineId !== selectedLine.lineDetails._id.toString()) return <></>;
 
-            return peerMap[lineId].map(
+            return peerMap[lineId]?.peerRelations?.map(
               (linePeer) =>
                 linePeer?.peerMediaStream && (
                   <StreamPlayer
