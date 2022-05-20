@@ -152,8 +152,10 @@ export default React.memo(function LineRow({
       role={'presentation'}
       className={`flex flex-row items-center justify-start gap-2 px-4 py-4 hover:bg-gray-200 
       cursor-pointer transition-all relative z-50 
+
+      ${isUserToggleTuned && ' bg-gray-100'}
       
-      ${(isUserToggleTuned || isUserTunedIn) && ' bg-gray-100 shadow-2xl'}`}
+      ${isUserTunedIn && isSelected && ' bg-gray-100 shadow-2xl'}`}
     >
       {/* channel picture */}
       {profilePictures && (
