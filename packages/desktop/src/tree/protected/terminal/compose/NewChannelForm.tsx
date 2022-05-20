@@ -101,7 +101,7 @@ export default function NewChannelForm({ handleClose }: { handleClose: () => voi
       }
 
       if (selectedUsers.length === maxUserCount - 1) {
-        toast.error('you can only have 8 people per channel!');
+        toast.error(`Max ${maxUserCount} people per channel including you!`);
 
         return;
       }
@@ -181,7 +181,9 @@ export default function NewChannelForm({ handleClose }: { handleClose: () => voi
         <span className="flex flex-row justify-between mt-5">
           <span className="text-gray-500 ">{`Selected`}</span>
 
-          <span className="text-gray-400">{selectedUsers.length}/7</span>
+          <span className="text-gray-400">
+            {selectedUsers.length}/${maxUserCount - 1}
+          </span>
         </span>
 
         {selectedUsers.map((selectedUser) => {
