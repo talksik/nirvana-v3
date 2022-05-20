@@ -79,6 +79,14 @@ export default function LineDetails() {
         </div>
 
         <Avatar.Group className={'animate-pulse'}>
+          <Avatar
+            key={`lineTunedInUserAvatar-${-1}`}
+            src={user.picture}
+            shape="square"
+            size={'large'}
+            className={`shadow-lg`}
+          />
+
           {selectedLine.profilePictures?.tunedMembers?.map((pictureSrc, index) => (
             <Avatar
               key={`lineTunedInUserAvatar-${index}`}
