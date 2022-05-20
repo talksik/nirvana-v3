@@ -231,7 +231,7 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
           roomsMap[lineId]?.tunedInMemberIds &&
           !roomsMap[lineId]?.tunedInMemberIds.includes(user._id.toString())
         ) {
-          lineStreamData?.peerRelations.forEach((peerRelation) => {
+          lineStreamData?.peerRelations?.forEach((peerRelation) => {
             peerRelation.peer.destroy();
           });
 
