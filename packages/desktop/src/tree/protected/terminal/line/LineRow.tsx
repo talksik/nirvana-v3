@@ -45,9 +45,43 @@ export default React.memo(function LineRow({
     // if (isUserToggleTuned) handleActivateLine();
 
     handleActivateLine();
-  }, [isUserToggleTuned, handleActivateLine]);
+  }, [handleActivateLine]);
 
   useKeyPressEvent((index + 1).toString(), hotkeyActivateLine);
+
+  const profilePictures = useMemo(() => {
+    const allMembers: string[] = [];
+    const tunedMembers: string[] = [];
+    const broadcastMembers: string[] = [];
+    const untunedMembers: string[] = [];
+
+    // ?don't add in my image as that's useless contextually?
+    if (user.picture) allMembers.push(user.picture);
+
+    line.otherUserObjects?.forEach((otherUser) => {
+      if (otherUser.picture) {
+        allMembers.push(otherUser.picture);
+
+        if (line.tunedInMemberIds?.includes(otherUser._id.toString())) {
+          tunedMembers.push(otherUser.picture);
+          return;
+        }
+        if (line.currentBroadcastersUserIds?.includes(otherUser._id.toString())) {
+          broadcastMembers.push(otherUser.picture);
+          return;
+        }
+
+        untunedMembers.push(otherUser.picture);
+      }
+    });
+
+    return {
+      untunedMembers,
+      allMembers,
+      tunedMembers,
+      broadcastMembers,
+    };
+  }, [line, user]);
 
   const renderRightActivity = useMemo(() => {
     if (isSelected) {
@@ -59,11 +93,10 @@ export default React.memo(function LineRow({
         </Tooltip>
       );
     }
-    // TODO: get the profile pictures of the broadcasters
-    if (line.currentBroadcastersUserIds?.length > 0)
+
+    if (profilePictures.broadcastMembers.length > 0)
       return (
         <Avatar.Group
-          key={`lineRowRightActivityGroup-${line.lineDetails._id.toString()}`}
           maxCount={2}
           maxPopoverTrigger="click"
           size="small"
@@ -75,10 +108,10 @@ export default React.memo(function LineRow({
           }}
           className="shadow-lg"
         >
-          {line.otherUserObjects?.map((otherUser, index) => (
+          {profilePictures.broadcastMembers.map((pictureSrc, index) => (
             <Avatar
-              key={`lineListActivitySection-${otherUser._id.toString()}-${index}`}
-              src={otherUser.picture ?? ''}
+              key={`lineRowActiveBroadcasters-${index}`}
+              src={pictureSrc}
               shape="square"
               size={'small'}
             />
@@ -86,19 +119,14 @@ export default React.memo(function LineRow({
         </Avatar.Group>
       );
 
-    // if there is someone or me broadcasting here
-    if (line.currentBroadcastersUserIds?.length > 0)
+    if (profilePictures.tunedMembers.length > 0)
       return <FiSun className="text-teal-500 animate-pulse" />;
-
-    if (isUserTunedIn) return <FiActivity className="text-black animate-pulse" />;
 
     // if there is new activity blocks for me
     if (line.currentUserMember.lastVisitDate)
       return <span className="h-2 w-2 rounded-full bg-slate-800 animate-pulse"></span>;
 
-    // if there is new activity/black dot, then show relative time as little bolder? or too much?
-
-    // TODO: compare last visit date to latest audio block
+    // TODO: compare last visit date to latest content block
     if (line.currentUserMember)
       return (
         <span className={`text-gray-400 ml-auto text-xs font-semibold`}>
@@ -111,20 +139,7 @@ export default React.memo(function LineRow({
         {moment(line.currentUserMember.lastVisitDate).fromNow(true)}
       </span>
     );
-  }, [line, isSelected]);
-
-  const profilePictures = useMemo(() => {
-    const pictureSources: string[] = [];
-
-    // ?don't add in my image as that's useless contextually?
-    // if (userData?.user?.picture) pictureSources.push(userData.user.picture);
-
-    line.otherUserObjects?.forEach((otherUser) => {
-      if (otherUser.picture) pictureSources.push(otherUser.picture);
-    });
-
-    return pictureSources;
-  }, [line, user]);
+  }, [line, isSelected, profilePictures]);
 
   // TODO: low priority: scale the whole thing and make it pop out nad translate...
   // doesn't work right now because no workaround for overflow scroll for y and visible for x
@@ -140,7 +155,14 @@ export default React.memo(function LineRow({
       {/* channel picture */}
       {profilePictures && (
         <span className={`${isSelected && ' scale-125 transition-all'}`}>
-          <LineIcon grayscale={!isUserTunedIn} sourceImages={profilePictures} />
+          <LineIcon
+            grayscale={!isUserTunedIn}
+            sourceImages={
+              profilePictures.tunedMembers.length > 0
+                ? profilePictures.tunedMembers
+                : profilePictures.allMembers
+            }
+          />
         </span>
       )}
 
