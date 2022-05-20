@@ -6,8 +6,7 @@ import toast from 'react-hot-toast';
 import { Avatar, Divider, Skeleton, Spin } from 'antd';
 import { User } from '@nirvana/core/models/user.model';
 import CreateLineRequest from '@nirvana/core/requests/createLine.request';
-
-const maxUserCount = 8;
+import { maxChannelUserCount } from '../rules';
 
 export default function NewChannelForm({ handleClose }: { handleClose: () => void }) {
   const [peopleSearchQuery, setPeopleSearchQuery] = useState<string>('');
@@ -61,7 +60,7 @@ export default function NewChannelForm({ handleClose }: { handleClose: () => voi
           return prevUsers;
         }
 
-        if (prevUsers.length === maxUserCount - 1) {
+        if (prevUsers.length === maxChannelUserCount - 1) {
           toast.error('you can only have 8 people per channel!');
 
           return prevUsers;
@@ -100,8 +99,8 @@ export default function NewChannelForm({ handleClose }: { handleClose: () => voi
         return;
       }
 
-      if (selectedUsers.length === maxUserCount - 1) {
-        toast.error(`Max ${maxUserCount} people per channel including you!`);
+      if (selectedUsers.length === maxChannelUserCount - 1) {
+        toast.error(`Max ${maxChannelUserCount} people per channel including you!`);
 
         return;
       }
@@ -182,7 +181,7 @@ export default function NewChannelForm({ handleClose }: { handleClose: () => voi
           <span className="text-gray-500 ">{`Selected`}</span>
 
           <span className="text-gray-400">
-            {selectedUsers.length}/${maxUserCount - 1}
+            {selectedUsers.length}/${maxChannelUserCount - 1}
           </span>
         </span>
 
