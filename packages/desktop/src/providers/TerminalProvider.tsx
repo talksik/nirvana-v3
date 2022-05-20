@@ -342,9 +342,16 @@ export function TerminalProvider({ children }: { children: React.ReactChild }) {
 
   // handle shortcuts
   const clearMind = useCallback(() => {
-    setSelectedLineId(undefined);
+    setSelectedLineId((prevLineId) => {
+      // untune from the last line if it was just a temporary tuned one
+      if (roomMap[prevLineId]?.currentUserMember.state === LineMemberState.INBOX) {
+        handleUntuneFromLine(prevLineId);
+      }
+
+      return undefined;
+    });
     setShowNewChannelForm(false);
-  }, [setSelectedLineId, setShowNewChannelForm]);
+  }, [setSelectedLineId, setShowNewChannelForm, handleUntuneFromLine, roomMap]);
 
   useKeyPressEvent('Escape', clearMind);
 
