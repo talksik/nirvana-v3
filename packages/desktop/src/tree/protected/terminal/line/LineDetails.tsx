@@ -1,25 +1,12 @@
-import React, { useMemo, useEffect, useState, useCallback, useRef } from 'react';
+import React, { useMemo, useEffect, useRef } from 'react';
 import useAuth from '../../../../providers/AuthProvider';
 import useStreams from '../../../../providers/StreamProvider';
 
 import { LineMemberState } from '@nirvana/core/models/line.model';
 import LineIcon from '../../../../components/lineIcon';
-import {
-  FiActivity,
-  FiHeadphones,
-  FiImage,
-  FiMoreVertical,
-  FiSearch,
-  FiSettings,
-  FiSun,
-  FiUsers,
-  FiVideo,
-  FiX,
-} from 'react-icons/fi';
+import { FiActivity, FiSettings, FiSun } from 'react-icons/fi';
 import { Avatar, Tooltip } from 'antd';
-import { useKeyPressEvent } from 'react-use';
 import useTerminalProvider from '../../../../providers/TerminalProvider';
-import Peer from 'simple-peer';
 
 export default function LineDetails() {
   const { user } = useAuth();

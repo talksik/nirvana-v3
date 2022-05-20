@@ -1,25 +1,10 @@
-import React, { useMemo, useEffect, useRef, useState } from 'react';
 import useAuth from '../../../../providers/AuthProvider';
 
-import { LineMemberState } from '@nirvana/core/models/line.model';
-import LineIcon from '../../../../components/lineIcon';
-import {
-  FiActivity,
-  FiHeadphones,
-  FiImage,
-  FiMoreVertical,
-  FiSearch,
-  FiSettings,
-  FiSun,
-  FiUsers,
-  FiVideo,
-} from 'react-icons/fi';
-import { Avatar, Tooltip } from 'antd';
-import useStreams from '../../../../providers/StreamProvider';
-import Peer from 'simple-peer';
 import NewChannelForm from '../compose/NewChannelForm';
 import LineDetails from '../line/LineDetails';
 import useTerminalProvider from '../../../../providers/TerminalProvider';
+
+import React from 'react';
 
 export default function MainPanel() {
   const { user } = useAuth();

@@ -2,13 +2,11 @@ import MasterLineData from '@nirvana/core/models/masterLineData.model';
 import React, { useMemo, useCallback } from 'react';
 
 import { Avatar, Tooltip } from 'antd';
-import { FiActivity, FiSun, FiX } from 'react-icons/fi';
+import { FiSun, FiX } from 'react-icons/fi';
 import useAuth from '../../../../providers/AuthProvider';
 import LineIcon from '../../../../components/lineIcon';
 import moment from 'moment';
 import { useKeyPressEvent } from 'react-use';
-import toast from 'react-hot-toast';
-import { LineMemberState } from '@nirvana/core/models/line.model';
 import useElectron from '../../../../providers/ElectronProvider';
 
 export default React.memo(function LineRow({
