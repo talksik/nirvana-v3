@@ -16,6 +16,12 @@ import useTerminalProvider from './TerminalProvider';
 import MasterLineData from '@nirvana/core/models/masterLineData.model';
 import { useEffectOnce } from 'react-use';
 
+const videoConstraints = {
+  frameRate: 30,
+  width: { max: 100 },
+  height: { max: 200 },
+};
+
 const iceServers = [
   // { urls: 'stun:stun.l.google.com:19302' },
   // { urls: 'stun:stun.l.google.com:19302' },
@@ -159,7 +165,10 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
     });
 
     navigator.mediaDevices
-      .getUserMedia({ video: true, audio: true })
+      .getUserMedia({
+        video: videoConstraints,
+        audio: true,
+      })
       .then((localMediaStream: MediaStream) => {
         setUserLocalStream(localMediaStream);
       });
@@ -309,7 +318,7 @@ function LineConnector({
 
     // todo get the user media selections
     navigator.mediaDevices
-      .getUserMedia({ video: true, audio: true })
+      .getUserMedia({ video: videoConstraints, audio: true })
       .then((localMediaStream: MediaStream) => {
         // todo check if already in peer map? keeping it simple for now
         // a peer relationship between me and someone for this particular channel so that I can just enable or disable this particular stream

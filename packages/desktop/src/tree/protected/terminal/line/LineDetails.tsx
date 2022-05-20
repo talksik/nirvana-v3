@@ -5,7 +5,7 @@ import useStreams from '../../../../providers/StreamProvider';
 import { LineMemberState } from '@nirvana/core/models/line.model';
 import LineIcon from '../../../../components/lineIcon';
 import { FiActivity, FiSettings, FiSun } from 'react-icons/fi';
-import { Avatar, Tooltip } from 'antd';
+import { Avatar, Spin, Tooltip } from 'antd';
 import useTerminalProvider from '../../../../providers/TerminalProvider';
 
 export default function LineDetails() {
@@ -182,14 +182,16 @@ function StreamPlayer({ peerStream }: { peerStream: MediaStream }) {
   }, [peerStream]);
 
   return (
-    <video
-      ref={streamRef}
-      height={350}
-      width={400}
-      className={'shadow-xl rounded'}
-      autoPlay
-      muted
-    />
+    <>
+      <video
+        ref={streamRef}
+        height={300}
+        width={400}
+        className={'shadow-xl rounded'}
+        autoPlay
+        muted
+      />
+    </>
   );
 }
 
