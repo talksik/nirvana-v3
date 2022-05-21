@@ -8,6 +8,7 @@ import LineIcon from '../../../../components/lineIcon';
 import moment from 'moment';
 import { useKeyPressEvent } from 'react-use';
 import useElectron from '../../../../providers/ElectronProvider';
+import { maxToggleTunedChannelCount } from '../rules';
 
 export default React.memo(function LineRow({
   index,
@@ -131,7 +132,7 @@ export default React.memo(function LineRow({
         {line.lineDetails.name || line.otherUserObjects[0].givenName}
       </h2>
 
-      {line.isUserToggleTuned && isWindowFocused && (
+      {index < maxToggleTunedChannelCount && (
         <span className="ml-2 text-gray-300 text-xs p-1 px-2 bg-gray-100">{`${index + 1}`}</span>
       )}
 

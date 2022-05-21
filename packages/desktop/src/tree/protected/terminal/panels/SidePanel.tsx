@@ -12,6 +12,7 @@ import useSockets from '../../../../providers/SocketProvider';
 import useElectron from '../../../../providers/ElectronProvider';
 import useStreams from '../../../../providers/StreamProvider';
 import { maxToggleTunedChannelCount } from '../rules';
+import { useKeyPressEvent } from 'react-use';
 
 export default function SidePanel() {
   // using merely for loading state...better to add to realtimeroom context?
@@ -36,6 +37,14 @@ export default function SidePanel() {
   const handleCreateNewChannel = useCallback(() => {
     handleShowNewChannelForm('show');
   }, [handleShowNewChannelForm]);
+
+  const omniSearchBarRef = useRef<HTMLInputElement>();
+
+  const focusSearch = useCallback(() => {
+    if (omniSearchBarRef.current) omniSearchBarRef.current.focus();
+  }, [omniSearchBarRef]);
+
+  useKeyPressEvent('Tab', focusSearch);
 
   return (
     <div
@@ -88,7 +97,10 @@ export default function SidePanel() {
                 className="flex-1 bg-transparent placeholder-gray-400 text-gray-500 placeholder:text-xs focus:outline-none"
                 onChange={(e) => setSearchQuery(e.target.value)}
                 value={searchQuery}
+                ref={omniSearchBarRef}
               />
+
+              <span className="ml-auto text-gray-300 text-xs p-1 bg-gray-100">tab</span>
             </div>
 
             <Tooltip title={'New channel'}>
