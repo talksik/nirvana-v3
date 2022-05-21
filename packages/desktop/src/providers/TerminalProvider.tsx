@@ -286,6 +286,18 @@ export function TerminalProvider({ children }: { children: React.ReactChild }) {
     }
   }, [rooms.value, updateRoomMap, handleConnectToLine, handleTuneIntoLine]);
 
+  // "subscribe" to a channel
+  const handleAddChannel = useCallback(
+    (channelId: string) => {
+      // get the details of the channel
+      // get my association with it
+      // get other members in it
+      // add to map
+      // connect/join the socket room for it
+    },
+    [handleConnectToLine, updateRoomMap],
+  );
+
   // persist whether I want it toggle tuned or not
   const handleUpdateLineMemberState = useCallback(
     (lineId: string, newState: LineMemberState) => {
