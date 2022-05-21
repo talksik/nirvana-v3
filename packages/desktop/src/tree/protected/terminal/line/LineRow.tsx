@@ -105,7 +105,7 @@ export default React.memo(function LineRow({
       className={`flex flex-row items-center justify-start gap-2 px-4 py-4 hover:bg-gray-200 
       cursor-pointer transition-all relative z-50 
 
-      ${line.isUserToggleTuned && ' bg-gray-100'}
+      ${line.isUserToggleTuned && ' bg-gray-100 shadow-2xl'}
       
       ${line.isUserTunedIn && isSelected && ' bg-gray-200 shadow-2xl'}`}
     >
