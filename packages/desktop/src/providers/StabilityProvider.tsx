@@ -24,10 +24,12 @@ export function StabilityProvider({ children }: { children: React.ReactNode }) {
   }, [setIsOffline]);
 
   useEffect(() => {
-    setInterval(() => {
-      state.retry();
+    const interval = setInterval(() => {
+      if (!state.loading) state.retry();
     }, 5000);
-  }, [state]);
+
+    return () => clearInterval(interval);
+  }, [state.loading]);
 
   if (isOffline)
     return (
