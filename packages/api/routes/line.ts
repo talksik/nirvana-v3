@@ -31,8 +31,11 @@ export default function getLineRoutes() {
   // get all of user's lines
   router.get('/', authCheck, getUserLines);
 
-  // toggle tune into a line
+  // toggle tune into or off a line and persist
   router.post('/:lineId/state', authCheck, updateLineMemberState);
+
+  // get all details of a line with user associations and other users
+  router.post('/:lineId', authCheck, getLineDetails);
 
   // get conversation between user and other user
   router.get('/dm/:otherUserId', authCheck, getDmByOtherUserId);
@@ -210,6 +213,24 @@ async function getUserLines(req: Request, res: Response) {
     const resObj = new GetUserLinesResponse(masterLines);
 
     res.json(new NirvanaResponse<GetUserLinesResponse>(resObj));
+  } catch (error) {
+    res.status(500).json(error);
+  }
+}
+
+async function getLineDetails(req: Request, res: Response) {
+  try {
+    const { lineId } = req.params;
+
+    const userInfo = res.locals.userInfo as JwtClaims;
+
+    // get all the line associations with lineId
+
+    // find the one for me
+
+    // const lineData = new MasterLineData();
+
+    // res.json(new NirvanaResponse<GetUserLinesResponse>(resObj));
   } catch (error) {
     res.status(500).json(error);
   }

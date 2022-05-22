@@ -1,18 +1,19 @@
-import { GoogleUserInfo, User } from "@nirvana/core/models";
-import { JwtClaims, authCheck } from "../middleware/auth";
-import express, { Application, Request, Response } from "express";
+import { GoogleUserInfo, User } from '@nirvana/core/models';
+import { JwtClaims, authCheck } from '../middleware/auth';
+import express, { Application, Request, Response } from 'express';
 
-import LoginResponse from "../../core/responses/login.response";
-import { OAuth2Client } from "google-auth-library";
-import { ObjectID } from "bson";
-import { ObjectId } from "mongodb";
-import UserDetailsResponse from "../../core/responses/userDetails.response";
-import { UserService } from "../services/user.service";
-import { UserStatus } from "../../core/models/user.model";
-import { collections } from "../services/database.service";
-import { loadConfig } from "../config";
+import LoginResponse from '../../core/responses/login.response';
+import { OAuth2Client } from 'google-auth-library';
+import { ObjectID } from 'bson';
+import { ObjectId } from 'mongodb';
+import UserDetailsResponse from '../../core/responses/userDetails.response';
+import { UserService } from '../services/user.service';
+import { UserStatus } from '../../core/models/user.model';
+import { collections } from '../services/database.service';
+import { loadConfig } from '../config';
+import NirvanaResponse from '@nirvana/core/responses/nirvanaResponse';
 
-const jwt = require("jsonwebtoken");
+const jwt = require('jsonwebtoken');
 
 const config = loadConfig();
 
@@ -24,20 +25,22 @@ export default function getUserRoutes() {
   router.use(express.json());
 
   // get user details based on id token
-  router.get("/", authCheck, getUserDetails);
+  router.get('/', authCheck, getUserDetails);
 
-  router.get("/login", login);
+  router.get('/login', login);
 
-  router.get("/authcheck", authCheck, handleAuthCheck);
+  router.get('/authcheck', authCheck, handleAuthCheck);
+
+  router.get('/:userId', authCheck, getOtherUserData);
 
   return router;
 }
 
 async function handleAuthCheck(req: Request, res: Response) {
   try {
-    res.status(200).json("You are good to go!");
+    res.status(200).json('You are good to go!');
   } catch (error) {
-    res.status(401).json("Unauthorized");
+    res.status(401).json('Unauthorized');
   }
 }
 
@@ -49,7 +52,7 @@ async function getUserDetails(req: Request, res: Response) {
 
     user
       ? res.status(200).json(new UserDetailsResponse(user))
-      : res.status(404).json("No such user");
+      : res.status(404).json('No such user');
   } catch (error) {
     console.log(error);
     res.status(500).json(`Problem with signing user up or logging in`);
@@ -65,14 +68,14 @@ async function login(req: Request, res: Response) {
 
   try {
     const ticket = await client.verifyIdToken({
-      idToken: (id_token as string) ?? "",
+      idToken: (id_token as string) ?? '',
       audience: config.GOOGLE_AUTH_CLIENT_ID, // Specify the CLIENT_ID of the app that accesses the backend
     });
     const googleUserId = ticket.getPayload()?.sub as string;
     const email = ticket.getPayload()?.email as string;
 
     if (!googleUserId || !email) {
-      res.status(401).json("no google account found");
+      res.status(401).json('no google account found');
       return;
     }
 
@@ -82,15 +85,14 @@ async function login(req: Request, res: Response) {
     // if no user found, then go ahead and create user
     if (!user) {
       if (!access_token) {
-        res.status(400).json("No access token provided");
+        res.status(400).json('No access token provided');
         return;
       }
 
       // get google user info from access token
-      const userInfo: GoogleUserInfo =
-        await UserService.getGoogleUserInfoWithAccessToken(
-          access_token as string
-        );
+      const userInfo: GoogleUserInfo = await UserService.getGoogleUserInfoWithAccessToken(
+        access_token as string,
+      );
 
       // create initial user model object
 
@@ -103,7 +105,7 @@ async function login(req: Request, res: Response) {
         new Date(),
         userInfo.picture,
         userInfo.verifiedEmail,
-        userInfo.locale
+        userInfo.locale,
       );
 
       // create user if not exists
@@ -120,12 +122,12 @@ async function login(req: Request, res: Response) {
           email: newUser.email,
           name: newUser.name,
         },
-        config.JWT_TOKEN_SECRET
+        config.JWT_TOKEN_SECRET,
       );
 
       insertResult
         ? res.status(200).json(new LoginResponse(jwtToken, newUser))
-        : res.status(500).json("Failed to create account, already exists");
+        : res.status(500).json('Failed to create account, already exists');
 
       return;
     }
@@ -139,12 +141,35 @@ async function login(req: Request, res: Response) {
         email: user.email,
         name: user.name,
       },
-      config.JWT_TOKEN_SECRET
+      config.JWT_TOKEN_SECRET,
     );
 
     res.status(200).json(new LoginResponse(jwtToken, user));
   } catch (error) {
     console.log(error);
     res.status(500).json(`Problem with signing user up or logging in`);
+  }
+}
+
+/**
+ *
+ * @param take in userId
+ * return current user object for them
+ */
+async function getOtherUserData(req: Request, res: Response) {
+  try {
+    const { userId } = req.params;
+
+    const user = await UserService.getUserById(userId);
+
+    if (!user)
+      return res
+        .status(400)
+        .json(new NirvanaResponse(undefined, new Error('Could not find user!')));
+
+    return res.status(200).json(new NirvanaResponse<User>(user));
+  } catch (error) {
+    console.error(error);
+    res.status(500).json(new NirvanaResponse(undefined, error as Error));
   }
 }
