@@ -204,14 +204,14 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
       console.log(uniqueDevices);
     });
 
-    navigator.mediaDevices
-      .getUserMedia({
-        video: videoConstraints,
-        audio: true,
-      })
-      .then((localMediaStream: MediaStream) => {
-        setUserLocalStream(localMediaStream);
-      });
+    // navigator.mediaDevices
+    //   .getUserMedia({
+    //     video: videoConstraints,
+    //     audio: true,
+    //   })
+    //   .then((localMediaStream: MediaStream) => {
+    //     setUserLocalStream(localMediaStream);
+    //   });
   }, []);
 
   console.log(`peer map: `, peerMap);
@@ -260,7 +260,7 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
   return (
     <StreamProviderContext.Provider value={{ peerMap, userLocalStream }}>
       {/* handles stream connections */}
-      {Object.values(roomsMap).map((line) => {
+      {/* {Object.values(roomsMap).map((line) => {
         if (line.tunedInMemberIds?.includes(user._id.toString()))
           return (
             <MemoLineConnector
@@ -274,7 +274,7 @@ export function StreamProvider({ children }: { children: React.ReactChild }) {
               setLocalStreamForLine={setLocalStreamForLine}
             />
           );
-      })}
+      })} */}
 
       {children}
     </StreamProviderContext.Provider>

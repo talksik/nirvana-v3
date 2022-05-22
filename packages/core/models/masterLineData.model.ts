@@ -24,7 +24,7 @@ export default class MasterLineData {
   //     -> all connected line members be able to show this in the right activity section of the lineRow
   currentBroadcastersUserIds?: string[];
 
-  profilePictures: {
+  profilePictures?: {
     allMembers: string[];
     allMembersWithoutMe: string[];
 
@@ -32,7 +32,7 @@ export default class MasterLineData {
 
     tunedMembers: string[];
     broadcastMembers: string[];
-  };
+  } = undefined;
   isUserTunedIn: boolean = false;
   isUserToggleTuned: boolean = false;
 

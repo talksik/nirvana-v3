@@ -38,7 +38,7 @@ export function StabilityProvider({ children }: { children: React.ReactNode }) {
       </div>
     );
 
-  if (state.error || state.loading)
+  if (state.error)
     return (
       <div className="h-screen w-screen text-gray-400 bg-white flex-1 flex flex-col justify-center items-center">
         <span>{'sorry this is our bad. servers are rebooting... :('}</span>
