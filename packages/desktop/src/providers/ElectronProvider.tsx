@@ -22,16 +22,6 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
   const [desktopMode, setDesktopMode] = useState<DesktopMode>('mainApp');
   const [isWindowFocused, setIsWindowFocused] = useState<boolean>(false);
 
-  const [isOffline, setIsOffline] = useState<boolean>();
-
-  // handle network connection
-  useEffect(() => {
-    setIsOffline(!navigator.onLine);
-
-    window.addEventListener('online', () => setIsOffline(false));
-    window.addEventListener('offline', () => setIsOffline(true));
-  }, [setIsOffline]);
-
   // handle all window resizing logic
   useEffect(() => {
     // add dimensions if it's not overlay only mode
@@ -89,13 +79,6 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
   const handleToggleDesktopMode = useCallback(() => {
     setDesktopMode((prevMode) => (prevMode === 'mainApp' ? 'overlayOnly' : 'mainApp'));
   }, [setDesktopMode]);
-
-  if (isOffline)
-    return (
-      <div className="h-screen w-screen bg-white flex-1 flex flex-row justify-center items-center">
-        <span>{'poor network connection... :('}</span>{' '}
-      </div>
-    );
 
   return (
     <ElectronContext.Provider value={{ desktopMode, handleToggleDesktopMode, isWindowFocused }}>

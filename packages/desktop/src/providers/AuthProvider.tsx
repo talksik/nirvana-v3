@@ -33,6 +33,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   //   });
   // }, []);
 
+  // todo: check this in intervals repeatedly
   useEffect(() => {
     if (jwtToken) {
       console.warn(jwtToken);
