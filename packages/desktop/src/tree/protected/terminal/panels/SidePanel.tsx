@@ -93,7 +93,7 @@ export default function SidePanel() {
             <div className="flex-1 flex flex-row items-center space-x-2 bg-gray-200 p-2 rounded">
               <FiSearch className="text-xs text-gray-400" />
               <input
-                placeholder="Search or start a conversation"
+                placeholder="Find or start a conversation"
                 className="flex-1 bg-transparent placeholder-gray-400 text-gray-500 placeholder:text-xs focus:outline-none"
                 onChange={(e) => setSearchQuery(e.target.value)}
                 value={searchQuery}
