@@ -66,7 +66,7 @@ export default function SidePanel() {
         </button>
 
         {desktopMode === 'mainApp' && (
-          <span className="text-gray-800 font-semibold mx-auto">Channels</span>
+          <span className="text-gray-800 font-semibold mx-auto">Conversations</span>
         )}
 
         <button

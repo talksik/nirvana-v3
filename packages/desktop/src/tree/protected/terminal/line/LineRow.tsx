@@ -90,7 +90,7 @@ export default React.memo(function LineRow({
       );
 
     return (
-      <span className={`text-gray-400 ml-auto text-xs `}>
+      <span className={`text-gray-200 ml-auto text-xs `}>
         {moment(line.currentUserMember.lastVisitDate).fromNow(true)}
       </span>
     );
@@ -124,13 +124,13 @@ export default React.memo(function LineRow({
       )}
 
       {/* channel name */}
-      <h2
-        className={`text-inherit text-md max-w-[180px] truncate text-slate-800 ${
-          line.currentUserMember.lastVisitDate ? 'font-semibold' : ''
+      <span
+        className={`text-md max-w-[180px] truncate text-gray-300 ${
+          line.currentUserMember.lastVisitDate ? 'font-semibold text-gray-800' : ''
         }`}
       >
         {line.lineDetails.name || line.otherUserObjects[0].givenName}
-      </h2>
+      </span>
 
       {index < maxToggleTunedChannelCount && (
         <span className="ml-2 text-gray-300 text-xs p-1 px-2 bg-gray-100">{`${index + 1}`}</span>
