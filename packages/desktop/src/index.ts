@@ -1,16 +1,6 @@
-import {
-  BrowserWindow,
-  Display,
-  Menu,
-  app,
-  dialog,
-  globalShortcut,
-  ipcMain,
-  screen,
-} from 'electron';
-import Channels, { DEFAULT_APP_PRESET } from './electron/constants';
+import { BrowserWindow, Display, app, ipcMain, screen } from 'electron';
+import Channels, { DEFAULT_APP_PRESET, DimensionChangeRequest } from './electron/constants';
 
-import { DimensionChangeRequest } from './electron/constants';
 import { handleGoogleLogin } from './electron/handleLogin';
 import path from 'path';
 import store from './electron/store';
