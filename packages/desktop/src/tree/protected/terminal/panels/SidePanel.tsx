@@ -120,7 +120,7 @@ shadow-xl bg-gray-800 p-2 text-white text-xs"
                 <span className="flex flex-row gap-2 items-center justify-start text-gray-400 animate-pulse">
                   <FiActivity className="text-sm" />
 
-                  <h2 className="text-inherit text-xs">Tuned In</h2>
+                  <h2 className="text-inherit text-xs">Priority</h2>
 
                   <p className="text-slate-300 text-xs ml-auto">{`${
                     tunedChannelsCount || 0
