@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useContext, useCallback } from 'react';
-import toast from 'react-hot-toast';
-import { io, Socket } from 'socket.io-client';
-import useAuth from './AuthProvider';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
+import { Socket, io } from 'socket.io-client';
+
 import FlowState from '../tree/protected/FlowState';
+import toast from 'react-hot-toast';
+import useAuth from './AuthProvider';
 
 interface ISocketProvider {
   $ws: Socket;
@@ -46,7 +47,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    const socketConnection = io('http://localhost:5000', {
+    const socketConnection = io('http://localhost:8080', {
       query: { token: jwtToken },
       transports: ['websocket'],
       upgrade: false,

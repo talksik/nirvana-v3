@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 
 import environmentVariables from '../config/config';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const jwt = require('jsonwebtoken');
 
 // used by specific routes that need to authentication
@@ -14,7 +15,7 @@ export const authCheck = async (req: Request, res: Response, next: NextFunction)
     }
 
     // verify jwt token with our api secret
-    var decoded: JwtClaims = jwt.verify(authorization, environmentVariables.JWT_TOKEN_SECRET);
+    const decoded: JwtClaims = jwt.verify(authorization, environmentVariables.JWT_TOKEN_SECRET);
 
     res.locals.userInfo = decoded;
 

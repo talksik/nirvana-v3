@@ -6,14 +6,14 @@ import { Line } from '@nirvana/core/models/line.model';
 import LoginResponse from '@nirvana/core/responses/login.response';
 import MasterLineData from '@nirvana/core/models/masterLineData.model';
 import NirvanaResponse from '@nirvana/core/responses/nirvanaResponse';
+import UpdateLineMemberState from '@nirvana/core/requests/updateLineMemberState.request';
 import { User } from '@nirvana/core/models';
 import UserDetailsResponse from '@nirvana/core/responses/userDetails.response';
 import UserSearchResponse from '@nirvana/core/responses/userSearch.response';
-import UpdateLineMemberState from '@nirvana/core/requests/updateLineMemberState.request';
 
 // export const localHost = process.env.REACT_APP_API_DOMAIN;
 
-export const localHost = 'http://localhost:5000/api';
+export const localHost = 'http://localhost:8080/api';
 
 export default class NirvanaApi {
   // auth token from google that our backend will use

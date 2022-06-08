@@ -13,15 +13,22 @@ import cors from 'cors';
 import getLineRoutes from './routes/line';
 import getSearchRoutes from './routes/search';
 import getUserRoutes from './routes/user';
+import morgan from 'morgan';
 
 const app = express();
 
+app.use(morgan('combined'));
 app.use(cors());
 app.use(express.json());
 
-app.use((req: Request, res: Response, next: NextFunction) => {
-  console.log('Time: ', new Date());
-  next();
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  console.error(err);
+  next(err);
+});
+
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  res.status(500);
+  res.json(new NirvanaResponse(undefined, err, err.message));
 });
 
 app.get('/', (req: Request, res: Response) => {
@@ -36,8 +43,10 @@ app.use('/api/user', getUserRoutes());
 app.use('/api/search', getSearchRoutes());
 app.use('/api/lines', getLineRoutes());
 
-const PORT = 5000;
-const server = app.listen(PORT, () => console.log('express running'));
+const PORT = process.env.PORT || 8080;
+const server = app.listen(PORT, () =>
+  console.log(`express running on port | ${PORT} in host machine`),
+);
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const io = require('socket.io')(server, {
