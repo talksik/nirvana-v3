@@ -1,3 +1,3 @@
-export const maxChannelUserCount = 5;
+export const maxChannelUserCount = 8;
 
 export const maxToggleTunedChannelCount = 3;

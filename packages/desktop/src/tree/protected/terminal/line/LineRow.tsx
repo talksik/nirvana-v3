@@ -1,14 +1,14 @@
-import MasterLineData from '@nirvana/core/models/masterLineData.model';
-import React, { useMemo, useCallback } from 'react';
-
 import { Avatar, Tooltip } from 'antd';
 import { FiSun, FiX } from 'react-icons/fi';
-import useAuth from '../../../../providers/AuthProvider';
+import React, { useCallback, useMemo } from 'react';
+
 import LineIcon from '../../../../components/lineIcon';
-import moment from 'moment';
-import { useKeyPressEvent } from 'react-use';
-import useElectron from '../../../../providers/ElectronProvider';
+import MasterLineData from '@nirvana/core/models/masterLineData.model';
 import { maxToggleTunedChannelCount } from '../rules';
+import moment from 'moment';
+import useAuth from '../../../../providers/AuthProvider';
+import useElectron from '../../../../providers/ElectronProvider';
+import { useKeyPressEvent } from 'react-use';
 
 export default React.memo(function LineRow({
   index,
@@ -125,8 +125,8 @@ export default React.memo(function LineRow({
 
       {/* channel name */}
       <span
-        className={`text-md max-w-[180px] truncate text-gray-300 ${
-          line.currentUserMember.lastVisitDate ? 'font-semibold text-gray-800' : ''
+        className={`text-md max-w-[180px] truncate  ${
+          line.currentUserMember.lastVisitDate ? 'font-semibold text-gray-800' : ' text-gray-300'
         }`}
       >
         {line.lineDetails.name || line.otherUserObjects[0].givenName}

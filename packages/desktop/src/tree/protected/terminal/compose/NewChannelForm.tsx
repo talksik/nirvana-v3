@@ -1,12 +1,13 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { FiPlusSquare, FiUsers, FiX, FiXSquare } from 'react-icons/fi';
-import { useAsyncFn, useDebounce, useKeyPressEvent } from 'react-use';
-import { createLine, userSearch } from '../../../../api/NirvanaApi';
-import toast from 'react-hot-toast';
 import { Avatar, Divider, Skeleton, Spin } from 'antd';
-import { User } from '@nirvana/core/models/user.model';
+import { FiPlusSquare, FiUsers, FiX, FiXSquare } from 'react-icons/fi';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { createLine, userSearch } from '../../../../api/NirvanaApi';
+import { useAsyncFn, useDebounce, useKeyPressEvent } from 'react-use';
+
 import CreateLineRequest from '@nirvana/core/requests/createLine.request';
+import { User } from '@nirvana/core/models/user.model';
 import { maxChannelUserCount } from '../rules';
+import toast from 'react-hot-toast';
 
 export default function NewChannelForm({ handleClose }: { handleClose: () => void }) {
   const [peopleSearchQuery, setPeopleSearchQuery] = useState<string>('');
@@ -181,7 +182,7 @@ export default function NewChannelForm({ handleClose }: { handleClose: () => voi
           <span className="text-gray-500 ">{`Selected`}</span>
 
           <span className="text-gray-400">
-            {selectedUsers.length}/${maxChannelUserCount - 1}
+            {`${selectedUsers.length}/${maxChannelUserCount - 1}`}
           </span>
         </span>
 

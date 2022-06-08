@@ -1,9 +1,10 @@
-import React, { useContext, useState, useEffect, useCallback } from 'react';
-import { User } from '@nirvana/core/models/user.model';
-import { useAsyncFn } from 'react-use';
 import NirvanaApi, { getUserDetails } from '../api/NirvanaApi';
-import toast from 'react-hot-toast';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
+
 import { STORE_ITEMS } from '../electron/constants';
+import { User } from '@nirvana/core/models/user.model';
+import toast from 'react-hot-toast';
+import { useAsyncFn } from 'react-use';
 
 interface IAuthProvider {
   user?: User;
@@ -38,7 +39,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (jwtToken) {
       console.warn(jwtToken);
 
-      // ?should this be set here? what's a better way of
+      // ?should this be set here? what's a better way of having jwt token encapsulated in api async functions
       NirvanaApi._jwtToken = jwtToken;
 
       fetchUser()
