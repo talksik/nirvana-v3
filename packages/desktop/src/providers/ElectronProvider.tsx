@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState, useCallback } from 'react';
 import Channels, { DEFAULT_APP_PRESET, Dimensions } from '../electron/constants';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 
 interface IElectronProvider {
   // pass handlers and current dimensions?
@@ -32,7 +32,6 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
     if (desktopMode === 'mainApp') {
       stayOnTop = false;
       finalDimensions = DEFAULT_APP_PRESET;
-      finalPosition = 'center';
     } else if (desktopMode === 'overlayOnly') {
       stayOnTop = true;
       finalDimensions = {
