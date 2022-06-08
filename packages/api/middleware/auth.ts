@@ -1,32 +1,26 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Request, Response } from 'express';
 
-import { loadConfig } from "../config";
+import environmentVariables from '../config/config';
 
-const jwt = require("jsonwebtoken");
-
-const config = loadConfig();
+const jwt = require('jsonwebtoken');
 
 // used by specific routes that need to authentication
-export const authCheck = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const authCheck = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { authorization } = req.headers;
 
     if (!authorization) {
-      throw Error("No provided header");
+      throw Error('No provided header');
     }
 
     // verify jwt token with our api secret
-    var decoded: JwtClaims = jwt.verify(authorization, config.JWT_TOKEN_SECRET);
+    var decoded: JwtClaims = jwt.verify(authorization, environmentVariables.JWT_TOKEN_SECRET);
 
     res.locals.userInfo = decoded;
 
     next();
   } catch (error) {
-    res.status(401).send("unauthorized");
+    res.status(401).send('unauthorized');
   }
 };
 

@@ -10,13 +10,12 @@ import UserDetailsResponse from '../../core/responses/userDetails.response';
 import { UserService } from '../services/user.service';
 import { UserStatus } from '../../core/models/user.model';
 import { collections } from '../services/database.service';
-import { loadConfig } from '../config';
+import environmentVariables from '../config/config';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const jwt = require('jsonwebtoken');
 
-const config = loadConfig();
-
-const client = new OAuth2Client(config.GOOGLE_AUTH_CLIENT_ID);
+const client = new OAuth2Client(environmentVariables.GOOGLE_AUTH_CLIENT_ID);
 
 export default function getUserRoutes() {
   const router = express.Router();
@@ -66,7 +65,7 @@ async function login(req: Request, res: Response) {
   try {
     const ticket = await client.verifyIdToken({
       idToken: (id_token as string) ?? '',
-      audience: config.GOOGLE_AUTH_CLIENT_ID, // Specify the CLIENT_ID of the app that accesses the backend
+      audience: environmentVariables.GOOGLE_AUTH_CLIENT_ID, // Specify the CLIENT_ID of the app that accesses the backend
     });
     const googleUserId = ticket.getPayload()?.sub as string;
     const email = ticket.getPayload()?.email as string;
@@ -77,7 +76,7 @@ async function login(req: Request, res: Response) {
     }
 
     // return user details if it passed auth middleware
-    let user = await UserService.getUserByEmail(email);
+    const user = await UserService.getUserByEmail(email);
 
     // if no user found, then go ahead and create user
     if (!user) {
@@ -119,7 +118,7 @@ async function login(req: Request, res: Response) {
           email: newUser.email,
           name: newUser.name,
         },
-        config.JWT_TOKEN_SECRET,
+        environmentVariables.JWT_TOKEN_SECRET,
       );
 
       insertResult
@@ -138,7 +137,7 @@ async function login(req: Request, res: Response) {
         email: user.email,
         name: user.name,
       },
-      config.JWT_TOKEN_SECRET,
+      environmentVariables.JWT_TOKEN_SECRET,
     );
 
     res.status(200).json(new LoginResponse(existingUserJwtToken, user));

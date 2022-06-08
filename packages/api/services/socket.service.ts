@@ -21,17 +21,16 @@ import {
 import GetAllSocketClients from '@nirvana/core/sockets/getAllActiveSocketClients';
 import { JwtClaims } from '../middleware/auth';
 import { LineMemberState } from '@nirvana/core/models/line.model';
-import { LineService } from '../services/line.service';
+import { LineService } from './line.service';
 import ReceiveSignal from '@nirvana/core/sockets/receiveSignal';
 import SendSignal from '@nirvana/core/sockets/sendSignal';
-import { UserService } from '../services/user.service';
+import { UserService } from './user.service';
 import { UserStatus } from '@nirvana/core/models/user.model';
-import { client } from '../services/database.service';
-import { loadConfig } from '../config';
+import { client } from './database.service';
+import environmentVariables from '../config/config';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const jwt = require('jsonwebtoken');
-
-const config = loadConfig();
 
 // NOTE: client socket connections should never have to deal with socketIds
 const socketIdsToUserIds: {
@@ -53,7 +52,7 @@ export default function InitializeWs(io: any) {
         console.log(token);
 
         // verify jwt token with our api secret
-        var decoded: JwtClaims = jwt.verify(token, config.JWT_TOKEN_SECRET);
+        const decoded: JwtClaims = jwt.verify(token, environmentVariables.JWT_TOKEN_SECRET);
 
         socket.userInfo = decoded;
 
