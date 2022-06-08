@@ -79,10 +79,11 @@ export default function InitializeWs(io: any) {
       /** CONNECT | User wants to subscribe to live emissions of a line */
       socket.on(ServerRequestChannels.CONNECT_TO_LINE, (req: ConnectToLineRequest) => {
         // add this user to the room
-        console.log(`${socket.id} user CONNECTED room for line ${Object.keys(socket.rooms)}`);
 
         const roomName = `connectedLine:${req.lineId}`;
         socket.join(roomName);
+
+        console.log(`${socket.id} user CONNECTED room for line ${Object.keys(socket.rooms)}`);
 
         const clientUserIdsInRoom = [...(io.sockets.adapter.rooms.get(roomName) ?? [])].map(
           (otherUserSocketId: string) => socketIdsToUserIds[otherUserSocketId],
@@ -96,10 +97,10 @@ export default function InitializeWs(io: any) {
 
       /** TUNE | User tunes into the line either temporarily or toggled in  */
       socket.on(ServerRequestChannels.TUNE_INTO_LINE, async (req: TuneToLineRequest) => {
-        console.log(`${socket.id} user TUNED into room for line ${req.lineId}`);
-
         const roomName = `tunedLine:${req.lineId}`;
         socket.join(roomName);
+
+        console.log(`${socket.id} user TUNED into room for line ${req.lineId}`);
 
         const clientUserIdsInRoom = [...(io.sockets.adapter.rooms.get(roomName) ?? [])].map(
           (otherUserSocketId: string) => socketIdsToUserIds[otherUserSocketId],

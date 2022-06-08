@@ -24,6 +24,12 @@ const usersCollection: mongoDB.Collection = db.collection('users');
 const lineCollection: mongoDB.Collection = db.collection('lines');
 const lineMembersCollection: mongoDB.Collection = db.collection('lineMembers');
 
+// client.on('connection', () => {
+//   db.command({
+//     collMod: 'lines',
+//   });
+// });
+
 collections.users = usersCollection;
 collections.lines = lineCollection;
 collections.lineMembers = lineMembersCollection;
