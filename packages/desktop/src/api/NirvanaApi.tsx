@@ -1,7 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse, Method } from 'axios';
 
-import CreateLineRequest from '@nirvana/core/requests/createLine.request';
-import GetUserLinesResponse from '@nirvana/core/responses/getUserLines.response';
 import LoginResponse from '@nirvana/core/responses/login.response';
 import NirvanaResponse from '@nirvana/core/responses/nirvanaResponse';
 import UpdateLineMemberState from '@nirvana/core/requests/updateLineMemberState.request';
@@ -45,7 +43,7 @@ export default class NirvanaApi {
       throw new Error('Something went wrong');
     }
 
-    return await res.json();
+    return (await res.json()) as T;
   }
 }
 
@@ -74,20 +72,4 @@ export async function getUserDetails(): Promise<UserDetailsResponse> {
 
 export async function userSearch(searchQuery: string): Promise<UserSearchResponse> {
   return await NirvanaApi.fetch(`/search/users?query=${searchQuery}`, 'GET', true);
-}
-
-export async function getUserLines(): Promise<NirvanaResponse<GetUserLinesResponse>> {
-  return await NirvanaApi.fetch<NirvanaResponse<GetUserLinesResponse>>(`/lines`, 'GET', true);
-}
-
-export async function updateLineMemberState(
-  request: UpdateLineMemberState,
-  lineId: string,
-): Promise<NirvanaResponse<GetUserLinesResponse>> {
-  return await NirvanaApi.fetch<NirvanaResponse<GetUserLinesResponse>>(
-    `/lines/${lineId}/state`,
-    'POST',
-    true,
-    request,
-  );
 }
