@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 
 export interface IContent {
-  id?: string;
+  id?: ObjectId;
 
   creatorUserId: string;
   contentUrl: string; // remote resource of file/media
@@ -22,7 +22,8 @@ export class ContentBlock implements IContent {
 
     public createdDate = new Date(),
 
-    public id?: string,
+    public metadata?: object,
+    public id?: ObjectId,
   ) {}
 }
 

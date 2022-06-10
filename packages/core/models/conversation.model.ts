@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import User from './user.model';
 
 export default class Conversation {
@@ -23,7 +24,7 @@ export default class Conversation {
     public lastUpdatedDate = new Date(),
     public createdDate = new Date(),
 
-    public id?: string,
+    public id?: ObjectId,
   ) {}
 }
 
