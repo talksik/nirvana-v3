@@ -1,7 +1,10 @@
+import { Button, CircularProgress, Container } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 
 import Channels from '../electron/constants';
 import { FcGoogle } from 'react-icons/fc';
+import NirvanaLogo from '../subcomponents/NirvanaLogo';
+import { blueGrey } from '@mui/material/colors';
 // import Logo from '../../components/Logo';
 import { login } from '../api/NirvanaApi';
 import { useAsyncFn } from 'react-use';
@@ -47,6 +50,30 @@ export default function Login() {
     // send to main process
     window.electronAPI.auth.initiateLogin();
   };
+
+  return (
+    <Container
+      maxWidth={false}
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 5,
+        background: blueGrey[50],
+      }}
+    >
+      <NirvanaLogo />
+
+      {isLoading ? (
+        <CircularProgress />
+      ) : (
+        <Button onClick={continueAuth} variant="outlined" color="primary" startIcon={<FcGoogle />}>
+          Continue with Google
+        </Button>
+      )}
+    </Container>
+  );
 
   return (
     <div
