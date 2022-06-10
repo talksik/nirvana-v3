@@ -5,6 +5,7 @@ import ProtectedRoute from './ProtectedRoute';
 import React from 'react';
 import { SocketProvider } from '../providers/SocketProvider';
 import { StabilityProvider } from '../providers/StabilityProvider';
+import Terminal from './Terminal';
 import { ThemeProvider } from '@mui/material';
 import { Toaster } from 'react-hot-toast';
 import { ZenProvider } from '../providers/ZenProvider';
@@ -18,7 +19,7 @@ export default function ElectronApp() {
             <ProtectedRoute>
               <ZenProvider>
                 <SocketProvider>
-                  <></>
+                  <Terminal />
                 </SocketProvider>
               </ZenProvider>
             </ProtectedRoute>
