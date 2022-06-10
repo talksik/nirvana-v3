@@ -32,6 +32,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
     if (desktopMode === 'mainApp') {
       stayOnTop = false;
       finalDimensions = DEFAULT_APP_PRESET;
+      finalPosition = 'center';
     } else if (desktopMode === 'overlayOnly') {
       stayOnTop = true;
       finalDimensions = {

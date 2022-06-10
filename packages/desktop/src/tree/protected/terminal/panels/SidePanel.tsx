@@ -1,18 +1,19 @@
-import { LineMemberState } from '@nirvana/core/models/line.model';
 import { Avatar, Dropdown, Skeleton, Tooltip } from 'antd';
-import React, { useCallback, useMemo, useRef, useState, useEffect } from 'react';
 import { FiActivity, FiPlus, FiSearch } from 'react-icons/fi';
-import useRooms from '../../../../providers/RoomsProvider';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
+import { LineMemberState } from '@nirvana/core/models/line.model';
+import LineRow from '../line/LineRow';
 import NavBar from '../navbar/Navbar';
 import NoTextLogo from '@nirvana/components/logo/NoTextLogo';
-import LineRow from '../line/LineRow';
-import useTerminalProvider from '../../../../providers/TerminalProvider';
-import useAuth from '../../../../providers/AuthProvider';
-import useSockets from '../../../../providers/SocketProvider';
-import useElectron from '../../../../providers/ElectronProvider';
-import useStreams from '../../../../providers/StreamProvider';
 import { maxToggleTunedChannelCount } from '../rules';
+import useAuth from '../../../../providers/AuthProvider';
+import useElectron from '../../../../providers/ElectronProvider';
 import { useKeyPressEvent } from 'react-use';
+import useRooms from '../../../../providers/RoomsProvider';
+import useSockets from '../../../../providers/SocketProvider';
+import useStreams from '../../../../providers/StreamProvider';
+import useTerminalProvider from '../../../../providers/TerminalProvider';
 
 export default function SidePanel() {
   // using merely for loading state...better to add to realtimeroom context?
@@ -69,12 +70,12 @@ export default function SidePanel() {
           <span className="text-gray-800 font-semibold mx-auto">Conversations</span>
         )}
 
-        <button
+        {/* <button
           onClick={handleLogout}
           className="text-gray-300 text-xs px-3 py-2 transition-all hover:bg-gray-200"
         >
           log out
-        </button>
+        </button> */}
 
         <button
           onClick={handleFlowState}
