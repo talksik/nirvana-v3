@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 
+import Channels from '../electron/constants';
 import { FcGoogle } from 'react-icons/fc';
 // import Logo from '../../components/Logo';
-import { login } from '../../../api/NirvanaApi';
+import { login } from '../api/NirvanaApi';
 import { useAsyncFn } from 'react-use';
-import Channels from '../../../electron/constants';
-import useAuth from '../../../providers/AuthProvider';
+import useAuth from '../providers/AuthProvider';
 
 export default function Login() {
   const { setJwtToken } = useAuth();

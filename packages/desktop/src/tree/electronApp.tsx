@@ -1,12 +1,11 @@
-import React from 'react';
-import { Toaster } from 'react-hot-toast';
-import { RoomsProvider } from '../providers/RoomsProvider';
-import { TerminalProvider } from '../providers/TerminalProvider';
 import { AuthProvider } from '../providers/AuthProvider';
 import { ElectronProvider } from '../providers/ElectronProvider';
+import ProtectedRoute from './ProtectedRoute';
+import React from 'react';
+import { RoomsProvider } from '../providers/RoomsProvider';
 import { SocketProvider } from '../providers/SocketProvider';
-import ProtectedRoute from './protected/ProtectedRoute';
 import { StabilityProvider } from '../providers/StabilityProvider';
+import { Toaster } from 'react-hot-toast';
 export default function ElectronApp() {
   return (
     <StabilityProvider>
@@ -15,9 +14,7 @@ export default function ElectronApp() {
           <ProtectedRoute>
             <SocketProvider>
               <RoomsProvider>
-                <TerminalProvider>
-                  <></>
-                </TerminalProvider>
+                <></>
               </RoomsProvider>
             </SocketProvider>
           </ProtectedRoute>

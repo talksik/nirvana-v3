@@ -1,8 +1,8 @@
-import { ObjectId } from "mongodb";
+import { ObjectId } from 'mongodb';
 
-export class User {
+export default class User {
   constructor(
-    public googleId: string, // our Google id that every google user has unique that we are going to use for now
+    public googleId: string,
     public email: string,
 
     public name: string,
@@ -17,12 +17,25 @@ export class User {
     // additional properties specific to our users collection
     public status?: UserStatus,
     public lastUpdatedDate?: Date,
-    public _id?: ObjectId
+    public _id?: ObjectId,
   ) {}
 }
 
 export enum UserStatus {
-  ONLINE = "ONLINE",
-  OFFLINE = "OFFLINE",
-  FLOW_STATE = "FLOW_STATE",
+  ONLINE = 'ONLINE',
+  OFFLINE = 'OFFLINE',
+  FLOW_STATE = 'FLOW_STATE',
+}
+
+export class GoogleUserInfo {
+  constructor(
+    public id: string,
+    public email: string,
+    public verifiedEmail: boolean,
+    public name: string,
+    public given_name: string,
+    public family_name: string,
+    public picture: string,
+    public locale: string,
+  ) {}
 }

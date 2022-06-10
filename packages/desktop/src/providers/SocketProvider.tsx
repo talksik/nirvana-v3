@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { Socket, io } from 'socket.io-client';
 
-import FlowState from '../tree/protected/FlowState';
+import FlowState from '../tree/FlowState';
 import toast from 'react-hot-toast';
 import useAuth from './AuthProvider';
 

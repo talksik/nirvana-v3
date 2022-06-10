@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useContext } from 'react';
-
+import React, { useContext, useEffect, useState } from 'react';
 import { useAsyncFn, useAsyncRetry } from 'react-use';
+
 import { serverCheck } from '../api/NirvanaApi';
 
 interface IStabilityContext {

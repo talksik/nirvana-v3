@@ -1,5 +1,5 @@
-import { GoogleUserInfo, User } from '@nirvana/core/models';
 import { JwtClaims, authCheck } from '../middleware/auth';
+import User, { GoogleUserInfo, UserStatus } from '@nirvana/core/models/user.model';
 import express, { Application, Request, Response } from 'express';
 
 import LoginResponse from '../../core/responses/login.response';
@@ -8,7 +8,6 @@ import { ObjectID } from 'bson';
 import { ObjectId } from 'mongodb';
 import UserDetailsResponse from '../../core/responses/userDetails.response';
 import { UserService } from '../services/user.service';
-import { UserStatus } from '../../core/models/user.model';
 import { collections } from '../services/database.service';
 import environmentVariables from '../config/config';
 

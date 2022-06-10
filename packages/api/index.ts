@@ -1,16 +1,9 @@
 import express, { Application, Request, Response } from 'express';
 
-import GetAllSocketClients from '@nirvana/core/sockets/getAllActiveSocketClients';
 import InitializeWs from './services/socket.service';
 import { NextFunction } from 'express';
 import NirvanaResponse from '@nirvana/core/responses/nirvanaResponse';
-import ReceiveSignal from '../core/sockets/receiveSignal';
-import SendSignal from '@nirvana/core/sockets/sendSignal';
-import SocketChannels from '@nirvana/core/sockets/channels';
-import { UserService } from './services/user.service';
-import { UserStatus } from '@nirvana/core/models';
 import cors from 'cors';
-import getLineRoutes from './routes/line';
 import getSearchRoutes from './routes/search';
 import getUserRoutes from './routes/user';
 import morgan from 'morgan';
@@ -41,7 +34,7 @@ app.use('/api/status', (req: Request, res: Response) => {
 
 app.use('/api/user', getUserRoutes());
 app.use('/api/search', getSearchRoutes());
-app.use('/api/lines', getLineRoutes());
+// app.use('/api/conversations', getConversationRoutes());
 
 const PORT = process.env.PORT || 8080;
 const server = app.listen(PORT, () =>

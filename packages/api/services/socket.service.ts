@@ -18,15 +18,7 @@ import {
   UserStoppedBroadcastingResponse,
 } from '@nirvana/core/sockets/channels';
 
-import GetAllSocketClients from '@nirvana/core/sockets/getAllActiveSocketClients';
 import { JwtClaims } from '../middleware/auth';
-import { LineMemberState } from '@nirvana/core/models/line.model';
-import { LineService } from './line.service';
-import ReceiveSignal from '@nirvana/core/sockets/receiveSignal';
-import SendSignal from '@nirvana/core/sockets/sendSignal';
-import { UserService } from './user.service';
-import { UserStatus } from '@nirvana/core/models/user.model';
-import { client } from './database.service';
 import environmentVariables from '../config/config';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires

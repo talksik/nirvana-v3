@@ -2,7 +2,7 @@ import NirvanaApi, { getUserDetails } from '../api/NirvanaApi';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 
 import { STORE_ITEMS } from '../electron/constants';
-import { User } from '@nirvana/core/models/user.model';
+import User from '@nirvana/core/models/user.model';
 import toast from 'react-hot-toast';
 import { useAsyncFn } from 'react-use';
 

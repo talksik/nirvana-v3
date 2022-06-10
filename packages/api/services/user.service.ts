@@ -1,9 +1,9 @@
-import { GoogleUserInfo, User } from "@nirvana/core/models";
+import User, { GoogleUserInfo } from '@nirvana/core/models/user.model';
 
-import { ObjectId } from "mongodb";
-import { UserStatus } from "../../core/models/user.model";
-import axios from "axios";
-import { collections } from "./database.service";
+import { ObjectId } from 'mongodb';
+import { UserStatus } from '../../core/models/user.model';
+import axios from 'axios';
+import { collections } from './database.service';
 
 export class UserService {
   static async getUserById(userId: string) {
@@ -62,11 +62,11 @@ export class UserService {
     // based on index defined in Mongo atlas
     const query = {
       $search: {
-        index: "basic user search",
+        index: 'basic user search',
         text: {
           query: searchQuery,
           path: {
-            wildcard: "*",
+            wildcard: '*',
           },
         },
       },
@@ -95,13 +95,9 @@ export class UserService {
     return null;
   }
 
-  static async getGoogleUserInfoWithAccessToken(
-    accessToken: string
-  ): Promise<GoogleUserInfo> {
+  static async getGoogleUserInfoWithAccessToken(accessToken: string): Promise<GoogleUserInfo> {
     return (
-      await axios.get(
-        `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${accessToken}`
-      )
+      await axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${accessToken}`)
     ).data;
   }
 

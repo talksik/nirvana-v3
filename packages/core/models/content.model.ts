@@ -1,19 +1,38 @@
-import { ObjectId } from "mongodb";
+import { ObjectId } from 'mongodb';
 
-export default class Content {
+export interface IContent {
+  id?: string;
+
+  creatorUserId: string;
+  contentUrl: string; // remote resource of file/media
+  createdDate: Date;
+
+  // visitCount
+}
+
+// ? persist length of clip for easier viewing for others...
+// ?they have to load it anyway and will get metadata anyway?
+export class ContentBlock implements IContent {
   constructor(
-    public relationshipId: string, // if it's a one on one, this will be the relationship Id
-    public sentDate: Date,
+    public creatorUserId: string,
     public contentUrl: string,
-    public contentData: string,
+
     public contentType: ContentType,
-    public _id?: ObjectId,
-    public listenedDate?: Date
+    public blobType: string,
+
+    public createdDate = new Date(),
+
+    public id?: string,
   ) {}
 }
 
 export enum ContentType {
-  link = "LINK",
-  audioClip = "AUDIO_CLIP",
-  text = "TEXT",
+  audio = 'audio',
+  link = 'link',
+  image = 'image',
+  code = 'code',
+}
+
+export function isUrlImage(url: string) {
+  return url.match(/\.(jpeg|jpg|gif|png)$/) != null;
 }

@@ -2,12 +2,9 @@ import axios, { AxiosRequestConfig, AxiosResponse, Method } from 'axios';
 
 import CreateLineRequest from '@nirvana/core/requests/createLine.request';
 import GetUserLinesResponse from '@nirvana/core/responses/getUserLines.response';
-import { Line } from '@nirvana/core/models/line.model';
 import LoginResponse from '@nirvana/core/responses/login.response';
-import MasterLineData from '@nirvana/core/models/masterLineData.model';
 import NirvanaResponse from '@nirvana/core/responses/nirvanaResponse';
 import UpdateLineMemberState from '@nirvana/core/requests/updateLineMemberState.request';
-import { User } from '@nirvana/core/models';
 import UserDetailsResponse from '@nirvana/core/responses/userDetails.response';
 import UserSearchResponse from '@nirvana/core/responses/userSearch.response';
 
@@ -93,12 +90,4 @@ export async function updateLineMemberState(
     true,
     request,
   );
-}
-
-export async function getDmByUserId(otherUserId: string): Promise<Line> {
-  return await NirvanaApi.fetch(`/lines/dm/${otherUserId}`, 'GET', true);
-}
-
-export async function createLine(request: CreateLineRequest): Promise<NirvanaResponse<Line>> {
-  return await NirvanaApi.fetch(`/lines`, 'POST', true, request);
 }
