@@ -10,8 +10,8 @@ export interface IContent {
   // visitCount
 }
 
-// ? persist length of clip for easier viewing for others...
-// ?they have to load it anyway and will get metadata anyway?
+// ? persist length of clip for easier read access for others...
+// ? they have to load it anyway and will get metadata anyway?
 export class ContentBlock implements IContent {
   constructor(
     public creatorUserId: string,

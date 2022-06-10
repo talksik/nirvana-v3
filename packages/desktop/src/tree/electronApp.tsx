@@ -2,7 +2,6 @@ import { AuthProvider } from '../providers/AuthProvider';
 import { ElectronProvider } from '../providers/ElectronProvider';
 import ProtectedRoute from './ProtectedRoute';
 import React from 'react';
-import { RoomsProvider } from '../providers/RoomsProvider';
 import { SocketProvider } from '../providers/SocketProvider';
 import { StabilityProvider } from '../providers/StabilityProvider';
 import { Toaster } from 'react-hot-toast';
@@ -13,9 +12,7 @@ export default function ElectronApp() {
         <AuthProvider>
           <ProtectedRoute>
             <SocketProvider>
-              <RoomsProvider>
-                <></>
-              </RoomsProvider>
+              <></>
             </SocketProvider>
           </ProtectedRoute>
         </AuthProvider>
