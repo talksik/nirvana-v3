@@ -1,41 +1,30 @@
-const rules = require("./webpack.rules");
+const rules = require('./webpack.rules');
 
-const plugins = require("./webpack.plugins");
+const plugins = require('./webpack.plugins');
 
-const path = require("path");
+const path = require('path');
 
 rules.push({
   test: /\.css$/,
-  use: [
-    { loader: "style-loader" },
-    { loader: "css-loader" },
-    {
-      loader: "postcss-loader",
-      options: {
-        postcssOptions: {
-          config: path.join(__dirname, "postcss.config.js"),
-        },
-      },
-    },
-  ],
+  use: [{ loader: 'style-loader' }, { loader: 'css-loader' }],
 });
 
 module.exports = {
-  mode: "development",
-  entry: "./src/app.tsx",
+  mode: 'development',
+  entry: './src/app.tsx',
   module: {
     rules,
   },
   plugins: plugins,
   resolve: {
-    extensions: [".js", ".ts", ".jsx", ".tsx", ".css"],
+    extensions: ['.js', '.ts', '.jsx', '.tsx', '.css'],
   },
   output: {
-    path: path.resolve(__dirname, "build"),
-    filename: "bundle.js",
+    path: path.resolve(__dirname, 'build'),
+    filename: 'bundle.js',
   },
   devServer: {
-    static: path.join(__dirname, "build"),
+    static: path.join(__dirname, 'build'),
     compress: true,
     port: 4000,
   },

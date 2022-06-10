@@ -1,22 +1,11 @@
-const rules = require("./webpack.rules");
-const plugins = require("./webpack.plugins");
+const rules = require('./webpack.rules');
+const plugins = require('./webpack.plugins');
 
-const path = require("path");
+const path = require('path');
 
 rules.push({
   test: /\.css$/,
-  use: [
-    { loader: "style-loader" },
-    { loader: "css-loader" },
-    {
-      loader: "postcss-loader",
-      options: {
-        postcssOptions: {
-          config: path.join(__dirname, "postcss.config.js"),
-        },
-      },
-    },
-  ],
+  use: [{ loader: 'style-loader' }, { loader: 'css-loader' }],
 });
 
 module.exports = {
@@ -25,6 +14,6 @@ module.exports = {
   },
   plugins: plugins,
   resolve: {
-    extensions: [".js", ".ts", ".jsx", ".tsx", ".css"],
+    extensions: ['.js', '.ts', '.jsx', '.tsx', '.css'],
   },
 };

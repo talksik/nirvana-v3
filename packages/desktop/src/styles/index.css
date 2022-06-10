@@ -1,9 +1,3 @@
-@import '~antd/dist/antd.css';
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 body {
   display: flex;
   flex-direction: column;
@@ -18,10 +12,6 @@ body {
   display: flex;
   padding: 0 !important;
   font-family: 'IBM Plex Sans', sans-serif;
-}
-
-button {
-  @apply transition-all rounded;
 }
 
 .titlebar {
@@ -43,15 +33,6 @@ button {
   -webkit-app-region: no-drag;
 }
 
-.ant-avatar-group .ant-avatar {
-  border: none;
-  @apply shadow-lg;
-}
-
-.ant-modal-footer {
-  padding: 0 !important;
-}
-
 /* Designing for scroll-bar */
 ::-webkit-scrollbar {
   width: 4px;
@@ -59,19 +40,16 @@ button {
 
 /* Track */
 ::-webkit-scrollbar-track {
-  @apply bg-gray-100;
   border-radius: 5px;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  @apply bg-gray-300;
   border-radius: 5px;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-gray-500;
 }
 
 .direction-ltr {
