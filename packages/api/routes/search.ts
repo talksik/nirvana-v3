@@ -1,9 +1,9 @@
-import { JwtClaims, authCheck } from "../middleware/auth";
-import express, { Application, Request, Response } from "express";
+import { JwtClaims, authCheck } from '../middleware/auth';
+import express, { Application, Request, Response } from 'express';
 
-import { User } from "@nirvana/core/models";
-import UserSearchResponse from "../../core/responses/userSearch.response";
-import { UserService } from "../services/user.service";
+import User from '@nirvana/core/models/user.model';
+import UserSearchResponse from '../../core/responses/userSearch.response';
+import { UserService } from '../services/user.service';
 
 export default function getSearchRoutes() {
   const router = express.Router();
@@ -11,7 +11,7 @@ export default function getSearchRoutes() {
   router.use(express.json());
 
   // get user details based on id token
-  router.get("/users", authCheck, handleUserSearch);
+  router.get('/users', authCheck, handleUserSearch);
 
   return router;
 }
@@ -23,18 +23,14 @@ async function handleUserSearch(req: Request, res: Response) {
     const { query } = req.query;
 
     if (!query) {
-      res.status(400).send("No search query provided!");
+      res.status(400).send('No search query provided!');
       return;
     }
 
     // text search on users
-    const users: User[] | null = await UserService.getUsersLikeEmailAndName(
-      query as string
-    );
+    const users: User[] | null = await UserService.getUsersLikeEmailAndName(query as string);
 
-    const filteredUsers = users?.filter(
-      (currUser) => currUser._id?.toString() !== userInfo.userId
-    );
+    const filteredUsers = users?.filter((currUser) => currUser._id?.toString() !== userInfo.userId);
 
     const resObj = new UserSearchResponse(filteredUsers ?? []);
 

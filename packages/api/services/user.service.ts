@@ -1,7 +1,6 @@
-import User, { GoogleUserInfo } from '@nirvana/core/models/user.model';
+import User, { GoogleUserInfo, UserStatus } from '@nirvana/core/models/user.model';
 
 import { ObjectId } from 'mongodb';
-import { UserStatus } from '../../core/models/user.model';
 import axios from 'axios';
 import { collections } from './database.service';
 
