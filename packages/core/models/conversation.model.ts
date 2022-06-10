@@ -4,19 +4,24 @@ export default class Conversation {
   constructor(
     public createdByUserId: string,
 
-    public memberIdsList: string[],
+    /**
+     * includes basic user info as well as their information
+     * for this particular conversation
+     */
+    public members: (ConversationMember & User)[],
 
-    public members: ConversationMember[],
+    public name?: string,
 
-    public userCache: User[],
+    /**
+     * last time there was new content for everyone
+     */
+    public lastActivityDate = new Date(),
 
-    public name: string | null = null,
-
+    /**
+     * when name was changed or member list updated
+     */
     public lastUpdatedDate = new Date(),
-
     public createdDate = new Date(),
-
-    public membersInRoom: string[] = [],
 
     public id?: string,
   ) {}
@@ -24,15 +29,26 @@ export default class Conversation {
 
 export class ConversationMember {
   constructor(
-    public userId: string, // NOTE: serves as the user ID
-
     public role: MemberRole,
     public memberState: MemberState,
 
     public joinedDate = new Date(),
-    public lastActiveDate?: Date, // when I last spoke in the conversation or contributed with some content
-    public lastVisitDate?: Date, // when I last clicked into a conversation
-    public lastFetchDate?: Date, // for the use of long polling in the future
+
+    /**
+     * when I last spoke in the conversation or contributed to a conversation
+     */
+    public lastActiveDate?: Date,
+
+    /**
+     * last time I clicked into a conversation
+     */
+    public lastVisitDate?: Date,
+
+    /**
+     * when this conversation was last brought to my attention/displayed
+     * for the use of long polling in the future
+     */
+    public lastFetchDate?: Date,
   ) {}
 }
 
