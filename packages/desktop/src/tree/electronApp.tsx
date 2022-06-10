@@ -5,6 +5,7 @@ import React from 'react';
 import { SocketProvider } from '../providers/SocketProvider';
 import { StabilityProvider } from '../providers/StabilityProvider';
 import { Toaster } from 'react-hot-toast';
+import { ZenProvider } from '../providers/ZenProvider';
 
 export default function ElectronApp() {
   return (
@@ -12,9 +13,11 @@ export default function ElectronApp() {
       <ElectronProvider>
         <AuthProvider>
           <ProtectedRoute>
-            <SocketProvider>
-              <></>
-            </SocketProvider>
+            <ZenProvider>
+              <SocketProvider>
+                <></>
+              </SocketProvider>
+            </ZenProvider>
           </ProtectedRoute>
         </AuthProvider>
 

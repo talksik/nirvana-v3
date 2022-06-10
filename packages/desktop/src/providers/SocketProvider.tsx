@@ -1,7 +1,6 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { Socket, io } from 'socket.io-client';
 
-import FlowState from '../tree/FlowState';
 import toast from 'react-hot-toast';
 import useAuth from './AuthProvider';
 
@@ -19,8 +18,6 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
   const { jwtToken } = useAuth();
 
   const [$ws, set$ws] = useState<Socket>(null);
-
-  const [flowState, setFlowState] = useState<boolean>(false);
 
   const initiateSocketStabilityListeners = useCallback((socketConnection: Socket) => {
     socketConnection.on('connect', () => {
@@ -64,19 +61,10 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     };
   }, [set$ws, jwtToken, initiateSocketStabilityListeners]);
 
-  const handleFlowState = useCallback(() => {
-    setFlowState(true);
-
-    $ws.disconnect();
-    $ws.removeAllListeners();
-  }, [setFlowState, $ws]);
-
   const handleReconnect = useCallback(() => {
-    setFlowState(false);
-
     initiateSocketStabilityListeners($ws);
     $ws.connect();
-  }, [setFlowState, $ws, initiateSocketStabilityListeners]);
+  }, [$ws, initiateSocketStabilityListeners]);
 
   if (!$ws) {
     return (
@@ -91,13 +79,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (flowState) {
-    return <FlowState handleReconnect={handleReconnect} />;
-  }
-
-  return (
-    <SocketContext.Provider value={{ $ws, handleFlowState }}>{children}</SocketContext.Provider>
-  );
+  return <SocketContext.Provider value={{ $ws }}>{children}</SocketContext.Provider>;
 }
 
 export default function useSockets() {
