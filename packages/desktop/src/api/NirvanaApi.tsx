@@ -1,8 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosResponse, Method } from 'axios';
 
 import LoginResponse from '@nirvana/core/responses/login.response';
-import NirvanaResponse from '@nirvana/core/responses/nirvanaResponse';
-import UpdateLineMemberState from '@nirvana/core/requests/updateLineMemberState.request';
 import UserDetailsResponse from '@nirvana/core/responses/userDetails.response';
 import UserSearchResponse from '@nirvana/core/responses/userSearch.response';
 

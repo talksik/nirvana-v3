@@ -11,7 +11,7 @@ interface IZenContext {
 const ZenContext = React.createContext<IZenContext>({});
 
 export function ZenProvider({ children }: { children: React.ReactNode }) {
-  const [flowState, setFlowState] = useState<boolean>(false);
+  const [flowState, setFlowState] = useState<boolean>(true);
 
   const handleFlowState = useCallback(() => {
     setFlowState(true);
