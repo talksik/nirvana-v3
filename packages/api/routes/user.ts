@@ -1,14 +1,11 @@
 import { JwtClaims, authCheck } from '../middleware/auth';
-import User, { GoogleUserInfo, UserStatus } from '@nirvana/core/models/user.model';
-import express, { Application, Request, Response } from 'express';
+import User, { GoogleUserInfo } from '@nirvana/core/models/user.model';
+import express, { Request, Response } from 'express';
 
 import LoginResponse from '../../core/responses/login.response';
 import { OAuth2Client } from 'google-auth-library';
-import { ObjectID } from 'bson';
-import { ObjectId } from 'mongodb';
 import UserDetailsResponse from '../../core/responses/userDetails.response';
 import { UserService } from '../services/user.service';
-import { collections } from '../services/database.service';
 import environmentVariables from '../config/config';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
