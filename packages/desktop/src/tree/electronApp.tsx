@@ -5,6 +5,7 @@ import React from 'react';
 import { SocketProvider } from '../providers/SocketProvider';
 import { StabilityProvider } from '../providers/StabilityProvider';
 import { Toaster } from 'react-hot-toast';
+
 export default function ElectronApp() {
   return (
     <StabilityProvider>

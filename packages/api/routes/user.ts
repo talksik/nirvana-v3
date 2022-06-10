@@ -1,5 +1,5 @@
 import { JwtClaims, authCheck } from '../middleware/auth';
-import User, { GoogleUserInfo } from '@nirvana/core/models/user.model';
+import User, { GoogleUserInfo, UserStatus } from '@nirvana/core/models/user.model';
 import express, { Request, Response } from 'express';
 
 import LoginResponse from '../../core/responses/login.response';
