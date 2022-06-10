@@ -1,4 +1,4 @@
-import { Button, CircularProgress, Container } from '@mui/material';
+import { Button, CircularProgress, Container, Stack } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 
 import Channels from '../electron/constants';
@@ -72,19 +72,9 @@ export default function Login() {
           Continue with Google
         </Button>
       )}
-    </Container>
-  );
-
-  return (
-    <div
-      className="flex flex-col space-y-5 justify-center items-center 
-    h-screen w-screen
-     bg-zinc-700"
-    >
-      {/* <Logo className="scale-50" /> */}
 
       {/* ! TESTING PURPOSES */}
-      <div className={'text-white flex flex-col gap-5'}>
+      <Stack direction={'column'}>
         <button
           onClick={() =>
             setJwtToken(
@@ -114,21 +104,7 @@ export default function Login() {
         >
           Nirvana Support
         </button>
-      </div>
-
-      {isLoading ? (
-        <>
-          <span className="text-white">Attempting to log you in</span>
-        </>
-      ) : (
-        <button
-          onClick={continueAuth}
-          className=" text-md text-zinc-200 py-2 px-5 border border-gray-200 transition-all hover:bg-gray-200 hover:text-teal-500 rounded flex flex-row items-center space-x-2"
-        >
-          <FcGoogle className="text-lg" />
-          <span>Continue with Google</span>
-        </button>
-      )}
-    </div>
+      </Stack>
+    </Container>
   );
 }

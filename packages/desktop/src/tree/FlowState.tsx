@@ -1,5 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { Button, Container, Typography } from '@mui/material';
 import FullMottoLogo, { LogoType } from '@nirvana/components/logo/fullMotto';
+import React, { useEffect, useState } from 'react';
+
+import { blueGrey } from '@mui/material/colors';
 
 type Quote = {
   content: string;
@@ -27,23 +30,37 @@ export default function FlowState({ handleReconnect }: { handleReconnect: () => 
   }, []);
 
   return (
-    <div className="flex flex-col flex-1 justify-center items-center relative bg-gray-100">
+    <Container
+      maxWidth={false}
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 5,
+        background: blueGrey[50],
+      }}
+    >
       {/* <img src="https://source.unsplash.com/random/?nature" /> */}
       <FullMottoLogo type={LogoType.small} className={'absolute bottom-5 mx-auto'} />
 
       {quote && (
-        <span className="flex flex-col justify-center items-center max-w-screen-sm">
-          <span className="text-xl text-gray-800 font-semibold text-center">{`"${quote.content}"`}</span>
-          <span className="tex-md italic text-gray-400">{quote.author}</span>
-        </span>
+        <Container
+          maxWidth={'md'}
+          sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}
+        >
+          <Typography variant={'h6'} textAlign={'center'}>
+            {quote.content}
+          </Typography>
+          <Typography variant={'overline'} textAlign={'center'}>
+            {quote.author}
+          </Typography>
+        </Container>
       )}
 
-      <button
-        onClick={handleReconnect}
-        className="text-gray-300 text-xs p-3 transition-all hover:bg-gray-200 fixed top-5 right-5"
-      >
+      <Button variant={'text'} onClick={handleReconnect}>
         reconnect
-      </button>
-    </div>
+      </Button>
+    </Container>
   );
 }
