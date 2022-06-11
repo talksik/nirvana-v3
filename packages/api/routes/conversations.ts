@@ -11,6 +11,7 @@ import CreateConversationRequest from '@nirvana/core/requests/CreateConversation
 import CreateConversationResponse from '@nirvana/core/responses/CreateConversationResponse.response';
 import { MemberState } from '../../core/models/conversation.model';
 import NirvanaResponse from '@nirvana/core/responses/nirvanaResponse';
+import { ObjectId } from 'mongodb';
 import { UserService } from '../services/user.service';
 
 export default function getConversationRoutes() {
@@ -38,7 +39,7 @@ const createConversation = async (req: Request, res: Response, next: NextFunctio
   const createRequest = req.body as CreateConversationRequest;
   const userInfo = res.locals.userInfo as JwtClaims;
 
-  if (!createRequest.otherUsers) {
+  if (!createRequest.otherUsers || createRequest.otherUsers.length === 0) {
     return next(new Error('must provide who you want to talk to'));
   }
 
@@ -48,6 +49,9 @@ const createConversation = async (req: Request, res: Response, next: NextFunctio
 
   createRequest.otherUsers.forEach((userObject) => {
     const newConversationMember = new ConversationMember(MemberRole.regular, MemberState.inbox);
+
+    // ! hack as json over the wire converts to string for some reason
+    userObject._id = new ObjectId(userObject._id);
 
     conversationUserMembers.push({
       ...userObject,

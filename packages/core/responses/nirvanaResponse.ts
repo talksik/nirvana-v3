@@ -6,7 +6,13 @@
 //     }
 //   | { data?: T; error: Error };
 
-export default class NirvanaResponse<T> {
+export interface INirvanaResponse<T> {
+  data?: T;
+  error?: Error;
+  message?: string;
+}
+
+export default class NirvanaResponse<T> implements INirvanaResponse<T> {
   data?: T;
   error?: Error;
   message?: string;

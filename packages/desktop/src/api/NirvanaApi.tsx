@@ -1,9 +1,9 @@
+import NirvanaResponse, { INirvanaResponse } from '@nirvana/core/responses/nirvanaResponse';
 import axios, { AxiosRequestConfig, AxiosResponse, Method } from 'axios';
 
-import CreateConversationRequest from '../../../core/requests/CreateConversationRequest.request';
-import CreateConversationResponse from '../../../core/responses/CreateConversationResponse.response';
+import CreateConversationRequest from '@nirvana/core/requests/CreateConversationRequest.request';
+import CreateConversationResponse from '@nirvana/core/responses/CreateConversationResponse.response';
 import LoginResponse from '@nirvana/core/responses/login.response';
-import NirvanaResponse from '../../../core/responses/nirvanaResponse';
 import UserDetailsResponse from '@nirvana/core/responses/userDetails.response';
 import UserSearchResponse from '@nirvana/core/responses/userSearch.response';
 
@@ -38,13 +38,13 @@ export default class NirvanaApi {
       res = await fetch(fullUrl);
     }
 
-    if (!res.ok) {
-      if (res.status === 401) throw new Error('You are not authorized here');
+    const resultJson = await res.json();
 
-      throw new Error('Something went wrong');
+    if (!res.ok) {
+      throw Error((resultJson as INirvanaResponse<string>).message);
     }
 
-    return (await res.json()) as T;
+    return resultJson as T;
   }
 }
 

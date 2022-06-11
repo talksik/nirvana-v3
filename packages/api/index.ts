@@ -26,7 +26,7 @@ app.use('/api/conversations', getConversationRoutes());
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   // use logger or sentry
 
-  if (!res.statusCode) res.status(500);
+  if (res.statusCode === 200) res.status(500);
 
   return res.json(new NirvanaResponse(undefined, err, err.message));
 });

@@ -110,6 +110,7 @@ export default function NewConversationDialog() {
       // todo: select conversation Id that was created
     } catch (error) {
       console.error(error);
+      toast.error(error.message);
     }
 
     setIsSubmitting(false);
