@@ -182,7 +182,7 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
         // fetch and add to conversation map
         const retrieveConversationResult = await getConversationById(conversationId);
         if (!retrieveConversationResult.data) {
-          toast.error('unable to select conversation');
+          toast.error('unable to find conversation');
           return;
         }
 
