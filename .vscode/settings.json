@@ -6,7 +6,7 @@
   "editor.tabSize": 2,
   "workbench.iconTheme": "material-icon-theme",
   "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "workbench.colorTheme": "Solarized Light",
+  "workbench.colorTheme": "Quiet Light",
   "javascript.format.semicolons": "insert",
   "window.zoomLevel": 1
 
