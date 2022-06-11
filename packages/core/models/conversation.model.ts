@@ -9,9 +9,11 @@ export default class Conversation {
      * includes basic user info as well as their information
      * for this particular conversation
      */
-    public members: (ConversationMember & User)[],
+    public members: ConversationUserMember[],
 
     public name?: string,
+
+    public id: ObjectId = new ObjectId(),
 
     /**
      * last time there was new content for everyone
@@ -19,14 +21,18 @@ export default class Conversation {
     public lastActivityDate = new Date(),
 
     /**
-     * when name was changed or member list updated
+     * when the conversation document was created
      */
-    public lastUpdatedDate = new Date(),
     public createdDate = new Date(),
 
-    public id: ObjectId = new ObjectId(),
+    /**
+     * when name was changed or member list updated
+     */
+    public lastUpdatedDate?: Date,
   ) {}
 }
+
+export type ConversationUserMember = ConversationMember & User;
 
 export class ConversationMember {
   constructor(

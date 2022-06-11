@@ -5,6 +5,19 @@ import axios from 'axios';
 import { collections } from './database.service';
 
 export class UserService {
+  static async getUserByObjectId(userId: ObjectId) {
+    const query = { _id: userId };
+
+    const res = await collections.users?.findOne(query);
+
+    // exists
+    if (res?._id) {
+      return res as User;
+    }
+
+    return null;
+  }
+
   static async getUserById(userId: string) {
     const query = { _id: new ObjectId(userId) };
 
