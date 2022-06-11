@@ -16,16 +16,16 @@ import { useAsyncFn } from 'react-use';
 import { useImmer } from 'use-immer';
 
 interface IConversationContext {
-  conversations: ConversationMap;
+  conversationMap: ConversationMap;
 
   selectedConversation?: MasterConversation;
-  // handleSetConversation?: (conversationId: string) => void;
+  selectConversation?: (conversationId: string, temporaryOverrideSort?: boolean) => Promise<void>;
 
-  handleStartConversation?: (otherUsers: User[]) => void;
+  handleStartConversation?: (otherUsers: User[], conversationName?: string) => Promise<void>;
 }
 
 const ConversationContext = React.createContext<IConversationContext>({
-  conversations: {},
+  conversationMap: {},
 });
 
 export function ConversationProvider({ children }: { children: React.ReactNode }) {
@@ -100,7 +100,7 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
   );
 
   const handleStartConversation = useCallback(
-    async (otherUsers: User[]) => {
+    async (otherUsers: User[], conversationName?: string) => {
       try {
         /** group conversation
          * 1. create it
@@ -133,7 +133,7 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
         }
 
         const createdConversationResult = await createConversation(
-          new CreateConversationRequest(otherUsers),
+          new CreateConversationRequest(otherUsers, conversationName),
         );
 
         selectConversation(createdConversationResult.data.conversationId.toString());
@@ -144,7 +144,7 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
         toast.error(error.message);
       }
     },
-    [conversationMap, selectConversation],
+    [selectConversation],
   );
 
   // todo: open up a handler for children
@@ -162,7 +162,12 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
 
   return (
     <ConversationContext.Provider
-      value={{ conversations: conversationMap, handleStartConversation, selectedConversation }}
+      value={{
+        conversationMap,
+        handleStartConversation,
+        selectedConversation,
+        selectConversation,
+      }}
     >
       {children}
     </ConversationContext.Provider>

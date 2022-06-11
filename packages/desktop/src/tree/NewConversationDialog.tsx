@@ -97,14 +97,21 @@ export default function NewConversationDialog() {
 
     setIsSubmitting(true);
 
-    handleStartConversation(selectedUsers);
+    await handleStartConversation(selectedUsers, conversationName);
 
     // clear form for next time
     setSelectedUsers([]);
     setConversationName('');
 
     setIsSubmitting(false);
-  }, [selectedUsers, setConversationName, conversationName, setSelectedUsers, setIsSubmitting]);
+  }, [
+    selectedUsers,
+    setConversationName,
+    conversationName,
+    setSelectedUsers,
+    setIsSubmitting,
+    handleStartConversation,
+  ]);
 
   return (
     <Dialog fullScreen open={page === 'START_NEW_CONVERSATION'} onClose={handleSetPage('WELCOME')}>
