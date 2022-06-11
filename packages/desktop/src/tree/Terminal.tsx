@@ -1,4 +1,4 @@
-import { Container, Grid } from '@mui/material';
+import { Box, Container, Grid } from '@mui/material';
 
 import Navbar from './Navbar';
 import React from 'react';
@@ -12,23 +12,41 @@ export default function Terminal() {
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        background: blueGrey[50],
       }}
     >
-      <Grid container spacing={0}>
-        <Grid item xs={4}>
+      <Grid container spacing={0} sx={{ flex: 1 }}>
+        <Grid
+          item
+          xs={4}
+          sx={{
+            zIndex: 2,
+            backgroundColor: blueGrey[50],
+            boxShadow: 3,
+            borderRight: `1px solid ${blueGrey}`,
+
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
           <Navbar />
         </Grid>
 
-        <Grid item xs={8}>
-          {' '}
+        <Grid item xs={8} sx={{ bgcolor: 'white' }}>
           main panel
         </Grid>
-
-        <Grid item xs={12}>
-          This is the footer controls
-        </Grid>
       </Grid>
+
+      <Box
+        sx={{
+          p: 2,
+          zIndex: 10,
+          boxShadow: 10,
+
+          bgcolor: blueGrey[800],
+        }}
+      >
+        This is the footer controls
+      </Box>
     </Container>
   );
 }
