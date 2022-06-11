@@ -23,6 +23,9 @@ export default function getUserRoutes() {
 
   router.get('/login', login);
 
+  // get user public information by id
+  router.get('/:userId', authCheck, getPublicUser);
+
   router.get('/authcheck', authCheck, handleAuthCheck);
 
   return router;
@@ -36,6 +39,19 @@ async function getUserDetails(req: Request, res: Response, next: NextFunction) {
   const userInfo = res.locals.userInfo as JwtClaims;
 
   const user = await UserService.getUserById(userInfo.userId);
+
+  if (user) {
+    return res.status(200).json(new UserDetailsResponse(user));
+  }
+
+  res.status(404);
+  next(Error('No user found'));
+}
+
+async function getPublicUser(req: Request, res: Response, next: NextFunction) {
+  const { userId } = req.params;
+
+  const user = await UserService.getUserById(userId as string);
 
   if (user) {
     return res.status(200).json(new UserDetailsResponse(user));

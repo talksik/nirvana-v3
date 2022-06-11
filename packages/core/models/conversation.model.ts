@@ -13,7 +13,7 @@ export default class Conversation {
 
     public name?: string,
 
-    public id: ObjectId = new ObjectId(),
+    public _id: ObjectId = new ObjectId(),
 
     /**
      * last time there was new content for everyone

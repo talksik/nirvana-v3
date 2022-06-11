@@ -11,7 +11,7 @@ export const authCheck = async (req: Request, res: Response, next: NextFunction)
     const { authorization } = req.headers;
 
     if (!authorization) {
-      throw Error('No provided header');
+      throw Error('No provided auth header');
     }
 
     // verify jwt token with our api secret

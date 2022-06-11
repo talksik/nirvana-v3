@@ -4,7 +4,7 @@ import Conversation, {
   MemberRole,
 } from '@nirvana/core/models/conversation.model';
 import { JwtClaims, authCheck } from '../middleware/auth';
-import express, { NextFunction, Request, Response } from 'express';
+import express, { NextFunction, Request, Response, response } from 'express';
 
 import ConversationService from '../services/conversation.service';
 import CreateConversationRequest from '@nirvana/core/requests/CreateConversationRequest.request';
@@ -23,11 +23,13 @@ export default function getConversationRoutes() {
   router.get('/:conversationId', authCheck);
 
   // get all conversations that I am in
-  router.get('/', authCheck);
+  router.get('/', authCheck, getAllConversations);
 
   // get a one on one conversation based on other user Id
+  router.get('/check/:otherUserId', authCheck);
 
   // get a conversation's content
+  router.get('/:conversationId/content', authCheck);
 
   // create a conversation
   router.post('/', authCheck, createConversation);
@@ -35,9 +37,32 @@ export default function getConversationRoutes() {
   return router;
 }
 
+const getAllConversations = async (req: Request, res: Response, next: NextFunction) => {
+  const userInfo = res.locals.userInfo as JwtClaims;
+
+  try {
+    const resultConversations = await ConversationService.getAllConversationsForUser(
+      userInfo.userId,
+    );
+
+    const responseObj = new NirvanaResponse<Conversation[]>(
+      resultConversations ?? [],
+      undefined,
+      'here are all of the conversations for user',
+    );
+
+    return res.json(responseObj);
+  } catch (error) {
+    return next(Error('unable to get conversations'));
+  }
+};
+
 const createConversation = async (req: Request, res: Response, next: NextFunction) => {
   const createRequest = req.body as CreateConversationRequest;
   const userInfo = res.locals.userInfo as JwtClaims;
+
+  // todo: do quick check to make sure that we don't already have a conversation
+  // as last resort if client didn't already do this
 
   if (!createRequest.otherUsers || createRequest.otherUsers.length === 0) {
     return next(new Error('must provide who you want to talk to'));
