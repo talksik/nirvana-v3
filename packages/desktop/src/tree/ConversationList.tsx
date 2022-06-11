@@ -26,6 +26,7 @@ import { NirvanaRules } from '../util/rules';
 import { SUPPORT_DISPLAY_NAME } from '../util/support';
 import useAuth from '../providers/AuthProvider';
 import useConversations from '../providers/ConversationProvider';
+import useSearch from '../providers/SearchProvider';
 import useTerminal from './Terminal';
 
 // sort conversations based on the different data sources: type, conversations, audio clips, etc.
@@ -36,7 +37,7 @@ import useTerminal from './Terminal';
  * @returns
  */
 export function ConversationList() {
-  // const { handleOmniSearch } = useTerminal();
+  const { omniSearch } = useSearch();
 
   const { conversationMap } = useConversations();
 
@@ -44,9 +45,9 @@ export function ConversationList() {
   console.warn('RENDER COUNT | CONVERSATION LIST | ', rendersCount);
 
   // don't actually dial, just show nirvana support there
-  // const handleQuickDialSupport = useCallback(() => {
-  //   handleOmniSearch(SUPPORT_DISPLAY_NAME);
-  // }, [handleOmniSearch]);
+  const handleQuickDialSupport = useCallback(() => {
+    omniSearch(SUPPORT_DISPLAY_NAME);
+  }, [omniSearch]);
 
   if (Object.keys(conversationMap).length === 0) {
     return (
@@ -57,7 +58,9 @@ export function ConversationList() {
 
         <Divider />
 
-        <Button variant={'text'}>Click here to say hi to our team!</Button>
+        <Button variant={'text'} onClick={handleQuickDialSupport}>
+          Click here to say hi to our team!
+        </Button>
       </Stack>
     );
   }
