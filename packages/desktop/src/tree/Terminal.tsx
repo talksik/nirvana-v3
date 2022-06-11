@@ -35,7 +35,9 @@ export default function Terminal() {
         >
           <Navbar />
 
-          <ConversationList />
+          <Box sx={{ p: 2 }}>
+            <ConversationList />
+          </Box>
         </Grid>
 
         <Grid item xs={8} sx={{ bgcolor: 'white' }}>

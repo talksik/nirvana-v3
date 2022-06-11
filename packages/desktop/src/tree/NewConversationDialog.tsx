@@ -97,11 +97,13 @@ export default function NewConversationDialog() {
 
     setIsSubmitting(true);
 
-    await handleStartConversation(selectedUsers, conversationName);
+    const succeeded = await handleStartConversation(selectedUsers, conversationName);
 
     // clear form for next time
-    setSelectedUsers([]);
-    setConversationName('');
+    if (succeeded) {
+      setSelectedUsers([]);
+      setConversationName('');
+    }
 
     setIsSubmitting(false);
   }, [

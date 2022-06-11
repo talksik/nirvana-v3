@@ -21,7 +21,7 @@ interface IConversationContext {
   selectedConversation?: MasterConversation;
   selectConversation?: (conversationId: string, temporaryOverrideSort?: boolean) => Promise<void>;
 
-  handleStartConversation?: (otherUsers: User[], conversationName?: string) => Promise<void>;
+  handleStartConversation?: (otherUsers: User[], conversationName?: string) => Promise<boolean>;
 }
 
 const ConversationContext = React.createContext<IConversationContext>({
@@ -139,10 +139,13 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
         selectConversation(createdConversationResult.data.conversationId.toString(), true);
 
         toast.success('started conversation');
+
+        return true;
       } catch (error) {
         console.error(error);
         toast.error(error.message);
       }
+      return false;
     },
     [selectConversation],
   );
