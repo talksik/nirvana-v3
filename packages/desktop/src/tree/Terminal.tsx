@@ -1,5 +1,6 @@
 import { Box, Container, Grid } from '@mui/material';
 
+import { ConversationList } from './ConversationList';
 import Navbar from './Navbar';
 import NewConversationDialog from './NewConversationDialog';
 import React from 'react';
@@ -33,6 +34,8 @@ export default function Terminal() {
           }}
         >
           <Navbar />
+
+          <ConversationList />
         </Grid>
 
         <Grid item xs={8} sx={{ bgcolor: 'white' }}>
