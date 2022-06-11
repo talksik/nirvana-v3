@@ -39,6 +39,8 @@ function useSocketFire() {
 
   const handleTuneIntoLine = useCallback(
     (lineId: string) => {
+      // todo: use a connector to call the people in this line as this is me joining this room
+
       $ws.emit(ServerRequestChannels.TUNE_INTO_LINE, new TuneToLineRequest(lineId));
     },
     [$ws],
