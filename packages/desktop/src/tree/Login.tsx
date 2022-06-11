@@ -76,7 +76,7 @@ export default function Login() {
 
       {/* ! TESTING PURPOSES */}
       <Stack direction={'column'}>
-        <button
+        <Button
           onClick={() =>
             setJwtToken(
               'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MjczYTNjZGVmYzc3MDNhZDg1NWYzMjYiLCJnb29nbGVVc2VySWQiOiIxMTM0NzA3ODY2OTAzNTMxMDkwODYiLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EtL0FPaDE0R2ptMjlTZDFXbm04TnZaYlhrb3N2ZjZTb0lENmtCUDVPSFJMVklPQlE9czk2LWMiLCJlbWFpbCI6InBhdGVsLmFyanVuNTBAZ21haWwuY29tIiwibmFtZSI6IkFyanVuIFBhdGVsIiwiaWF0IjoxNjUxOTY2MDg2fQ.bGK4DaUyuHCIRFhX5g3xQxI5SVMKR7hmte1UpmTZaVc',
@@ -84,9 +84,9 @@ export default function Login() {
           }
         >
           Personal Account
-        </button>
+        </Button>
 
-        <button
+        <Button
           onClick={() =>
             setJwtToken(
               'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MjczYTZmYmVmYzc3MDNhZDg1NWYzMjciLCJnb29nbGVVc2VySWQiOiIxMTE2NzEzNTI4MDkwMTg3NjM4MjYiLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EtL0FPaDE0R2dUUmFNaVVUZkNaX1ZOM2M3SFJyYUlZUmpmN1BNSUZjVThJdlZiPXM5Ni1jIiwiZW1haWwiOiJhcmp1bnBhdGVsQGJlcmtlbGV5LmVkdSIsIm5hbWUiOiJBcmp1biBQYXRlbCIsImlhdCI6MTY1MTk2NjA5OH0.53TbuXaHDTivEpqVr-TP5A1vVIFznT3q_HoVxOReZKc',
@@ -94,9 +94,9 @@ export default function Login() {
           }
         >
           Berkeley Email
-        </button>
+        </Button>
 
-        <button
+        <Button
           onClick={() =>
             setJwtToken(
               'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MjczZTAxNTM1OTg3YWZhMGZjOTA5NzYiLCJnb29nbGVVc2VySWQiOiIxMTQyMTgxMjM0Mzk1OTA4OTU4MjAiLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL29ndy9BRGVhNEk0RUhmY08ycVc1blEtelJXdzdRdTVOMWVQdnU5cHkyQzFPbUVxbj1zNjQtYy1tbyIsImVtYWlsIjoidXNlbmlydmFuYUBnbWFpbC5jb20iLCJuYW1lIjoiTmlydmFuYSBTdXBwb3J0IiwiaWF0IjoxNjUxOTY3MDA2fQ.9AgmMW2LYv4QNqibvopiKAaV0GWNbChujWiY6t0OZeQ',
@@ -104,7 +104,7 @@ export default function Login() {
           }
         >
           Nirvana Support
-        </button>
+        </Button>
       </Stack>
     </Container>
   );
