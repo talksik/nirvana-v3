@@ -5,6 +5,7 @@ import { ConversationMap } from '../util/types';
 import User from '@nirvana/core/models/user.model';
 import useAuth from './AuthProvider';
 import { useDebounce } from 'react-use';
+import { userSearch } from '../api/NirvanaApi';
 
 interface ISearchContext {
   searchUsers?: (searchQuery: string) => void;
@@ -42,11 +43,8 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
   const [, cancel] = useDebounce(
     async () => {
       if (searchQuery) {
-        // let results = await firestoreSearchUsers(searchQuery);
-        // results = results.filter((userResult) => userResult. user._id);
-
-        const results = [];
-        setUserResultsResults(results);
+        const results = await userSearch(searchQuery);
+        setUserResultsResults(results.users ?? []);
 
         console.warn('searched users', results);
       }

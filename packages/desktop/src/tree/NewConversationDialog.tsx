@@ -79,7 +79,7 @@ export default function NewConversationDialog() {
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  const handleSubmitLocal = useCallback(async () => {
+  const handleSubmit = useCallback(async () => {
     if (selectedUsers.length === 0) {
       toast.error('Must select a person!');
       return;
@@ -147,7 +147,9 @@ export default function NewConversationDialog() {
             value={selectedUsers}
             onChange={handleChangeSelections}
             filterSelectedOptions
-            isOptionEqualToValue={(optionUser, valueUser) => optionUser._id.equals(valueUser._id)}
+            isOptionEqualToValue={(optionUser, valueUser) =>
+              optionUser._id.toString() === valueUser._id.toString()
+            }
             filterOptions={(options) => options}
             inputValue={searchQuery}
             renderInput={(params) => (
@@ -177,7 +179,7 @@ export default function NewConversationDialog() {
               Cancel
             </Button>
             <Button
-              onClick={handleSubmitLocal}
+              onClick={handleSubmit}
               disabled={selectedUsers.length === 0 || isSubmitting}
               variant={'contained'}
               color="primary"

@@ -23,7 +23,7 @@ export default function UserDetailRow({
 
       <Stack>
         <Typography variant="subtitle2" color="info" gutterBottom={false}>
-          {user.givenName}
+          {user.name}
         </Typography>
         <Typography variant={'overline'}>{user.email}</Typography>
       </Stack>
