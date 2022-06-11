@@ -27,14 +27,5 @@ import useSockets from './SocketProvider';
 const RealtimeContext = React.createContext({});
 
 export function RealtimeProvider({ children }: { children }) {
-  const { $ws } = useSockets();
-
-  useEffect(() => {
-    // $ws.on(ServerResponseChannels.SOMEONE_CONNECTED_TO_LINE, (res: SomeoneConnectedResponse) => {
-    // })
-    // $ws.on(ServerResponseChannels.SOMEONE_TUNED_INTO_LINE, (res: SomeoneTunedResponse) => {
-    // })
-  }, [$ws]);
-
   return <RealtimeContext.Provider value={{}}>{children}</RealtimeContext.Provider>;
 }

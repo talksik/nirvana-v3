@@ -1,3 +1,12 @@
+import {
+  ConnectToLineRequest,
+  ServerRequestChannels,
+  ServerResponseChannels,
+  SomeoneConnectedResponse,
+  SomeoneTunedResponse,
+  TuneToLineRequest,
+  UntuneFromLineRequest,
+} from '@nirvana/core/sockets/channels';
 import { ConversationMap, MasterConversation } from '../util/types';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
@@ -14,6 +23,34 @@ import User from '@nirvana/core/models/user.model';
 import toast from 'react-hot-toast';
 import { useAsyncFn } from 'react-use';
 import { useImmer } from 'use-immer';
+import useSockets from './SocketProvider';
+
+function useSocketFire() {
+  const { $ws } = useSockets();
+
+  const handleConnectToLine = useCallback(
+    (lineId: string) => {
+      $ws.emit(ServerRequestChannels.CONNECT_TO_LINE, new ConnectToLineRequest(lineId));
+    },
+    [$ws],
+  );
+
+  const handleTuneIntoLine = useCallback(
+    (lineId: string) => {
+      $ws.emit(ServerRequestChannels.TUNE_INTO_LINE, new TuneToLineRequest(lineId));
+    },
+    [$ws],
+  );
+
+  const handleUntuneFromLine = useCallback(
+    (lineId: string) => {
+      $ws.emit(ServerRequestChannels.UNTUNE_FROM_LINE, new UntuneFromLineRequest(lineId));
+    },
+    [$ws],
+  );
+
+  return { handleConnectToLine, handleTuneIntoLine, handleUntuneFromLine };
+}
 
 interface IConversationContext {
   conversationMap: ConversationMap;
@@ -37,25 +74,60 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
 
   const [selectedConversation, setSelectedConversation] = useState<MasterConversation>(undefined);
 
+  const { $ws } = useSockets();
+
+  useEffect(() => {
+    $ws.on(ServerResponseChannels.SOMEONE_CONNECTED_TO_LINE, (res: SomeoneConnectedResponse) => {
+      setConversationMap((draft) => {
+        if (!draft[res.lineId]) {
+          toast.error('no line');
+          return;
+        }
+
+        draft[res.lineId].connectedUserIds = res.allUsers;
+      });
+    });
+
+    $ws.on(ServerResponseChannels.SOMEONE_TUNED_INTO_LINE, (res: SomeoneTunedResponse) => {
+      setConversationMap((draft) => {
+        if (!draft[res.lineId]) {
+          toast.error('no line');
+          return;
+        }
+
+        draft[res.lineId].tunedInUsers = res.allUsers;
+      });
+    });
+  }, [$ws, setConversationMap]);
+
   useEffect(() => {
     doFetch();
   }, [doFetch]);
+
+  // add the conversation to the conversation map/client side cache
+  // has implications on realtime listening and also the ui on whether or not it's shown
+  const handleAddConversationCache = useCallback(
+    (conversation: Conversation) => {
+      setConversationMap((draft) => {
+        draft[conversation._id.toString()] = {
+          ...conversation,
+          tunedInUsers: [],
+          connectedUserIds: [],
+        };
+      });
+    },
+    [setConversationMap],
+  );
 
   useEffect(() => {
     console.log(fetchState.value);
 
     if (fetchState.value?.data) {
-      setConversationMap((draft) => {
-        fetchState.value.data.forEach((conversationResult) => {
-          draft[conversationResult._id.toString()] = {
-            ...conversationResult,
-            tunedInUsers: [],
-            connectedUserIds: [],
-          };
-        });
+      fetchState.value.data.forEach((conversationResult) => {
+        handleAddConversationCache(conversationResult);
       });
     }
-  }, [fetchState.value, setConversationMap]);
+  }, [fetchState.value, handleAddConversationCache]);
 
   /**
    * temporaryOverrideSort: tell me if you want to temporarily prioritize this conversation above all others
