@@ -1,9 +1,10 @@
+import { ConversationMap, MasterConversation } from '../util/types';
 import React, { useCallback, useContext, useState } from 'react';
 
 import Conversation from '@nirvana/core/models/conversation.model';
-import { ConversationMap } from '../util/types';
 import User from '@nirvana/core/models/user.model';
 import useAuth from './AuthProvider';
+import useConversations from './ConversationProvider';
 import { useDebounce } from 'react-use';
 import { userSearch } from '../api/NirvanaApi';
 
@@ -12,7 +13,7 @@ interface ISearchContext {
   omniSearch?: (searchQuery: string) => void;
   searchConversations?: (searchQuery: string) => void;
 
-  conversationResults: Conversation[];
+  conversationResults: MasterConversation[];
   userResults: User[];
 
   isSearching: boolean;
@@ -31,12 +32,12 @@ const SearchContext = React.createContext<ISearchContext>({
 
 export function SearchProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
-  // const { conversationMap } = useConversations();
+  const { conversationMap } = useConversations();
 
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   const [userResults, setUserResultsResults] = useState<User[]>([]);
-  const [conversationResults, setConversationResultsResults] = useState<Conversation[]>([]);
+  const [conversationResults, setConversationResultsResults] = useState<MasterConversation[]>([]);
   const [isSearching, setIsSearching] = useState<boolean>(false);
 
   // debounce user search and any other async ones
@@ -71,39 +72,39 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
    */
 
   const searchRelevantConversations = useCallback(
-    async (searchQuery: string): Promise<Conversation[]> => {
-      const relevantConversations: Conversation[] = [];
+    async (searchQuery: string): Promise<MasterConversation[]> => {
+      const relevantConversations: MasterConversation[] = [];
 
-      // Object.values(conversationMap).forEach((conversation) => {
-      //   for (const cachedConversationUser of conversation.userCache) {
-      //     if (
-      //       cachedConversationUser.email
-      //         .toLocaleLowerCase()
-      //         .includes(searchQuery.toLocaleLowerCase())
-      //     ) {
-      //       relevantConversations.push(conversation);
-      //       return;
-      //     }
+      Object.values(conversationMap).forEach((conversation) => {
+        for (const cachedConversationUser of conversation.members) {
+          if (
+            cachedConversationUser.email
+              .toLocaleLowerCase()
+              .includes(searchQuery.toLocaleLowerCase())
+          ) {
+            relevantConversations.push(conversation);
+            return;
+          }
 
-      //     if (
-      //       cachedConversationUser.displayName
-      //         .toLocaleLowerCase()
-      //         .includes(searchQuery.toLocaleLowerCase())
-      //     ) {
-      //       relevantConversations.push(conversation);
-      //       return;
-      //     }
-      //   }
+          if (
+            cachedConversationUser.name
+              .toLocaleLowerCase()
+              .includes(searchQuery.toLocaleLowerCase())
+          ) {
+            relevantConversations.push(conversation);
+            return;
+          }
+        }
 
-      //   if (conversation.name?.toLocaleLowerCase().includes(searchQuery.toLocaleLowerCase())) {
-      //     relevantConversations.push(conversation);
-      //     return;
-      //   }
-      // });
+        if (conversation.name?.toLocaleLowerCase().includes(searchQuery.toLocaleLowerCase())) {
+          relevantConversations.push(conversation);
+          return;
+        }
+      });
 
       return relevantConversations;
     },
-    [],
+    [conversationMap],
   );
 
   const omniSearch = useCallback(

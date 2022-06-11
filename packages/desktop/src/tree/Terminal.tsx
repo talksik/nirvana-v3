@@ -4,12 +4,16 @@ import { ConversationList } from './ConversationList';
 import MainPanel from './MainPanel';
 import Navbar from './Navbar';
 import NewConversationDialog from './NewConversationDialog';
+import OmniSearchResults from './OmniSearchResults';
 import React from 'react';
 import { blueGrey } from '@mui/material/colors';
 import useRouter from '../providers/RouterProvider';
+import useSearch from '../providers/SearchProvider';
 
 export default function Terminal() {
   const { page } = useRouter();
+
+  const { searchQuery } = useSearch();
 
   return (
     <Container
@@ -36,9 +40,7 @@ export default function Terminal() {
         >
           <Navbar />
 
-          <Box sx={{ p: 2 }}>
-            <ConversationList />
-          </Box>
+          <Box sx={{ p: 2 }}>{searchQuery ? <OmniSearchResults /> : <ConversationList />}</Box>
         </Grid>
 
         <Grid

@@ -106,9 +106,11 @@ export function ConversationList() {
 export function ConversationRow({
   conversation,
   index,
+  onClick,
 }: {
   conversation: MasterConversation;
   index?: number;
+  onClick?: () => void;
 }) {
   const { user } = useAuth();
 
@@ -126,8 +128,12 @@ export function ConversationRow({
   }, [index]);
 
   const handleSelectConversation = useCallback(() => {
+    if (onClick) {
+      onClick();
+    }
+
     selectConversation(conversation._id.toString(), false);
-  }, [conversation, selectConversation]);
+  }, [conversation, selectConversation, onClick]);
 
   useKeyPressEvent(`${keyboardShortcut?.toString()}`, handleSelectConversation);
 
