@@ -1,6 +1,7 @@
 import NirvanaResponse, { INirvanaResponse } from '@nirvana/core/responses/nirvanaResponse';
 import axios, { AxiosRequestConfig, AxiosResponse, Method } from 'axios';
 
+import Conversation from '@nirvana/core/models/conversation.model';
 import CreateConversationRequest from '@nirvana/core/requests/CreateConversationRequest.request';
 import CreateConversationResponse from '@nirvana/core/responses/CreateConversationResponse.response';
 import LoginResponse from '@nirvana/core/responses/login.response';
@@ -79,4 +80,8 @@ export async function createConversation(
   req: CreateConversationRequest,
 ): Promise<NirvanaResponse<CreateConversationResponse>> {
   return await NirvanaApi.fetch(`/conversations`, 'POST', true, req);
+}
+
+export async function getConversations(): Promise<NirvanaResponse<Conversation[]>> {
+  return await NirvanaApi.fetch(`/conversations`, 'GET', true);
 }

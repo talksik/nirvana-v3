@@ -1,4 +1,5 @@
 import { AuthProvider } from '../providers/AuthProvider';
+import { ConversationProvider } from '../providers/ConversationProvider';
 import { ElectronProvider } from '../providers/ElectronProvider';
 import { NirvanaTheme } from '../mui/NirvanaTheme';
 import ProtectedRoute from './ProtectedRoute';
@@ -21,11 +22,13 @@ export default function ElectronApp() {
             <ProtectedRoute>
               <ZenProvider>
                 <SocketProvider>
-                  <SearchProvider>
-                    <RouterProvider>
-                      <Terminal />
-                    </RouterProvider>
-                  </SearchProvider>
+                  <ConversationProvider>
+                    <SearchProvider>
+                      <RouterProvider>
+                        <Terminal />
+                      </RouterProvider>
+                    </SearchProvider>
+                  </ConversationProvider>
                 </SocketProvider>
               </ZenProvider>
             </ProtectedRoute>

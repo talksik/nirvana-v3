@@ -15,11 +15,11 @@ interface IRouterContext {
 }
 
 const RouterContext = React.createContext<IRouterContext>({
-  page: 'START_NEW_CONVERSATION',
+  page: 'WELCOME',
 });
 
 export function RouterProvider({ children }: { children: React.ReactNode }) {
-  const [page, setPage] = useState<TPage>('START_NEW_CONVERSATION');
+  const [page, setPage] = useState<TPage>('WELCOME');
 
   const handleSetPage = useCallback((newPage: TPage) => () => setPage(newPage), [setPage]);
 
