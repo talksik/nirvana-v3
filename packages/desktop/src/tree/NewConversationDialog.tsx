@@ -20,11 +20,13 @@ import React, { HTMLAttributes, useCallback, useEffect, useState } from 'react';
 import { useDebounce, useKeyPressEvent, useToggle } from 'react-use';
 
 import CircularProgress from '@mui/material/CircularProgress';
+import CreateConversationRequest from '../../../core/requests/CreateConversationRequest.request';
 import { FiX } from 'react-icons/fi';
 import { NirvanaRules } from '../util/rules';
 import User from '@nirvana/core/models/user.model';
 import UserDetailRow from '../subcomponents/UserDetailRow';
 import { blueGrey } from '@mui/material/colors';
+import { createConversation } from '../api/NirvanaApi';
 import toast from 'react-hot-toast';
 import useAuth from '../providers/AuthProvider';
 import useRouter from '../providers/RouterProvider';
@@ -92,12 +94,23 @@ export default function NewConversationDialog() {
 
     setIsSubmitting(true);
 
-    // await handleSubmit(selectedUsers, conversationName);
-    toast('submitting');
+    try {
+      // if it's just one other person, then call quick dial master function which would do all of the checking
 
-    // clear form for next time
-    setSelectedUsers([]);
-    setConversationName('');
+      // if more than one person, then just create conversation
+
+      const createResult = await createConversation(
+        new CreateConversationRequest(selectedUsers, conversationName),
+      );
+
+      // clear form for next time
+      setSelectedUsers([]);
+      setConversationName('');
+
+      // todo: select conversation Id that was created
+    } catch (error) {
+      console.error(error);
+    }
 
     setIsSubmitting(false);
   }, [selectedUsers, setConversationName, conversationName, setSelectedUsers, setIsSubmitting]);

@@ -1,6 +1,9 @@
 import axios, { AxiosRequestConfig, AxiosResponse, Method } from 'axios';
 
+import CreateConversationRequest from '../../../core/requests/CreateConversationRequest.request';
+import CreateConversationResponse from '../../../core/responses/CreateConversationResponse.response';
 import LoginResponse from '@nirvana/core/responses/login.response';
+import NirvanaResponse from '../../../core/responses/nirvanaResponse';
 import UserDetailsResponse from '@nirvana/core/responses/userDetails.response';
 import UserSearchResponse from '@nirvana/core/responses/userSearch.response';
 
@@ -70,4 +73,10 @@ export async function getUserDetails(): Promise<UserDetailsResponse> {
 
 export async function userSearch(searchQuery: string): Promise<UserSearchResponse> {
   return await NirvanaApi.fetch(`/search/users?query=${searchQuery}`, 'GET', true);
+}
+
+export async function createConversation(
+  req: CreateConversationRequest,
+): Promise<NirvanaResponse<CreateConversationResponse>> {
+  return await NirvanaApi.fetch(`/conversations`, 'POST', true, req);
 }

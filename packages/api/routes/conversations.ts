@@ -38,27 +38,15 @@ const createConversation = async (req: Request, res: Response, next: NextFunctio
   const createRequest = req.body as CreateConversationRequest;
   const userInfo = res.locals.userInfo as JwtClaims;
 
-  console.log('other members', createRequest.otherMemberIds);
-
-  if (!createRequest.otherMemberIds || createRequest.otherMemberIds.length === 0) {
+  if (!createRequest.otherUsers) {
     return next(new Error('must provide who you want to talk to'));
   }
 
   // process of creating other conversation user members with their user objects
   // for cached data purposes
-  const otherUserMembers = await UserService.getUsersByIds(createRequest.otherMemberIds);
-  if (!otherUserMembers) {
-    return next(new Error('unable to find other conversation members'));
-  }
   const conversationUserMembers: ConversationUserMember[] = [];
 
-  createRequest.otherMemberIds.forEach(async (memberId) => {
-    const userObject = otherUserMembers.find((userObj) => userObj._id?.equals(memberId));
-
-    if (!userObject) {
-      return next(new Error('unable to find a user that was passed in'));
-    }
-
+  createRequest.otherUsers.forEach((userObject) => {
     const newConversationMember = new ConversationMember(MemberRole.regular, MemberState.inbox);
 
     conversationUserMembers.push({
@@ -88,6 +76,8 @@ const createConversation = async (req: Request, res: Response, next: NextFunctio
   if (!insertResult) {
     return next(Error('unable to create a conversation'));
   }
+
+  // todo: send updates to other users if they are connected through sockets
 
   const responseObj = new NirvanaResponse<CreateConversationResponse>(
     new CreateConversationResponse(insertResult.insertedId),
