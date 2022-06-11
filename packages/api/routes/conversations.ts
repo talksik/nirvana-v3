@@ -16,7 +16,7 @@ export default function getConversationRoutes() {
   router.get('/:conversationId', authCheck);
 
   // get all conversations that I am in
-  router.get('/conversations', authCheck);
+  router.get('/', authCheck);
 
   // get a one on one conversation based on other user Id
 
@@ -31,15 +31,23 @@ export default function getConversationRoutes() {
 const createConversation = async (req: Request, res: Response, next: NextFunction) => {
   const createRequest = req.body as CreateConversationRequest;
 
-  next(Error('test this shit'));
+  console.log(createRequest.conversation);
 
-  // console.log(createRequest.conversation);
+  if (!createRequest.conversation) {
+    return next(new Error('must pass in a conversation'));
+  }
 
-  // const insertResult = await ConversationService.createConversation(createRequest.conversation);
+  const insertResult = await ConversationService.createConversation(createRequest.conversation);
 
-  // if (!insertResult?.acknowledged) {
-  //   throw Error('nothing inserted');
-  // }
+  if (!insertResult) {
+    return next(Error('unale to create a conversation'));
+  }
 
-  // return res.json(new CreateConversationResponse(insertResult.insertedId));
+  const responseObj = new NirvanaResponse<CreateConversationResponse>(
+    new CreateConversationResponse(insertResult.insertedId),
+    undefined,
+    'created conversation!',
+  );
+
+  return res.json(responseObj);
 };
