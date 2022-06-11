@@ -1,10 +1,15 @@
 import { Box, Container, Grid } from '@mui/material';
 
+import { EPage } from '../providers/RouterProvider';
 import Navbar from './Navbar';
+import NewConversationDialog from './NewConversationDialog';
 import React from 'react';
 import { blueGrey } from '@mui/material/colors';
+import useRouter from '../providers/RouterProvider';
 
 export default function Terminal() {
+  const { page } = useRouter();
+
   return (
     <Container
       maxWidth={false}
@@ -47,6 +52,9 @@ export default function Terminal() {
       >
         This is the footer controls
       </Box>
+
+      {/* create chat dialog */}
+      <NewConversationDialog />
     </Container>
   );
 }

@@ -3,6 +3,8 @@ import { ElectronProvider } from '../providers/ElectronProvider';
 import { NirvanaTheme } from '../mui/NirvanaTheme';
 import ProtectedRoute from './ProtectedRoute';
 import React from 'react';
+import { RouterProvider } from '../providers/RouterProvider';
+import { SearchProvider } from '../providers/SearchProvider';
 import { SocketProvider } from '../providers/SocketProvider';
 import { StabilityProvider } from '../providers/StabilityProvider';
 import Terminal from './Terminal';
@@ -19,7 +21,11 @@ export default function ElectronApp() {
             <ProtectedRoute>
               <ZenProvider>
                 <SocketProvider>
-                  <Terminal />
+                  <SearchProvider>
+                    <RouterProvider>
+                      <Terminal />
+                    </RouterProvider>
+                  </SearchProvider>
                 </SocketProvider>
               </ZenProvider>
             </ProtectedRoute>

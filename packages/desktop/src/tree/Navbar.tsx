@@ -7,10 +7,11 @@ import KeyboardShortcutLabel from '../subcomponents/KeyboardShortcutLabel';
 import { KeyboardShortcuts } from '../util/keyboard';
 import NirvanaLogo from '../subcomponents/NirvanaLogo';
 import { blueGrey } from '@mui/material/colors';
+import useSearch from '../providers/SearchProvider';
 import useTerminal from './Terminal';
 
 const Navbar = () => {
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const { searchQuery, omniSearch, conversationResults, userResults, isSearching } = useSearch();
 
   const searchRef = useRef<HTMLInputElement>(null);
   const onSearchFocus = useCallback(() => {
@@ -21,9 +22,9 @@ const Navbar = () => {
 
   const handleSearchChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      setSearchQuery(e.target.value);
+      omniSearch(e.target.value);
     },
-    [setSearchQuery],
+    [omniSearch],
   );
 
   const rendersCount = useRendersCount();
@@ -68,7 +69,7 @@ const Navbar = () => {
           inputRef={searchRef}
         />
 
-        {/* {isSearching && <CircularProgress size={20} />} */}
+        {isSearching && <CircularProgress size={20} />}
 
         {searchQuery ? (
           <KeyboardShortcutLabel label={KeyboardShortcuts.escape.label} />
