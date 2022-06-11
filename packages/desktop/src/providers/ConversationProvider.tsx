@@ -4,6 +4,7 @@ import {
   ServerResponseChannels,
   SomeoneConnectedResponse,
   SomeoneTunedResponse,
+  SomeoneUntunedFromLineResponse,
   TuneToLineRequest,
   UntuneFromLineRequest,
 } from '@nirvana/core/sockets/channels';
@@ -102,6 +103,22 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
         draft[res.lineId].tunedInUsers = res.allUsers;
       });
     });
+
+    $ws.on(
+      ServerResponseChannels.SOMEONE_UNTUNED_FROM_LINE,
+      (res: SomeoneUntunedFromLineResponse) => {
+        setConversationMap((draft) => {
+          if (!draft[res.lineId]) {
+            toast.error('no line');
+            return;
+          }
+
+          draft[res.lineId].tunedInUsers = draft[res.lineId].tunedInUsers.filter(
+            (userId) => userId !== res.userId,
+          );
+        });
+      },
+    );
   }, [$ws, setConversationMap]);
 
   useEffect(() => {
