@@ -17,10 +17,8 @@ import {
   styled,
 } from '@mui/material';
 import React, { HTMLAttributes, useCallback, useEffect, useState } from 'react';
-import { useDebounce, useKeyPressEvent, useToggle } from 'react-use';
 
 import CircularProgress from '@mui/material/CircularProgress';
-import CreateConversationRequest from '../../../core/requests/CreateConversationRequest.request';
 import { FiX } from 'react-icons/fi';
 import { NirvanaRules } from '../util/rules';
 import User from '@nirvana/core/models/user.model';
@@ -103,6 +101,7 @@ export default function NewConversationDialog() {
     if (succeeded) {
       setSelectedUsers([]);
       setConversationName('');
+      handleSetPage('SELECTED_CONVERSATION');
     }
 
     setIsSubmitting(false);
@@ -113,6 +112,7 @@ export default function NewConversationDialog() {
     setSelectedUsers,
     setIsSubmitting,
     handleStartConversation,
+    handleSetPage,
   ]);
 
   return (

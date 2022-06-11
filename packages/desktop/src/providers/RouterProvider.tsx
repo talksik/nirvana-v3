@@ -23,14 +23,6 @@ const RouterContext = React.createContext<IRouterContext>({
 export function RouterProvider({ children }: { children: React.ReactNode }) {
   const [page, setPage] = useState<TPage>('WELCOME');
 
-  const { selectedConversation } = useConversations();
-
-  useEffect(() => {
-    if (selectedConversation) {
-      setPage('SELECTED_CONVERSATION');
-    }
-  }, [setPage, selectedConversation]);
-
   const handleSetPage = useCallback((newPage: TPage) => () => setPage(newPage), [setPage]);
 
   return (
