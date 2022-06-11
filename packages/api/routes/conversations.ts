@@ -23,10 +23,11 @@ export default function getConversationRoutes() {
   router.get('/:conversationId', authCheck);
 
   // get all conversations that I am in
+  // todo: add in pagination for performance, while allowing getting long polling updates?
   router.get('/', authCheck, getAllConversations);
 
   // get a one on one conversation based on other user Id
-  router.get('/check/:otherUserId', authCheck);
+  router.get('/check/:otherUserId', authCheck, getOneOnOneConversationIfExists);
 
   // get a conversation's content
   router.get('/:conversationId/content', authCheck);
@@ -40,6 +41,8 @@ export default function getConversationRoutes() {
 const getAllConversations = async (req: Request, res: Response, next: NextFunction) => {
   const userInfo = res.locals.userInfo as JwtClaims;
 
+  // todo: use pagination params to get only certain ones
+
   try {
     const resultConversations = await ConversationService.getAllConversationsForUser(
       userInfo.userId,
@@ -52,6 +55,28 @@ const getAllConversations = async (req: Request, res: Response, next: NextFuncti
     );
 
     return res.json(responseObj);
+  } catch (error) {
+    return next(Error('unable to get conversations'));
+  }
+};
+
+const getOneOnOneConversationIfExists = async (req: Request, res: Response, next: NextFunction) => {
+  const userInfo = res.locals.userInfo as JwtClaims;
+  const { otherUserId } = req.params;
+
+  try {
+    const resultConversation = await ConversationService.getConversationBetweenTwoPeople(
+      new ObjectId(userInfo.userId),
+      new ObjectId(otherUserId),
+    );
+
+    return res.json(
+      new NirvanaResponse(
+        resultConversation?._id ?? undefined,
+        undefined,
+        'here is the conversation if it exists',
+      ),
+    );
   } catch (error) {
     return next(Error('unable to get conversations'));
   }

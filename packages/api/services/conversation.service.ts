@@ -28,4 +28,27 @@ export default class ConversationService {
 
     return undefined;
   }
+
+  /**
+   * gets one on one conversation between two people if it exists
+   */
+  static async getConversationBetweenTwoPeople(userAId: ObjectId, userBId: ObjectId) {
+    const query = {
+      $and: [
+        {
+          'members._id': userAId,
+        },
+        { 'members._id': userBId },
+      ],
+    };
+
+    const res = await collections.conversations?.findOne(query);
+
+    // exists
+    if (res?._id) {
+      return res as Conversation;
+    }
+
+    return null;
+  }
 }
