@@ -1,6 +1,7 @@
 import { Box, Container, Grid } from '@mui/material';
 
 import { ConversationList } from './ConversationList';
+import MainPanel from './MainPanel';
 import Navbar from './Navbar';
 import NewConversationDialog from './NewConversationDialog';
 import React from 'react';
@@ -40,8 +41,17 @@ export default function Terminal() {
           </Box>
         </Grid>
 
-        <Grid item xs={8} sx={{ bgcolor: 'white' }}>
-          main panel
+        <Grid
+          item
+          xs={8}
+          sx={{
+            backgroundColor: 'white',
+            display: 'flex',
+            flexDirection: 'column',
+            maxHeight: '100vh',
+          }}
+        >
+          <MainPanel />
         </Grid>
       </Grid>
 
