@@ -85,3 +85,7 @@ export async function createConversation(
 export async function getConversations(): Promise<NirvanaResponse<Conversation[]>> {
   return await NirvanaApi.fetch(`/conversations`, 'GET', true);
 }
+
+export async function checkIfOnOnOneExists(otherUserId: string): Promise<NirvanaResponse<string>> {
+  return await NirvanaApi.fetch(`/conversations/check/${otherUserId}`, 'GET', true);
+}

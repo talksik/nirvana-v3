@@ -75,8 +75,8 @@ const getOneOnOneConversationIfExists = async (req: Request, res: Response, next
         resultConversation?._id ?? undefined,
         undefined,
         resultConversation
-          ? 'no such conversation exists!'
-          : 'there is a conversation...quick dial them now!',
+          ? 'there is a conversation...quick dial them now!'
+          : 'no such conversation exists!',
       ),
     );
   } catch (error) {

@@ -1,11 +1,13 @@
 // make do router given absense of react router in desktop apps
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+
+import useConversations from './ConversationProvider';
 
 type TPage =
   | 'START_NEW_CONVERSATION'
   | 'FULL_PAGE_OMNI_SEARCH'
-  | 'CONVERSATION_DETAILS'
+  | 'SELECTED_CONVERSATION'
   | 'PROFILE'
   | 'WELCOME';
 
@@ -20,6 +22,14 @@ const RouterContext = React.createContext<IRouterContext>({
 
 export function RouterProvider({ children }: { children: React.ReactNode }) {
   const [page, setPage] = useState<TPage>('WELCOME');
+
+  const { selectedConversation } = useConversations();
+
+  useEffect(() => {
+    if (selectedConversation) {
+      setPage('SELECTED_CONVERSATION');
+    }
+  }, [setPage, selectedConversation]);
 
   const handleSetPage = useCallback((newPage: TPage) => () => setPage(newPage), [setPage]);
 

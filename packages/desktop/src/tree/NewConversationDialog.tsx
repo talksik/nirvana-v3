@@ -29,6 +29,7 @@ import { blueGrey } from '@mui/material/colors';
 import { createConversation } from '../api/NirvanaApi';
 import toast from 'react-hot-toast';
 import useAuth from '../providers/AuthProvider';
+import useConversations from '../providers/ConversationProvider';
 import useRouter from '../providers/RouterProvider';
 import useSearch from '../providers/SearchProvider';
 
@@ -81,6 +82,8 @@ export default function NewConversationDialog() {
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
+  const { handleStartConversation } = useConversations();
+
   const handleSubmit = useCallback(async () => {
     if (selectedUsers.length === 0) {
       toast.error('Must select a person!');
@@ -94,24 +97,11 @@ export default function NewConversationDialog() {
 
     setIsSubmitting(true);
 
-    try {
-      // if it's just one other person, then call quick dial master function which would do all of the checking
+    handleStartConversation(selectedUsers);
 
-      // if more than one person, then just create conversation
-
-      const createResult = await createConversation(
-        new CreateConversationRequest(selectedUsers, conversationName),
-      );
-
-      // clear form for next time
-      setSelectedUsers([]);
-      setConversationName('');
-
-      // todo: select conversation Id that was created
-    } catch (error) {
-      console.error(error);
-      toast.error(error.message);
-    }
+    // clear form for next time
+    setSelectedUsers([]);
+    setConversationName('');
 
     setIsSubmitting(false);
   }, [selectedUsers, setConversationName, conversationName, setSelectedUsers, setIsSubmitting]);
