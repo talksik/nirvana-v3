@@ -34,12 +34,12 @@ export default class Conversation {
 
 export type ConversationUserMember = ConversationMember & User;
 
-export const enum MemberRole {
+export enum MemberRole {
   admin = 'admin',
   regular = 'regular',
 }
 
-export const enum MemberState {
+export enum MemberState {
   priority = 'priority',
   inbox = 'inbox',
   // deleted = "deleted"
@@ -48,7 +48,7 @@ export const enum MemberState {
 export class ConversationMember {
   constructor(
     public role: MemberRole,
-    public memberState: MemberState,
+    public memberState: 'priority' | 'inbox',
 
     public joinedDate = new Date(),
 

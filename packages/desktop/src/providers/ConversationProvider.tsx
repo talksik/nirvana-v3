@@ -126,12 +126,9 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
         (mem) => mem.email === user.email,
       );
 
-      // if (
-      //   currMemberForConversation &&
-      //   currMemberForConversation.memberState === MemberState.priority
-      // ) {
-      //   handleTuneIntoLine(conversation._id.toString());
-      // }
+      if (currMemberForConversation && currMemberForConversation.memberState === 'priority') {
+        handleTuneIntoLine(conversation._id.toString());
+      }
     },
     [setConversationMap, handleConnectToLine, handleTuneIntoLine, user],
   );
