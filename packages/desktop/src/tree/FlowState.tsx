@@ -46,7 +46,7 @@ export default function FlowState({ handleReconnect }: { handleReconnect: () => 
 
       {quote && (
         <Container
-          maxWidth={'md'}
+          maxWidth={'sm'}
           sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}
         >
           <Typography variant={'h6'} textAlign={'center'}>

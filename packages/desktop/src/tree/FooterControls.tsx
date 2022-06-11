@@ -24,8 +24,11 @@ import { blueGrey } from '@mui/material/colors';
 import useAuth from '../providers/AuthProvider';
 import useConversations from '../providers/ConversationProvider';
 import useSearch from '../providers/SearchProvider';
+import useZen from '../providers/ZenProvider';
 
 export default function FooterControls() {
+  const { handleFlowState } = useZen();
+
   const { omniSearch } = useSearch();
   const { selectedConversation } = useConversations();
   const { user, handleLogout } = useAuth();
@@ -97,7 +100,7 @@ export default function FooterControls() {
             <Switch color="secondary" size="small" />
           </Tooltip>
 
-          <Button size={'small'} color={'secondary'} variant="text">
+          <Button size={'small'} color={'secondary'} variant="text" onClick={handleFlowState}>
             flow
           </Button>
         </Stack>
