@@ -52,7 +52,7 @@ async function getPublicUser(req: Request, res: Response, next: NextFunction) {
   const user = await UserService.getUserById(userId as string);
 
   if (user) {
-    const responseObj = new NirvanaResponse(new UserDetailsResponse(user), undefined, 'got user');
+    const responseObj = new NirvanaResponse(user, undefined, 'got user');
     return res.status(200).json(responseObj);
   }
 
