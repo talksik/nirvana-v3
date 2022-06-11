@@ -11,7 +11,7 @@ import Conversation from '@nirvana/core/models/conversation.model';
 import CreateConversationRequest from '@nirvana/core/requests/CreateConversationRequest.request';
 import { Typography } from '@mui/material';
 import User from '@nirvana/core/models/user.model';
-import { toast } from 'react-toastify';
+import toast from 'react-hot-toast';
 import { useAsyncFn } from 'react-use';
 import { useImmer } from 'use-immer';
 
@@ -136,7 +136,7 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
           new CreateConversationRequest(otherUsers, conversationName),
         );
 
-        selectConversation(createdConversationResult.data.conversationId.toString());
+        selectConversation(createdConversationResult.data.conversationId.toString(), true);
 
         toast.success('started conversation');
       } catch (error) {
