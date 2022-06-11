@@ -21,7 +21,8 @@ export const authCheck = async (req: Request, res: Response, next: NextFunction)
 
     next();
   } catch (error) {
-    res.status(401).send('unauthorized');
+    res.status(301);
+    next(error);
   }
 };
 

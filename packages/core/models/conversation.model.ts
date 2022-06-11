@@ -24,7 +24,7 @@ export default class Conversation {
     public lastUpdatedDate = new Date(),
     public createdDate = new Date(),
 
-    public id?: ObjectId,
+    public id: ObjectId = new ObjectId(),
   ) {}
 }
 

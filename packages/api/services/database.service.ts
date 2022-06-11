@@ -6,6 +6,7 @@ import environmentVariables from '../config/config';
 // Global Variables
 export const collections: {
   users?: mongoDB.Collection;
+  conversations?: mongoDB.Collection;
 } = {};
 
 // Initialize Connection
@@ -19,6 +20,7 @@ client.connect();
 const db: mongoDB.Db = client.db(process.env.DB_NAME);
 
 const usersCollection: mongoDB.Collection = db.collection('users');
+const conversationsCollection: mongoDB.Collection = db.collection('conversations');
 
 // client.on('connection', () => {
 //   db.command({
@@ -27,5 +29,6 @@ const usersCollection: mongoDB.Collection = db.collection('users');
 // });
 
 collections.users = usersCollection;
+collections.conversations = conversationsCollection;
 
 console.log(`Successfully connected to database: ${db.databaseName} and collections`);
