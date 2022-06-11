@@ -1,5 +1,6 @@
 import { Container, Grid } from '@mui/material';
 
+import Navbar from './Navbar';
 import React from 'react';
 import { blueGrey } from '@mui/material/colors';
 
@@ -16,7 +17,7 @@ export default function Terminal() {
     >
       <Grid container spacing={0}>
         <Grid item xs={4}>
-          This is the sidepanel
+          <Navbar />
         </Grid>
 
         <Grid item xs={8}>
