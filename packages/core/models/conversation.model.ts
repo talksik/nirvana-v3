@@ -34,6 +34,17 @@ export default class Conversation {
 
 export type ConversationUserMember = ConversationMember & User;
 
+export const enum MemberRole {
+  admin = 'admin',
+  regular = 'regular',
+}
+
+export const enum MemberState {
+  priority = 'priority',
+  inbox = 'inbox',
+  // deleted = "deleted"
+}
+
 export class ConversationMember {
   constructor(
     public role: MemberRole,
@@ -57,14 +68,4 @@ export class ConversationMember {
      */
     public lastFetchDate?: Date,
   ) {}
-}
-
-export enum MemberRole {
-  admin = 'admin',
-  regular = 'regular',
-}
-export enum MemberState {
-  priority = 'priority',
-  inbox = 'inbox',
-  // deleted = "deleted"
 }
