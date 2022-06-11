@@ -9,7 +9,7 @@ export type ConversationMap = {
 
     // allows client side to have this pushed up in the list and can uncheck it once user is done with this
     // if action is take, normal ordering should take place with database upserts
-    temporaryInboxTop: boolean;
+    temporaryInboxTop?: boolean;
   };
 };
 
