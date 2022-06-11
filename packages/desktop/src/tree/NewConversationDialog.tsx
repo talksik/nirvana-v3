@@ -18,7 +18,6 @@ import {
 } from '@mui/material';
 import React, { HTMLAttributes, useCallback, useEffect, useState } from 'react';
 import { useDebounce, useKeyPressEvent, useToggle } from 'react-use';
-import useRouter, { EPage } from '../providers/RouterProvider';
 
 import CircularProgress from '@mui/material/CircularProgress';
 import { FiX } from 'react-icons/fi';
@@ -28,10 +27,11 @@ import UserDetailRow from '../subcomponents/UserDetailRow';
 import { blueGrey } from '@mui/material/colors';
 import toast from 'react-hot-toast';
 import useAuth from '../providers/AuthProvider';
+import useRouter from '../providers/RouterProvider';
 import useSearch from '../providers/SearchProvider';
 
 export default function NewConversationDialog() {
-  const { page, setPage } = useRouter();
+  const { page, handleSetPage } = useRouter();
 
   const { user } = useAuth();
 
@@ -102,12 +102,8 @@ export default function NewConversationDialog() {
     setIsSubmitting(false);
   }, [selectedUsers, setConversationName, conversationName, setSelectedUsers, setIsSubmitting]);
 
-  const handleClose = useCallback(() => {
-    setPage(EPage.WELCOME);
-  }, [setPage]);
-
   return (
-    <Dialog fullScreen open={page === EPage.START_NEW_CONVERSATION} onClose={handleClose}>
+    <Dialog fullScreen open={page === 'START_NEW_CONVERSATION'} onClose={handleSetPage('WELCOME')}>
       <Container
         maxWidth={false}
         sx={{
@@ -121,7 +117,10 @@ export default function NewConversationDialog() {
           position: 'relative',
         }}
       >
-        <IconButton sx={{ position: 'absolute', top: 10, right: 10 }} onClick={handleClose}>
+        <IconButton
+          sx={{ position: 'absolute', top: 10, right: 10 }}
+          onClick={handleSetPage('WELCOME')}
+        >
           <FiX />
         </IconButton>
 
@@ -174,7 +173,7 @@ export default function NewConversationDialog() {
           )}
 
           <Stack justifyContent={'flex-end'} direction={'row'} spacing={2}>
-            <Button onClick={handleClose} variant={'text'}>
+            <Button onClick={handleSetPage('WELCOME')} variant={'text'}>
               Cancel
             </Button>
             <Button

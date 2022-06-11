@@ -7,10 +7,12 @@ import KeyboardShortcutLabel from '../subcomponents/KeyboardShortcutLabel';
 import { KeyboardShortcuts } from '../util/keyboard';
 import NirvanaLogo from '../subcomponents/NirvanaLogo';
 import { blueGrey } from '@mui/material/colors';
+import useRouter from '../providers/RouterProvider';
 import useSearch from '../providers/SearchProvider';
 import useTerminal from './Terminal';
 
 const Navbar = () => {
+  const { handleSetPage } = useRouter();
   const { searchQuery, omniSearch, conversationResults, userResults, isSearching } = useSearch();
 
   const searchRef = useRef<HTMLInputElement>(null);
@@ -79,7 +81,11 @@ const Navbar = () => {
       </Stack>
 
       <Tooltip title={'Group conversation'}>
-        <IconButton color="default" size={'small'}>
+        <IconButton
+          color="default"
+          size={'small'}
+          onClick={handleSetPage('START_NEW_CONVERSATION')}
+        >
           <FiUsers />
         </IconButton>
       </Tooltip>
