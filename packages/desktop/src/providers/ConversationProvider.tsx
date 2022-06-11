@@ -1,8 +1,13 @@
+import { ConversationMap, MasterConversation } from '../util/types';
 import React, { useCallback, useEffect, useState } from 'react';
-import { checkIfOnOnOneExists, createConversation, getConversations } from '../api/NirvanaApi';
+import {
+  checkIfOnOnOneExists,
+  createConversation,
+  getConversationById,
+  getConversations,
+} from '../api/NirvanaApi';
 
 import Conversation from '@nirvana/core/models/conversation.model';
-import { ConversationMap } from '../util/types';
 import CreateConversationRequest from '@nirvana/core/requests/CreateConversationRequest.request';
 import { Typography } from '@mui/material';
 import User from '@nirvana/core/models/user.model';
@@ -13,7 +18,7 @@ import { useImmer } from 'use-immer';
 interface IConversationContext {
   conversations: ConversationMap;
 
-  selectedConversation?: Conversation;
+  selectedConversation?: MasterConversation;
   // handleSetConversation?: (conversationId: string) => void;
 
   handleStartConversation?: (otherUsers: User[]) => void;
@@ -30,7 +35,7 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
   // the map that we manage throughout the app
   const [conversationMap, setConversationMap] = useImmer<ConversationMap>({});
 
-  const [selectedConversation, setSelectedConversation] = useState<Conversation>(undefined);
+  const [selectedConversation, setSelectedConversation] = useState<MasterConversation>(undefined);
 
   useEffect(() => {
     doFetch();
@@ -56,7 +61,7 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
    * temporaryOverrideSort: tell me if you want to temporarily prioritize this conversation above all others
    */
   const selectConversation = useCallback(
-    (conversationId: string, temporaryOverrideSort = false) => {
+    async (conversationId: string, temporaryOverrideSort = false) => {
       /**
        * see if there is such a conversation in our map
        * if not, then go and fetch it from backend
@@ -69,9 +74,29 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
         toast.success('we have that conversation!!!');
 
         setSelectedConversation(conversationMap[conversationId]);
+
+        return;
       }
+
+      // fetch and add to conversation map
+      const retrieveConversationResult = await getConversationById(conversationId);
+      if (!retrieveConversationResult.data) {
+        toast.error('unable to select conversation');
+        return;
+      }
+
+      setConversationMap((draft) => {
+        draft[conversationId] = {
+          ...retrieveConversationResult.data,
+          tunedInUsers: [],
+          connectedUserIds: [],
+          temporaryOverrideSort,
+        };
+
+        setSelectedConversation(draft[conversationId]);
+      });
     },
-    [conversationMap, setSelectedConversation],
+    [conversationMap, setSelectedConversation, setConversationMap],
   );
 
   const handleStartConversation = useCallback(

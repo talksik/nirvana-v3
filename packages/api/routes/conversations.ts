@@ -19,8 +19,8 @@ export default function getConversationRoutes() {
 
   router.use(express.json());
 
-  // get a conversation
-  router.get('/:conversationId', authCheck);
+  // get a conversation by id
+  router.get('/:conversationId', authCheck, getConversationById);
 
   // get all conversations that I am in
   // todo: add in pagination for performance, while allowing getting long polling updates?
@@ -37,6 +37,24 @@ export default function getConversationRoutes() {
 
   return router;
 }
+
+const getConversationById = async (req: Request, res: Response, next: NextFunction) => {
+  const { conversationId } = req.params;
+
+  if (!conversationId) {
+    return next(Error('Must provide a conversation Id'));
+  }
+
+  const conversationResult = await ConversationService.getConversationById(conversationId);
+
+  const responseObj = new NirvanaResponse(
+    conversationResult,
+    undefined,
+    conversationResult ? 'here is the conversation' : 'No conversation found',
+  );
+
+  return res.json(responseObj);
+};
 
 const getAllConversations = async (req: Request, res: Response, next: NextFunction) => {
   const userInfo = res.locals.userInfo as JwtClaims;

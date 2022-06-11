@@ -3,6 +3,19 @@ import { ObjectId } from 'mongodb';
 import { collections } from './database.service';
 
 export default class ConversationService {
+  static async getConversationById(conversationId: string) {
+    const query = { _id: new ObjectId(conversationId) };
+
+    const res = await collections.conversations?.findOne(query);
+
+    // exists
+    if (res?._id) {
+      return res as Conversation;
+    }
+
+    return undefined;
+  }
+
   static async createConversation(newConversation: Conversation) {
     return await collections.conversations?.insertOne(newConversation);
   }
