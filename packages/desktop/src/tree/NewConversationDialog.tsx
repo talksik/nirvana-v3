@@ -99,9 +99,10 @@ export default function NewConversationDialog() {
 
     // clear form for next time
     if (succeeded) {
+      toast('succeeded');
       setSelectedUsers([]);
       setConversationName('');
-      handleSetPage('SELECTED_CONVERSATION');
+      handleSetPage('SELECTED_CONVERSATION')();
     }
 
     setIsSubmitting(false);

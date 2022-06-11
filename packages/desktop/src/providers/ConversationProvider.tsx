@@ -115,7 +115,7 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
 
         if (!otherUsers || otherUsers.length === 0) {
           toast.error('Must provider users');
-          return;
+          return false;
         }
 
         // todo: check to make sure that the other user is not the user himself, although backend should error out
@@ -128,7 +128,7 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
             toast.success('already have this user...quick dialing');
 
             selectConversation(conversationDmCheck.data, true);
-            return;
+            return true;
           }
         }
 
