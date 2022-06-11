@@ -155,34 +155,45 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
        */
 
       const allConversationIds = Object.keys(conversationMap);
+      let conversationToSelect: MasterConversation;
 
       if (allConversationIds.includes(conversationId)) {
         toast.success('we have that conversation!!!');
 
-        setSelectedConversation(conversationMap[conversationId]);
+        conversationToSelect = conversationMap[conversationId];
+      } else {
+        // fetch and add to conversation map
+        const retrieveConversationResult = await getConversationById(conversationId);
+        if (!retrieveConversationResult.data) {
+          toast.error('unable to select conversation');
+          return;
+        }
 
-        return;
-      }
-
-      // fetch and add to conversation map
-      const retrieveConversationResult = await getConversationById(conversationId);
-      if (!retrieveConversationResult.data) {
-        toast.error('unable to select conversation');
-        return;
-      }
-
-      setConversationMap((draft) => {
-        draft[conversationId] = {
+        const newMasterConversation: MasterConversation = {
           ...retrieveConversationResult.data,
           tunedInUsers: [],
           connectedUserIds: [],
           temporaryOverrideSort,
         };
 
-        setSelectedConversation(draft[conversationId]);
+        conversationToSelect = newMasterConversation;
+
+        setConversationMap((draft) => {
+          draft[conversationId] = newMasterConversation;
+        });
+      }
+
+      setSelectedConversation((prevConversation) => {
+        if (prevConversation) {
+          handleUntuneFromLine(prevConversation._id.toString());
+        }
+
+        handleTuneIntoLine(conversationToSelect._id.toString());
+
+        return conversationToSelect;
       });
     },
-    [conversationMap, setSelectedConversation, setConversationMap],
+    [conversationMap, setSelectedConversation, setConversationMap, handleUntuneFromLine],
   );
 
   const handleStartConversation = useCallback(
