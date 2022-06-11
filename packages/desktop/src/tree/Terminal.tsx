@@ -1,6 +1,7 @@
 import { Box, Container, Grid } from '@mui/material';
 
 import { ConversationList } from './ConversationList';
+import FooterControls from './FooterControls';
 import MainPanel from './MainPanel';
 import Navbar from './Navbar';
 import NewConversationDialog from './NewConversationDialog';
@@ -57,17 +58,7 @@ export default function Terminal() {
         </Grid>
       </Grid>
 
-      <Box
-        sx={{
-          p: 2,
-          zIndex: 10,
-          boxShadow: 10,
-
-          bgcolor: blueGrey[800],
-        }}
-      >
-        This is the footer controls
-      </Box>
+      <FooterControls />
 
       {/* create chat dialog */}
       <NewConversationDialog />
