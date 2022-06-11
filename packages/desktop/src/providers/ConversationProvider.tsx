@@ -7,6 +7,7 @@ import {
   TuneToLineRequest,
   UntuneFromLineRequest,
 } from '@nirvana/core/sockets/channels';
+import Conversation, { MemberState } from '@nirvana/core/models/conversation.model';
 import { ConversationMap, MasterConversation } from '../util/types';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
@@ -16,12 +17,12 @@ import {
   getConversations,
 } from '../api/NirvanaApi';
 
-import Conversation from '@nirvana/core/models/conversation.model';
 import CreateConversationRequest from '@nirvana/core/requests/CreateConversationRequest.request';
 import { Typography } from '@mui/material';
 import User from '@nirvana/core/models/user.model';
 import toast from 'react-hot-toast';
 import { useAsyncFn } from 'react-use';
+import useAuth from './AuthProvider';
 import { useImmer } from 'use-immer';
 import useSockets from './SocketProvider';
 
@@ -66,6 +67,8 @@ const ConversationContext = React.createContext<IConversationContext>({
 });
 
 export function ConversationProvider({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth();
+
   // the initial persistent fetch for conversations
   const [fetchState, doFetch] = useAsyncFn(getConversations);
 
@@ -75,6 +78,7 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
   const [selectedConversation, setSelectedConversation] = useState<MasterConversation>(undefined);
 
   const { $ws } = useSockets();
+  const { handleConnectToLine, handleTuneIntoLine, handleUntuneFromLine } = useSocketFire();
 
   useEffect(() => {
     $ws.on(ServerResponseChannels.SOMEONE_CONNECTED_TO_LINE, (res: SomeoneConnectedResponse) => {
@@ -115,8 +119,21 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
           connectedUserIds: [],
         };
       });
+
+      handleConnectToLine(conversation._id.toString());
+
+      const currMemberForConversation = conversation.members.find(
+        (mem) => mem.email === user.email,
+      );
+
+      // if (
+      //   currMemberForConversation &&
+      //   currMemberForConversation.memberState === MemberState.priority
+      // ) {
+      //   handleTuneIntoLine(conversation._id.toString());
+      // }
     },
-    [setConversationMap],
+    [setConversationMap, handleConnectToLine, handleTuneIntoLine, user],
   );
 
   useEffect(() => {
