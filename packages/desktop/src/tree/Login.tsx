@@ -61,6 +61,7 @@ export default function Login() {
         alignItems: 'center',
         gap: 5,
         background: blueGrey[50],
+        WebkitAppRegion: 'drag',
       }}
     >
       <NirvanaLogo />

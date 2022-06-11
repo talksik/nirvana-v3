@@ -74,7 +74,9 @@ const getOneOnOneConversationIfExists = async (req: Request, res: Response, next
       new NirvanaResponse(
         resultConversation?._id ?? undefined,
         undefined,
-        'here is the conversation if it exists',
+        resultConversation
+          ? 'no such conversation exists!'
+          : 'there is a conversation...quick dial them now!',
       ),
     );
   } catch (error) {
@@ -91,6 +93,18 @@ const createConversation = async (req: Request, res: Response, next: NextFunctio
 
   if (!createRequest.otherUsers || createRequest.otherUsers.length === 0) {
     return next(new Error('must provide who you want to talk to'));
+  }
+
+  // if it's a one on one, and one already exists then don't allow creating another convo!!
+  if (createRequest.otherUsers.length === 1) {
+    const oneOnOneExists = await ConversationService.getConversationBetweenTwoPeople(
+      new ObjectId(userInfo.userId),
+      new ObjectId(createRequest.otherUsers[0]._id),
+    );
+
+    if (oneOnOneExists) {
+      return next(Error('Already have a conversatoin with them! quick dial them!'));
+    }
   }
 
   // process of creating other conversation user members with their user objects
