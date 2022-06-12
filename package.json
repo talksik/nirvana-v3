@@ -1,6 +1,11 @@
 {
-    "private": true,
-    "name": "nirvana",
-    "workspaces": ["packages/*"],
-    "scripts": {}
- }
+  "private": true,
+  "name": "nirvana",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "api": "yarn workspace @nirvana/api dev",
+    "desktop": "yarn workspace @nirvana/desktop dev"
+  }
+}
