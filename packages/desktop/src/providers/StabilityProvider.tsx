@@ -26,7 +26,7 @@ export function StabilityProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const interval = setInterval(() => {
       if (!state.loading) state.retry();
-    }, 5000);
+    }, 30000);
 
     return () => clearInterval(interval);
   }, [state.loading]);
