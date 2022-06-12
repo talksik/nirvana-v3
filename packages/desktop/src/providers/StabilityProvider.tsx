@@ -23,6 +23,7 @@ export function StabilityProvider({ children }: { children: React.ReactNode }) {
     window.addEventListener('offline', () => setIsOffline(true));
   }, [setIsOffline]);
 
+  // server check refetching
   useEffect(() => {
     const interval = setInterval(() => {
       if (!state.loading) state.retry();
