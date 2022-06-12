@@ -19,22 +19,28 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
 
   const [$ws, set$ws] = useState<Socket>(null);
 
-  const initiateSocketStabilityListeners = useCallback((socketConnection: Socket) => {
-    socketConnection.on('connect', () => {
-      toast.success('sockets connected');
-    });
+  const initiateSocketStabilityListeners = useCallback(
+    (socketConnection: Socket) => {
+      socketConnection.on('connect', () => {
+        toast.success('sockets connected');
+      });
 
-    socketConnection.io.on('close', () => {
-      console.error('SOCKET | connection closed likely due to idling or manual disconnect');
-      toast('unplugging');
-    });
+      socketConnection.io.on('close', () => {
+        console.error('SOCKET | connection closed likely due to idling or manual disconnect');
+        toast('unplugging');
 
-    // client-side errors
-    socketConnection.on('connect_error', (err) => {
-      console.error(`SOCKETS | ${err.message}`);
-      toast.error('sorry...this is our bad...please refresh with cmd + r');
-    });
-  }, []);
+        socketConnection.disconnect();
+        set$ws(undefined);
+      });
+
+      // client-side errors
+      socketConnection.on('connect_error', (err) => {
+        console.error(`SOCKETS | ${err.message}`);
+        toast.error('sorry...this is our bad...please refresh with cmd + r');
+      });
+    },
+    [set$ws],
+  );
 
   useEffect(() => {
     if (!jwtToken) {
