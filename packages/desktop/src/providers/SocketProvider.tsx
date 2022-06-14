@@ -29,7 +29,6 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
         console.error('SOCKET | connection closed likely due to idling or manual disconnect');
         toast('unplugging');
 
-        socketConnection.disconnect();
         set$ws(undefined);
       });
 
