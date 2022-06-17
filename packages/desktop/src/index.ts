@@ -1,6 +1,7 @@
 import { BrowserWindow, Display, app, ipcMain, screen } from 'electron';
 import Channels, { DEFAULT_APP_PRESET, DimensionChangeRequest } from './electron/constants';
 
+import { environmentVariables } from './electron/config';
 import { handleGoogleLogin } from './electron/handleLogin';
 import path from 'path';
 import store from './electron/store';
@@ -10,6 +11,9 @@ import store from './electron/store';
 // whether you're running in development or production).
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
+
+console.log(`is production ${app.isPackaged}`);
+console.log(`variables loaded`, environmentVariables);
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
