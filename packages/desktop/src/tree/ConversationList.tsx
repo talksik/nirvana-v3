@@ -14,7 +14,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { FiActivity, FiCircle, FiSun } from 'react-icons/fi';
+import { FiActivity, FiCircle, FiInbox, FiSun } from 'react-icons/fi';
 import React, { useCallback, useMemo } from 'react';
 import { useKeyPressEvent, useRendersCount } from 'react-use';
 
@@ -84,9 +84,9 @@ export function ConversationList() {
         ))}
       </List>
 
-      {/* <Divider /> */}
+      <Divider />
 
-      {/* <List
+      <List
         sx={{
           pt: 2,
         }}
@@ -96,7 +96,7 @@ export function ConversationList() {
             <Typography variant="subtitle2"> Inbox</Typography>
           </ListSubheader>
         }
-      ></List> */}
+      ></List>
     </>
   );
 }
