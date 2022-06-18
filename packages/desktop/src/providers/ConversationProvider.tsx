@@ -152,6 +152,8 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
     [setConversationMap, handleConnectToLine, handleTuneIntoLine, user],
   );
 
+  // add conversations to cache on initial fetch
+  // the two stores | persistent and socket | are decoupled
   useEffect(() => {
     console.log(fetchState.value);
 
@@ -231,6 +233,8 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
     ],
   );
 
+  // temporary fix for updated conversation content not being surfaced
+  // as the map value updates
   useEffect(() => {
     if (selectedConversation) {
       setSelectedConversation(conversationMap[selectedConversation._id.toString()]);
@@ -289,9 +293,7 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
   );
 
   // todo: open up a handler for children
-  // to refetch or search for a particular conversation and add it to the list of conversations
-
-  // todo: transform conversations to a map and keep adding to the map
+  // to refetch all conversatinos or search for a particular conversation and add it to the list of conversations
 
   if (fetchState.error) {
     return (
