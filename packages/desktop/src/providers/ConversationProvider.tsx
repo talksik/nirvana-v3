@@ -165,7 +165,6 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
   /**
    * temporaryOverrideSort: tell me if you want to temporarily prioritize this conversation above all others
    */
-  // ! PROBLEM: this is not updating if the conversation map updates...thus should just select conversation by
   // selecting an id and making sure that it's in the map and the views just use the id to access from map
   const selectConversation = useCallback(
     async (conversationId: string, temporaryOverrideSort = false) => {
@@ -222,6 +221,12 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
       handleTuneIntoLine,
     ],
   );
+
+  useEffect(() => {
+    if (selectedConversation) {
+      setSelectedConversation(conversationMap[selectedConversation._id.toString()]);
+    }
+  }, [conversationMap, selectedConversation, setSelectedConversation]);
 
   const handleStartConversation = useCallback(
     async (otherUsers: User[], conversationName?: string) => {
