@@ -204,8 +204,16 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
       }
 
       setSelectedConversation((prevConversation) => {
+        // only untune if it was an inbox conversation
+
         if (prevConversation) {
-          handleUntuneFromLine(prevConversation._id.toString());
+          const currMemberForConversation = prevConversation.members.find(
+            (mem) => mem.email === user.email,
+          );
+
+          if (currMemberForConversation && currMemberForConversation.memberState === 'inbox') {
+            handleUntuneFromLine(prevConversation._id.toString());
+          }
         }
 
         handleTuneIntoLine(conversationToSelect._id.toString());
@@ -214,6 +222,7 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
       });
     },
     [
+      user,
       conversationMap,
       setSelectedConversation,
       setConversationMap,
