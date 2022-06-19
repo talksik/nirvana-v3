@@ -642,6 +642,8 @@ function Room({
           }
         });
 
+        console.error('peer connection was closed');
+
         toast.error('peer connection was closed');
       });
 
@@ -672,13 +674,33 @@ function Room({
     };
   }, [userLocalStream]);
 
+  // find when someone leaves the room and destroy peer and remove them from our map
+  useEffect(() => {
+    // go through tuned in users
+    // if we have someone in room who is not in tuned in, then destroy + delete
+    if (conversation.room) {
+      Object.entries(conversation.room).forEach(([roomUserId, roomContents]) => {
+        if (!conversation.tunedInUsers.includes(roomUserId)) {
+          console.log('someone left the room!!!');
+
+          roomContents.peer.destroy();
+
+          setConversationMap((draft) => {
+            delete draft[conversation._id.toString()].room[roomUserId];
+          });
+        }
+      });
+    }
+  }, [conversation.tunedInUsers, conversation.room]);
+
   // go through all of the peers and destroy and update conversation map
   useUnmount(() => {
     setConversationMap((draft) => {
       if (draft[conversation._id.toString()].room) {
         Object.values(draft[conversation._id.toString()].room).forEach((roomPeerContents) => {
           roomPeerContents.peer.destroy();
-          toast('destroyed peer connection as I am leaving room');
+
+          console.log('destroyed peer connection as I am leaving room');
         });
       }
 
