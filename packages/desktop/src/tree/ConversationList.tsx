@@ -101,6 +101,7 @@ export function ConversationList() {
             key={`${currentConversation._id.toString()}-priorityConvoList`}
             conversation={currentConversation}
             index={index}
+            isPriority={true}
           />
         ))}
       </List>
@@ -123,6 +124,7 @@ export function ConversationList() {
             key={`${currentConversation._id.toString()}-inboxConvoList`}
             conversation={currentConversation}
             index={index}
+            isPriority={false}
           />
         ))}
       </List>
@@ -139,10 +141,12 @@ export function ConversationRow({
   conversation,
   index,
   onClick,
+  isPriority = false,
 }: {
   conversation: MasterConversation;
   index?: number;
   onClick?: () => void;
+  isPriority?: boolean;
 }) {
   const { user } = useAuth();
 
@@ -158,21 +162,6 @@ export function ConversationRow({
 
     selectConversation(conversation._id.toString(), false);
   }, [conversation, selectConversation, onClick]);
-
-  const currentConversationMember = useMemo(() => {
-    const currentConvoMember = conversation.members.find(
-      (mem) => mem._id.toString() === user._id.toString(),
-    );
-    return currentConvoMember;
-  }, [conversation.members, user]);
-
-  const isPriority = useMemo(() => {
-    if (currentConversationMember && currentConversationMember.memberState === 'priority') {
-      return true;
-    }
-
-    return false;
-  }, [currentConversationMember]);
 
   const keyboardShortcut = useMemo(() => {
     if (index < NirvanaRules.topXConversationsWithShortcuts && isPriority) {
