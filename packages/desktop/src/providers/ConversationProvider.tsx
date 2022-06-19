@@ -27,33 +27,6 @@ import useAuth from './AuthProvider';
 import { useImmer } from 'use-immer';
 import useSockets from './SocketProvider';
 
-// responsible for managing devices, managing streams
-// initiating calls, managing incoming calls
-// joining room
-// leaving room
-// playing audio
-// handling device switching
-// handling muting and unmuting
-// showing when there are problems
-function useCommunications() {
-  const { $ws } = useSockets();
-
-  useEffect(() => {
-    // select initial devices and create initial stream
-  }, []);
-
-  // go and create connection with everyone already here
-  const handleJoinRoom = useCallback((peopleAlreadyHere: string[]) => {
-    // create n peer objects
-    // for each
-    //    - create a signal
-    //    - send signal to the other person
-    //    - return peer object
-  }, []);
-
-  return { handleJoinRoom };
-}
-
 // responsible for firing socket events from the local client
 function useSocketFire() {
   const { $ws } = useSockets();
@@ -364,19 +337,106 @@ export default function useConversations() {
   return React.useContext(ConversationContext);
 }
 
+const videoConstraints = false;
+
+// {
+//   frameRate: 30,
+//   width: { max: 100 },
+//   height: { max: 200 },
+// };
+
+const iceServers = [
+  // { urls: 'stun:stun.l.google.com:19302' },
+  // { urls: 'stun:stun.l.google.com:19302' },
+  // { urls: 'stun:stun1.l.google.com:19302' },
+  { urls: 'stun:stun2.l.google.com:19302' },
+  // { urls: 'stun:stun3.l.google.com:19302' },
+  // { urls: 'stun:stun4.l.google.com:19302' },
+  // { urls: 'stun:global.stun.twilio.com:3478?transport=udp' },
+  // {
+  //   url: 'turn:numb.viagenie.ca',
+  //   credential: 'muazkh',
+  //   username: 'webrtc@live.com',
+  // },
+  // {
+  //   url: 'turn:192.158.29.39:3478?transport=udp',
+  //   credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+  //   username: '28224511:1379330808',
+  // },
+  // {
+  //   url: 'turn:turn.bistri.com:80',
+  //   credential: 'homeo',
+  //   username: 'homeo',
+  // },
+  // {
+  //   url: 'turn:turn.anyfirewall.com:443?transport=tcp',
+  //   credential: 'webrtc',
+  //   username: 'webrtc',
+  // },
+  {
+    url: 'turn:openrelay.metered.ca:80',
+    credential: 'openrelayproject',
+    username: 'openrelayproject',
+  },
+];
+
+function useDevices() {
+  const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
+
+  useEffect(() => {
+    navigator.mediaDevices.enumerateDevices().then((devices) => {
+      const uniqueDevices: MediaDeviceInfo[] = [];
+
+      const uniqueGroupIds = [];
+      devices.forEach((device) => {
+        if (!uniqueGroupIds.includes(device.groupId)) {
+          uniqueDevices.push(device);
+          uniqueGroupIds.push(device.groupId);
+        }
+      });
+
+      setDevices(uniqueDevices);
+    });
+  }, []);
+
+  // navigator.mediaDevices
+  //   .getUserMedia({
+  //     video: videoConstraints,
+  //     audio: true,
+  //   })
+  //   .then((localMediaStream: MediaStream) => {
+  //     setUserLocalStream(localMediaStream);
+  //   });
+
+  return devices;
+}
+
 // renderless component to manage a room and send data upward for other components
 //   - decoupled from sockets and other data, render if you want to join x room
 //   - unmount if you want to leave room
 //   - have event listeners specific to this room
 //   - take in new users that come into the room
-function Room({ conversation }: { conversation: MasterConversation }) {
+function Room({ conversation }: { conversation: MasterConversation; mediaStream?: MediaStream }) {
+  const { user } = useAuth();
+
   // have internal state to manage details of this "room"
 
   // ============== STREAMING ===============
 
   // handle incoming calls and accept calls and create objects for them
   useEffect(() => {
-    //
+    // ?will there be race condition where this room component is rendered but we don't have the latest
+    // ?list of tunedin folks and so we may just end up calling select few?
+    // ?in this case, start with initiating event to get all people in room first
+
+    if (conversation.tunedInUsers && conversation.tunedInUsers.length > 1) {
+      // going ahead and calling all of the other folks
+      const allOtherUserIds = conversation.tunedInUsers.filter(
+        (memberUserId) => memberUserId !== user._id.toString(),
+      );
+
+      // initiate listeners for all of them
+    }
   }, []);
 
   const handleJoinRoom = useCallback((roomId: string) => {
