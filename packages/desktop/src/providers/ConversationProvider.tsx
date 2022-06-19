@@ -367,21 +367,22 @@ const iceServers = [
   //   credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
   //   username: '28224511:1379330808',
   // },
-  // {
-  //   url: 'turn:turn.bistri.com:80',
-  //   credential: 'homeo',
-  //   username: 'homeo',
-  // },
+  {
+    url: 'turn:turn.bistri.com:80',
+    credential: 'homeo',
+    username: 'homeo',
+  },
+
   // {
   //   url: 'turn:turn.anyfirewall.com:443?transport=tcp',
   //   credential: 'webrtc',
   //   username: 'webrtc',
   // },
-  {
-    url: 'turn:openrelay.metered.ca:80',
-    credential: 'openrelayproject',
-    username: 'openrelayproject',
-  },
+  // {
+  //   url: 'turn:openrelay.metered.ca:80',
+  //   credential: 'openrelayproject',
+  //   username: 'openrelayproject',
+  // },
 ];
 
 function useDevices() {
@@ -471,7 +472,7 @@ function Room({
           const localPeerConnection = new Peer({
             initiator: true,
             stream: localMediaStream,
-            trickle: true, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times,
+            trickle: false, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times,
             config: {
               iceServers,
             },
@@ -508,6 +509,7 @@ function Room({
             setConversationMap((draft) => {
               if (draft[conversation._id.toString()].room[otherUserId]) {
                 draft[conversation._id.toString()].room[otherUserId].stream = remoteStream;
+
                 remoteStream.getTracks().forEach((track) => {
                   // TODO: add particular track to right place
                 });
@@ -569,7 +571,7 @@ function Room({
       const peerForMeAndNewbie = new Peer({
         initiator: false,
         stream: userLocalStream,
-        trickle: true, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times
+        trickle: false, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times
         config: {
           iceServers,
         },

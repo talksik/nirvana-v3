@@ -4,6 +4,7 @@ import { Socket, io } from 'socket.io-client';
 
 import toast from 'react-hot-toast';
 import useAuth from './AuthProvider';
+import { useUnmount } from 'react-use';
 
 interface ISocketProvider {
   $ws: Socket;
@@ -42,7 +43,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     [set$ws],
   );
 
-  useEffect(() => {
+  const connect = useCallback(() => {
     if (!jwtToken) {
       set$ws(undefined);
       toast.error('no jwt token!!!');
@@ -60,17 +61,20 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
 
     initiateSocketStabilityListeners(socketConnection);
     set$ws(socketConnection);
+  }, [initiateSocketStabilityListeners, jwtToken, set$ws]);
 
-    return () => {
-      socketConnection.disconnect();
-      socketConnection.removeAllListeners();
-    };
-  }, [set$ws, jwtToken, initiateSocketStabilityListeners]);
+  useEffect(() => {
+    connect();
+  }, [connect]);
+
+  useUnmount(() => {
+    $ws?.disconnect();
+    $ws?.removeAllListeners();
+  });
 
   const handleReconnect = useCallback(() => {
-    initiateSocketStabilityListeners($ws);
-    $ws.connect();
-  }, [$ws, initiateSocketStabilityListeners]);
+    connect();
+  }, [connect]);
 
   if (!$ws) {
     return (
