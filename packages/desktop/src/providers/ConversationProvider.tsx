@@ -447,6 +447,8 @@ function Room({
         audio: true,
       });
 
+      console.log(localMediaStream);
+
       setUserLocalStream(localMediaStream);
 
       // ?will there be race condition where this room component is rendered but we don't have the latest
@@ -459,8 +461,6 @@ function Room({
           (memberUserId) => memberUserId !== user._id.toString(),
         );
         toast.success('calling bunch of people');
-
-        setUserLocalStream(localMediaStream);
 
         // for each person, create peer object
         allOtherUserIds.forEach((otherUserId) => {
@@ -643,7 +643,7 @@ function Room({
 
       // find our local connection to this peer in the room contents
       setConversationMap((draft) => {
-        const localPeerForMasterAndMe = draft[res.lineId]?.room[res.lineId];
+        const localPeerForMasterAndMe = draft[res.lineId]?.room[res.masterUserId];
 
         if (localPeerForMasterAndMe) {
           localPeerForMasterAndMe.peer.signal(res.simplePeerSignal);
@@ -655,7 +655,7 @@ function Room({
       $ws.removeAllListeners(mastersAnswerReceivedChannelNameForRoom);
       $ws.removeAllListeners(someoneJoinedChannelNameForRoom);
     };
-  });
+  }, [userLocalStream]);
 
   // go through all of the peers and destroy and update conversation map
   useUnmount(() => {
