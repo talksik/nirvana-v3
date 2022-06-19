@@ -44,7 +44,7 @@ export function ConversationList() {
   const { conversationMap } = useConversations();
 
   const rendersCount = useRendersCount();
-  console.warn('RENDER COUNT | CONVERSATION LIST | ', rendersCount);
+  // console.warn('RENDER COUNT | CONVERSATION LIST | ', rendersCount);
 
   // don't actually dial, just show nirvana support there
   const handleQuickDialSupport = useCallback(() => {
@@ -153,7 +153,7 @@ export function ConversationRow({
   const { selectedConversation, selectConversation } = useConversations();
 
   const rendersCount = useRendersCount();
-  console.warn('RENDER COUNT | CONVERSATION LIST ROW | ', rendersCount);
+  // console.warn('RENDER COUNT | CONVERSATION LIST ROW | ', rendersCount);
 
   const handleSelectConversation = useCallback(() => {
     if (onClick) {

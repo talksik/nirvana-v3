@@ -18,7 +18,7 @@ export default function MainPanel() {
   // render room contents if there are people with video or other tracks
 
   const rendersCount = useRendersCount();
-  console.warn('RENDER COUNT | MAINPANEL | ', rendersCount);
+  // console.warn('RENDER COUNT | MAINPANEL | ', rendersCount);
 
   if (selectedConversation)
     return <ConversationDetails masterConversation={selectedConversation} />;

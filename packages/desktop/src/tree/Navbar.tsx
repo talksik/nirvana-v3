@@ -30,7 +30,7 @@ const Navbar = () => {
   );
 
   const rendersCount = useRendersCount();
-  console.warn('RENDER COUNT | NAVBAR | ', rendersCount);
+  // console.warn('RENDER COUNT | NAVBAR | ', rendersCount);
 
   return (
     <Stack
