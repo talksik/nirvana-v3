@@ -130,7 +130,7 @@ export default function InitializeWs(io: any) {
         const userSocketId = userIdsToSocketIds[req.userToCall];
 
         io.to(userSocketId).emit(
-          ServerResponseChannels.RTC_NEW_USER_JOINED,
+          `${ServerResponseChannels.RTC_NEW_USER_JOINED}:${req.lineId}`,
           new RtcNewUserJoinedResponse(userInfo.userId, req.lineId, req.simplePeerSignal),
         );
       });
@@ -143,7 +143,7 @@ export default function InitializeWs(io: any) {
           const userSocketId = userIdsToSocketIds[req.newbieUserId];
 
           io.to(userSocketId).emit(
-            ServerResponseChannels.RTC_RECEIVING_MASTER_ANSWER,
+            `${ServerResponseChannels.RTC_RECEIVING_MASTER_ANSWER}:${req.lineId}`,
             new RtcReceiveAnswerResponse(userInfo.userId, req.lineId, req.simplePeerSignal),
           );
         },

@@ -1,6 +1,9 @@
 import {
   ConnectToLineRequest,
+  RtcAnswerSomeoneRequest,
   RtcCallRequest,
+  RtcNewUserJoinedResponse,
+  RtcReceiveAnswerResponse,
   ServerRequestChannels,
   ServerResponseChannels,
   SomeoneConnectedResponse,
@@ -481,7 +484,7 @@ function Room({
                 if (draft[conversation._id.toString()]) {
                   draft[conversation._id.toString()].room = {
                     ...(draft[conversation._id.toString()].room ?? {}),
-                    otherUserId: { peer: localPeerConnection, isConnecting: true },
+                    [otherUserId]: { peer: localPeerConnection, isConnecting: true },
                   };
                 }
               });
@@ -536,6 +539,7 @@ function Room({
 
       return () => {
         // go through all peer connections and destroy them
+        // remove all room contents as well
         localPeersForRoom.forEach((peerConnection) => {
           peerConnection.destroy();
         });
@@ -548,6 +552,123 @@ function Room({
       localPeersForRoom.forEach((peerToClose) => peerToClose.destroy());
     };
   });
+
+  useEffectOnce(() => {
+    const localNewbiesForRoom: Peer[] = [];
+
+    const someoneJoinedChannelNameForRoom = `${
+      ServerResponseChannels.RTC_NEW_USER_JOINED
+    }:${conversation._id.toString()}`;
+    const mastersAnswerReceivedChannelNameForRoom = `${
+      ServerResponseChannels.RTC_RECEIVING_MASTER_ANSWER
+    }:${conversation._id.toString()}`;
+
+    $ws.on(someoneJoinedChannelNameForRoom, (res: RtcNewUserJoinedResponse) => {
+      toast.success('NEWBIE JOINED!!!');
+      console.log('someone calling me', res);
+
+      const peerForMeAndNewbie = new Peer({
+        initiator: false,
+        trickle: true, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times
+        config: {
+          iceServers,
+        },
+      });
+
+      peerForMeAndNewbie.signal(res.simplePeerSignal);
+
+      setConversationMap((draft) => {
+        if (draft[conversation._id.toString()]) {
+          draft[conversation._id.toString()].room = {
+            ...(draft[conversation._id.toString()].room ?? {}),
+            [res.userWhoCalled]: { peer: peerForMeAndNewbie, isConnecting: true },
+          };
+        }
+      });
+
+      peerForMeAndNewbie.on('signal', (signal) => {
+        console.log('sending an answer to the slave', res);
+
+        $ws.emit(
+          ServerRequestChannels.RTC_ANSWER_SOMEONE_FOR_LINE,
+          new RtcAnswerSomeoneRequest(res.userWhoCalled, res.lineId, signal),
+        );
+      });
+
+      peerForMeAndNewbie.on('stream', (remoteStream: MediaStream) => {
+        // globally updating conversation so that other views can render what they want
+        toast.success('got stream from remote, going to add to our ');
+
+        setConversationMap((draft) => {
+          if (draft[conversation._id.toString()].room[res.userWhoCalled]) {
+            draft[conversation._id.toString()].room[res.userWhoCalled].stream = remoteStream;
+            remoteStream.getTracks().forEach((track) => {
+              // TODO: add particular track to right place
+            });
+          }
+        });
+      });
+
+      peerForMeAndNewbie.on('connect', () => {
+        toast.success('successfully connected to another peer');
+        setConversationMap((draft) => {
+          if (draft[conversation._id.toString()].room[res.userWhoCalled]) {
+            draft[conversation._id.toString()].room[res.userWhoCalled].isConnecting = false;
+          }
+        });
+      });
+
+      peerForMeAndNewbie.on('track', (track, stream) => {
+        // TODO: add to room contents
+
+        toast('a peer added a track to a stream');
+      });
+
+      peerForMeAndNewbie.on('close', () => {
+        // the person will be removed from the tuned in list, but the connections here are decoupled from that flow
+        // we want to manage the room within the master conversation and remove it for ourselves
+
+        // TODO: update the map to remove the user and all contribution contens
+
+        toast.error('peer connection was closed');
+      });
+
+      peerForMeAndNewbie.on('error', (err) => {
+        console.error(err);
+        toast.error('there was a problem with the peer connection');
+      });
+
+      localNewbiesForRoom.push(peerForMeAndNewbie);
+    });
+
+    $ws.on(mastersAnswerReceivedChannelNameForRoom, (res: RtcReceiveAnswerResponse) => {
+      toast.success('MASTER gave me an answer!!!');
+
+      console.log('master gave me this answer: ', res);
+
+      // find our local connection to this peer in the room contents
+      setConversationMap((draft) => {
+        const localPeerForMasterAndMe = draft[res.lineId]?.room[res.lineId];
+
+        if (localPeerForMasterAndMe) {
+          localPeerForMasterAndMe.peer.signal(res.simplePeerSignal);
+        }
+      });
+    });
+
+    return () => {
+      $ws.removeAllListeners(mastersAnswerReceivedChannelNameForRoom);
+      $ws.removeAllListeners(someoneJoinedChannelNameForRoom);
+    };
+  });
+
+  // TODO: improved listener manager for each peer connection
+  const setPeerListeners = useCallback(
+    (peer) => {
+      //
+    },
+    [setConversationMap],
+  );
 
   // share audio to foreground conversation | either push to talk or toggle broadcasting
   const handleStartTalking = useCallback((record = false) => {
@@ -582,3 +703,9 @@ function Room({
 
   return null;
 }
+
+// ANOTHER APPROACH
+// have one hook used in the upper level
+// this hook renders multiple components for each room
+// each component for each room returns data for that room
+// this upper level rooms hook returns each room's data
