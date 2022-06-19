@@ -419,37 +419,6 @@ const iceServers = [
   // },
 ];
 
-function useDevices() {
-  const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
-
-  useEffect(() => {
-    navigator.mediaDevices.enumerateDevices().then((devices) => {
-      const uniqueDevices: MediaDeviceInfo[] = [];
-
-      const uniqueGroupIds = [];
-      devices.forEach((device) => {
-        if (!uniqueGroupIds.includes(device.groupId)) {
-          uniqueDevices.push(device);
-          uniqueGroupIds.push(device.groupId);
-        }
-      });
-
-      setDevices(uniqueDevices);
-    });
-  }, []);
-
-  // navigator.mediaDevices
-  //   .getUserMedia({
-  //     video: videoConstraints,
-  //     audio: true,
-  //   })
-  //   .then((localMediaStream: MediaStream) => {
-  //     setUserLocalStream(localMediaStream);
-  //   });
-
-  return devices;
-}
-
 // renderless component to manage a room and send data upward for other components
 //   - decoupled from sockets and other data, render if you want to join x room
 //   - unmount if you want to leave room

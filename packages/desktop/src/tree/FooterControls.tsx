@@ -44,6 +44,7 @@ import { SUPPORT_DISPLAY_NAME } from '../util/support';
 import { blueGrey } from '@mui/material/colors';
 import useAuth from '../providers/AuthProvider';
 import useConversations from '../providers/ConversationProvider';
+import useDevices from '../hooks/useDevices';
 import useSearch from '../providers/SearchProvider';
 import useZen from '../providers/ZenProvider';
 
@@ -242,8 +243,11 @@ export default function FooterControls() {
   );
 }
 
+const NO_DEVICE_SELECTION = 'NA';
+
 function UserSettingsDialog({ open, handleClose }: { handleClose: () => void; open: boolean }) {
   const { user, handleLogout } = useAuth();
+  const devices = useDevices();
 
   const { omniSearch } = useSearch();
   const handleQuickDialSupport = useCallback(() => {
@@ -289,15 +293,18 @@ function UserSettingsDialog({ open, handleClose }: { handleClose: () => void; op
 
           <FormControl fullWidth>
             <InputLabel>Microphone</InputLabel>
-            <Select value={'Macbook Pro High Definition'} label="Microphone">
-              <MenuItem value="">
+            <Select label="Microphone">
+              <MenuItem value={NO_DEVICE_SELECTION}>
                 <em>None</em>
               </MenuItem>
-              <MenuItem value={'Macbook Pro High Definition'}>
-                {'Macbook Pro High Definition'}
-              </MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem>
+              {devices.audioInputDevices.map((deviceInfo) => (
+                <MenuItem
+                  key={`micDeviceSelection-${deviceInfo.deviceId}`}
+                  value={deviceInfo.deviceId}
+                >
+                  {deviceInfo.label}
+                </MenuItem>
+              ))}
             </Select>
             <FormHelperText>
               Your speaker selection should be done on your computer status or taskbar. Please
@@ -308,25 +315,28 @@ function UserSettingsDialog({ open, handleClose }: { handleClose: () => void; op
 
           <FormControl fullWidth>
             <InputLabel>Video</InputLabel>
-            <Select value={'HD Macbook Pro'} label="Audio">
-              <MenuItem value="">
+            <Select label="Audio">
+              <MenuItem value={NO_DEVICE_SELECTION}>
                 <em>None</em>
               </MenuItem>
-              <MenuItem value={'HD Macbook Pro'}>{'HD Macbook Pro'}</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem>
+              {devices.videoDevices.map((deviceInfo) => (
+                <MenuItem
+                  key={`videoDeviceSelection-${deviceInfo.deviceId}`}
+                  value={deviceInfo.deviceId}
+                >
+                  {deviceInfo.label}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
 
           <FormControl fullWidth disabled>
             <InputLabel>Screen</InputLabel>
-            <Select value={'Chrome browser - stack overflow'} label="Audio">
-              <MenuItem value="">
+            <Select value={'coming soon'} label="Audio">
+              <MenuItem value={NO_DEVICE_SELECTION}>
                 <em>None</em>
               </MenuItem>
-              <MenuItem value={'Chrome browser - stack overflow'}>
-                {'Chrome browser - stack overflow'}
-              </MenuItem>
+              <MenuItem value={'coming soon'}>{'coming soon'}</MenuItem>
               <MenuItem value={20}>Twenty</MenuItem>
               <MenuItem value={30}>Thirty</MenuItem>
             </Select>
