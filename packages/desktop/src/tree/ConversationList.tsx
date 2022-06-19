@@ -67,6 +67,24 @@ export function ConversationList() {
       inboxConversations.push(currentMasterConversation);
     });
 
+    // sort each list
+    inboxConversations.sort((a, b) => {
+      if (a.temporaryOverrideSort) {
+        return 1;
+      }
+
+      if (b.temporaryOverrideSort) {
+        return -1;
+      }
+
+      // sort by which ones have new activity for me
+      // then sort by last activity date
+    });
+
+    priorityConversations.sort((a, b) => {
+      return b.createdDate.getTime() - a.createdDate.getTime();
+    });
+
     return [priorityConversations, inboxConversations];
   }, [conversationMap, user]);
 
