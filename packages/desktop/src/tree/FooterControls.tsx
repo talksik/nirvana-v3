@@ -15,7 +15,16 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { FiHeadphones, FiHelpCircle, FiLink, FiLogOut, FiSun } from 'react-icons/fi';
+import {
+  FiActivity,
+  FiAirplay,
+  FiHeadphones,
+  FiHelpCircle,
+  FiLink,
+  FiLogOut,
+  FiSun,
+  FiVideoOff,
+} from 'react-icons/fi';
 import React, { useCallback } from 'react';
 
 import ConversationLabel from '../subcomponents/ConversationLabel';
@@ -157,6 +166,17 @@ export default function FooterControls() {
                 ))}
               </AvatarGroup>
 
+              <Tooltip title="Mark priority or not!">
+                <IconButton
+                  sx={{
+                    color: 'white',
+                  }}
+                  size="small"
+                >
+                  <FiActivity />
+                </IconButton>
+              </Tooltip>
+
               <Tooltip title="Paste image or link!">
                 <IconButton
                   sx={{
@@ -165,6 +185,28 @@ export default function FooterControls() {
                   size="small"
                 >
                   <FiLink />
+                </IconButton>
+              </Tooltip>
+
+              <Tooltip title="Show screen!">
+                <IconButton
+                  sx={{
+                    color: 'white',
+                  }}
+                  size="small"
+                >
+                  <FiAirplay />
+                </IconButton>
+              </Tooltip>
+
+              <Tooltip title="Show video!">
+                <IconButton
+                  sx={{
+                    color: 'white',
+                  }}
+                  size="small"
+                >
+                  <FiVideoOff />
                 </IconButton>
               </Tooltip>
 
