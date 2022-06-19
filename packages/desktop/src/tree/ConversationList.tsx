@@ -114,6 +114,14 @@ export function ConversationList() {
           </ListSubheader>
         }
       >
+        {masterConversations[0].length === 0 && (
+          <Stack direction={'column'} alignItems="center">
+            <Typography align="center" variant="caption">
+              Mark conversations as priority to hear them across the hall.
+            </Typography>
+          </Stack>
+        )}
+
         {masterConversations[0].map((currentConversation, index) => (
           <ConversationRow
             key={`${currentConversation._id.toString()}-priorityConvoList`}

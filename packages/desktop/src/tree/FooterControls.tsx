@@ -1,15 +1,25 @@
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Avatar,
   AvatarGroup,
   Box,
   Button,
+  Checkbox,
   Container,
+  Dialog,
   Divider,
   Fab,
+  FormControl,
+  FormControlLabel,
+  FormHelperText,
   IconButton,
+  InputLabel,
   ListItemIcon,
   Menu,
   MenuItem,
+  Select,
   Stack,
   Switch,
   Tooltip,
@@ -18,12 +28,14 @@ import {
 import {
   FiActivity,
   FiAirplay,
+  FiChevronDown,
   FiHeadphones,
   FiHelpCircle,
   FiLink,
   FiLogOut,
   FiSun,
   FiVideoOff,
+  FiX,
 } from 'react-icons/fi';
 import React, { useCallback } from 'react';
 
@@ -249,6 +261,97 @@ export default function FooterControls() {
           <Typography color="warning">Logout</Typography>
         </MenuItem>
       </Menu>
+
+      <UserSettingsDialog open={true} handleClose={() => console.log('hi')} />
     </Box>
+  );
+}
+
+function UserSettingsDialog({ open, handleClose }: { handleClose: () => void; open: boolean }) {
+  return (
+    <Dialog maxWidth={'sm'} open={open} fullWidth onClose={handleClose}>
+      <Container
+        maxWidth={false}
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: 2,
+          flex: 1,
+          background: blueGrey[50],
+          position: 'relative',
+        }}
+      >
+        <IconButton sx={{ position: 'absolute', top: 10, right: 10 }} onClick={handleClose}>
+          <FiX />
+        </IconButton>
+
+        <Container
+          maxWidth="sm"
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            p: 10,
+            gap: 2,
+          }}
+        >
+          <Stack flexDirection={'row'} justifyContent={'space-between'}>
+            <Typography variant="h6">Media Settings</Typography>
+
+            <Button variant={'text'} color={'secondary'}>
+              Unplug everything
+            </Button>
+          </Stack>
+
+          <Divider />
+
+          <FormControl fullWidth>
+            <InputLabel>Microphone</InputLabel>
+            <Select value={'Macbook Pro High Definition'} label="Microphone">
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              <MenuItem value={'Macbook Pro High Definition'}>
+                {'Macbook Pro High Definition'}
+              </MenuItem>
+              <MenuItem value={20}>Twenty</MenuItem>
+              <MenuItem value={30}>Thirty</MenuItem>
+            </Select>
+            <FormHelperText>
+              Your speaker selection should be done on your computer status or taskbar. Please
+              select distinct speaker and microphone to avoid distortion when you have bluetooth
+              device connected.
+            </FormHelperText>
+          </FormControl>
+
+          <FormControl fullWidth>
+            <InputLabel>Video</InputLabel>
+            <Select value={'HD Macbook Pro'} label="Audio">
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              <MenuItem value={'HD Macbook Pro'}>{'HD Macbook Pro'}</MenuItem>
+              <MenuItem value={20}>Twenty</MenuItem>
+              <MenuItem value={30}>Thirty</MenuItem>
+            </Select>
+          </FormControl>
+
+          <FormControl fullWidth>
+            <InputLabel>Screen</InputLabel>
+            <Select value={'Chrome browser - stack overflow'} label="Audio">
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              <MenuItem value={'Chrome browser - stack overflow'}>
+                {'Chrome browser - stack overflow'}
+              </MenuItem>
+              <MenuItem value={20}>Twenty</MenuItem>
+              <MenuItem value={30}>Thirty</MenuItem>
+            </Select>
+          </FormControl>
+        </Container>
+      </Container>
+    </Dialog>
   );
 }
