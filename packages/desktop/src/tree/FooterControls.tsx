@@ -37,7 +37,7 @@ import {
   FiVideoOff,
   FiX,
 } from 'react-icons/fi';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import ConversationLabel from '../subcomponents/ConversationLabel';
 import { SUPPORT_DISPLAY_NAME } from '../util/support';
@@ -50,22 +50,21 @@ import useZen from '../providers/ZenProvider';
 export default function FooterControls() {
   const { handleFlowState } = useZen();
 
-  const { omniSearch } = useSearch();
   const { selectedConversation } = useConversations();
   const { user, handleLogout } = useAuth();
 
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-  const handleClickProfileMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleCloseProfileMenu = () => {
-    setAnchorEl(null);
-  };
+  const [openUserSettings, setOpenUserSettings] = useState<boolean>(false);
 
-  const handleQuickDialSupport = useCallback(() => {
-    omniSearch(SUPPORT_DISPLAY_NAME);
-  }, [omniSearch]);
+  const handleClickProfile = useCallback(
+    (event: React.MouseEvent<HTMLElement>) => {
+      setOpenUserSettings(true);
+    },
+    [setOpenUserSettings],
+  );
+
+  const handleCloseUserSettings = useCallback(() => {
+    setOpenUserSettings(false);
+  }, [setOpenUserSettings]);
 
   return (
     <Box
@@ -96,7 +95,7 @@ export default function FooterControls() {
       >
         <Stack spacing={1} direction={'row'} alignItems={'center'}>
           <IconButton
-            onClick={handleClickProfileMenu}
+            onClick={handleClickProfile}
             size="small"
             sx={{ borderRadius: 1 }}
             aria-controls={open ? 'account-menu' : undefined}
@@ -238,36 +237,20 @@ export default function FooterControls() {
         )}
       </Stack>
 
-      <Menu
-        anchorEl={anchorEl}
-        id="account-menu"
-        open={open}
-        onClose={handleCloseProfileMenu}
-        transformOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-        anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
-      >
-        <MenuItem onClick={handleQuickDialSupport}>
-          <ListItemIcon>
-            <FiHelpCircle />
-          </ListItemIcon>
-          <Typography>Help</Typography>
-        </MenuItem>
-
-        <Divider />
-        <MenuItem onClick={handleLogout}>
-          <ListItemIcon>
-            <FiLogOut />
-          </ListItemIcon>
-          <Typography color="warning">Logout</Typography>
-        </MenuItem>
-      </Menu>
-
-      <UserSettingsDialog open={true} handleClose={() => console.log('hi')} />
+      <UserSettingsDialog open={openUserSettings} handleClose={handleCloseUserSettings} />
     </Box>
   );
 }
 
 function UserSettingsDialog({ open, handleClose }: { handleClose: () => void; open: boolean }) {
+  const { user, handleLogout } = useAuth();
+
+  const { omniSearch } = useSearch();
+  const handleQuickDialSupport = useCallback(() => {
+    omniSearch(SUPPORT_DISPLAY_NAME);
+    handleClose();
+  }, [omniSearch, handleClose]);
+
   return (
     <Dialog maxWidth={'sm'} open={open} fullWidth onClose={handleClose}>
       <Container
@@ -304,8 +287,6 @@ function UserSettingsDialog({ open, handleClose }: { handleClose: () => void; op
             </Button>
           </Stack>
 
-          <Divider />
-
           <FormControl fullWidth>
             <InputLabel>Microphone</InputLabel>
             <Select value={'Macbook Pro High Definition'} label="Microphone">
@@ -337,7 +318,7 @@ function UserSettingsDialog({ open, handleClose }: { handleClose: () => void; op
             </Select>
           </FormControl>
 
-          <FormControl fullWidth>
+          <FormControl fullWidth disabled>
             <InputLabel>Screen</InputLabel>
             <Select value={'Chrome browser - stack overflow'} label="Audio">
               <MenuItem value="">
@@ -350,6 +331,34 @@ function UserSettingsDialog({ open, handleClose }: { handleClose: () => void; op
               <MenuItem value={30}>Thirty</MenuItem>
             </Select>
           </FormControl>
+
+          <Divider />
+
+          <Stack flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'}>
+            <Typography variant="subtitle2">Questions?</Typography>
+
+            <Button variant={'text'}>Resources</Button>
+          </Stack>
+
+          <Divider />
+
+          <Stack flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'}>
+            <Typography variant="subtitle2">Help, feedback, and more?</Typography>
+
+            <Button variant={'text'} onClick={handleQuickDialSupport}>
+              Contact Us
+            </Button>
+          </Stack>
+
+          <Divider />
+
+          <Stack flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'}>
+            <Typography variant="subtitle2">Account</Typography>
+
+            <Button variant={'text'} onClick={handleLogout} color={'error'}>
+              log out
+            </Button>
+          </Stack>
         </Container>
       </Container>
     </Dialog>
