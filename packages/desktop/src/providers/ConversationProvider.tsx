@@ -7,6 +7,7 @@ import {
   ServerRequestChannels,
   ServerResponseChannels,
   SomeoneConnectedResponse,
+  SomeoneDisconnectedResponse,
   SomeoneTunedResponse,
   SomeoneUntunedFromLineResponse,
   TuneToLineRequest,
@@ -133,6 +134,26 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
       },
     );
   }, [$ws, setConversationMap]);
+
+  // remove them from the line connected list and tuned list if they are there
+  $ws.on(
+    ServerResponseChannels.SOMEONE_DISCONNECTED_FROM_LINE,
+    (res: SomeoneDisconnectedResponse) => {
+      setConversationMap((draft) => {
+        if (!draft[res.lineId]) {
+          toast.error('there was a problem updating rooms!!!');
+          return;
+        }
+
+        draft[res.lineId].connectedUserIds = draft[res.lineId].connectedUserIds?.filter(
+          (userId) => userId !== res.userId,
+        );
+        draft[res.lineId].tunedInUsers = draft[res.lineId].tunedInUsers?.filter(
+          (userId) => userId !== res.userId,
+        );
+      });
+    },
+  );
 
   // add the conversation to the conversation map/client side cache
   // has implications on realtime listening and also the ui on whether or not it's shown
