@@ -1,5 +1,7 @@
+import Conversation, { ConversationMember } from '@nirvana/core/models/conversation.model';
+
 import { ContentBlock } from '@nirvana/core/models/content.model';
-import Conversation from '@nirvana/core/models/conversation.model';
+import Peer from 'simple-peer';
 import User from '@nirvana/core/models/user.model';
 
 export type MasterConversation = Conversation & {
@@ -9,6 +11,17 @@ export type MasterConversation = Conversation & {
   // allows client side to have this pushed up in the list and can uncheck it once user is done with this
   // if action is take, normal ordering should take place with database upserts
   temporaryOverrideSort?: boolean;
+
+  room?: {
+    [userId: string]: {
+      peer: Peer;
+      stream?: MediaStream;
+      tracks?: MediaStreamTrack[];
+    };
+  };
+
+  // all of audio clips, links, media, etc.
+  content?: ContentBlock[];
 };
 
 export type ConversationMap = {

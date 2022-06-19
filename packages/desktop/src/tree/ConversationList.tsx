@@ -37,6 +37,8 @@ import useTerminal from './Terminal';
  * @returns
  */
 export function ConversationList() {
+  const { user } = useAuth();
+
   const { omniSearch } = useSearch();
 
   const { conversationMap } = useConversations();
@@ -48,6 +50,25 @@ export function ConversationList() {
   const handleQuickDialSupport = useCallback(() => {
     omniSearch(SUPPORT_DISPLAY_NAME);
   }, [omniSearch]);
+
+  const masterConversations = useMemo(() => {
+    const priorityConversations: MasterConversation[] = [];
+    const inboxConversations: MasterConversation[] = [];
+
+    Object.values(conversationMap).forEach((currentMasterConversation) => {
+      const personalConvoMember = currentMasterConversation.members.find(
+        (mem) => mem._id.toString() === user._id.toString(),
+      );
+      if (personalConvoMember && personalConvoMember.memberState === 'priority') {
+        priorityConversations.push(currentMasterConversation);
+
+        return;
+      }
+      inboxConversations.push(currentMasterConversation);
+    });
+
+    return [priorityConversations, inboxConversations];
+  }, [conversationMap, user]);
 
   if (Object.keys(conversationMap).length === 0) {
     return (

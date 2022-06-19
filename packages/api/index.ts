@@ -42,7 +42,6 @@ const server = app.listen(PORT, () =>
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const io = require('socket.io')(server, {
-  // todo: add authentication
   cors: {
     origin: '*',
   },

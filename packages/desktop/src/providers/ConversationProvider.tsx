@@ -27,6 +27,34 @@ import useAuth from './AuthProvider';
 import { useImmer } from 'use-immer';
 import useSockets from './SocketProvider';
 
+// responsible for managing devices, managing streams
+// initiating calls, managing incoming calls
+// joining room
+// leaving room
+// playing audio
+// handling device switching
+// handling muting and unmuting
+// showing when there are problems
+function useCommunications() {
+  const { $ws } = useSockets();
+
+  useEffect(() => {
+    // select initial devices and create initial stream
+  }, []);
+
+  // go and create connection with everyone already here
+  const handleJoinRoom = useCallback((peopleAlreadyHere: string[]) => {
+    // create n peer objects
+    // for each
+    //    - create a signal
+    //    - send signal to the other person
+    //    - return peer object
+  }, []);
+
+  return { handleJoinRoom };
+}
+
+// responsible for firing socket events from the local client
 function useSocketFire() {
   const { $ws } = useSockets();
 
@@ -39,8 +67,6 @@ function useSocketFire() {
 
   const handleTuneIntoLine = useCallback(
     (lineId: string) => {
-      // todo: use a connector to call the people in this line as this is me joining this room
-
       $ws.emit(ServerRequestChannels.TUNE_INTO_LINE, new TuneToLineRequest(lineId));
     },
     [$ws],
@@ -83,6 +109,12 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
   const { $ws } = useSockets();
   const { handleConnectToLine, handleTuneIntoLine, handleUntuneFromLine } = useSocketFire();
 
+  // fetch conversations
+  useEffect(() => {
+    doFetch();
+  }, [doFetch]);
+
+  // conversation socket listeners
   useEffect(() => {
     $ws.on(ServerResponseChannels.SOMEONE_CONNECTED_TO_LINE, (res: SomeoneConnectedResponse) => {
       setConversationMap((draft) => {
@@ -123,10 +155,6 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
     );
   }, [$ws, setConversationMap]);
 
-  useEffect(() => {
-    doFetch();
-  }, [doFetch]);
-
   // add the conversation to the conversation map/client side cache
   // has implications on realtime listening and also the ui on whether or not it's shown
   const handleAddConversationCache = useCallback(
@@ -141,13 +169,15 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
 
       handleConnectToLine(conversation._id.toString());
 
+      // if it's in my priority list, tune into it automatically
       const currMemberForConversation = conversation.members.find(
         (mem) => mem.email === user.email,
       );
-
       if (currMemberForConversation && currMemberForConversation.memberState === 'priority') {
         handleTuneIntoLine(conversation._id.toString());
       }
+
+      // todo : if it's a
     },
     [setConversationMap, handleConnectToLine, handleTuneIntoLine, user],
   );
@@ -232,8 +262,7 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
       handleTuneIntoLine,
     ],
   );
-
-  // temporary fix for updated conversation content not being surfaced
+  // !temporary fix for updated conversation content not being surfaced
   // as the map value updates
   useEffect(() => {
     if (selectedConversation) {
@@ -241,6 +270,7 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
     }
   }, [conversationMap, selectedConversation, setSelectedConversation]);
 
+  // handling quick dial or creating a conversation
   const handleStartConversation = useCallback(
     async (otherUsers: User[], conversationName?: string) => {
       try {
@@ -292,8 +322,47 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
     [selectConversation],
   );
 
-  // todo: open up a handler for children
-  // to refetch all conversatinos or search for a particular conversation and add it to the list of conversations
+  // ============== STREAMING ===============
+  // handle incoming calls and accept calls and create objects for them
+  useEffect(() => {
+    //
+  }, []);
+
+  const handleJoinRoom = useCallback(
+    (roomId: string) => {
+      // call up folks and then have listeners for the peer connection objects that we created
+      //   such as when peer connection closes, we want to remove from our list of peers for such conversation
+      //   error handler as well for the peer connection
+      // rest endpoint to get all of the folks in a certain room
+    },
+    [setConversationMap, $ws],
+  );
+
+  const handleLeaveRoom = useCallback(() => {
+    // untune from line
+    // destroy peer connections
+  }, []);
+
+  // share audio to foreground conversation | either push to talk or toggle broadcasting
+  const handleStartTalking = useCallback((record = false) => {
+    // if record, then start recording
+    // add stream if not there for this peer connection or just add track to stream
+  }, []);
+
+  const handleStopTalking = useCallback(() => {
+    // stop recording if was recording
+    // stop sharing audio | maybe stop track to avoid stereo distortion
+  }, []);
+
+  const handleShareVideo = useCallback(() => {
+    // add track and/or stream of video to the peer connections for currently selected room
+  }, []);
+
+  const handleShareScreen = useCallback(() => {
+    // add track and/or stream of screen to the peer connections for currently selected room
+  }, []);
+
+  // ============= END OF STREAMING MODULE ========
 
   if (fetchState.error) {
     return (
