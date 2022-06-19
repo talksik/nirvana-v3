@@ -31,7 +31,12 @@ export class ConnectToLineRequest {
   constructor(public lineId: string) {}
 }
 export class SomeoneConnectedResponse {
-  constructor(public lineId: string, public userId: string, public allUsers: string[]) {}
+  constructor(
+    public lineId: string,
+    public userId: string,
+    public allConnectedUsers: string[],
+    public allTunedUsers: string[],
+  ) {}
 }
 
 export class SomeoneDisconnectedResponse {

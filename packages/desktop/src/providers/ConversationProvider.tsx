@@ -101,7 +101,8 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
           return;
         }
 
-        draft[res.lineId].connectedUserIds = res.allUsers;
+        draft[res.lineId].connectedUserIds = res.allConnectedUsers;
+        draft[res.lineId].tunedInUsers = res.allTunedUsers;
       });
     });
 

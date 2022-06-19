@@ -70,18 +70,28 @@ export default function InitializeWs(io: any) {
       socket.on(ServerRequestChannels.CONNECT_TO_LINE, (req: ConnectToLineRequest) => {
         // add this user to the room
 
-        const roomName = `connectedLine:${req.lineId}`;
-        socket.join(roomName);
+        const connectedRoomName = `connectedLine:${req.lineId}`;
+        const tunedRoomName = `tunedLine:${req.lineId}`;
+        socket.join(connectedRoomName);
 
         console.log(`${socket.id} user CONNECTED room for line ${Object.keys(socket.rooms)}`);
 
-        const clientUserIdsInRoom = [...(io.sockets.adapter.rooms.get(roomName) ?? [])].map(
-          (otherUserSocketId: string) => socketIdsToUserIds[otherUserSocketId],
-        );
+        const clientUserIdsInConnectedRoom = [
+          ...(io.sockets.adapter.rooms.get(connectedRoomName) ?? []),
+        ].map((otherUserSocketId: string) => socketIdsToUserIds[otherUserSocketId]);
 
-        io.in(roomName).emit(
+        const clientUserIdsInTunedRoom = [
+          ...(io.sockets.adapter.rooms.get(tunedRoomName) ?? []),
+        ].map((otherUserSocketId: string) => socketIdsToUserIds[otherUserSocketId]);
+
+        io.in(connectedRoomName).emit(
           ServerResponseChannels.SOMEONE_CONNECTED_TO_LINE,
-          new SomeoneConnectedResponse(req.lineId, userInfo.userId, clientUserIdsInRoom),
+          new SomeoneConnectedResponse(
+            req.lineId,
+            userInfo.userId,
+            clientUserIdsInConnectedRoom,
+            clientUserIdsInTunedRoom,
+          ),
         );
       });
 
