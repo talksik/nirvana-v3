@@ -1,3 +1,4 @@
+import { Button, Container, Typography } from '@mui/material';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { Socket, io } from 'socket.io-client';
 
@@ -73,14 +74,27 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
 
   if (!$ws) {
     return (
-      <div className="h-screen w-screen justify-center items-center bg-white flex flex-col">
-        <span className="text-gray-400">
+      <Container
+        maxWidth={false}
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: 2,
+          flex: 1,
+          background: 'white',
+        }}
+      >
+        <Typography variant="caption" align="center">
           {
             "Please wait for a solid connection. If that doesn't work, please click below or restart the application."
           }
-        </span>
-        <button onClick={handleReconnect}>Reconnect</button>
-      </div>
+        </Typography>
+        <Button variant={'text'} onClick={handleReconnect}>
+          reconnect
+        </Button>
+      </Container>
     );
   }
 
