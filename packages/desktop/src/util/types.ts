@@ -16,9 +16,12 @@ export type MasterConversation = Conversation & {
     [userId: string]: {
       peer: Peer;
       stream?: MediaStream;
-      tracks?: MediaStreamTrack[];
+      audioTrack?: MediaStreamTrack;
+      videoTrack?: MediaStreamTrack;
+      screenTrack?: MediaStreamTrack;
     };
   };
+  isConnectingToRoom?: boolean;
 
   // all of audio clips, links, media, etc.
   content?: ContentBlock[];

@@ -1,5 +1,6 @@
 import {
   ConnectToLineRequest,
+  RtcCallRequest,
   ServerRequestChannels,
   ServerResponseChannels,
   SomeoneConnectedResponse,
@@ -11,20 +12,21 @@ import {
 import Conversation, { MemberState } from '@nirvana/core/models/conversation.model';
 import { ConversationMap, MasterConversation } from '../util/types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Updater, useImmer } from 'use-immer';
 import {
   checkIfOnOnOneExists,
   createConversation,
   getConversationById,
   getConversations,
 } from '../api/NirvanaApi';
+import { useAsyncFn, useEffectOnce } from 'react-use';
 
 import CreateConversationRequest from '@nirvana/core/requests/CreateConversationRequest.request';
+import Peer from 'simple-peer';
 import { Typography } from '@mui/material';
 import User from '@nirvana/core/models/user.model';
 import toast from 'react-hot-toast';
-import { useAsyncFn } from 'react-use';
 import useAuth from './AuthProvider';
-import { useImmer } from 'use-immer';
 import useSockets from './SocketProvider';
 
 // responsible for firing socket events from the local client
@@ -326,6 +328,7 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
       {userTunedInConversations.map((tunedConversation) => (
         <Room
           key={`streamRoom-${tunedConversation._id.toString()}`}
+          setConversationMap={setConversationMap}
           conversation={tunedConversation}
         />
       ))}
@@ -337,13 +340,11 @@ export default function useConversations() {
   return React.useContext(ConversationContext);
 }
 
-const videoConstraints = false;
-
-// {
-//   frameRate: 30,
-//   width: { max: 100 },
-//   height: { max: 200 },
-// };
+const videoConstraints = {
+  frameRate: 15,
+  width: { max: 100 },
+  height: { max: 200 },
+};
 
 const iceServers = [
   // { urls: 'stun:stun.l.google.com:19302' },
@@ -416,15 +417,25 @@ function useDevices() {
 //   - unmount if you want to leave room
 //   - have event listeners specific to this room
 //   - take in new users that come into the room
-function Room({ conversation }: { conversation: MasterConversation; mediaStream?: MediaStream }) {
+function Room({
+  conversation,
+  setConversationMap,
+}: {
+  conversation: MasterConversation;
+  mediaStream?: MediaStream;
+  setConversationMap: Updater<ConversationMap>;
+}) {
   const { user } = useAuth();
+  const { $ws } = useSockets();
 
   // have internal state to manage details of this "room"
 
   // ============== STREAMING ===============
 
   // handle incoming calls and accept calls and create objects for them
-  useEffect(() => {
+  useEffectOnce(() => {
+    const localPeersForRoom: Peer[] = [];
+
     // ?will there be race condition where this room component is rendered but we don't have the latest
     // ?list of tunedin folks and so we may just end up calling select few?
     // ?in this case, start with initiating event to get all people in room first
@@ -434,10 +445,98 @@ function Room({ conversation }: { conversation: MasterConversation; mediaStream?
       const allOtherUserIds = conversation.tunedInUsers.filter(
         (memberUserId) => memberUserId !== user._id.toString(),
       );
+      toast.success('calling bunch of people');
 
-      // initiate listeners for all of them
+      navigator.mediaDevices
+        .getUserMedia({ video: videoConstraints, audio: true })
+        .then((localMediaStream: MediaStream) => {
+          // for each person, create peer object
+          allOtherUserIds.forEach((otherUserId) => {
+            const connectingToast = toast.loading('calling peer for a snappy experience');
+
+            // ========= PEER CREATION =============
+            // make sure this peer gets destroyed when it's time to remove this listener
+            const localPeerConnection = new Peer({
+              initiator: true,
+              stream: localMediaStream,
+              trickle: true, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times,
+              config: {
+                iceServers,
+              },
+            });
+
+            // ========= PEER EVENT HANDLERS =============
+            localPeerConnection.on('signal', (signal) => {
+              console.log('have a signal to make call to someone ');
+
+              $ws.emit(
+                ServerRequestChannels.RTC_CALL_SOMEONE_FOR_LINE,
+                new RtcCallRequest(otherUserId, conversation._id.toString(), signal),
+              );
+
+              toast.dismiss(connectingToast);
+
+              // notifying globally that we are in the process now
+              setConversationMap((draft) => {
+                if (draft[conversation._id.toString()]) {
+                  draft[conversation._id.toString()].room = {
+                    ...(draft[conversation._id.toString()].room ?? {}),
+                    otherUserId: { peer: localPeerConnection },
+                  };
+                }
+                draft[conversation._id.toString()].isConnectingToRoom = true;
+              });
+            });
+
+            localPeerConnection.on('stream', (remoteStream: MediaStream) => {
+              // globally updating conversation so that other views can render what they want
+              setConversationMap((draft) => {
+                if (draft[conversation._id.toString()].room[otherUserId]) {
+                  toast.success('got stream from remote, going to add to our ');
+                  draft[conversation._id.toString()].room[otherUserId].stream = remoteStream;
+                  remoteStream.getTracks().forEach((track) => {
+                    // TODO: add particular track to right place
+                  });
+                }
+              });
+            });
+
+            localPeerConnection.on('connect', () => {
+              toast.success('successfully connected to another peer');
+            });
+
+            localPeerConnection.on('track', (track, stream) => {
+              // TODO: add to room contents
+
+              toast('a peer added a track to a stream');
+            });
+
+            localPeerConnection.on('close', () => {
+              // the person will be removed from the tuned in list, but the connections here are decoupled from that flow
+              // we want to manage the room within the master conversation and remove it for ourselves
+
+              // TODO: update the map to remove the user and remove
+
+              toast.error('peer connection was closed');
+            });
+
+            localPeerConnection.on('error', (err) => {
+              console.error(err);
+              toast.error('there was a problem with the peer connection');
+            });
+
+            localPeersForRoom.push(localPeerConnection);
+          });
+        });
+
+      return () => {
+        // go through all peer connections and destroy them
+        localPeersForRoom.forEach((peerConnection) => {
+          peerConnection.destroy();
+        });
+      };
     }
-  }, []);
+  });
 
   const handleJoinRoom = useCallback((roomId: string) => {
     // call up folks and then have listeners for the peer connection objects that we created
