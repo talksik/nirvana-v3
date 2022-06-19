@@ -125,26 +125,6 @@ export default function InitializeWs(io: any) {
         );
       });
 
-      // TODO: use same pattern as tuning and untuning and send updated fresh list of current broadcasters but using another namespace/room for broadcasters in a line
-      /** BROADCAST UPDATE | tell all connected, not just tuned into, that there is an update to someone broadcasting */
-      socket.on(ServerRequestChannels.BROADCAST_TO_LINE, (req: StartBroadcastingRequest) => {
-        const roomName = `connectedLine:${req.lineId}`;
-
-        io.in(roomName).emit(
-          ServerResponseChannels.SOMEONE_STARTED_BROADCASTING,
-          new UserStartedBroadcastingResponse(req.lineId, userInfo.userId),
-        );
-      });
-
-      socket.on(ServerRequestChannels.STOP_BROADCAST_TO_LINE, (req: StopBroadcastingRequest) => {
-        const roomName = `connectedLine:${req.lineId}`;
-
-        io.in(roomName).emit(
-          ServerResponseChannels.SOMEONE_STOPPED_BROADCASTING,
-          new UserStoppedBroadcastingResponse(req.lineId, userInfo.userId),
-        );
-      });
-
       socket.on(ServerRequestChannels.RTC_CALL_SOMEONE_FOR_LINE, (req: RtcCallRequest) => {
         console.log('slave calling a master');
 

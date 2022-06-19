@@ -8,9 +8,6 @@ export enum ServerRequestChannels {
   TUNE_INTO_LINE = 'TUNE_INTO_LINE', // pass in if user wants to toggle/persist? or is this just temporary?
   UNTUNE_FROM_LINE = 'UNTUNE_FROM_LINE',
 
-  BROADCAST_TO_LINE = 'BROADCAST_TO_LINE',
-  STOP_BROADCAST_TO_LINE = 'STOP_BROADCAST_TO_LINE',
-
   RTC_CALL_SOMEONE_FOR_LINE = 'RTC_CALL_SOMEONE_FOR_LINE',
   RTC_ANSWER_SOMEONE_FOR_LINE = 'RTC_ANSWER_SOMEONE_FOR_LINE',
 
@@ -23,9 +20,6 @@ export enum ServerResponseChannels {
 
   SOMEONE_TUNED_INTO_LINE = 'SOMEONE_TUNED_INTO_LINE', // allows all current tuned in folks to create peer objects
   SOMEONE_UNTUNED_FROM_LINE = 'SOMEONE_UNTUNED_FROM_LINE', // discard peer
-
-  SOMEONE_STARTED_BROADCASTING = 'SOMEONE_STARTED_BROADCASTING', //show their stream tracks
-  SOMEONE_STOPPED_BROADCASTING = 'SOMEONE_STOPPED_BROADCASTING', // stop showing their stream tracks
 
   RTC_NEW_USER_JOINED = 'RTC_NEW_USER_JOINED',
   RTC_RECEIVING_MASTER_ANSWER = 'RTC_RECEIVING_MASTER_ANSWER',
