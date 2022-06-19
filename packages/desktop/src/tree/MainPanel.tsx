@@ -1,6 +1,7 @@
-import { Container, Grid, Typography } from '@mui/material';
+import { CardMedia, Container, Grid, Typography } from '@mui/material';
 import React, { useEffect, useMemo, useRef } from 'react';
 
+import { Box } from '@mui/system';
 import { MasterConversation } from '../util/types';
 // import ConversationDetails from './ConversationDetails';
 import { blueGrey } from '@mui/material/colors';
@@ -70,8 +71,19 @@ function Video({ stream }: { stream: MediaStream }) {
   useEffect(() => {
     if (stream && videoRef.current) {
       videoRef.current.srcObject = stream;
+      videoRef.current.autoplay = true;
+      videoRef.current.muted = true;
     }
   }, [stream]);
 
-  return <video ref={videoRef} muted autoPlay height={'400'} width={'600'} />;
+  return (
+    <Box
+      component={'video'}
+      ref={videoRef}
+      sx={{
+        height: 300,
+        boxShadow: 20,
+      }}
+    />
+  );
 }
