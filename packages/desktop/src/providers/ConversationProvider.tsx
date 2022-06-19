@@ -289,7 +289,11 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
         // todo: check to make sure that the other user is not the user himself, although backend should error out
 
         if (otherUsers.length === 1) {
+          console.log('checking if exists....');
+
           const conversationDmCheck = await checkIfOnOnOneExists(otherUsers[0]._id.toString());
+
+          console.log(conversationDmCheck);
 
           // if we found a conversation
           if (conversationDmCheck.data) {

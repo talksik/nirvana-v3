@@ -46,9 +46,6 @@ export default function MainPanel() {
 }
 
 function ConversationDetails({ masterConversation }: { masterConversation: MasterConversation }) {
-  console.log('selected room contents');
-  console.log(masterConversation);
-
   return (
     <Container maxWidth={'md'}>
       <Grid container>
