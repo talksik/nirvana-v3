@@ -489,6 +489,7 @@ function Room({
 
             toast.dismiss(connectingToast);
 
+            // todo, take trickle into account to not overwrite stream
             // notifying globally that we are in the process now
             setConversationMap((draft) => {
               if (draft[conversation._id.toString()]) {
@@ -567,6 +568,8 @@ function Room({
     $ws.on(someoneJoinedChannelNameForRoom, (res: RtcNewUserJoinedResponse) => {
       toast.success('NEWBIE JOINED!!!');
       console.log('someone calling me', res);
+
+      // todo, take trickle into account to not overwrite prev peer
 
       const peerForMeAndNewbie = new Peer({
         initiator: false,
