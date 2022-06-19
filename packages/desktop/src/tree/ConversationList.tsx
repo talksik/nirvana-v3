@@ -96,7 +96,7 @@ export function ConversationList() {
           </ListSubheader>
         }
       >
-        {Object.values(conversationMap).map((currentConversation, index) => (
+        {masterConversations[0].map((currentConversation, index) => (
           <ConversationRow
             key={`${currentConversation._id.toString()}-priorityConvoList`}
             conversation={currentConversation}
@@ -117,7 +117,15 @@ export function ConversationList() {
             <Typography variant="subtitle2"> Inbox</Typography>
           </ListSubheader>
         }
-      ></List>
+      >
+        {masterConversations[1].map((currentConversation, index) => (
+          <ConversationRow
+            key={`${currentConversation._id.toString()}-inboxConvoList`}
+            conversation={currentConversation}
+            index={index}
+          />
+        ))}
+      </List>
     </>
   );
 }
@@ -143,14 +151,6 @@ export function ConversationRow({
   const rendersCount = useRendersCount();
   console.warn('RENDER COUNT | CONVERSATION LIST ROW | ', rendersCount);
 
-  const keyboardShortcut = useMemo(() => {
-    if (index < NirvanaRules.topXConversationsWithShortcuts) {
-      return index + 1;
-    }
-
-    return undefined;
-  }, [index]);
-
   const handleSelectConversation = useCallback(() => {
     if (onClick) {
       onClick();
@@ -158,6 +158,29 @@ export function ConversationRow({
 
     selectConversation(conversation._id.toString(), false);
   }, [conversation, selectConversation, onClick]);
+
+  const currentConversationMember = useMemo(() => {
+    const currentConvoMember = conversation.members.find(
+      (mem) => mem._id.toString() === user._id.toString(),
+    );
+    return currentConvoMember;
+  }, [conversation.members, user]);
+
+  const isPriority = useMemo(() => {
+    if (currentConversationMember && currentConversationMember.memberState === 'priority') {
+      return true;
+    }
+
+    return false;
+  }, [currentConversationMember]);
+
+  const keyboardShortcut = useMemo(() => {
+    if (index < NirvanaRules.topXConversationsWithShortcuts && isPriority) {
+      return index + 1;
+    }
+
+    return undefined;
+  }, [index, isPriority]);
 
   useKeyPressEvent(`${keyboardShortcut?.toString()}`, handleSelectConversation);
 
