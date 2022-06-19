@@ -19,9 +19,11 @@ export type MasterConversation = Conversation & {
       audioTrack?: MediaStreamTrack;
       videoTrack?: MediaStreamTrack;
       screenTrack?: MediaStreamTrack;
+
+      // calling happening whether it is a newbie or master
+      isConnecting?: boolean;
     };
   };
-  isConnectingToRoom?: boolean;
 
   // all of audio clips, links, media, etc.
   content?: ContentBlock[];

@@ -481,18 +481,18 @@ function Room({
                 if (draft[conversation._id.toString()]) {
                   draft[conversation._id.toString()].room = {
                     ...(draft[conversation._id.toString()].room ?? {}),
-                    otherUserId: { peer: localPeerConnection },
+                    otherUserId: { peer: localPeerConnection, isConnecting: true },
                   };
                 }
-                draft[conversation._id.toString()].isConnectingToRoom = true;
               });
             });
 
             localPeerConnection.on('stream', (remoteStream: MediaStream) => {
               // globally updating conversation so that other views can render what they want
+              toast.success('got stream from remote, going to add to our ');
+
               setConversationMap((draft) => {
                 if (draft[conversation._id.toString()].room[otherUserId]) {
-                  toast.success('got stream from remote, going to add to our ');
                   draft[conversation._id.toString()].room[otherUserId].stream = remoteStream;
                   remoteStream.getTracks().forEach((track) => {
                     // TODO: add particular track to right place
@@ -503,6 +503,11 @@ function Room({
 
             localPeerConnection.on('connect', () => {
               toast.success('successfully connected to another peer');
+              setConversationMap((draft) => {
+                if (draft[conversation._id.toString()].room[otherUserId]) {
+                  draft[conversation._id.toString()].room[otherUserId].isConnecting = false;
+                }
+              });
             });
 
             localPeerConnection.on('track', (track, stream) => {
@@ -515,7 +520,7 @@ function Room({
               // the person will be removed from the tuned in list, but the connections here are decoupled from that flow
               // we want to manage the room within the master conversation and remove it for ourselves
 
-              // TODO: update the map to remove the user and remove
+              // TODO: update the map to remove the user and all contribution contens
 
               toast.error('peer connection was closed');
             });
