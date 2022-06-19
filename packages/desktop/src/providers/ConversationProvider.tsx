@@ -10,7 +10,7 @@ import {
 } from '@nirvana/core/sockets/channels';
 import Conversation, { MemberState } from '@nirvana/core/models/conversation.model';
 import { ConversationMap, MasterConversation } from '../util/types';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   checkIfOnOnOneExists,
   createConversation,
@@ -321,6 +321,25 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
     },
     [selectConversation],
   );
+
+  const masterConversations = useMemo(() => {
+    const priorityConversations: MasterConversation[] = [];
+    const inboxConversations: MasterConversation[] = [];
+
+    Object.values(conversationMap).forEach((currentMasterConversation) => {
+      const personalConvoMember = currentMasterConversation.members.find(
+        (mem) => mem._id.toString() === user._id.toString(),
+      );
+      if (personalConvoMember && personalConvoMember.memberState === 'priority') {
+        priorityConversations.push(currentMasterConversation);
+
+        return;
+      }
+      inboxConversations.push(currentMasterConversation);
+    });
+
+    return [priorityConversations, inboxConversations];
+  }, [conversationMap, user]);
 
   // ============== STREAMING ===============
   // handle incoming calls and accept calls and create objects for them
