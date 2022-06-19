@@ -537,6 +537,7 @@ function Room({
           localPeerConnection.on('close', () => {
             // the person will be removed from the tuned in list, but the connections here are decoupled from that flow
             // we want to manage the room within the master conversation and remove it for ourselves
+            // !this is false, see unmount, we are relying on tuned list for disconnections
 
             setConversationMap((draft) => {
               if (draft[conversation._id.toString()].room[otherUserId]) {
@@ -635,6 +636,7 @@ function Room({
       peerForMeAndNewbie.on('close', () => {
         // the person will be removed from the tuned in list, but the connections here are decoupled from that flow
         // we want to manage the room within the master conversation and remove it for ourselves
+        // !this is false, see unmount, we are relying on tuned list for disconnections
 
         setConversationMap((draft) => {
           if (draft[conversation._id.toString()].room[res.userWhoCalled]) {
