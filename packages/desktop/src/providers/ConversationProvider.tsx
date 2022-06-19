@@ -450,6 +450,7 @@ function Room({
       );
       toast.success('calling bunch of people');
 
+      // TODO : bring this stream object higher and add this later to the room
       navigator.mediaDevices
         .getUserMedia({ video: videoConstraints, audio: true })
         .then((localMediaStream: MediaStream) => {
