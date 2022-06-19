@@ -45,7 +45,8 @@ export default function MainPanel() {
 }
 
 function ConversationDetails({ masterConversation }: { masterConversation: MasterConversation }) {
-  console.log('selected room contents', masterConversation.room);
+  console.log('selected room contents');
+  console.log(masterConversation);
 
   return (
     <Container maxWidth={'md'}>
@@ -72,5 +73,5 @@ function Video({ stream }: { stream: MediaStream }) {
     }
   }, [stream]);
 
-  return <video ref={videoRef} muted height={'400'} width={'600'} />;
+  return <video ref={videoRef} muted autoPlay height={'400'} width={'600'} />;
 }
