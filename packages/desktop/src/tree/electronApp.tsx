@@ -35,7 +35,7 @@ export default function ElectronApp() {
           </AuthProvider>
 
           <Toaster
-            position={'bottom-right'}
+            position={'top-right'}
             toastOptions={{
               style: {
                 borderRadius: '10px',
