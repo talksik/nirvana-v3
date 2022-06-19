@@ -176,8 +176,6 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
       if (currMemberForConversation && currMemberForConversation.memberState === 'priority') {
         handleTuneIntoLine(conversation._id.toString());
       }
-
-      // todo : if it's a
     },
     [setConversationMap, handleConnectToLine, handleTuneIntoLine, user],
   );
@@ -185,8 +183,6 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
   // add conversations to cache on initial fetch
   // the two stores | persistent and socket | are decoupled
   useEffect(() => {
-    console.log(fetchState.value);
-
     if (fetchState.value?.data) {
       fetchState.value.data.forEach((conversationResult) => {
         handleAddConversationCache(conversationResult);
