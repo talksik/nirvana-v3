@@ -320,7 +320,7 @@ function UserSettingsDialog({ open, handleClose }: { handleClose: () => void; op
             </Select>
             <FormHelperText>
               Your speaker selection should be done on your computer status or taskbar. Please
-              select distinct speaker and microphone to avoid distortion when you have bluetooth
+              select distinct speaker and microphone to avoid distortion when you have a bluetooth
               device connected.
             </FormHelperText>
           </FormControl>
