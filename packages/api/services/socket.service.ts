@@ -66,8 +66,6 @@ export default function InitializeWs(io: any) {
         console.log('asdf');
       });
 
-      // ?verification that user is in a particular line to be tuned into it or just generally in it?
-
       /** CONNECT | User wants to subscribe to live emissions of a line */
       socket.on(ServerRequestChannels.CONNECT_TO_LINE, (req: ConnectToLineRequest) => {
         // add this user to the room
@@ -125,6 +123,7 @@ export default function InitializeWs(io: any) {
         );
       });
 
+      // ============== STREAMING ================
       socket.on(ServerRequestChannels.RTC_CALL_SOMEONE_FOR_LINE, (req: RtcCallRequest) => {
         console.log('slave calling a master');
 

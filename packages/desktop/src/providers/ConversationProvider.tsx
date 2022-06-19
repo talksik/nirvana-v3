@@ -541,19 +541,13 @@ function Room({
         });
       };
     }
+
+    // ======= LISTEN FOR INCOMING CALLS AND ACCEPT THEM
+
+    return () => {
+      localPeersForRoom.forEach((peerToClose) => peerToClose.destroy());
+    };
   });
-
-  const handleJoinRoom = useCallback((roomId: string) => {
-    // call up folks and then have listeners for the peer connection objects that we created
-    //   such as when peer connection closes, we want to remove from our list of peers for such conversation
-    //   error handler as well for the peer connection
-    // rest endpoint to get all of the folks in a certain room
-  }, []);
-
-  const handleLeaveRoom = useCallback(() => {
-    // untune from line
-    // destroy peer connections
-  }, []);
 
   // share audio to foreground conversation | either push to talk or toggle broadcasting
   const handleStartTalking = useCallback((record = false) => {
