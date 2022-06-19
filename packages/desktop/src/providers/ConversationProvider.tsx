@@ -322,40 +322,73 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
     [selectConversation],
   );
 
-  const masterConversations = useMemo(() => {
-    const priorityConversations: MasterConversation[] = [];
-    const inboxConversations: MasterConversation[] = [];
+  const userTunedInConversations = useMemo(() => {
+    const tunedConversations: MasterConversation[] = [];
 
     Object.values(conversationMap).forEach((currentMasterConversation) => {
-      const personalConvoMember = currentMasterConversation.members.find(
-        (mem) => mem._id.toString() === user._id.toString(),
-      );
-      if (personalConvoMember && personalConvoMember.memberState === 'priority') {
-        priorityConversations.push(currentMasterConversation);
-
-        return;
+      if (currentMasterConversation.tunedInUsers.includes(user._id.toString())) {
+        tunedConversations.push(currentMasterConversation);
       }
-      inboxConversations.push(currentMasterConversation);
     });
 
-    return [priorityConversations, inboxConversations];
+    return tunedConversations;
   }, [conversationMap, user]);
 
+  if (fetchState.error) {
+    return (
+      <Typography variant={'h6'} color={'danger'}>
+        Something went terribly wrong
+      </Typography>
+    );
+  }
+
+  return (
+    <ConversationContext.Provider
+      value={{
+        conversationMap,
+        handleStartConversation,
+        selectedConversation,
+        selectConversation,
+      }}
+    >
+      {children}
+
+      {/* with id specified, shouldn't unmount and mount unexpectedly */}
+      {userTunedInConversations.map((tunedConversation) => (
+        <Room
+          key={`streamRoom-${tunedConversation._id.toString()}`}
+          conversation={tunedConversation}
+        />
+      ))}
+    </ConversationContext.Provider>
+  );
+}
+
+export default function useConversations() {
+  return React.useContext(ConversationContext);
+}
+
+// renderless component to manage a room and send data upward for other components
+//   - decoupled from sockets and other data, render if you want to join x room
+//   - unmount if you want to leave room
+//   - have event listeners specific to this room
+//   - take in new users that come into the room
+function Room({ conversation }: { conversation: MasterConversation }) {
+  // have internal state to manage details of this "room"
+
   // ============== STREAMING ===============
+
   // handle incoming calls and accept calls and create objects for them
   useEffect(() => {
     //
   }, []);
 
-  const handleJoinRoom = useCallback(
-    (roomId: string) => {
-      // call up folks and then have listeners for the peer connection objects that we created
-      //   such as when peer connection closes, we want to remove from our list of peers for such conversation
-      //   error handler as well for the peer connection
-      // rest endpoint to get all of the folks in a certain room
-    },
-    [setConversationMap, $ws],
-  );
+  const handleJoinRoom = useCallback((roomId: string) => {
+    // call up folks and then have listeners for the peer connection objects that we created
+    //   such as when peer connection closes, we want to remove from our list of peers for such conversation
+    //   error handler as well for the peer connection
+    // rest endpoint to get all of the folks in a certain room
+  }, []);
 
   const handleLeaveRoom = useCallback(() => {
     // untune from line
@@ -383,28 +416,15 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
 
   // ============= END OF STREAMING MODULE ========
 
-  if (fetchState.error) {
-    return (
-      <Typography variant={'h6'} color={'danger'}>
-        Something went terribly wrong
-      </Typography>
-    );
-  }
+  useEffect(() => {
+    // call all of the tuned in folks that are already here
+    console.log(conversation.tunedInUsers);
 
-  return (
-    <ConversationContext.Provider
-      value={{
-        conversationMap,
-        handleStartConversation,
-        selectedConversation,
-        selectConversation,
-      }}
-    >
-      {children}
-    </ConversationContext.Provider>
-  );
-}
+    return () => {
+      // close peer connections here
+      // update the conversation map as well with proper states and data
+    };
+  }, []);
 
-export default function useConversations() {
-  return React.useContext(ConversationContext);
+  return null;
 }
