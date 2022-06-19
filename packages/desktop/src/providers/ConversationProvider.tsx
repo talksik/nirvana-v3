@@ -534,7 +534,12 @@ function Room({
             // the person will be removed from the tuned in list, but the connections here are decoupled from that flow
             // we want to manage the room within the master conversation and remove it for ourselves
 
-            // TODO: update the map to remove the user and all contribution contens
+            setConversationMap((draft) => {
+              if (draft[conversation._id.toString()].room[otherUserId]) {
+                draft[conversation._id.toString()].room[otherUserId].peer?.destroy();
+                delete draft[conversation._id.toString()].room[otherUserId];
+              }
+            });
 
             toast.error('peer connection was closed');
           });
@@ -625,7 +630,12 @@ function Room({
         // the person will be removed from the tuned in list, but the connections here are decoupled from that flow
         // we want to manage the room within the master conversation and remove it for ourselves
 
-        // TODO: update the map to remove the user and all contribution contens
+        setConversationMap((draft) => {
+          if (draft[conversation._id.toString()].room[res.userWhoCalled]) {
+            draft[conversation._id.toString()].room[res.userWhoCalled].peer?.destroy();
+            delete draft[conversation._id.toString()].room[res.userWhoCalled];
+          }
+        });
 
         toast.error('peer connection was closed');
       });
