@@ -48,6 +48,7 @@ export default class ConversationService {
   static async getConversationBetweenTwoPeople(userAId: ObjectId, userBId: ObjectId) {
     const query = {
       $and: [
+        { members: { $size: 2 } },
         {
           'members._id': userAId,
         },
