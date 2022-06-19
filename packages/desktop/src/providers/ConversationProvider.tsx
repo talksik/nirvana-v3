@@ -503,6 +503,8 @@ function Room({
             // globally updating conversation so that other views can render what they want
             toast.success('got stream from remote, going to add to our ');
 
+            console.log('got stream from master');
+
             setConversationMap((draft) => {
               if (draft[conversation._id.toString()].room[otherUserId]) {
                 draft[conversation._id.toString()].room[otherUserId].stream = remoteStream;
@@ -591,6 +593,8 @@ function Room({
       peerForMeAndNewbie.on('stream', (remoteStream: MediaStream) => {
         // globally updating conversation so that other views can render what they want
         toast.success('got stream from remote, going to add to our ');
+
+        console.log('got stream from newbie');
 
         setConversationMap((draft) => {
           if (draft[conversation._id.toString()].room[res.userWhoCalled]) {
