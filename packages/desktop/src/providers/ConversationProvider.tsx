@@ -158,12 +158,13 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
   // add the conversation to the conversation map/client side cache
   // has implications on realtime listening and also the ui on whether or not it's shown
   const handleAddConversationCache = useCallback(
-    (conversation: Conversation) => {
+    (conversation: Conversation, temporaryOverrideSort = false) => {
       setConversationMap((draft) => {
         draft[conversation._id.toString()] = {
           ...conversation,
           tunedInUsers: [],
           connectedUserIds: [],
+          temporaryOverrideSort,
         };
       });
 
@@ -194,6 +195,7 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
    * temporaryOverrideSort: tell me if you want to temporarily prioritize this conversation above all others
    */
   // selecting an id and making sure that it's in the map and the views just use the id to access from map
+  // get conversation from universe...hit if it's local, miss and fetch if not here
   const selectConversation = useCallback(
     async (conversationId: string, temporaryOverrideSort = false) => {
       /**
@@ -210,7 +212,9 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
 
         conversationToSelect = conversationMap[conversationId];
       } else {
-        // fetch and add to conversation map
+        // TODO: somehow use handleAddToCache instead of this duplicated code
+
+        // fetch and add to master conversation cache
         const retrieveConversationResult = await getConversationById(conversationId);
         if (!retrieveConversationResult.data) {
           toast.error('unable to find conversation');
@@ -224,16 +228,19 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
           temporaryOverrideSort,
         };
 
-        conversationToSelect = newMasterConversation;
-
         setConversationMap((draft) => {
           draft[conversationId] = newMasterConversation;
         });
+
+        conversationToSelect = newMasterConversation;
+
+        // connect to line so that we can listen in to changes
+        handleConnectToLine(newMasterConversation._id.toString());
       }
 
+      // set selected conversation with full master conversation now that we have it
       setSelectedConversation((prevConversation) => {
-        // only untune if it was an inbox conversation
-
+        // untune if it was an inbox conversation and we are going away from this conversation
         if (prevConversation) {
           const currMemberForConversation = prevConversation.members.find(
             (mem) => mem.email === user.email,
@@ -256,6 +263,7 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
       setConversationMap,
       handleUntuneFromLine,
       handleTuneIntoLine,
+      handleConnectToLine,
     ],
   );
   // !temporary fix for updated conversation content not being surfaced
