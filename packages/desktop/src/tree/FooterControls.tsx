@@ -122,56 +122,37 @@ export default function FooterControls() {
                 />
               ))}
             </AvatarGroup>
-
-            <Tooltip title="Paste image or link!">
-              <IconButton
-                sx={{
-                  color: 'white',
-                }}
-                size="small"
-              >
-                <FiLink />
-              </IconButton>
-            </Tooltip>
-
-            <Tooltip title="Show screen!">
-              <IconButton
-                sx={{
-                  color: 'white',
-                }}
-                size="small"
-              >
-                <FiAirplay />
-              </IconButton>
-            </Tooltip>
-
-            <Tooltip title="Show video!">
-              <IconButton
-                sx={{
-                  color: 'white',
-                }}
-                size="small"
-              >
-                <FiVideoOff />
-              </IconButton>
-            </Tooltip>
-
-            {/* todo: not speaking mode, speaking mode, locked in mode */}
-            <Tooltip title="Speak or toggle by clicking here!">
-              <IconButton
-                sx={{
-                  color: 'white',
-                }}
-                size="small"
-              >
-                <FiSun />
-              </IconButton>
-            </Tooltip>
           </Stack>
         )}
 
         <Stack sx={{ mt: 'auto' }} spacing={1} direction={'column'} alignItems={'center'}>
           <Divider orientation="horizontal" flexItem />
+
+          <Tooltip title="Show video!">
+            <IconButton
+              sx={{
+                color: 'white',
+              }}
+              size="small"
+            >
+              <FiVideoOff />
+            </IconButton>
+          </Tooltip>
+
+          {/* todo: not speaking mode, speaking mode, locked in mode */}
+          <Tooltip title="Speak or toggle by clicking here!">
+            <IconButton
+              sx={{
+                color: 'white',
+              }}
+              size="small"
+            >
+              <FiSun />
+            </IconButton>
+          </Tooltip>
+
+          <Divider orientation="horizontal" flexItem />
+
           <Tooltip title={'overlay mode'}>
             <Switch color="secondary" size="small" />
           </Tooltip>

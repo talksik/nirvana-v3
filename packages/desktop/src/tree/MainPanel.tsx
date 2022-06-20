@@ -13,7 +13,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { FiSun, FiUserPlus, FiZap } from 'react-icons/fi';
+import { FiAirplay, FiLink, FiSun, FiUserPlus, FiZap } from 'react-icons/fi';
 import React, { useEffect, useMemo, useRef } from 'react';
 
 import { Box } from '@mui/system';
@@ -102,6 +102,20 @@ function ConversationDetails({ masterConversation }: { masterConversation: Maste
             }}
             spacing={1}
           >
+            <Tooltip title="Paste image or link!">
+              <IconButton size="small">
+                <FiLink />
+              </IconButton>
+            </Tooltip>
+
+            <Tooltip title="Show screen!">
+              <IconButton size="small">
+                <FiAirplay />
+              </IconButton>
+            </Tooltip>
+
+            <Divider orientation={'vertical'} flexItem />
+
             <Tooltip title="Add to priority panel!">
               {isPriority ? (
                 <Fab size="small" color="primary">
