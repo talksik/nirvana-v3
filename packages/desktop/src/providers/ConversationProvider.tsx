@@ -64,6 +64,10 @@ function useSocketFire() {
 interface IConversationContext {
   conversationMap: ConversationMap;
 
+  // sorted conversation lists
+  priorityConversations: MasterConversation[];
+  inboxConversations: MasterConversation[];
+
   selectedConversation?: MasterConversation;
   selectConversation?: (conversationId: string, temporaryOverrideSort?: boolean) => Promise<void>;
 
@@ -72,6 +76,8 @@ interface IConversationContext {
 
 const ConversationContext = React.createContext<IConversationContext>({
   conversationMap: {},
+  priorityConversations: [],
+  inboxConversations: [],
 });
 
 export function ConversationProvider({ children }: { children: React.ReactNode }) {
@@ -339,6 +345,43 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
     return tunedConversations;
   }, [conversationMap, user]);
 
+  const masterConversations = useMemo(() => {
+    const priorityConversations: MasterConversation[] = [];
+    const inboxConversations: MasterConversation[] = [];
+
+    Object.values(conversationMap).forEach((currentMasterConversation) => {
+      const personalConvoMember = currentMasterConversation.members.find(
+        (mem) => mem._id.toString() === user._id.toString(),
+      );
+      if (personalConvoMember && personalConvoMember.memberState === 'priority') {
+        priorityConversations.push(currentMasterConversation);
+
+        return;
+      }
+      inboxConversations.push(currentMasterConversation);
+    });
+
+    // sort each list
+    inboxConversations.sort((a, b) => {
+      if (a.temporaryOverrideSort) {
+        return 1;
+      }
+
+      if (b.temporaryOverrideSort) {
+        return -1;
+      }
+
+      // sort by which ones have new activity for me
+      // then sort by last activity date
+    });
+
+    priorityConversations.sort((a, b) => {
+      return b.createdDate.getTime() - a.createdDate.getTime();
+    });
+
+    return [priorityConversations, inboxConversations];
+  }, [conversationMap, user]);
+
   if (fetchState.error) {
     return (
       <Typography variant={'h6'} color={'danger'}>
@@ -354,6 +397,8 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
         handleStartConversation,
         selectedConversation,
         selectConversation,
+        priorityConversations: masterConversations[0],
+        inboxConversations: masterConversations[1],
       }}
     >
       {children}

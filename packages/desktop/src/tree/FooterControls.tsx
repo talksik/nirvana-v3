@@ -39,9 +39,10 @@ import {
   FiVideoOff,
   FiX,
 } from 'react-icons/fi';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import ConversationLabel from '../subcomponents/ConversationLabel';
+import { MasterConversation } from '../util/types';
 import { SUPPORT_DISPLAY_NAME } from '../util/support';
 import { blueGrey } from '@mui/material/colors';
 import useAuth from '../providers/AuthProvider';
@@ -53,7 +54,7 @@ import useZen from '../providers/ZenProvider';
 export default function FooterControls() {
   const { handleFlowState } = useZen();
 
-  const { selectedConversation } = useConversations();
+  const { selectedConversation, priorityConversations } = useConversations();
   const { user, handleLogout } = useAuth();
 
   const [openUserSettings, setOpenUserSettings] = useState<boolean>(false);
@@ -68,6 +69,18 @@ export default function FooterControls() {
   const handleCloseUserSettings = useCallback(() => {
     setOpenUserSettings(false);
   }, [setOpenUserSettings]);
+
+  // is there a selected conversation and if so, is it a priority one?
+  const isSelectedConversationPriority = useMemo(() => {
+    const priorityIds =
+      priorityConversations.map((priorityConvo) => priorityConvo._id.toString()) ?? [];
+
+    if (selectedConversation && priorityIds.includes(selectedConversation._id.toString())) {
+      return true;
+    }
+
+    return false;
+  }, [selectedConversation, priorityConversations]);
 
   return (
     <Box
@@ -90,93 +103,23 @@ export default function FooterControls() {
           p: 1,
           flex: 1,
         }}
+        spacing={2}
       >
-        {selectedConversation && (
-          <Stack
-            direction={'column'}
-            spacing={1}
-            sx={{
-              p: 1,
-              borderRadius: 2,
-              bgcolor: blueGrey[300],
-            }}
-            alignItems={'center'}
-          >
-            {/*  status */}
-            <Box
-              component={'span'}
-              sx={{
-                bgcolor: (theme) => theme.palette.secondary.main,
-                height: 5,
-                width: 5,
-                borderRadius: 100,
-              }}
-            />
+        {priorityConversations.map((masterPriorityConversation) => (
+          <OverlayConversation
+            key={`priorityConversationOverlay-${masterPriorityConversation._id.toString()}`}
+            masterConversation={masterPriorityConversation}
+            isSelected={
+              masterPriorityConversation._id.toString() === selectedConversation?._id.toString()
+            }
+          />
+        ))}
 
-            <AvatarGroup
-              variant={'rounded'}
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                '& >:first-child': {
-                  marginTop: 0,
-                },
-                '& > *': {
-                  marginLeft: '0 !important' as any,
-                  marginTop: -2,
-                },
-              }}
-            >
-              {selectedConversation.members?.map((conversationUser, index) => (
-                <Avatar
-                  key={`${selectedConversation._id.toString()}-${conversationUser._id.toString()}-convoIcon`}
-                  alt={conversationUser?.givenName}
-                  src={conversationUser?.picture}
-                  sx={{
-                    opacity: selectedConversation.tunedInUsers?.includes(
-                      conversationUser._id.toString(),
-                    )
-                      ? '100%'
-                      : '20%',
-                  }}
-                />
-              ))}
-            </AvatarGroup>
-
+        {selectedConversation && !isSelectedConversationPriority && (
+          <>
             <Divider orientation="horizontal" flexItem />
-
-            <Tooltip title="Show video!">
-              <IconButton
-                sx={{
-                  color: 'white',
-                }}
-                size="small"
-              >
-                <FiVideoOff />
-              </IconButton>
-            </Tooltip>
-
-            {/* todo: not speaking mode, speaking mode, locked in mode */}
-            <Tooltip title="Speak or toggle by clicking here!">
-              <IconButton
-                sx={{
-                  color: 'white',
-                }}
-                size="small"
-              >
-                <FiSun />
-              </IconButton>
-            </Tooltip>
-
-            <IconButton
-              sx={{
-                color: 'GrayText',
-              }}
-              size="small"
-            >
-              <FiX />
-            </IconButton>
-          </Stack>
+            <OverlayConversation masterConversation={selectedConversation} isSelected={true} />
+          </>
         )}
 
         <Stack sx={{ mt: 'auto' }} spacing={1} direction={'column'} alignItems={'center'}>
@@ -219,6 +162,104 @@ export default function FooterControls() {
 
       <UserSettingsDialog open={openUserSettings} handleClose={handleCloseUserSettings} />
     </Box>
+  );
+}
+
+function OverlayConversation({
+  masterConversation,
+  isSelected = false,
+}: {
+  masterConversation: MasterConversation;
+  isSelected?: boolean;
+}) {
+  return (
+    <Stack
+      direction={'column'}
+      spacing={1}
+      sx={{
+        p: 1,
+        borderRadius: 2,
+        bgcolor: isSelected ? blueGrey[300] : '',
+      }}
+      alignItems={'center'}
+    >
+      {/*  status */}
+      <Box
+        component={'span'}
+        sx={{
+          bgcolor: (theme) => theme.palette.secondary.main,
+          height: 5,
+          width: 5,
+          borderRadius: 100,
+        }}
+      />
+
+      <AvatarGroup
+        variant={'rounded'}
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          '& >:first-child': {
+            marginTop: 0,
+          },
+          '& > *': {
+            marginLeft: '0 !important' as any,
+            marginTop: -2,
+          },
+        }}
+      >
+        {masterConversation.members?.map((conversationUser, index) => (
+          <Avatar
+            key={`${masterConversation._id.toString()}-${conversationUser._id.toString()}-convoIcon`}
+            alt={conversationUser?.givenName}
+            src={conversationUser?.picture}
+            sx={{
+              opacity: masterConversation.tunedInUsers?.includes(conversationUser._id.toString())
+                ? '100%'
+                : '20%',
+            }}
+          />
+        ))}
+      </AvatarGroup>
+
+      {isSelected && (
+        <>
+          <Divider orientation="horizontal" flexItem />
+
+          <Tooltip title="Show video!">
+            <IconButton
+              sx={{
+                color: 'white',
+              }}
+              size="small"
+            >
+              <FiVideoOff />
+            </IconButton>
+          </Tooltip>
+
+          {/* todo: not speaking mode, speaking mode, locked in mode */}
+          <Tooltip title="Speak or toggle by clicking here!">
+            <IconButton
+              sx={{
+                color: 'white',
+              }}
+              size="small"
+            >
+              <FiSun />
+            </IconButton>
+          </Tooltip>
+
+          <IconButton
+            sx={{
+              color: 'GrayText',
+            }}
+            size="small"
+          >
+            <FiX />
+          </IconButton>
+        </>
+      )}
+    </Stack>
   );
 }
 
