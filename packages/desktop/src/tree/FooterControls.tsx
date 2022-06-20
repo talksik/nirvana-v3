@@ -70,13 +70,7 @@ export default function FooterControls() {
   return (
     <Box
       sx={{
-        mt: 'auto',
-        borderTop: '1px solid',
-        borderTopColor: blueGrey[100],
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'flex-start',
-        width: '100%',
+        maxWidth: 100,
 
         zIndex: 10,
         boxShadow: 10,
@@ -85,7 +79,7 @@ export default function FooterControls() {
       }}
     >
       <Stack
-        direction={'row'}
+        direction={'column'}
         alignItems={'center'}
         justifyContent={'flex-start'}
         sx={{
@@ -94,7 +88,7 @@ export default function FooterControls() {
           flex: 1,
         }}
       >
-        <Stack spacing={1} direction={'row'} alignItems={'center'}>
+        <Stack spacing={1} direction={'column'} alignItems={'center'}>
           <IconButton
             onClick={handleClickProfile}
             size="small"
@@ -127,114 +121,93 @@ export default function FooterControls() {
         </Stack>
 
         {selectedConversation && (
-          <>
-            <Stack
-              direction={'row'}
+          <Stack direction={'column'} spacing={1}>
+            <AvatarGroup
+              variant={'rounded'}
               sx={{
-                flex: 1,
-                mx: 'auto',
-
-                WebkitAppRegion: 'drag',
-                cursor: 'pointer',
+                display: 'flex',
+                flexDirection: 'column',
+                '& >:first-child': {
+                  marginTop: 0,
+                },
+                '& > *': {
+                  marginLeft: '0 !important' as any,
+                  marginTop: -2,
+                },
               }}
-              alignItems={'center'}
-              justifyContent={'center'}
-              spacing={1}
             >
-              <Container
-                maxWidth={'sm'}
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                }}
-              >
-                <IconButton color="primary" size="small">
-                  <FiSun />
-                </IconButton>
-
-                <ConversationLabel
-                  users={selectedConversation.members ?? []}
-                  conversationName={selectedConversation.name}
-                  isSelected={true}
+              {selectedConversation.members?.map((conversationUser, index) => (
+                <Avatar
+                  key={`${selectedConversation._id.toString()}-${conversationUser._id.toString()}-convoIcon`}
+                  alt={conversationUser?.givenName}
+                  src={conversationUser?.picture}
+                  sx={{
+                    opacity: selectedConversation.tunedInUsers?.includes(
+                      conversationUser._id.toString(),
+                    )
+                      ? '100%'
+                      : '20%',
+                  }}
                 />
-              </Container>
-            </Stack>
+              ))}
+            </AvatarGroup>
 
-            <Stack sx={{ ml: 'auto' }} direction={'row'} spacing={1}>
-              <AvatarGroup variant={'rounded'}>
-                {selectedConversation.members?.map((conversationUser, index) => (
-                  <Avatar
-                    key={`${selectedConversation._id.toString()}-${conversationUser._id.toString()}-convoIcon`}
-                    alt={conversationUser?.givenName}
-                    src={conversationUser?.picture}
-                    sx={{
-                      opacity: selectedConversation.tunedInUsers?.includes(
-                        conversationUser._id.toString(),
-                      )
-                        ? '100%'
-                        : '20%',
-                    }}
-                  />
-                ))}
-              </AvatarGroup>
+            <Tooltip title="Mark priority or not!">
+              <IconButton
+                sx={{
+                  color: 'white',
+                }}
+                size="small"
+              >
+                <FiActivity />
+              </IconButton>
+            </Tooltip>
 
-              <Tooltip title="Mark priority or not!">
-                <IconButton
-                  sx={{
-                    color: 'white',
-                  }}
-                  size="small"
-                >
-                  <FiActivity />
-                </IconButton>
-              </Tooltip>
+            <Tooltip title="Paste image or link!">
+              <IconButton
+                sx={{
+                  color: 'white',
+                }}
+                size="small"
+              >
+                <FiLink />
+              </IconButton>
+            </Tooltip>
 
-              <Tooltip title="Paste image or link!">
-                <IconButton
-                  sx={{
-                    color: 'white',
-                  }}
-                  size="small"
-                >
-                  <FiLink />
-                </IconButton>
-              </Tooltip>
+            <Tooltip title="Show screen!">
+              <IconButton
+                sx={{
+                  color: 'white',
+                }}
+                size="small"
+              >
+                <FiAirplay />
+              </IconButton>
+            </Tooltip>
 
-              <Tooltip title="Show screen!">
-                <IconButton
-                  sx={{
-                    color: 'white',
-                  }}
-                  size="small"
-                >
-                  <FiAirplay />
-                </IconButton>
-              </Tooltip>
+            <Tooltip title="Show video!">
+              <IconButton
+                sx={{
+                  color: 'white',
+                }}
+                size="small"
+              >
+                <FiVideoOff />
+              </IconButton>
+            </Tooltip>
 
-              <Tooltip title="Show video!">
-                <IconButton
-                  sx={{
-                    color: 'white',
-                  }}
-                  size="small"
-                >
-                  <FiVideoOff />
-                </IconButton>
-              </Tooltip>
-
-              {/* todo: not speaking mode, speaking mode, locked in mode */}
-              <Tooltip title="Speak or toggle by clicking here!">
-                <IconButton
-                  sx={{
-                    color: 'white',
-                  }}
-                  size="small"
-                >
-                  <FiSun />
-                </IconButton>
-              </Tooltip>
-            </Stack>
-          </>
+            {/* todo: not speaking mode, speaking mode, locked in mode */}
+            <Tooltip title="Speak or toggle by clicking here!">
+              <IconButton
+                sx={{
+                  color: 'white',
+                }}
+                size="small"
+              >
+                <FiSun />
+              </IconButton>
+            </Tooltip>
+          </Stack>
         )}
       </Stack>
 

@@ -22,7 +22,7 @@ export default function Terminal() {
       disableGutters={true}
       sx={{
         display: 'flex',
-        flexDirection: 'column',
+        flexDirection: 'row',
       }}
     >
       <Grid container spacing={0} sx={{ flex: 1 }}>
