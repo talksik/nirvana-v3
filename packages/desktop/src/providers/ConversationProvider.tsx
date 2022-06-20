@@ -443,14 +443,14 @@ function Room({
     (async () => {
       // TODO : bring this stream object higher and add this later to the room
       // set up local stream for this room - temporary until we figure out global stream handling and passing down
-      const localMediaStream = await navigator.mediaDevices.getUserMedia({
-        video: videoConstraints,
-        audio: true,
-      });
+      // const localMediaStream = await navigator.mediaDevices.getUserMedia({
+      //   video: videoConstraints,
+      //   audio: true,
+      // });
 
-      console.log(localMediaStream);
+      // console.log(localMediaStream);
 
-      setUserLocalStream(localMediaStream);
+      // setUserLocalStream(localMediaStream);
 
       // ?will there be race condition where this room component is rendered but we don't have the latest
       // ?list of tunedin folks and so we may just end up calling select few?
@@ -470,7 +470,7 @@ function Room({
           // make sure this peer gets destroyed when it's time to remove this listener
           const localPeerConnection = new Peer({
             initiator: true,
-            stream: localMediaStream,
+            // stream: localMediaStream,
             trickle: false, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times,
             config: {
               iceServers,
@@ -573,7 +573,7 @@ function Room({
 
       const peerForMeAndNewbie = new Peer({
         initiator: false,
-        stream: userLocalStream,
+        // stream: userLocalStream,
         trickle: false, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times
         config: {
           iceServers,

@@ -1,4 +1,13 @@
-import { CardMedia, Container, Grid, IconButton, Stack, Tooltip, Typography } from '@mui/material';
+import {
+  CardMedia,
+  Container,
+  Fab,
+  Grid,
+  IconButton,
+  Stack,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 import { FiSun, FiUserPlus, FiZap } from 'react-icons/fi';
 import React, { useEffect, useMemo, useRef } from 'react';
 
@@ -48,6 +57,19 @@ export default function MainPanel() {
 }
 
 function ConversationDetails({ masterConversation }: { masterConversation: MasterConversation }) {
+  const { user } = useAuth();
+
+  const isPriority = useMemo(() => {
+    const personalConvoMember = masterConversation.members.find(
+      (mem) => mem._id.toString() === user._id.toString(),
+    );
+    if (personalConvoMember && personalConvoMember.memberState === 'priority') {
+      return true;
+    }
+
+    return false;
+  }, [masterConversation, user]);
+
   return (
     <Container maxWidth={false} disableGutters>
       <Stack direction={'column'}>
@@ -72,9 +94,15 @@ function ConversationDetails({ masterConversation }: { masterConversation: Maste
               spacing={1}
             >
               <Tooltip title="Add to priority panel!">
-                <IconButton size="small">
-                  <FiZap />
-                </IconButton>
+                {isPriority ? (
+                  <Fab size="small" color="primary">
+                    <FiZap />
+                  </Fab>
+                ) : (
+                  <IconButton size="small">
+                    <FiZap />
+                  </IconButton>
+                )}
               </Tooltip>
 
               <Tooltip title="Add people to the conversation">
