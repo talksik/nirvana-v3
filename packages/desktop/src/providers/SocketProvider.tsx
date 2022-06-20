@@ -24,7 +24,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
   const initiateSocketStabilityListeners = useCallback(
     (socketConnection: Socket) => {
       socketConnection.on('connect', () => {
-        toast.success('sockets connected');
+        // toast.success('sockets connected');
       });
 
       socketConnection.io.on('close', () => {

@@ -88,8 +88,11 @@ export default function NewConversationDialog() {
       return;
     }
 
-    if (selectedUsers.length + 1 >= NirvanaRules.maxMembersPerConversation) {
-      toast.error('A group can only have 8 people including you!');
+    // everyone else + me should be less than or equal to max
+    if (selectedUsers.length + 1 > NirvanaRules.maxMembersPerConversation) {
+      toast.error(
+        `A group can only have ${NirvanaRules.maxMembersPerConversation} people including you!`,
+      );
       return;
     }
 

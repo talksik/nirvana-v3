@@ -44,10 +44,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       fetchUser()
         .then((response) => {
-          toast.success('authenticated user');
+          // toast.success('authenticated user');
         })
-        .catch(() => {
-          toast.error('problem in authenticating jwt token');
+        .catch((error) => {
+          toast.error('problem in authenticating');
+          console.error(error);
         });
     }
   }, [jwtToken, fetchUser]);
@@ -58,10 +59,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     fetchUser()
       .then((response) => {
-        toast.success('authenticated user');
+        // toast.success('authenticated user');
       })
-      .catch(() => {
-        toast.error('logged out');
+      .catch((error) => {
+        // toast.error('logged out');
       });
 
     setJwtToken(undefined);

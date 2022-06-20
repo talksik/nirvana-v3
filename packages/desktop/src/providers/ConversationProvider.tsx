@@ -98,7 +98,7 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
     $ws.on(ServerResponseChannels.SOMEONE_CONNECTED_TO_LINE, (res: SomeoneConnectedResponse) => {
       setConversationMap((draft) => {
         if (!draft[res.lineId]) {
-          toast.error('no line');
+          console.error('no line');
           return;
         }
 
@@ -110,7 +110,7 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
     $ws.on(ServerResponseChannels.SOMEONE_TUNED_INTO_LINE, (res: SomeoneTunedResponse) => {
       setConversationMap((draft) => {
         if (!draft[res.lineId]) {
-          toast.error('no line');
+          console.error('no line');
           return;
         }
 
@@ -123,7 +123,7 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
       (res: SomeoneUntunedFromLineResponse) => {
         setConversationMap((draft) => {
           if (!draft[res.lineId]) {
-            toast.error('no line');
+            console.error('no line');
             return;
           }
 
@@ -141,7 +141,7 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
     (res: SomeoneDisconnectedResponse) => {
       setConversationMap((draft) => {
         if (!draft[res.lineId]) {
-          toast.error('there was a problem updating rooms!!!');
+          console.error('there was a problem updating rooms!!!');
           return;
         }
 
@@ -208,8 +208,6 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
       let conversationToSelect: MasterConversation;
 
       if (allConversationIds.includes(conversationId)) {
-        toast.success('we have that conversation!!!');
-
         conversationToSelect = conversationMap[conversationId];
       } else {
         // TODO: somehow use handleAddToCache instead of this duplicated code
@@ -290,7 +288,8 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
          */
 
         if (!otherUsers || otherUsers.length === 0) {
-          toast.error('Must provider users');
+          toast.error('Must select other people!');
+
           return false;
         }
 
@@ -305,7 +304,7 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
 
           // if we found a conversation
           if (conversationDmCheck.data) {
-            toast.success('already have this user...quick dialing');
+            console.log('already have this user...quick dialing');
 
             selectConversation(conversationDmCheck.data, true);
             return true;
@@ -317,8 +316,6 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
         );
 
         selectConversation(createdConversationResult.data.conversationId.toString(), true);
-
-        toast.success('started conversation');
 
         return true;
       } catch (error) {
@@ -464,11 +461,10 @@ function Room({
         const allOtherUserIds = conversation.tunedInUsers.filter(
           (memberUserId) => memberUserId !== user._id.toString(),
         );
-        toast.success('calling bunch of people');
 
         // for each person, create peer object
         allOtherUserIds.forEach((otherUserId) => {
-          const connectingToast = toast.loading('calling peer for a snappy experience');
+          const connectingToast = toast.loading('connecting you for a snappy experience');
 
           // ========= PEER CREATION =============
           // make sure this peer gets destroyed when it's time to remove this listener
@@ -483,7 +479,7 @@ function Room({
 
           // ========= PEER EVENT HANDLERS =============
           localPeerConnection.on('signal', (signal) => {
-            console.log('have a signal to make call to someone ');
+            // console.log('have a signal to make call to someone ');
 
             $ws.emit(
               ServerRequestChannels.RTC_CALL_SOMEONE_FOR_LINE,
@@ -506,7 +502,7 @@ function Room({
 
           localPeerConnection.on('stream', (remoteStream: MediaStream) => {
             // globally updating conversation so that other views can render what they want
-            toast.success('got stream from remote, going to add to our ');
+            // toast.success('got stream from remote, going to add to our ');
 
             console.log('got stream from master');
 
@@ -522,7 +518,7 @@ function Room({
           });
 
           localPeerConnection.on('connect', () => {
-            toast.success('successfully connected to another peer');
+            // toast.success('successfully connected to another peer');
             setConversationMap((draft) => {
               if (draft[conversation._id.toString()].room[otherUserId]) {
                 draft[conversation._id.toString()].room[otherUserId].isConnecting = false;
@@ -553,7 +549,7 @@ function Room({
 
           localPeerConnection.on('error', (err) => {
             console.error(err);
-            toast.error('there was a problem with the peer connection');
+            toast.error('there was a problem with the connecting');
           });
         });
       }
@@ -570,7 +566,7 @@ function Room({
     }:${conversation._id.toString()}`;
 
     $ws.on(someoneJoinedChannelNameForRoom, (res: RtcNewUserJoinedResponse) => {
-      toast.success('NEWBIE JOINED!!!');
+      // toast.success('NEWBIE JOINED!!!');
       console.log('someone calling me', res);
 
       // todo, take trickle into account to not overwrite prev peer
@@ -606,7 +602,7 @@ function Room({
 
       peerForMeAndNewbie.on('stream', (remoteStream: MediaStream) => {
         // globally updating conversation so that other views can render what they want
-        toast.success('got stream from remote, going to add to our ');
+        // toast.success('got stream from remote, going to add to our ');
 
         console.log('got stream from newbie');
 
@@ -654,12 +650,12 @@ function Room({
 
       peerForMeAndNewbie.on('error', (err) => {
         console.error(err);
-        toast.error('there was a problem with the peer connection');
+        toast.error('there was a problem with connecting');
       });
     });
 
     $ws.on(mastersAnswerReceivedChannelNameForRoom, (res: RtcReceiveAnswerResponse) => {
-      toast.success('MASTER gave me an answer!!!');
+      // toast.success('MASTER gave me an answer!!!');
 
       console.log('master gave me this answer: ', res);
 
