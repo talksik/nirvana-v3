@@ -148,6 +148,8 @@ function OverlayConversation({
   masterConversation: MasterConversation;
   isSelected?: boolean;
 }) {
+  const { user } = useAuth();
+
   const { selectConversation, handleEscape } = useConversations();
 
   const handleSelectConversation = useCallback(() => {
@@ -205,18 +207,23 @@ function OverlayConversation({
         }}
         max={3}
       >
-        {masterConversation.members?.map((conversationUser, index) => (
-          <Avatar
-            key={`${masterConversation._id.toString()}-${conversationUser._id.toString()}-convoIcon`}
-            alt={conversationUser?.givenName}
-            src={conversationUser?.picture}
-            sx={{
-              opacity: masterConversation.tunedInUsers?.includes(conversationUser._id.toString())
-                ? '100%'
-                : '20%',
-            }}
-          />
-        ))}
+        {masterConversation.members?.map(
+          (conversationUser, index) =>
+            conversationUser._id.toString() !== user._id.toString() && (
+              <Avatar
+                key={`${masterConversation._id.toString()}-${conversationUser._id.toString()}-convoIcon`}
+                alt={conversationUser?.givenName}
+                src={conversationUser?.picture}
+                sx={{
+                  opacity: masterConversation.tunedInUsers?.includes(
+                    conversationUser._id.toString(),
+                  )
+                    ? '100%'
+                    : '20%',
+                }}
+              />
+            ),
+        )}
       </AvatarGroup>
 
       {isSelected && (
