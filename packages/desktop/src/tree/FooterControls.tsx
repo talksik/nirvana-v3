@@ -107,21 +107,6 @@ export default function FooterControls() {
         <Stack sx={{ mt: 'auto' }} spacing={1} direction={'column'} alignItems={'center'}>
           <Divider orientation="horizontal" flexItem />
 
-          {/* todo: not speaking mode, speaking mode, locked in mode */}
-          <Tooltip title="Speak or toggle by clicking here!">
-            <IconButton color="primary">
-              <FiSun />
-            </IconButton>
-          </Tooltip>
-
-          <Tooltip title="Show video!">
-            <IconButton color="secondary" size="small">
-              <FiVideoOff />
-            </IconButton>
-          </Tooltip>
-
-          <Divider orientation="horizontal" flexItem />
-
           <Tooltip title={'overlay mode'}>
             <Switch
               checked={desktopMode === 'overlayOnly'}
@@ -132,18 +117,6 @@ export default function FooterControls() {
           </Tooltip>
 
           <Divider orientation="horizontal" flexItem />
-
-          <Tooltip title="Media settings and more">
-            <IconButton
-              sx={{
-                color: 'white',
-              }}
-              size="small"
-              onClick={handleClickProfile}
-            >
-              <FiSettings />
-            </IconButton>
-          </Tooltip>
 
           <Button size={'small'} color={'secondary'} variant="text" onClick={handleFlowState}>
             flow
@@ -248,6 +221,28 @@ function OverlayConversation({
       {isSelected && (
         <>
           <Divider orientation="horizontal" flexItem />
+
+          {/* todo: not speaking mode, speaking mode, locked in mode */}
+          <Tooltip title="Speak or toggle by clicking here!">
+            <IconButton
+              sx={{
+                color: 'white',
+              }}
+            >
+              <FiSun />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Show video!">
+            <IconButton
+              sx={{
+                color: 'white',
+              }}
+              size="small"
+            >
+              <FiVideoOff />
+            </IconButton>
+          </Tooltip>
 
           <Tooltip title="hit escape!">
             <IconButton
