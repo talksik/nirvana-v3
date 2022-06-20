@@ -13,6 +13,7 @@ import {
   TuneToLineRequest,
   UntuneFromLineRequest,
 } from '@nirvana/core/sockets/channels';
+import { Container, Typography } from '@mui/material';
 import Conversation, { MemberState } from '@nirvana/core/models/conversation.model';
 import { ConversationMap, MasterConversation } from '../util/types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -28,7 +29,6 @@ import { useAsyncFn, useEffectOnce, useKeyPressEvent, useUnmount } from 'react-u
 import CreateConversationRequest from '@nirvana/core/requests/CreateConversationRequest.request';
 import { KeyboardShortcuts } from '../util/keyboard';
 import Peer from 'simple-peer';
-import { Typography } from '@mui/material';
 import User from '@nirvana/core/models/user.model';
 import toast from 'react-hot-toast';
 import useAuth from './AuthProvider';
@@ -213,6 +213,11 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
        * set the temporary sort accordingly
        */
 
+      if (!conversationId) {
+        toast.error('must select a conversation');
+        return;
+      }
+
       const allConversationIds = Object.keys(conversationMap);
       let conversationToSelect: MasterConversation;
 
@@ -393,9 +398,22 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
 
   if (fetchState.error) {
     return (
-      <Typography variant={'h6'} color={'danger'}>
-        Something went terribly wrong
-      </Typography>
+      <Container
+        maxWidth={false}
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: 2,
+          flex: 1,
+          background: 'white',
+        }}
+      >
+        <Typography variant="caption" align="center">
+          Something went terribly wrong
+        </Typography>
+      </Container>
     );
   }
 

@@ -1,3 +1,4 @@
+import { Container, Typography } from '@mui/material';
 import React, { useContext, useEffect, useState } from 'react';
 import { useAsyncFn, useAsyncRetry } from 'react-use';
 
@@ -34,20 +35,44 @@ export function StabilityProvider({ children }: { children: React.ReactNode }) {
 
   if (isOffline)
     return (
-      <div className="h-screen w-screen bg-white flex-1 flex flex-row justify-center items-center">
-        <span>{'poor network connection... :('}</span>{' '}
-      </div>
+      <Container
+        maxWidth={false}
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: 2,
+          flex: 1,
+          background: 'white',
+        }}
+      >
+        <Typography variant="caption" align="center">
+          {'poor network connection... :('}
+        </Typography>
+      </Container>
     );
 
   if (state.error)
     return (
-      <div className="h-screen w-screen text-gray-400 bg-white flex-1 flex flex-col justify-center items-center">
-        <span>{'sorry this is our bad. servers are rebooting... :('}</span>
-        <br />
-        <span>{'try refresh or restart application'}</span>
-        <br />
-        <span>{'call me for emergencies : (949)237-2715'}</span>
-      </div>
+      <Container
+        maxWidth={false}
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: 2,
+          flex: 1,
+          background: 'white',
+        }}
+      >
+        <Typography variant="caption" align="center">
+          {
+            'sorry this is our bad. servers are rebooting... :( call me for emergencies : (949)237-2715'
+          }
+        </Typography>
+      </Container>
     );
 
   return (
