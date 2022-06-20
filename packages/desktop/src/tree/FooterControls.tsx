@@ -21,6 +21,7 @@ import { FiSettings, FiSun, FiVideoOff, FiX } from 'react-icons/fi';
 import React, { useCallback, useMemo, useState } from 'react';
 
 import { MasterConversation } from '../util/types';
+import { MdOutlineRecordVoiceOver } from 'react-icons/md';
 import { SUPPORT_DISPLAY_NAME } from '../util/support';
 import { blueGrey } from '@mui/material/colors';
 import useAuth from '../providers/AuthProvider';
@@ -229,7 +230,7 @@ function OverlayConversation({
                 color: 'white',
               }}
             >
-              <FiSun />
+              <MdOutlineRecordVoiceOver />
             </IconButton>
           </Tooltip>
 
