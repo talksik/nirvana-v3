@@ -122,7 +122,35 @@ function ConversationDetails({ masterConversation }: { masterConversation: Maste
 
         {/* main canvas */}
         <Container maxWidth={'sm'} sx={{ pt: 2 }}>
-          <ConversationChunk />
+          <Stack spacing={1} sx={{ display: 'flex', flexDirection: 'column', py: 2 }}>
+            <Typography textAlign={'center'} color="GrayText" variant={'subtitle1'}>
+              last week
+            </Typography>
+
+            <ConversationChunk />
+
+            <ConversationChunk />
+
+            <ConversationChunk />
+          </Stack>
+
+          <Stack spacing={1} sx={{ display: 'flex', flexDirection: 'column', py: 2 }}>
+            <Typography textAlign={'center'} color="GrayText" variant={'subtitle1'}>
+              yesterday
+            </Typography>
+
+            <ConversationChunk />
+          </Stack>
+
+          <Stack spacing={1} sx={{ display: 'flex', flexDirection: 'column', py: 2 }}>
+            <Typography textAlign={'center'} color="GrayText" variant={'subtitle1'}>
+              today
+            </Typography>
+
+            <ConversationChunk />
+
+            <ConversationChunk />
+          </Stack>
         </Container>
 
         <Container maxWidth={false}>
