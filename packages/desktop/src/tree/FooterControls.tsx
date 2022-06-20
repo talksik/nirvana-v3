@@ -95,9 +95,9 @@ export default function FooterControls() {
             direction={'column'}
             spacing={1}
             sx={{
-              bgcolor: blueGrey[200],
               p: 1,
               borderRadius: 2,
+              bgcolor: blueGrey[300],
             }}
             alignItems={'center'}
           >
@@ -168,8 +168,6 @@ export default function FooterControls() {
         )}
 
         <Stack sx={{ mt: 'auto' }} spacing={1} direction={'column'} alignItems={'center'}>
-          <Divider orientation="horizontal" flexItem />
-
           <Divider orientation="horizontal" flexItem />
 
           <Tooltip title={'overlay mode'}>
