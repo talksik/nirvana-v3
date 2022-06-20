@@ -29,6 +29,7 @@ import {
   FiActivity,
   FiAirplay,
   FiChevronDown,
+  FiCircle,
   FiHeadphones,
   FiHelpCircle,
   FiLink,
@@ -101,6 +102,17 @@ export default function FooterControls() {
             }}
             alignItems={'center'}
           >
+            {/*  status */}
+            <Box
+              component={'span'}
+              sx={{
+                bgcolor: (theme) => theme.palette.secondary.main,
+                height: 5,
+                width: 5,
+                borderRadius: 100,
+              }}
+            />
+
             <AvatarGroup
               variant={'rounded'}
               sx={{
