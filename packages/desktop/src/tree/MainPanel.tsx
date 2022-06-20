@@ -1,7 +1,9 @@
-import { CardMedia, Container, Grid, Typography } from '@mui/material';
+import { CardMedia, Container, Grid, IconButton, Stack, Tooltip, Typography } from '@mui/material';
+import { FiSun, FiUserPlus, FiZap } from 'react-icons/fi';
 import React, { useEffect, useMemo, useRef } from 'react';
 
 import { Box } from '@mui/system';
+import ConversationLabel from '../subcomponents/ConversationLabel';
 import { MasterConversation } from '../util/types';
 // import ConversationDetails from './ConversationDetails';
 import { blueGrey } from '@mui/material/colors';
@@ -47,17 +49,54 @@ export default function MainPanel() {
 
 function ConversationDetails({ masterConversation }: { masterConversation: MasterConversation }) {
   return (
-    <Container maxWidth={'md'}>
-      <Grid container>
-        {masterConversation.room &&
-          Object.entries(masterConversation.room).map(([userId, userPeerContents]) => {
-            return (
-              <Grid item key={`userPeerRenderConvoDetails-${userId}`}>
-                <Video stream={userPeerContents.stream} />
-              </Grid>
-            );
-          })}
-      </Grid>
+    <Container maxWidth={false} disableGutters>
+      <Stack direction={'column'}>
+        <Box sx={{ p: 2, boxShadow: 3, zIndex: 10 }}>
+          <Stack direction="row" alignItems="center">
+            <IconButton color="primary" size="small">
+              <FiSun />
+            </IconButton>
+            <ConversationLabel
+              users={masterConversation.members}
+              conversationName={masterConversation.name}
+              isSelected={true}
+            />
+
+            {/* conversation controls */}
+            <Stack
+              direction="row"
+              alignItems="center"
+              sx={{
+                ml: 'auto',
+              }}
+              spacing={1}
+            >
+              <Tooltip title="Add to priority panel!">
+                <IconButton size="small">
+                  <FiZap />
+                </IconButton>
+              </Tooltip>
+
+              <Tooltip title="Add people to the conversation">
+                <IconButton size="small">
+                  <FiUserPlus />
+                </IconButton>
+              </Tooltip>
+            </Stack>
+          </Stack>
+        </Box>
+
+        <Grid container>
+          {masterConversation.room &&
+            Object.entries(masterConversation.room).map(([userId, userPeerContents]) => {
+              return (
+                <Grid item key={`userPeerRenderConvoDetails-${userId}`}>
+                  <Video stream={userPeerContents.stream} />
+                </Grid>
+              );
+            })}
+        </Grid>
+      </Stack>
     </Container>
   );
 }

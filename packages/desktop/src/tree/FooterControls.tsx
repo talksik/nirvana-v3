@@ -123,17 +123,6 @@ export default function FooterControls() {
               ))}
             </AvatarGroup>
 
-            <Tooltip title="Mark priority or not!">
-              <IconButton
-                sx={{
-                  color: 'white',
-                }}
-                size="small"
-              >
-                <FiActivity />
-              </IconButton>
-            </Tooltip>
-
             <Tooltip title="Paste image or link!">
               <IconButton
                 sx={{
@@ -183,6 +172,11 @@ export default function FooterControls() {
 
         <Stack sx={{ mt: 'auto' }} spacing={1} direction={'column'} alignItems={'center'}>
           <Divider orientation="horizontal" flexItem />
+          <Tooltip title={'overlay mode'}>
+            <Switch color="secondary" size="small" />
+          </Tooltip>
+
+          <Divider orientation="horizontal" flexItem />
 
           <Tooltip title="Media settings and more">
             <IconButton
@@ -193,10 +187,6 @@ export default function FooterControls() {
             >
               <FiSettings />
             </IconButton>
-          </Tooltip>
-
-          <Tooltip title={'overlay mode'}>
-            <Switch color="secondary" size="small" />
           </Tooltip>
 
           <Button size={'small'} color={'secondary'} variant="text" onClick={handleFlowState}>
