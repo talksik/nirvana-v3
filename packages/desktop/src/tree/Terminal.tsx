@@ -52,6 +52,7 @@ export default function Terminal() {
             display: 'flex',
             flexDirection: 'column',
             maxHeight: '100vh',
+            overflowY: 'auto',
           }}
         >
           <MainPanel />

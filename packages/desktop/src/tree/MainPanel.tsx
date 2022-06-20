@@ -78,48 +78,6 @@ function ConversationDetails({ masterConversation }: { masterConversation: Maste
   return (
     <Container maxWidth={false} disableGutters>
       <Stack direction={'column'} sx={{ position: 'relative' }}>
-        {/* conversation header details and controls */}
-        <Box sx={{ p: 2, boxShadow: 3, zIndex: 10 }}>
-          <Stack direction="row" alignItems="center">
-            <IconButton color="primary" size="small">
-              <FiSun />
-            </IconButton>
-            <ConversationLabel
-              users={masterConversation.members}
-              conversationName={masterConversation.name}
-              isSelected={true}
-            />
-
-            {/* conversation controls */}
-            <Stack
-              direction="row"
-              alignItems="center"
-              sx={{
-                ml: 'auto',
-              }}
-              spacing={1}
-            >
-              <Tooltip title="Add to priority panel!">
-                {isPriority ? (
-                  <Fab size="small" color="primary">
-                    <FiZap />
-                  </Fab>
-                ) : (
-                  <IconButton size="small">
-                    <FiZap />
-                  </IconButton>
-                )}
-              </Tooltip>
-
-              <Tooltip title="Add people to the conversation">
-                <IconButton size="small">
-                  <FiUserPlus />
-                </IconButton>
-              </Tooltip>
-            </Stack>
-          </Stack>
-        </Box>
-
         {/* main canvas */}
         <Container maxWidth={'sm'} sx={{ pt: 2 }}>
           <Stack spacing={1} sx={{ display: 'flex', flexDirection: 'column', py: 2 }}>
@@ -166,6 +124,48 @@ function ConversationDetails({ masterConversation }: { masterConversation: Maste
               })}
           </Stack>
         </Container>
+
+        {/* conversation header details and controls */}
+        <Box sx={{ p: 2, boxShadow: 3, zIndex: 10, position: 'sticky' }}>
+          <Stack direction="row" alignItems="center">
+            <IconButton color="primary" size="small">
+              <FiSun />
+            </IconButton>
+            <ConversationLabel
+              users={masterConversation.members}
+              conversationName={masterConversation.name}
+              isSelected={true}
+            />
+
+            {/* conversation controls */}
+            <Stack
+              direction="row"
+              alignItems="center"
+              sx={{
+                ml: 'auto',
+              }}
+              spacing={1}
+            >
+              <Tooltip title="Add to priority panel!">
+                {isPriority ? (
+                  <Fab size="small" color="primary">
+                    <FiZap />
+                  </Fab>
+                ) : (
+                  <IconButton size="small">
+                    <FiZap />
+                  </IconButton>
+                )}
+              </Tooltip>
+
+              <Tooltip title="Add people to the conversation">
+                <IconButton size="small">
+                  <FiUserPlus />
+                </IconButton>
+              </Tooltip>
+            </Stack>
+          </Stack>
+        </Box>
       </Stack>
     </Container>
   );
@@ -254,7 +254,7 @@ function ConversationChunk() {
       <Box sx={{ position: 'relative', p: 4 }}>
         <Slider
           aria-label="Restricted values"
-          defaultValue={25}
+          defaultValue={0}
           valueLabelFormat={valueLabelFormat}
           getAriaValueText={valuetext}
           valueLabelDisplay="on"
