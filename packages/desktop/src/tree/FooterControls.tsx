@@ -72,7 +72,6 @@ export default function FooterControls() {
     <Box
       sx={{
         maxWidth: 100,
-
         zIndex: 10,
         boxShadow: 10,
 
@@ -92,7 +91,16 @@ export default function FooterControls() {
         }}
       >
         {selectedConversation && (
-          <Stack direction={'column'} spacing={1}>
+          <Stack
+            direction={'column'}
+            spacing={1}
+            sx={{
+              bgcolor: blueGrey[200],
+              p: 1,
+              borderRadius: 2,
+            }}
+            alignItems={'center'}
+          >
             <AvatarGroup
               variant={'rounded'}
               sx={{
@@ -122,34 +130,36 @@ export default function FooterControls() {
                 />
               ))}
             </AvatarGroup>
+
+            <Divider orientation="horizontal" flexItem />
+
+            <Tooltip title="Show video!">
+              <IconButton
+                sx={{
+                  color: 'white',
+                }}
+                size="small"
+              >
+                <FiVideoOff />
+              </IconButton>
+            </Tooltip>
+
+            {/* todo: not speaking mode, speaking mode, locked in mode */}
+            <Tooltip title="Speak or toggle by clicking here!">
+              <IconButton
+                sx={{
+                  color: 'white',
+                }}
+                size="small"
+              >
+                <FiSun />
+              </IconButton>
+            </Tooltip>
           </Stack>
         )}
 
         <Stack sx={{ mt: 'auto' }} spacing={1} direction={'column'} alignItems={'center'}>
           <Divider orientation="horizontal" flexItem />
-
-          <Tooltip title="Show video!">
-            <IconButton
-              sx={{
-                color: 'white',
-              }}
-              size="small"
-            >
-              <FiVideoOff />
-            </IconButton>
-          </Tooltip>
-
-          {/* todo: not speaking mode, speaking mode, locked in mode */}
-          <Tooltip title="Speak or toggle by clicking here!">
-            <IconButton
-              sx={{
-                color: 'white',
-              }}
-              size="small"
-            >
-              <FiSun />
-            </IconButton>
-          </Tooltip>
 
           <Divider orientation="horizontal" flexItem />
 
