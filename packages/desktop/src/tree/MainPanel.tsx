@@ -1,9 +1,14 @@
 import {
+  Avatar,
+  AvatarGroup,
+  Card,
   CardMedia,
   Container,
+  Divider,
   Fab,
   Grid,
   IconButton,
+  Slider,
   Stack,
   Tooltip,
   Typography,
@@ -72,7 +77,8 @@ function ConversationDetails({ masterConversation }: { masterConversation: Maste
 
   return (
     <Container maxWidth={false} disableGutters>
-      <Stack direction={'column'}>
+      <Stack direction={'column'} sx={{ position: 'relative' }}>
+        {/* conversation header details and controls */}
         <Box sx={{ p: 2, boxShadow: 3, zIndex: 10 }}>
           <Stack direction="row" alignItems="center">
             <IconButton color="primary" size="small">
@@ -114,16 +120,24 @@ function ConversationDetails({ masterConversation }: { masterConversation: Maste
           </Stack>
         </Box>
 
-        <Grid container>
-          {masterConversation.room &&
-            Object.entries(masterConversation.room).map(([userId, userPeerContents]) => {
-              return (
-                <Grid item key={`userPeerRenderConvoDetails-${userId}`}>
-                  <Video stream={userPeerContents.stream} />
-                </Grid>
-              );
-            })}
-        </Grid>
+        {/* main canvas */}
+        <Container maxWidth={'sm'} sx={{ pt: 2 }}>
+          <ConversationChunk />
+        </Container>
+
+        <Container maxWidth={false}>
+          <Stack direction="row" alignItems={'center'}>
+            {masterConversation.room &&
+              Object.entries(masterConversation.room).map(([userId, userPeerContents]) => {
+                return (
+                  <Video
+                    key={`userPeerRenderConvoDetails-${userId}`}
+                    stream={userPeerContents.stream}
+                  />
+                );
+              })}
+          </Stack>
+        </Container>
       </Stack>
     </Container>
   );
@@ -149,5 +163,76 @@ function Video({ stream }: { stream: MediaStream }) {
         boxShadow: 20,
       }}
     />
+  );
+}
+
+const marks = [
+  {
+    value: 0,
+    label: 'Arjun',
+    avatar: <Avatar alt="Remy Sharp" src="https://mui.com/static/images/avatar/1.jpg" />,
+  },
+  {
+    value: 20,
+    label: 'Nick',
+    avatar: <Avatar alt="Remy Sharp" src="https://mui.com/static/images/avatar/3.jpg" />,
+  },
+  {
+    value: 37,
+    label: 'Jeremy',
+    avatar: <Avatar alt="Remy Sharp" src="https://mui.com/static/images/avatar/2.jpg" />,
+  },
+  {
+    value: 100,
+    label: '43 sec',
+    avatar: <Avatar alt="Remy Sharp" src="https://mui.com/static/images/avatar/2.jpg" />,
+  },
+];
+
+function valuetext(value: number) {
+  return `${value}°C`;
+}
+
+// TODO: get label based on what region we are in
+function valueLabelFormat(value: number) {
+  return (
+    marks.find((mark) => mark.value === value)?.avatar ?? (
+      <Avatar alt="Agnes Walker" src="https://mui.com/static/images/avatar/5.jpg" />
+    )
+  );
+}
+
+function ConversationChunk() {
+  return (
+    <Card sx={{ display: 'flex', flexDirection: 'column', p: 2 }}>
+      <Stack direction={'row'} alignItems={'center'} justifyContent="flex-end" spacing={2}>
+        <Typography variant={'caption'} color={'GrayText'}>
+          Monday
+        </Typography>
+
+        <Divider orientation={'vertical'} flexItem />
+
+        <Typography variant={'caption'} color={'GrayText'}>
+          2:30pm
+        </Typography>
+
+        <Divider orientation={'vertical'} flexItem />
+
+        <Typography variant={'caption'} color={'GrayText'}>
+          6/18/22
+        </Typography>
+      </Stack>
+
+      <Box sx={{ position: 'relative', p: 4 }}>
+        <Slider
+          aria-label="Restricted values"
+          defaultValue={25}
+          valueLabelFormat={valueLabelFormat}
+          getAriaValueText={valuetext}
+          valueLabelDisplay="on"
+          marks={marks}
+        />
+      </Box>
+    </Card>
   );
 }
