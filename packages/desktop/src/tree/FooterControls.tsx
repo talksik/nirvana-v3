@@ -26,6 +26,7 @@ import { blueGrey } from '@mui/material/colors';
 import useAuth from '../providers/AuthProvider';
 import useConversations from '../providers/ConversationProvider';
 import useDevices from '../hooks/useDevices';
+import useElectron from '../providers/ElectronProvider';
 import useSearch from '../providers/SearchProvider';
 import useZen from '../providers/ZenProvider';
 
@@ -34,6 +35,8 @@ export default function FooterControls() {
 
   const { selectedConversation, priorityConversations } = useConversations();
   const { user, handleLogout } = useAuth();
+
+  const { handleToggleDesktopMode, desktopMode } = useElectron();
 
   const [openUserSettings, setOpenUserSettings] = useState<boolean>(false);
 
@@ -64,6 +67,7 @@ export default function FooterControls() {
     <Box
       sx={{
         maxWidth: 100,
+        width: '100%',
         zIndex: 10,
         boxShadow: 10,
 
@@ -104,7 +108,12 @@ export default function FooterControls() {
           <Divider orientation="horizontal" flexItem />
 
           <Tooltip title={'overlay mode'}>
-            <Switch color="secondary" size="small" />
+            <Switch
+              checked={desktopMode === 'overlayOnly'}
+              onChange={handleToggleDesktopMode}
+              color="secondary"
+              size="small"
+            />
           </Tooltip>
 
           <Divider orientation="horizontal" flexItem />
@@ -156,7 +165,7 @@ function OverlayConversation({
     if (!isSelected) {
       selectConversation(masterConversation._id.toString(), false);
     }
-  }, [masterConversation, selectConversation]);
+  }, [masterConversation, selectConversation, isSelected]);
 
   return (
     <Stack

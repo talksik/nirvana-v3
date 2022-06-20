@@ -8,6 +8,7 @@ import NewConversationDialog from './NewConversationDialog';
 import OmniSearchResults from './OmniSearchResults';
 import React from 'react';
 import { blueGrey } from '@mui/material/colors';
+import useElectron from '../providers/ElectronProvider';
 import useRouter from '../providers/RouterProvider';
 import useSearch from '../providers/SearchProvider';
 
@@ -15,6 +16,8 @@ export default function Terminal() {
   const { page } = useRouter();
 
   const { searchQuery } = useSearch();
+
+  const { desktopMode } = useElectron();
 
   return (
     <Container
@@ -25,44 +28,47 @@ export default function Terminal() {
         flexDirection: 'row',
       }}
     >
-      <Grid container spacing={0} sx={{ flex: 1 }}>
-        <Grid
-          item
-          xs={4}
-          sx={{
-            zIndex: 2,
-            backgroundColor: blueGrey[50],
-            boxShadow: 3,
-            borderRight: `1px solid ${blueGrey}`,
+      {desktopMode === 'mainApp' && (
+        <>
+          {/* create chat dialog */}
+          <NewConversationDialog />
 
-            display: 'flex',
-            flexDirection: 'column',
-          }}
-        >
-          <Navbar />
+          <Grid container spacing={0} sx={{ flex: 1 }}>
+            <Grid
+              item
+              xs={4}
+              sx={{
+                zIndex: 2,
+                backgroundColor: blueGrey[50],
+                boxShadow: 3,
+                borderRight: `1px solid ${blueGrey}`,
 
-          <Box sx={{ p: 2 }}>{searchQuery ? <OmniSearchResults /> : <ConversationList />}</Box>
-        </Grid>
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <Navbar />
 
-        <Grid
-          item
-          xs={8}
-          sx={{
-            backgroundColor: 'white',
-            display: 'flex',
-            flexDirection: 'column',
-            maxHeight: '100vh',
-            overflowY: 'auto',
-          }}
-        >
-          <MainPanel />
-        </Grid>
-      </Grid>
+              <Box sx={{ p: 2 }}>{searchQuery ? <OmniSearchResults /> : <ConversationList />}</Box>
+            </Grid>
+
+            <Grid
+              item
+              xs={8}
+              sx={{
+                backgroundColor: 'white',
+                display: 'flex',
+                flexDirection: 'column',
+                maxHeight: '100vh',
+              }}
+            >
+              <MainPanel />
+            </Grid>
+          </Grid>
+        </>
+      )}
 
       <FooterControls />
-
-      {/* create chat dialog */}
-      <NewConversationDialog />
     </Container>
   );
 }

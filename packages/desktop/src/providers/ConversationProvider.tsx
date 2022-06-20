@@ -384,7 +384,7 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
     });
 
     priorityConversations.sort((a, b) => {
-      return b.createdDate.getTime() - a.createdDate.getTime();
+      return b.createdDate.valueOf() - a.createdDate.valueOf();
     });
 
     return [priorityConversations, inboxConversations];
