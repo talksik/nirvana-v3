@@ -26,6 +26,7 @@ export default function Terminal() {
       sx={{
         display: 'flex',
         flexDirection: 'row',
+        overflow: 'clip',
       }}
     >
       {desktopMode === 'mainApp' && (

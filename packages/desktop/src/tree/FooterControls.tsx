@@ -172,7 +172,7 @@ function OverlayConversation({
       direction={'column'}
       spacing={1}
       sx={{
-        my: 2,
+        mb: 1,
         p: 1,
         borderRadius: 2,
         bgcolor: isSelected ? blueGrey[300] : blueGrey[600],
