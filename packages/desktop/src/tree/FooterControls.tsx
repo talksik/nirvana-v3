@@ -171,7 +171,7 @@ function OverlayConversation({
   masterConversation: MasterConversation;
   isSelected?: boolean;
 }) {
-  const { selectConversation } = useConversations();
+  const { selectConversation, handleEscape } = useConversations();
 
   const handleSelectConversation = useCallback(() => {
     selectConversation(masterConversation._id.toString(), false);
@@ -271,6 +271,7 @@ function OverlayConversation({
               color: 'GrayText',
             }}
             size="small"
+            onClick={handleEscape}
           >
             <FiX />
           </IconButton>

@@ -23,9 +23,10 @@ import {
   getConversationById,
   getConversations,
 } from '../api/NirvanaApi';
-import { useAsyncFn, useEffectOnce, useUnmount } from 'react-use';
+import { useAsyncFn, useEffectOnce, useKeyPressEvent, useUnmount } from 'react-use';
 
 import CreateConversationRequest from '@nirvana/core/requests/CreateConversationRequest.request';
+import { KeyboardShortcuts } from '../util/keyboard';
 import Peer from 'simple-peer';
 import { Typography } from '@mui/material';
 import User from '@nirvana/core/models/user.model';
@@ -72,6 +73,8 @@ interface IConversationContext {
   selectConversation?: (conversationId: string, temporaryOverrideSort?: boolean) => Promise<void>;
 
   handleStartConversation?: (otherUsers: User[], conversationName?: string) => Promise<boolean>;
+
+  handleEscape?: () => void;
 }
 
 const ConversationContext = React.createContext<IConversationContext>({
@@ -382,6 +385,12 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
     return [priorityConversations, inboxConversations];
   }, [conversationMap, user]);
 
+  const handleEscape = useCallback(() => {
+    selectConversation(undefined);
+  }, [selectConversation]);
+
+  useKeyPressEvent(KeyboardShortcuts.escape.shortcutKey, handleEscape);
+
   if (fetchState.error) {
     return (
       <Typography variant={'h6'} color={'danger'}>
@@ -399,6 +408,7 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
         selectConversation,
         priorityConversations: masterConversations[0],
         inboxConversations: masterConversations[1],
+        handleEscape,
       }}
     >
       {children}

@@ -79,7 +79,7 @@ export function ConversationList() {
       >
         <Stack direction={'column'} alignItems="center">
           <Typography align="center" variant="caption">
-            Have your favorites here for quick dialing
+            Add your favorites here for quick dialing
           </Typography>
         </Stack>
       </List>
