@@ -251,20 +251,24 @@ export function ConversationRow({
 
         <ListItemAvatar>
           <AvatarGroup variant={'rounded'}>
-            {conversation.members?.map((conversationUser, index) => (
-              <Avatar
-                key={`${conversation._id.toString()}-${conversationUser._id.toString()}-convoIcon`}
-                alt={conversationUser?.givenName}
-                src={conversationUser?.picture}
-                sx={{
-                  width: 30,
-                  height: 30,
-                  opacity: conversation.tunedInUsers?.includes(conversationUser._id.toString())
-                    ? '100%'
-                    : '20%',
-                }}
-              />
-            ))}
+            {conversation.members?.map((conversationUser, index) => {
+              return (
+                conversationUser._id.toString() !== user._id.toString() && (
+                  <Avatar
+                    key={`${conversation._id.toString()}-${conversationUser._id.toString()}-convoIcon`}
+                    alt={conversationUser?.givenName}
+                    src={conversationUser?.picture}
+                    sx={{
+                      width: 30,
+                      height: 30,
+                      opacity: conversation.tunedInUsers?.includes(conversationUser._id.toString())
+                        ? '100%'
+                        : '20%',
+                    }}
+                  />
+                )
+              );
+            })}
           </AvatarGroup>
         </ListItemAvatar>
 
