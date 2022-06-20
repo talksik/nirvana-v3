@@ -107,6 +107,21 @@ export default function FooterControls() {
         <Stack sx={{ mt: 'auto' }} spacing={1} direction={'column'} alignItems={'center'}>
           <Divider orientation="horizontal" flexItem />
 
+          {/* todo: not speaking mode, speaking mode, locked in mode */}
+          <Tooltip title="Speak or toggle by clicking here!">
+            <IconButton color="primary">
+              <FiSun />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Show video!">
+            <IconButton color="secondary" size="small">
+              <FiVideoOff />
+            </IconButton>
+          </Tooltip>
+
+          <Divider orientation="horizontal" flexItem />
+
           <Tooltip title={'overlay mode'}>
             <Switch
               checked={desktopMode === 'overlayOnly'}
@@ -142,7 +157,7 @@ export default function FooterControls() {
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
           >
-            <Avatar sx={{ width: 24, height: 24 }} alt={user.givenName} src={user.picture} />
+            <Avatar alt={user.givenName} src={user.picture} />
           </IconButton>
         </Stack>
       </Stack>
@@ -234,38 +249,17 @@ function OverlayConversation({
         <>
           <Divider orientation="horizontal" flexItem />
 
-          <Tooltip title="Show video!">
+          <Tooltip title="hit escape!">
             <IconButton
               sx={{
-                color: 'white',
+                color: 'GrayText',
               }}
               size="small"
+              onClick={handleEscape}
             >
-              <FiVideoOff />
+              <FiX />
             </IconButton>
           </Tooltip>
-
-          {/* todo: not speaking mode, speaking mode, locked in mode */}
-          <Tooltip title="Speak or toggle by clicking here!">
-            <IconButton
-              sx={{
-                color: 'white',
-              }}
-              size="small"
-            >
-              <FiSun />
-            </IconButton>
-          </Tooltip>
-
-          <IconButton
-            sx={{
-              color: 'GrayText',
-            }}
-            size="small"
-            onClick={handleEscape}
-          >
-            <FiX />
-          </IconButton>
         </>
       )}
     </Stack>
