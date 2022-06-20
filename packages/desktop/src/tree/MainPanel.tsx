@@ -82,7 +82,7 @@ function ConversationDetails({ masterConversation }: { masterConversation: Maste
       sx={{ maxHeight: '100vh', display: 'flex', flexDirection: 'column' }}
     >
       {/* conversation header details and controls */}
-      <Box sx={{ p: 2, boxShadow: 3, zIndex: 10 }}>
+      <Box sx={{ p: 2, boxShadow: 3, zIndex: 10 }} flexDirection={'column'}>
         <Stack direction="row" alignItems="center">
           <IconButton color="primary" size="small">
             <FiSun />
@@ -121,6 +121,19 @@ function ConversationDetails({ masterConversation }: { masterConversation: Maste
             </Tooltip>
           </Stack>
         </Stack>
+
+        {/* live video and screenshares */}
+        <Stack direction="row" alignItems={'center'}>
+          {masterConversation.room &&
+            Object.entries(masterConversation.room).map(([userId, userPeerContents]) => {
+              return (
+                <Video
+                  key={`userPeerRenderConvoDetails-${userId}`}
+                  stream={userPeerContents.stream}
+                />
+              );
+            })}
+        </Stack>
       </Box>
 
       <Stack direction={'column'} sx={{ flex: 1, overflowY: 'auto' }}>
@@ -154,20 +167,6 @@ function ConversationDetails({ masterConversation }: { masterConversation: Maste
             <ConversationChunk />
 
             <ConversationChunk />
-          </Stack>
-        </Container>
-
-        <Container maxWidth={false}>
-          <Stack direction="row" alignItems={'center'}>
-            {masterConversation.room &&
-              Object.entries(masterConversation.room).map(([userId, userPeerContents]) => {
-                return (
-                  <Video
-                    key={`userPeerRenderConvoDetails-${userId}`}
-                    stream={userPeerContents.stream}
-                  />
-                );
-              })}
           </Stack>
         </Container>
       </Stack>
