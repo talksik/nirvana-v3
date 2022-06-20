@@ -108,7 +108,7 @@ function ConversationDetails({ masterConversation }: { masterConversation: Maste
               </IconButton>
             </Tooltip>
 
-            <Tooltip title="Show screen!">
+            <Tooltip title="Share screen!">
               <IconButton size="small">
                 <FiAirplay />
               </IconButton>
