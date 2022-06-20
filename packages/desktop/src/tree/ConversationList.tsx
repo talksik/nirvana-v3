@@ -68,45 +68,16 @@ export function ConversationList() {
   }
 
   return (
-    <>
-      <List
-        subheader={
-          <ListSubheader>
-            <FiZap />
-            <Typography variant="subtitle2"> Favorites</Typography>
-          </ListSubheader>
-        }
-      >
-        <Stack direction={'column'} alignItems="center">
-          <Typography align="center" variant="caption">
-            Add your favorites here for quick dialing
-          </Typography>
-        </Stack>
-      </List>
-
-      <Divider />
-
-      <List
-        sx={{
-          pt: 2,
-        }}
-        subheader={
-          <ListSubheader>
-            <FiInbox />
-            <Typography variant="subtitle2"> Inbox</Typography>
-          </ListSubheader>
-        }
-      >
-        {inboxConversations.map((currentConversation, index) => (
-          <ConversationRow
-            key={`${currentConversation._id.toString()}-inboxConvoList`}
-            conversation={currentConversation}
-            index={index}
-            isPriority={false}
-          />
-        ))}
-      </List>
-    </>
+    <List>
+      {inboxConversations.map((currentConversation, index) => (
+        <ConversationRow
+          key={`${currentConversation._id.toString()}-inboxConvoList`}
+          conversation={currentConversation}
+          index={index}
+          isPriority={false}
+        />
+      ))}
+    </List>
   );
 }
 
