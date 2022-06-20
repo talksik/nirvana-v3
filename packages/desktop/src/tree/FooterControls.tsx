@@ -1,23 +1,15 @@
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Avatar,
   AvatarGroup,
   Box,
   Button,
-  Checkbox,
   Container,
   Dialog,
   Divider,
-  Fab,
   FormControl,
-  FormControlLabel,
   FormHelperText,
   IconButton,
   InputLabel,
-  ListItemIcon,
-  Menu,
   MenuItem,
   Select,
   Stack,
@@ -25,23 +17,9 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import {
-  FiActivity,
-  FiAirplay,
-  FiChevronDown,
-  FiCircle,
-  FiHeadphones,
-  FiHelpCircle,
-  FiLink,
-  FiLogOut,
-  FiSettings,
-  FiSun,
-  FiVideoOff,
-  FiX,
-} from 'react-icons/fi';
+import { FiSettings, FiSun, FiVideoOff, FiX } from 'react-icons/fi';
 import React, { useCallback, useMemo, useState } from 'react';
 
-import ConversationLabel from '../subcomponents/ConversationLabel';
 import { MasterConversation } from '../util/types';
 import { SUPPORT_DISPLAY_NAME } from '../util/support';
 import { blueGrey } from '@mui/material/colors';
@@ -93,6 +71,7 @@ export default function FooterControls() {
 
         display: 'flex',
       }}
+      className={'titlebar'}
     >
       <Stack
         direction={'column'}
@@ -187,7 +166,7 @@ function OverlayConversation({
         my: 2,
         p: 1,
         borderRadius: 2,
-        bgcolor: isSelected ? blueGrey[300] : '',
+        bgcolor: isSelected ? blueGrey[300] : blueGrey[600],
         transition: (theme) =>
           theme.transitions.create(['background-color', 'transform'], {
             duration: theme.transitions.duration.standard,
@@ -226,6 +205,7 @@ function OverlayConversation({
             marginTop: -2,
           },
         }}
+        max={3}
       >
         {masterConversation.members?.map((conversationUser, index) => (
           <Avatar
