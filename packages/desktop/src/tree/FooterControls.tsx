@@ -186,7 +186,10 @@ function OverlayConversation({
         p: 1,
         borderRadius: 2,
         bgcolor: isSelected ? blueGrey[300] : '',
-        transition: 'background 1s, color 1s',
+        transition: (theme) =>
+          theme.transitions.create(['background-color', 'transform'], {
+            duration: theme.transitions.duration.standard,
+          }),
 
         cursor: 'pointer',
 
