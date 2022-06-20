@@ -14,7 +14,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { FiActivity, FiCircle, FiInbox, FiSun } from 'react-icons/fi';
+import { FiActivity, FiCircle, FiInbox, FiSun, FiZap } from 'react-icons/fi';
 import React, { useCallback, useMemo } from 'react';
 import { useKeyPressEvent, useRendersCount } from 'react-use';
 
@@ -107,6 +107,26 @@ export function ConversationList() {
   return (
     <>
       <List
+        subheader={
+          <ListSubheader>
+            <FiZap />
+            <Typography variant="subtitle2"> Favorites</Typography>
+          </ListSubheader>
+        }
+      >
+        <Stack direction={'column'} alignItems="center">
+          <Typography align="center" variant="caption">
+            Have your favorites here for quick dialing
+          </Typography>
+        </Stack>
+      </List>
+
+      <Divider />
+
+      <List
+        sx={{
+          pt: 2,
+        }}
         subheader={
           <ListSubheader>
             <FiActivity />
