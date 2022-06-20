@@ -171,6 +171,12 @@ function OverlayConversation({
   masterConversation: MasterConversation;
   isSelected?: boolean;
 }) {
+  const { selectConversation } = useConversations();
+
+  const handleSelectConversation = useCallback(() => {
+    selectConversation(masterConversation._id.toString(), false);
+  }, [masterConversation, selectConversation]);
+
   return (
     <Stack
       direction={'column'}
@@ -188,6 +194,7 @@ function OverlayConversation({
           bgcolor: blueGrey[300],
         },
       }}
+      onClick={handleSelectConversation}
       alignItems={'center'}
     >
       {/*  status */}
