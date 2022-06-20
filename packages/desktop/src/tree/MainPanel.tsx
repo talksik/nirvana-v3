@@ -82,7 +82,7 @@ function ConversationDetails({ masterConversation }: { masterConversation: Maste
       sx={{ maxHeight: '100vh', display: 'flex', flexDirection: 'column' }}
     >
       {/* conversation header details and controls */}
-      <Box sx={{ p: 2, boxShadow: 3, zIndex: 10 }} flexDirection={'column'}>
+      <Box className={'titlebar'} sx={{ p: 2, boxShadow: 3, zIndex: 10 }} flexDirection={'column'}>
         <Stack direction="row" alignItems="center">
           <IconButton color="primary" size="small">
             <FiSun />
