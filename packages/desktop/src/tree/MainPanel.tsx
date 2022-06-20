@@ -125,7 +125,7 @@ function ConversationDetails({ masterConversation }: { masterConversation: Maste
 
       <Stack direction={'column'} sx={{ flex: 1, overflowY: 'auto' }}>
         {/* main canvas */}
-        <Container maxWidth={'sm'} sx={{ pt: 2 }}>
+        <Container maxWidth={'sm'} sx={{ py: 2 }}>
           <Stack spacing={1} sx={{ display: 'flex', flexDirection: 'column', py: 2 }}>
             <Typography textAlign={'center'} color="GrayText" variant={'subtitle1'}>
               last week
