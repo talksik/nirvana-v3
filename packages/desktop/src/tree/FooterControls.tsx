@@ -103,7 +103,6 @@ export default function FooterControls() {
           p: 1,
           flex: 1,
         }}
-        spacing={2}
       >
         {priorityConversations.map((masterPriorityConversation) => (
           <OverlayConversation
@@ -177,9 +176,17 @@ function OverlayConversation({
       direction={'column'}
       spacing={1}
       sx={{
+        my: 2,
         p: 1,
         borderRadius: 2,
         bgcolor: isSelected ? blueGrey[300] : '',
+        transition: 'background 1s, color 1s',
+
+        cursor: 'pointer',
+
+        '&:hover': {
+          bgcolor: blueGrey[300],
+        },
       }}
       alignItems={'center'}
     >
