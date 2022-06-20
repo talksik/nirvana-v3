@@ -206,7 +206,7 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
   // selecting an id and making sure that it's in the map and the views just use the id to access from map
   // get conversation from universe...hit if it's local, miss and fetch if not here
   const selectConversation = useCallback(
-    async (conversationId: string, temporaryOverrideSort = false) => {
+    async (conversationId?: string, temporaryOverrideSort = false) => {
       /**
        * see if there is such a conversation in our map
        * if not, then go and fetch it from backend
@@ -214,7 +214,7 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
        */
 
       if (!conversationId) {
-        toast.error('must select a conversation');
+        setSelectedConversation(undefined);
         return;
       }
 
