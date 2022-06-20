@@ -155,6 +155,15 @@ export default function FooterControls() {
                 <FiSun />
               </IconButton>
             </Tooltip>
+
+            <IconButton
+              sx={{
+                color: 'GrayText',
+              }}
+              size="small"
+            >
+              <FiX />
+            </IconButton>
           </Stack>
         )}
 
