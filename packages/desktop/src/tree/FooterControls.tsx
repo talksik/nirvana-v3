@@ -182,6 +182,7 @@ export default function FooterControls() {
                 color: 'white',
               }}
               size="small"
+              onClick={handleClickProfile}
             >
               <FiSettings />
             </IconButton>
@@ -257,56 +258,46 @@ function UserSettingsDialog({ open, handleClose }: { handleClose: () => void; op
             </Button>
           </Stack>
 
-          <FormControl fullWidth>
-            <InputLabel>Microphone</InputLabel>
-            <Select label="Microphone">
-              <MenuItem value={NO_DEVICE_SELECTION}>
-                <em>None</em>
-              </MenuItem>
-              {devices.audioInputDevices.map((deviceInfo) => (
-                <MenuItem
-                  key={`micDeviceSelection-${deviceInfo.deviceId}`}
-                  value={deviceInfo.deviceId}
-                >
-                  {deviceInfo.label}
+          <Stack direction="row" alignItems="flex-start" spacing={1}>
+            <FormControl fullWidth>
+              <InputLabel>Microphone</InputLabel>
+              <Select label="Microphone">
+                <MenuItem value={NO_DEVICE_SELECTION}>
+                  <em>None</em>
                 </MenuItem>
-              ))}
-            </Select>
-            <FormHelperText>
-              Your speaker selection should be done on your computer status or taskbar. Please
-              select distinct speaker and microphone to avoid distortion when you have a bluetooth
-              device connected.
-            </FormHelperText>
-          </FormControl>
+                {devices.audioInputDevices.map((deviceInfo) => (
+                  <MenuItem
+                    key={`micDeviceSelection-${deviceInfo.deviceId}`}
+                    value={deviceInfo.deviceId}
+                  >
+                    {deviceInfo.label}
+                  </MenuItem>
+                ))}
+              </Select>
+              <FormHelperText>
+                Your speaker selection should be done on your computer status or taskbar. Please
+                select distinct speaker and microphone to avoid distortion when you have a bluetooth
+                device connected.
+              </FormHelperText>
+            </FormControl>
 
-          <FormControl fullWidth>
-            <InputLabel>Video</InputLabel>
-            <Select label="Audio">
-              <MenuItem value={NO_DEVICE_SELECTION}>
-                <em>None</em>
-              </MenuItem>
-              {devices.videoDevices.map((deviceInfo) => (
-                <MenuItem
-                  key={`videoDeviceSelection-${deviceInfo.deviceId}`}
-                  value={deviceInfo.deviceId}
-                >
-                  {deviceInfo.label}
+            <FormControl fullWidth>
+              <InputLabel>Video</InputLabel>
+              <Select label="Audio">
+                <MenuItem value={NO_DEVICE_SELECTION}>
+                  <em>None</em>
                 </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          <FormControl fullWidth disabled>
-            <InputLabel>Screen</InputLabel>
-            <Select value={'coming soon'} label="Audio">
-              <MenuItem value={NO_DEVICE_SELECTION}>
-                <em>None</em>
-              </MenuItem>
-              <MenuItem value={'coming soon'}>{'coming soon'}</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem>
-            </Select>
-          </FormControl>
+                {devices.videoDevices.map((deviceInfo) => (
+                  <MenuItem
+                    key={`videoDeviceSelection-${deviceInfo.deviceId}`}
+                    value={deviceInfo.deviceId}
+                  >
+                    {deviceInfo.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Stack>
 
           <Divider />
 
