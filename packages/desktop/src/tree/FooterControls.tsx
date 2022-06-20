@@ -174,7 +174,9 @@ function OverlayConversation({
   const { selectConversation, handleEscape } = useConversations();
 
   const handleSelectConversation = useCallback(() => {
-    selectConversation(masterConversation._id.toString(), false);
+    if (!isSelected) {
+      selectConversation(masterConversation._id.toString(), false);
+    }
   }, [masterConversation, selectConversation]);
 
   return (
