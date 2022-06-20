@@ -20,19 +20,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [userFetchState, fetchUser] = useAsyncFn(getUserDetails);
 
   // ! REMOVING FOR TESTING MULTIPLE CLIENTS
-  // useEffect(() => {
-  //   // on load of this, if we already have jwt tokens in store,
-  //   // then try using them with auth check
-  //   window.electronAPI.store.get(STORE_ITEMS.AUTH_SESSION_JWT).then((jwtToken: string) => {
-  //     if (jwtToken) {
-  //       setJwtToken(jwtToken);
+  useEffect(() => {
+    // on load of this, if we already have jwt tokens in store,
+    // then try using them with auth check
+    window.electronAPI.store.get(STORE_ITEMS.AUTH_SESSION_JWT).then((jwtToken: string) => {
+      if (jwtToken) {
+        setJwtToken(jwtToken);
 
-  //       console.log('retrieved jwtToken from storage', jwtToken);
-  //     } else {
-  //       console.log('no jwt token in store');
-  //     }
-  //   });
-  // }, []);
+        console.log('retrieved jwtToken from storage', jwtToken);
+      } else {
+        console.log('no jwt token in store');
+      }
+    });
+  }, []);
 
   // todo: check this in intervals repeatedly
   useEffect(() => {
