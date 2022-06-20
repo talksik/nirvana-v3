@@ -33,6 +33,7 @@ import {
   FiHelpCircle,
   FiLink,
   FiLogOut,
+  FiSettings,
   FiSun,
   FiVideoOff,
   FiX,
@@ -76,6 +77,8 @@ export default function FooterControls() {
         boxShadow: 10,
 
         bgcolor: blueGrey[800],
+
+        display: 'flex',
       }}
     >
       <Stack
@@ -88,38 +91,6 @@ export default function FooterControls() {
           flex: 1,
         }}
       >
-        <Stack spacing={1} direction={'column'} alignItems={'center'}>
-          <IconButton
-            onClick={handleClickProfile}
-            size="small"
-            sx={{ borderRadius: 1 }}
-            aria-controls={open ? 'account-menu' : undefined}
-            aria-haspopup="true"
-            aria-expanded={open ? 'true' : undefined}
-          >
-            <Avatar alt={user.givenName} src={user.picture} />
-          </IconButton>
-
-          <Tooltip title="Sound configuration">
-            <IconButton
-              sx={{
-                color: 'white',
-              }}
-              size="small"
-            >
-              <FiHeadphones />
-            </IconButton>
-          </Tooltip>
-
-          <Tooltip title={'overlay mode'}>
-            <Switch color="secondary" size="small" />
-          </Tooltip>
-
-          <Button size={'small'} color={'secondary'} variant="text" onClick={handleFlowState}>
-            flow
-          </Button>
-        </Stack>
-
         {selectedConversation && (
           <Stack direction={'column'} spacing={1}>
             <AvatarGroup
@@ -209,6 +180,40 @@ export default function FooterControls() {
             </Tooltip>
           </Stack>
         )}
+
+        <Stack sx={{ mt: 'auto' }} spacing={1} direction={'column'} alignItems={'center'}>
+          <Divider orientation="horizontal" flexItem />
+
+          <Tooltip title="Media settings and more">
+            <IconButton
+              sx={{
+                color: 'white',
+              }}
+              size="small"
+            >
+              <FiSettings />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title={'overlay mode'}>
+            <Switch color="secondary" size="small" />
+          </Tooltip>
+
+          <Button size={'small'} color={'secondary'} variant="text" onClick={handleFlowState}>
+            flow
+          </Button>
+
+          <IconButton
+            onClick={handleClickProfile}
+            size="small"
+            sx={{ borderRadius: 1 }}
+            aria-controls={open ? 'account-menu' : undefined}
+            aria-haspopup="true"
+            aria-expanded={open ? 'true' : undefined}
+          >
+            <Avatar sx={{ width: 24, height: 24 }} alt={user.givenName} src={user.picture} />
+          </IconButton>
+        </Stack>
       </Stack>
 
       <UserSettingsDialog open={openUserSettings} handleClose={handleCloseUserSettings} />
