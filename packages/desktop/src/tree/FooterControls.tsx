@@ -26,6 +26,8 @@ import {
   FiVideo,
   FiVideoOff,
   FiX,
+  FiZap,
+  FiZapOff,
 } from 'react-icons/fi';
 import React, { useCallback, useMemo, useState } from 'react';
 
@@ -182,6 +184,17 @@ function OverlayConversation({
     }
   }, [masterConversation, selectConversation, isSelected]);
 
+  const isPriority = useMemo(() => {
+    const personalConvoMember = masterConversation.members.find(
+      (mem) => mem._id.toString() === user._id.toString(),
+    );
+    if (personalConvoMember && personalConvoMember.memberState === 'priority') {
+      return true;
+    }
+
+    return false;
+  }, [masterConversation, user]);
+
   return (
     <Stack
       direction={'column'}
@@ -248,8 +261,18 @@ function OverlayConversation({
       {isSelected && (
         <>
           <Divider orientation="horizontal" flexItem />
-
           {/* todo: not speaking mode, speaking mode, locked in mode */}
+          <Tooltip title="pinned">
+            <IconButton
+              sx={{
+                color: 'white',
+              }}
+              size="small"
+              aria-selected={isPriority ? true : false}
+            >
+              {isPriority ? <FiZap /> : <FiZapOff />}
+            </IconButton>
+          </Tooltip>
 
           <Tooltip title="hit escape!">
             <IconButton

@@ -116,18 +116,6 @@ function ConversationDetails({ masterConversation }: { masterConversation: Maste
 
             <Divider orientation={'vertical'} flexItem />
 
-            <Tooltip title="Add to priority panel!">
-              {isPriority ? (
-                <Fab size="small" color="primary">
-                  <FiZap />
-                </Fab>
-              ) : (
-                <IconButton size="small">
-                  <FiZap />
-                </IconButton>
-              )}
-            </Tooltip>
-
             <Tooltip title="Add people to the conversation">
               <IconButton size="small">
                 <FiUserPlus />
