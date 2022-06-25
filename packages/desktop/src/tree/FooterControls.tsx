@@ -106,6 +106,7 @@ export default function FooterControls() {
         bgcolor: blueGrey[800],
 
         display: 'flex',
+        flexDirection: 'column',
       }}
       className={'titlebar'}
     >
@@ -114,9 +115,9 @@ export default function FooterControls() {
         alignItems={'center'}
         justifyContent={'flex-start'}
         sx={{
-          color: 'GrayText',
           p: 1,
           flex: 1,
+          overflow: 'auto',
         }}
       >
         {priorityConversations.map((masterPriorityConversation) => (
@@ -135,41 +136,41 @@ export default function FooterControls() {
             <OverlayConversation masterConversation={selectedConversation} isSelected={true} />
           </>
         )}
+      </Stack>
 
-        <Stack sx={{ mt: 'auto' }} spacing={1} direction={'column'} alignItems={'center'}>
-          <Divider orientation="horizontal" flexItem />
+      <Stack sx={{ mt: 'auto' }} spacing={1} direction={'column'} alignItems={'center'}>
+        <Divider orientation="horizontal" flexItem />
 
-          <Tooltip title="Show video!">
-            <IconButton size={'small'} sx={{ color: 'white' }} onClick={handleToggleVideo}>
-              {isVideoOn ? <FiVideo /> : <FiVideoOff />}
-            </IconButton>
-          </Tooltip>
-
-          <Divider orientation="horizontal" flexItem />
-
-          <Button size={'small'} color={'secondary'} variant="text" onClick={handleTurnOnFlowState}>
-            flow
-          </Button>
-
-          <IconButton
-            onClick={handleClickProfile}
-            size="small"
-            sx={{ borderRadius: 1 }}
-            aria-controls={open ? 'account-menu' : undefined}
-            aria-haspopup="true"
-            aria-expanded={open ? 'true' : undefined}
-          >
-            <Avatar alt={user.givenName} src={user.picture} />
+        <Tooltip title="Show video!">
+          <IconButton size={'small'} sx={{ color: 'white' }} onClick={handleToggleVideo}>
+            {isVideoOn ? <FiVideo /> : <FiVideoOff />}
           </IconButton>
+        </Tooltip>
 
-          <Divider orientation="horizontal" flexItem />
+        <Divider orientation="horizontal" flexItem />
 
-          <Tooltip title={desktopMode === 'overlayOnly' ? 'expand' : 'collapse'}>
-            <IconButton color={'info'} onClick={handleToggleDesktopMode}>
-              {desktopMode === 'overlayOnly' ? <FiChevronsLeft /> : <FiChevronsRight />}
-            </IconButton>
-          </Tooltip>
-        </Stack>
+        <Button size={'small'} color={'secondary'} variant="text" onClick={handleTurnOnFlowState}>
+          flow
+        </Button>
+
+        <IconButton
+          onClick={handleClickProfile}
+          size="small"
+          sx={{ borderRadius: 1 }}
+          aria-controls={open ? 'account-menu' : undefined}
+          aria-haspopup="true"
+          aria-expanded={open ? 'true' : undefined}
+        >
+          <Avatar alt={user.givenName} src={user.picture} />
+        </IconButton>
+
+        <Divider orientation="horizontal" flexItem />
+
+        <Tooltip title={desktopMode === 'overlayOnly' ? 'expand' : 'collapse'}>
+          <IconButton color={'info'} onClick={handleToggleDesktopMode}>
+            {desktopMode === 'overlayOnly' ? <FiChevronsLeft /> : <FiChevronsRight />}
+          </IconButton>
+        </Tooltip>
       </Stack>
 
       <UserSettingsDialog open={openUserSettings} handleClose={handleCloseUserSettings} />
