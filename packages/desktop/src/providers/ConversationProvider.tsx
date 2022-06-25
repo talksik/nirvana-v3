@@ -220,7 +220,12 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
         setSelectedConversation((prevConversation) => {
           // untuned from previous line
           if (prevConversation?._id) {
-            handleUntuneFromLine(prevConversation._id.toString());
+            const personalConvoMember = prevConversation.members?.find(
+              (mem) => mem._id.toString() === user._id.toString(),
+            );
+            if (personalConvoMember && personalConvoMember.memberState === 'inbox') {
+              handleUntuneFromLine(prevConversation._id.toString());
+            }
           }
 
           return undefined;
