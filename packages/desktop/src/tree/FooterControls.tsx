@@ -262,7 +262,7 @@ function OverlayConversation({
         <>
           <Divider orientation="horizontal" flexItem />
           {/* todo: not speaking mode, speaking mode, locked in mode */}
-          <Tooltip title="pinned">
+          <Tooltip title={isPriority ? 'zapped' : 'un-zapped'}>
             <IconButton
               sx={{
                 color: 'white',
