@@ -22,6 +22,9 @@ export const NirvanaTheme = createTheme({
     secondary: {
       main: '#FFB6B6',
     },
+    info: {
+      main: blueGrey[300],
+    },
   },
 
   components: {
