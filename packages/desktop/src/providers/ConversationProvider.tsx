@@ -214,7 +214,14 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
        */
 
       if (!conversationId) {
-        setSelectedConversation(undefined);
+        setSelectedConversation((prevConversation) => {
+          // untuned from previous line
+          if (prevConversation?._id) {
+            handleUntuneFromLine(prevConversation._id.toString());
+          }
+
+          return undefined;
+        });
         return;
       }
 
