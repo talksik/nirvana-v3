@@ -39,7 +39,7 @@ export default function Terminal() {
               item
               xs={4}
               sx={{
-                zIndex: 2,
+                zIndex: 10,
                 backgroundColor: blueGrey[50],
                 boxShadow: 3,
                 borderRight: `1px solid ${blueGrey}`,

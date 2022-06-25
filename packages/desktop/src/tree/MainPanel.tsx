@@ -79,10 +79,17 @@ function ConversationDetails({ masterConversation }: { masterConversation: Maste
     <Container
       maxWidth={false}
       disableGutters
-      sx={{ maxHeight: '100vh', display: 'flex', flexDirection: 'column' }}
+      sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}
     >
-      {/* conversation header details and controls */}
-      <Box className={'titlebar'} sx={{ p: 2, boxShadow: 3, zIndex: 10 }} flexDirection={'column'}>
+      {/* conversation header */}
+      <Box
+        className={'titlebar'}
+        sx={{
+          p: 1,
+          borderBottom: `1px solid`,
+          borderBottomColor: blueGrey[50],
+        }}
+      >
         <Stack direction="row" alignItems="center">
           <IconButton color="primary" size="small">
             <FiSun />
@@ -102,39 +109,12 @@ function ConversationDetails({ masterConversation }: { masterConversation: Maste
             }}
             spacing={1}
           >
-            <Tooltip title="Paste image or link!">
-              <IconButton size="small">
-                <FiLink />
-              </IconButton>
-            </Tooltip>
-
-            <Tooltip title="Share screen!">
-              <IconButton size="small">
-                <FiAirplay />
-              </IconButton>
-            </Tooltip>
-
-            <Divider orientation={'vertical'} flexItem />
-
             <Tooltip title="Add people to the conversation">
               <IconButton size="small">
                 <FiUserPlus />
               </IconButton>
             </Tooltip>
           </Stack>
-        </Stack>
-
-        {/* live video and screenshares */}
-        <Stack direction="row" alignItems={'center'}>
-          {masterConversation.room &&
-            Object.entries(masterConversation.room).map(([userId, userPeerContents]) => {
-              return (
-                <Video
-                  key={`userPeerRenderConvoDetails-${userId}`}
-                  stream={userPeerContents.stream}
-                />
-              );
-            })}
         </Stack>
       </Box>
 
@@ -325,6 +305,35 @@ function ConversationDetails({ masterConversation }: { masterConversation: Maste
           </Stack>
         </Container>
       </Stack>
+
+      <Box sx={{ p: 2, boxShadow: 3, zIndex: 10 }} flexDirection={'column'} mt={'auto'}>
+        {/* live video and screenshares */}
+        <Stack direction="row" alignItems={'center'}>
+          {masterConversation.room &&
+            Object.entries(masterConversation.room).map(([userId, userPeerContents]) => {
+              return (
+                <Video
+                  key={`userPeerRenderConvoDetails-${userId}`}
+                  stream={userPeerContents.stream}
+                />
+              );
+            })}
+        </Stack>
+
+        <Stack direction="row" alignItems="center" justifyContent={'flex-end'}>
+          <Tooltip title="Paste image or link!">
+            <IconButton size="small">
+              <FiLink />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Share screen!">
+            <IconButton size="small">
+              <FiAirplay />
+            </IconButton>
+          </Tooltip>
+        </Stack>
+      </Box>
     </Container>
   );
 }
