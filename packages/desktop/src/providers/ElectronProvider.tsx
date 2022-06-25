@@ -37,7 +37,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
       stayOnTop = true;
       finalDimensions = {
         height: DEFAULT_APP_PRESET.height,
-        width: 100,
+        width: 80,
       };
       finalPosition = 'topRight';
     }

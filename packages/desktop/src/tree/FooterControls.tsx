@@ -98,7 +98,7 @@ export default function FooterControls() {
   return (
     <Box
       sx={{
-        maxWidth: 100,
+        maxWidth: 80,
         width: '100%',
         zIndex: 10,
         boxShadow: 10,
