@@ -20,6 +20,7 @@ import {
 import {
   FiChevronsLeft,
   FiChevronsRight,
+  FiCircle,
   FiRss,
   FiSettings,
   FiSun,
@@ -280,13 +281,21 @@ function OverlayConversation({
       {isSelected && (
         <>
           <Divider orientation="horizontal" flexItem />
-          {/* todo: not speaking mode, speaking mode, locked in mode */}
+
+          <Tooltip title={'enter to toggle, ~ to push to talk'}>
+            <IconButton color={'primary'} size="small">
+              {isPriority ? <FiSun /> : <FiCircle />}
+            </IconButton>
+          </Tooltip>
+
+          <Divider orientation="horizontal" flexItem />
+
           <Tooltip title={isPriority ? 'zapped' : 'un-zapped'}>
             <IconButton
               sx={{
                 color: 'white',
+                fontSize: 15,
               }}
-              size="small"
               aria-selected={isPriority ? true : false}
               onClick={handleToggleConversationZap}
             >
