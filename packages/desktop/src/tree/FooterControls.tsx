@@ -52,6 +52,16 @@ export default function FooterControls() {
 
   const [openUserSettings, setOpenUserSettings] = useState<boolean>(false);
 
+  const handleTurnOnFlowState = useCallback(() => {
+    // when in overlay mode, we need to toggle main app and then go into flow state
+
+    if (desktopMode === 'overlayOnly') {
+      handleToggleDesktopMode();
+    }
+
+    handleFlowState();
+  }, [handleFlowState, desktopMode, handleToggleDesktopMode]);
+
   const handleClickProfile = useCallback(
     (event: React.MouseEvent<HTMLElement>) => {
       if (desktopMode === 'overlayOnly') {
@@ -137,7 +147,7 @@ export default function FooterControls() {
 
           <Divider orientation="horizontal" flexItem />
 
-          <Button size={'small'} color={'secondary'} variant="text" onClick={handleFlowState}>
+          <Button size={'small'} color={'secondary'} variant="text" onClick={handleTurnOnFlowState}>
             flow
           </Button>
 

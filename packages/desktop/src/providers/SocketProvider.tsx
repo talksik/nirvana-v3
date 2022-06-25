@@ -1,10 +1,10 @@
 import { Button, Container, Typography } from '@mui/material';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { Socket, io } from 'socket.io-client';
+import { useMount, useUnmount } from 'react-use';
 
 import toast from 'react-hot-toast';
 import useAuth from './AuthProvider';
-import { useUnmount } from 'react-use';
 
 interface ISocketProvider {
   $ws: Socket;
@@ -63,9 +63,9 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     set$ws(socketConnection);
   }, [initiateSocketStabilityListeners, jwtToken, set$ws]);
 
-  useEffect(() => {
+  useMount(() => {
     connect();
-  }, [connect]);
+  });
 
   useUnmount(() => {
     $ws?.disconnect();
