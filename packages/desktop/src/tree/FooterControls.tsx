@@ -17,7 +17,14 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { FiSettings, FiSun, FiVideoOff, FiX } from 'react-icons/fi';
+import {
+  FiChevronsLeft,
+  FiChevronsRight,
+  FiSettings,
+  FiSun,
+  FiVideoOff,
+  FiX,
+} from 'react-icons/fi';
 import React, { useCallback, useMemo, useState } from 'react';
 
 import { MasterConversation } from '../util/types';
@@ -43,9 +50,13 @@ export default function FooterControls() {
 
   const handleClickProfile = useCallback(
     (event: React.MouseEvent<HTMLElement>) => {
+      if (desktopMode === 'overlayOnly') {
+        handleToggleDesktopMode();
+      }
+
       setOpenUserSettings(true);
     },
-    [setOpenUserSettings],
+    [setOpenUserSettings, handleToggleDesktopMode, desktopMode],
   );
 
   const handleCloseUserSettings = useCallback(() => {
@@ -88,6 +99,15 @@ export default function FooterControls() {
           flex: 1,
         }}
       >
+        <Stack
+          direction={'column'}
+          alignItems={'center'}
+          spacing={1}
+          sx={{
+            py: 2,
+          }}
+        ></Stack>
+
         {priorityConversations.map((masterPriorityConversation) => (
           <OverlayConversation
             key={`priorityConversationOverlay-${masterPriorityConversation._id.toString()}`}
@@ -108,13 +128,25 @@ export default function FooterControls() {
         <Stack sx={{ mt: 'auto' }} spacing={1} direction={'column'} alignItems={'center'}>
           <Divider orientation="horizontal" flexItem />
 
-          <Tooltip title={'overlay mode'}>
-            <Switch
-              checked={desktopMode === 'overlayOnly'}
-              onChange={handleToggleDesktopMode}
-              color="secondary"
+          <Tooltip title="Speak or toggle by clicking here!">
+            <IconButton
+              sx={{
+                color: 'white',
+              }}
+            >
+              <MdOutlineRecordVoiceOver />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Show video!">
+            <IconButton
+              sx={{
+                color: 'white',
+              }}
               size="small"
-            />
+            >
+              <FiVideoOff />
+            </IconButton>
           </Tooltip>
 
           <Divider orientation="horizontal" flexItem />
@@ -133,6 +165,19 @@ export default function FooterControls() {
           >
             <Avatar alt={user.givenName} src={user.picture} />
           </IconButton>
+
+          <Divider orientation="horizontal" flexItem />
+
+          <Tooltip title={desktopMode === 'overlayOnly' ? 'expand' : 'collapse'}>
+            <IconButton
+              sx={{
+                color: 'white',
+              }}
+              onClick={handleToggleDesktopMode}
+            >
+              {desktopMode === 'overlayOnly' ? <FiChevronsLeft /> : <FiChevronsRight />}
+            </IconButton>
+          </Tooltip>
         </Stack>
       </Stack>
 
@@ -231,26 +276,6 @@ function OverlayConversation({
           <Divider orientation="horizontal" flexItem />
 
           {/* todo: not speaking mode, speaking mode, locked in mode */}
-          <Tooltip title="Speak or toggle by clicking here!">
-            <IconButton
-              sx={{
-                color: 'white',
-              }}
-            >
-              <MdOutlineRecordVoiceOver />
-            </IconButton>
-          </Tooltip>
-
-          <Tooltip title="Show video!">
-            <IconButton
-              sx={{
-                color: 'white',
-              }}
-              size="small"
-            >
-              <FiVideoOff />
-            </IconButton>
-          </Tooltip>
 
           <Tooltip title="hit escape!">
             <IconButton
