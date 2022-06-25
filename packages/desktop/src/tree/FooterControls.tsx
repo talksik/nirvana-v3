@@ -20,8 +20,10 @@ import {
 import {
   FiChevronsLeft,
   FiChevronsRight,
+  FiRss,
   FiSettings,
   FiSun,
+  FiVideo,
   FiVideoOff,
   FiX,
 } from 'react-icons/fi';
@@ -58,6 +60,12 @@ export default function FooterControls() {
     },
     [setOpenUserSettings, handleToggleDesktopMode, desktopMode],
   );
+
+  const [isVideoOn, setIsVideoOn] = useState<boolean>(false);
+
+  const handleToggleVideo = useCallback(() => {
+    setIsVideoOn((prevVal) => !prevVal);
+  }, [setIsVideoOn]);
 
   const handleCloseUserSettings = useCallback(() => {
     setOpenUserSettings(false);
@@ -99,15 +107,6 @@ export default function FooterControls() {
           flex: 1,
         }}
       >
-        <Stack
-          direction={'column'}
-          alignItems={'center'}
-          spacing={1}
-          sx={{
-            py: 2,
-          }}
-        ></Stack>
-
         {priorityConversations.map((masterPriorityConversation) => (
           <OverlayConversation
             key={`priorityConversationOverlay-${masterPriorityConversation._id.toString()}`}
@@ -128,24 +127,9 @@ export default function FooterControls() {
         <Stack sx={{ mt: 'auto' }} spacing={1} direction={'column'} alignItems={'center'}>
           <Divider orientation="horizontal" flexItem />
 
-          <Tooltip title="Speak or toggle by clicking here!">
-            <IconButton
-              sx={{
-                color: 'white',
-              }}
-            >
-              <MdOutlineRecordVoiceOver />
-            </IconButton>
-          </Tooltip>
-
           <Tooltip title="Show video!">
-            <IconButton
-              sx={{
-                color: 'white',
-              }}
-              size="small"
-            >
-              <FiVideoOff />
+            <IconButton size={'small'} sx={{ color: 'white' }} onClick={handleToggleVideo}>
+              {isVideoOn ? <FiVideo /> : <FiVideoOff />}
             </IconButton>
           </Tooltip>
 
@@ -169,12 +153,7 @@ export default function FooterControls() {
           <Divider orientation="horizontal" flexItem />
 
           <Tooltip title={desktopMode === 'overlayOnly' ? 'expand' : 'collapse'}>
-            <IconButton
-              sx={{
-                color: 'white',
-              }}
-              onClick={handleToggleDesktopMode}
-            >
+            <IconButton color={'info'} onClick={handleToggleDesktopMode}>
               {desktopMode === 'overlayOnly' ? <FiChevronsLeft /> : <FiChevronsRight />}
             </IconButton>
           </Tooltip>
@@ -252,23 +231,18 @@ function OverlayConversation({
         }}
         max={3}
       >
-        {masterConversation.members?.map(
-          (conversationUser, index) =>
-            conversationUser._id.toString() !== user._id.toString() && (
-              <Avatar
-                key={`${masterConversation._id.toString()}-${conversationUser._id.toString()}-convoIcon`}
-                alt={conversationUser?.givenName}
-                src={conversationUser?.picture}
-                sx={{
-                  opacity: masterConversation.tunedInUsers?.includes(
-                    conversationUser._id.toString(),
-                  )
-                    ? '100%'
-                    : '20%',
-                }}
-              />
-            ),
-        )}
+        {masterConversation.members?.map((conversationUser, index) => (
+          <Avatar
+            key={`${masterConversation._id.toString()}-${conversationUser._id.toString()}-convoIcon`}
+            alt={conversationUser?.givenName}
+            src={conversationUser?.picture}
+            sx={{
+              opacity: masterConversation.tunedInUsers?.includes(conversationUser._id.toString())
+                ? '100%'
+                : '20%',
+            }}
+          />
+        ))}
       </AvatarGroup>
 
       {isSelected && (
