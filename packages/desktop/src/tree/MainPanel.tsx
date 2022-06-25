@@ -158,11 +158,84 @@ function ConversationDetails({ masterConversation }: { masterConversation: Maste
               last week
             </Typography>
 
-            <ConversationChunk />
+            <Card sx={{ display: 'flex', flexDirection: 'column', p: 2 }}>
+              <Stack
+                direction={'row'}
+                alignItems={'center'}
+                justifyContent="flex-start"
+                spacing={2}
+              >
+                <Avatar
+                  sx={{
+                    width: 20,
+                    height: 20,
+                  }}
+                  alt="Remy Sharp"
+                  src="https://mui.com/static/images/avatar/2.jpg"
+                />
 
-            <ConversationChunk />
+                <Typography variant={'subtitle2'} color={'GrayText'}>
+                  Arjun Patel
+                </Typography>
 
-            <ConversationChunk />
+                <Typography variant={'caption'} color={'GrayText'}>
+                  6/18/22 | 2:35pm
+                </Typography>
+              </Stack>
+            </Card>
+
+            <Card sx={{ display: 'flex', flexDirection: 'column', p: 2 }}>
+              <Stack
+                direction={'row'}
+                alignItems={'center'}
+                justifyContent="flex-start"
+                spacing={2}
+              >
+                <Avatar
+                  sx={{
+                    width: 20,
+                    height: 20,
+                  }}
+                  alt="Remy Sharp"
+                  src="https://mui.com/static/images/avatar/1.jpg"
+                />
+
+                <Typography variant={'subtitle2'} color={'GrayText'}>
+                  James Pod
+                </Typography>
+
+                <Typography variant={'caption'} color={'GrayText'}>
+                  6/19/22 | 10:00am
+                </Typography>
+              </Stack>
+            </Card>
+
+            <Card sx={{ display: 'flex', flexDirection: 'column', p: 2 }}>
+              <Stack
+                direction={'row'}
+                alignItems={'center'}
+                justifyContent="flex-start"
+                spacing={2}
+              >
+                <Avatar
+                  sx={{
+                    width: 20,
+                    height: 20,
+                    opacity: 0.2,
+                  }}
+                  alt="Remy Sharp"
+                  src="https://mui.com/static/images/avatar/2.jpg"
+                />
+
+                <Typography variant={'subtitle2'} color={'GrayText'}>
+                  Arjun Patel
+                </Typography>
+
+                <Typography variant={'caption'} color={'GrayText'}>
+                  6/19/22 | 4:02pm
+                </Typography>
+              </Stack>
+            </Card>
           </Stack>
 
           <Stack spacing={1} sx={{ display: 'flex', flexDirection: 'column', py: 2 }}>
@@ -170,7 +243,32 @@ function ConversationDetails({ masterConversation }: { masterConversation: Maste
               yesterday
             </Typography>
 
-            <ConversationChunk />
+            <Card sx={{ display: 'flex', flexDirection: 'column', p: 2 }}>
+              <Stack
+                direction={'row'}
+                alignItems={'center'}
+                justifyContent="flex-start"
+                spacing={2}
+              >
+                <Avatar
+                  sx={{
+                    width: 20,
+                    height: 20,
+                    opacity: 0.2,
+                  }}
+                  alt="Remy Sharp"
+                  src="https://mui.com/static/images/avatar/3.jpg"
+                />
+
+                <Typography variant={'subtitle2'} color={'GrayText'}>
+                  Joshua Bottle
+                </Typography>
+
+                <Typography variant={'caption'} color={'GrayText'}>
+                  11:35am
+                </Typography>
+              </Stack>
+            </Card>
           </Stack>
 
           <Stack spacing={1} sx={{ display: 'flex', flexDirection: 'column', py: 2 }}>
@@ -178,9 +276,58 @@ function ConversationDetails({ masterConversation }: { masterConversation: Maste
               today
             </Typography>
 
-            <ConversationChunk />
+            <Card sx={{ display: 'flex', flexDirection: 'column', p: 2 }}>
+              <Stack
+                direction={'row'}
+                alignItems={'center'}
+                justifyContent="flex-start"
+                spacing={2}
+              >
+                <Avatar
+                  sx={{
+                    width: 20,
+                    height: 20,
+                  }}
+                  alt="Remy Sharp"
+                  src="https://mui.com/static/images/avatar/2.jpg"
+                />
 
-            <ConversationChunk />
+                <Typography variant={'subtitle2'} color={'GrayText'}>
+                  Arjun Patel
+                </Typography>
+
+                <Typography variant={'caption'} color={'GrayText'}>
+                  4:02pm
+                </Typography>
+              </Stack>
+            </Card>
+
+            <Card sx={{ display: 'flex', flexDirection: 'column', p: 2 }}>
+              <Stack
+                direction={'row'}
+                alignItems={'center'}
+                justifyContent="flex-start"
+                spacing={2}
+              >
+                <Avatar
+                  sx={{
+                    width: 20,
+                    height: 20,
+                    opacity: 0.2,
+                  }}
+                  alt="Remy Sharp"
+                  src="https://mui.com/static/images/avatar/4.jpg"
+                />
+
+                <Typography variant={'subtitle2'} color={'GrayText'}>
+                  Mary Ann
+                </Typography>
+
+                <Typography variant={'caption'} color={'GrayText'}>
+                  4:03pm
+                </Typography>
+              </Stack>
+            </Card>
           </Stack>
         </Container>
       </Stack>
@@ -250,34 +397,24 @@ function valueLabelFormat(value: number) {
 function ConversationChunk() {
   return (
     <Card sx={{ display: 'flex', flexDirection: 'column', p: 2 }}>
-      <Stack direction={'row'} alignItems={'center'} justifyContent="flex-end" spacing={2}>
-        <Typography variant={'caption'} color={'GrayText'}>
-          Monday
+      <Stack direction={'row'} alignItems={'center'} justifyContent="flex-start" spacing={2}>
+        <Avatar
+          sx={{
+            width: 10,
+            height: 10,
+          }}
+          alt="Remy Sharp"
+          src="https://mui.com/static/images/avatar/2.jpg"
+        />
+
+        <Typography variant={'subtitle2'} color={'GrayText'}>
+          Arjun Patel
         </Typography>
-
-        <Divider orientation={'vertical'} flexItem />
-
-        <Typography variant={'caption'} color={'GrayText'}>
-          2:30pm
-        </Typography>
-
-        <Divider orientation={'vertical'} flexItem />
 
         <Typography variant={'caption'} color={'GrayText'}>
           6/18/22
         </Typography>
       </Stack>
-
-      <Box sx={{ position: 'relative', p: 4 }}>
-        <Slider
-          aria-label="Restricted values"
-          defaultValue={0}
-          valueLabelFormat={valueLabelFormat}
-          getAriaValueText={valuetext}
-          valueLabelDisplay="on"
-          marks={marks}
-        />
-      </Box>
     </Card>
   );
 }
