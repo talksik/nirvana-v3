@@ -216,6 +216,7 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
        * set the temporary sort accordingly
        */
 
+      // if we are try to clear or escape most likely
       if (!conversationId) {
         setSelectedConversation((prevConversation) => {
           // untuned from previous line
@@ -230,6 +231,11 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
 
           return undefined;
         });
+        return;
+      }
+
+      // if we are selecting same one, don't run more logic
+      if (selectedConversation?._id.toString() === conversationId) {
         return;
       }
 
@@ -286,6 +292,7 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
     [
       user,
       conversationMap,
+      selectedConversation,
       setSelectedConversation,
       setConversationMap,
       handleUntuneFromLine,
