@@ -50,7 +50,7 @@ export default function Terminal() {
             >
               <Navbar />
 
-              <Box sx={{ p: 2, pt: 0 }}>
+              <Box sx={{ p: 1, pt: 0 }}>
                 {searchQuery ? <OmniSearchResults /> : <ConversationList />}
               </Box>
             </Grid>
