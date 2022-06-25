@@ -306,7 +306,7 @@ function ConversationDetails({ masterConversation }: { masterConversation: Maste
         </Container>
       </Stack>
 
-      <Box sx={{ p: 2, boxShadow: 3, zIndex: 10 }} flexDirection={'column'} mt={'auto'}>
+      <Box sx={{ p: 2, boxShadow: 3, zIndex: 5 }} flexDirection={'column'} mt={'auto'}>
         {/* live video and screenshares */}
         <Stack direction="row" alignItems={'center'}>
           {masterConversation.room &&
