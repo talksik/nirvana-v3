@@ -400,7 +400,7 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
     return [priorityConversations, inboxConversations];
   }, [conversationMap, user]);
 
-  const updateConversationPriority = useCallback(
+  const updateConversationPriorityHandler = useCallback(
     async (conversationId: string, newState: MemberState) => {
       try {
         await updateConversationPriority(conversationId, newState);
@@ -460,7 +460,7 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
         priorityConversations: masterConversations[0],
         inboxConversations: masterConversations[1],
         handleEscape,
-        updateConversationPriority,
+        updateConversationPriority: updateConversationPriorityHandler,
       }}
     >
       {children}
