@@ -159,12 +159,7 @@ function ConversationDetails({ masterConversation }: { masterConversation: Maste
             </Typography>
 
             <Card sx={{ display: 'flex', flexDirection: 'column', p: 2 }}>
-              <Stack
-                direction={'row'}
-                alignItems={'center'}
-                justifyContent="flex-start"
-                spacing={2}
-              >
+              <Stack direction={'row'} alignItems={'center'} justifyContent="flex-start" gap={2}>
                 <Avatar
                   sx={{
                     width: 20,
@@ -181,16 +176,17 @@ function ConversationDetails({ masterConversation }: { masterConversation: Maste
                 <Typography variant={'caption'} color={'GrayText'}>
                   6/18/22 | 2:35pm
                 </Typography>
+
+                <Box marginLeft={'auto'}>
+                  <Typography variant={'caption'} color={'GrayText'}>
+                    1m 30s
+                  </Typography>
+                </Box>
               </Stack>
             </Card>
 
             <Card sx={{ display: 'flex', flexDirection: 'column', p: 2 }}>
-              <Stack
-                direction={'row'}
-                alignItems={'center'}
-                justifyContent="flex-start"
-                spacing={2}
-              >
+              <Stack direction={'row'} alignItems={'center'} justifyContent="flex-start" gap={2}>
                 <Avatar
                   sx={{
                     width: 20,
@@ -207,16 +203,17 @@ function ConversationDetails({ masterConversation }: { masterConversation: Maste
                 <Typography variant={'caption'} color={'GrayText'}>
                   6/19/22 | 10:00am
                 </Typography>
+
+                <Box marginLeft={'auto'}>
+                  <Typography variant={'caption'} color={'GrayText'}>
+                    7 sec
+                  </Typography>
+                </Box>
               </Stack>
             </Card>
 
             <Card sx={{ display: 'flex', flexDirection: 'column', p: 2 }}>
-              <Stack
-                direction={'row'}
-                alignItems={'center'}
-                justifyContent="flex-start"
-                spacing={2}
-              >
+              <Stack direction={'row'} alignItems={'center'} justifyContent="flex-start" gap={2}>
                 <Avatar
                   sx={{
                     width: 20,
@@ -234,6 +231,12 @@ function ConversationDetails({ masterConversation }: { masterConversation: Maste
                 <Typography variant={'caption'} color={'GrayText'}>
                   6/19/22 | 4:02pm
                 </Typography>
+
+                <Box marginLeft={'auto'}>
+                  <Typography variant={'caption'} color={'GrayText'}>
+                    25 sec
+                  </Typography>
+                </Box>
               </Stack>
             </Card>
           </Stack>
@@ -244,12 +247,7 @@ function ConversationDetails({ masterConversation }: { masterConversation: Maste
             </Typography>
 
             <Card sx={{ display: 'flex', flexDirection: 'column', p: 2 }}>
-              <Stack
-                direction={'row'}
-                alignItems={'center'}
-                justifyContent="flex-start"
-                spacing={2}
-              >
+              <Stack direction={'row'} alignItems={'center'} justifyContent="flex-start" gap={2}>
                 <Avatar
                   sx={{
                     width: 20,
@@ -267,6 +265,12 @@ function ConversationDetails({ masterConversation }: { masterConversation: Maste
                 <Typography variant={'caption'} color={'GrayText'}>
                   11:35am
                 </Typography>
+
+                <Box marginLeft={'auto'}>
+                  <Typography variant={'caption'} color={'GrayText'}>
+                    17 sec
+                  </Typography>
+                </Box>
               </Stack>
             </Card>
           </Stack>
@@ -277,12 +281,7 @@ function ConversationDetails({ masterConversation }: { masterConversation: Maste
             </Typography>
 
             <Card sx={{ display: 'flex', flexDirection: 'column', p: 2 }}>
-              <Stack
-                direction={'row'}
-                alignItems={'center'}
-                justifyContent="flex-start"
-                spacing={2}
-              >
+              <Stack direction={'row'} alignItems={'center'} justifyContent="flex-start" gap={2}>
                 <Avatar
                   sx={{
                     width: 20,
@@ -299,16 +298,17 @@ function ConversationDetails({ masterConversation }: { masterConversation: Maste
                 <Typography variant={'caption'} color={'GrayText'}>
                   4:02pm
                 </Typography>
+
+                <Box marginLeft={'auto'}>
+                  <Typography variant={'caption'} color={'GrayText'}>
+                    22 sec
+                  </Typography>
+                </Box>
               </Stack>
             </Card>
 
             <Card sx={{ display: 'flex', flexDirection: 'column', p: 2 }}>
-              <Stack
-                direction={'row'}
-                alignItems={'center'}
-                justifyContent="flex-start"
-                spacing={2}
-              >
+              <Stack direction={'row'} alignItems={'center'} justifyContent="flex-start" gap={2}>
                 <Avatar
                   sx={{
                     width: 20,
@@ -326,6 +326,12 @@ function ConversationDetails({ masterConversation }: { masterConversation: Maste
                 <Typography variant={'caption'} color={'GrayText'}>
                   4:03pm
                 </Typography>
+
+                <Box marginLeft={'auto'}>
+                  <Typography variant={'caption'} color={'GrayText'}>
+                    2m 30s
+                  </Typography>
+                </Box>
               </Stack>
             </Card>
           </Stack>
