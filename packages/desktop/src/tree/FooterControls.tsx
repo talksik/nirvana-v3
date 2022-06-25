@@ -186,7 +186,7 @@ function OverlayConversation({
 }) {
   const { user } = useAuth();
 
-  const { selectConversation, handleEscape } = useConversations();
+  const { selectConversation, handleEscape, updateConversationPriority } = useConversations();
 
   const handleSelectConversation = useCallback(() => {
     if (!isSelected) {
@@ -204,6 +204,14 @@ function OverlayConversation({
 
     return false;
   }, [masterConversation, user]);
+
+  const handleToggleConversationZap = useCallback(() => {
+    if (isPriority) {
+      updateConversationPriority(masterConversation._id.toString(), 'inbox');
+      return;
+    }
+    updateConversationPriority(masterConversation._id.toString(), 'priority');
+  }, [updateConversationPriority, isPriority, masterConversation._id]);
 
   return (
     <Stack
@@ -279,6 +287,7 @@ function OverlayConversation({
               }}
               size="small"
               aria-selected={isPriority ? true : false}
+              onClick={handleToggleConversationZap}
             >
               {isPriority ? <FiZap /> : <FiZapOff />}
             </IconButton>

@@ -39,16 +39,18 @@ export enum MemberRole {
   regular = 'regular',
 }
 
-export enum MemberState {
-  priority = 'priority',
-  inbox = 'inbox',
-  // deleted = "deleted"
-}
+//! for some reason using this breaks frontend to need node modules
+// export enum MemberState {
+//   priority = 'priority',
+//   inbox = 'inbox',
+//   // deleted = "deleted"
+// }
 
+export type MemberState = 'priority' | 'inbox';
 export class ConversationMember {
   constructor(
     public role: MemberRole,
-    public memberState: 'priority' | 'inbox',
+    public memberState: MemberState,
 
     public joinedDate = new Date(),
 

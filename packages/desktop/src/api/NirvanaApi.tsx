@@ -1,10 +1,11 @@
+import Conversation, { MemberState } from '@nirvana/core/models/conversation.model';
 import NirvanaResponse, { INirvanaResponse } from '@nirvana/core/responses/nirvanaResponse';
 import axios, { AxiosRequestConfig, AxiosResponse, Method } from 'axios';
 
-import Conversation from '@nirvana/core/models/conversation.model';
 import CreateConversationRequest from '@nirvana/core/requests/CreateConversationRequest.request';
 import CreateConversationResponse from '@nirvana/core/responses/CreateConversationResponse.response';
 import LoginResponse from '@nirvana/core/responses/login.response';
+import UpdateConversationPriorityRequest from '@nirvana/core/requests/UpdateConversationPriority.request';
 import UserDetailsResponse from '@nirvana/core/responses/userDetails.response';
 import UserSearchResponse from '@nirvana/core/responses/userSearch.response';
 
@@ -94,4 +95,16 @@ export async function getConversationById(
   conversationId: string,
 ): Promise<NirvanaResponse<Conversation>> {
   return await NirvanaApi.fetch(`/conversations/${conversationId}`, 'GET', true);
+}
+
+export async function updateConversationPriority(
+  conversationId: string,
+  newState: MemberState,
+): Promise<NirvanaResponse<string>> {
+  return await NirvanaApi.fetch(
+    `/conversations/${conversationId}/priority`,
+    'POST',
+    true,
+    new UpdateConversationPriorityRequest(newState),
+  );
 }

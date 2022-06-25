@@ -9,9 +9,10 @@ import express, { NextFunction, Request, Response, response } from 'express';
 import ConversationService from '../services/conversation.service';
 import CreateConversationRequest from '@nirvana/core/requests/CreateConversationRequest.request';
 import CreateConversationResponse from '@nirvana/core/responses/CreateConversationResponse.response';
-import { MemberState } from '../../core/models/conversation.model';
+import { MemberState } from '@nirvana/core/models/conversation.model';
 import NirvanaResponse from '@nirvana/core/responses/nirvanaResponse';
 import { ObjectId } from 'mongodb';
+import UpdateConversationPriorityRequest from '@nirvana/core/requests/UpdateConversationPriority.request';
 import { UserService } from '../services/user.service';
 
 export default function getConversationRoutes() {
@@ -34,6 +35,9 @@ export default function getConversationRoutes() {
 
   // create a conversation
   router.post('/', authCheck, createConversation);
+
+  // change user's categorization of conversation
+  router.post('/:conversationId/priority', authCheck, updatePriorityOfConversation);
 
   return router;
 }
@@ -130,7 +134,7 @@ const createConversation = async (req: Request, res: Response, next: NextFunctio
   const conversationUserMembers: ConversationUserMember[] = [];
 
   createRequest.otherUsers.forEach((userObject) => {
-    const newConversationMember = new ConversationMember(MemberRole.regular, MemberState.inbox);
+    const newConversationMember = new ConversationMember(MemberRole.regular, 'inbox');
 
     // ! hack as json over the wire converts to string for some reason
     userObject._id = new ObjectId(userObject._id);
@@ -142,7 +146,7 @@ const createConversation = async (req: Request, res: Response, next: NextFunctio
   });
 
   // adding in the admin user which is the user who started the conversation
-  const adminMember = new ConversationMember(MemberRole.admin, MemberState.inbox);
+  const adminMember = new ConversationMember(MemberRole.admin, 'inbox');
   const currentUser = await UserService.getUserById(userInfo.userId);
   if (!currentUser) {
     return next(new Error('unable to find your user object for caching'));
@@ -171,4 +175,28 @@ const createConversation = async (req: Request, res: Response, next: NextFunctio
     'created conversation!',
   );
   return res.json(responseObj);
+};
+
+const updatePriorityOfConversation = async (req: Request, res: Response, next: NextFunction) => {
+  const { conversationId } = req.params;
+  const userInfo = res.locals.userInfo as JwtClaims;
+  const reqObj = req.body as UpdateConversationPriorityRequest;
+
+  try {
+    const updateRes = await ConversationService.updateUserConversationPriority(
+      new ObjectId(conversationId),
+      new ObjectId(userInfo.userId),
+      reqObj.newState,
+    );
+
+    return res.json(
+      new NirvanaResponse(
+        undefined,
+        undefined,
+        updateRes?.ok ? 'updated' : 'failed to update conversation priority',
+      ),
+    );
+  } catch (error) {
+    next(Error('unable to set conversation as priority'));
+  }
 };

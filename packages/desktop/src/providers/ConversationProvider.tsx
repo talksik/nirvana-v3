@@ -23,6 +23,7 @@ import {
   createConversation,
   getConversationById,
   getConversations,
+  updateConversationPriority,
 } from '../api/NirvanaApi';
 import { useAsyncFn, useEffectOnce, useKeyPressEvent, useUnmount } from 'react-use';
 
@@ -75,6 +76,8 @@ interface IConversationContext {
   handleStartConversation?: (otherUsers: User[], conversationName?: string) => Promise<boolean>;
 
   handleEscape?: () => void;
+
+  updateConversationPriority?: (conversationId: string, newState: MemberState) => Promise<void>;
 }
 
 const ConversationContext = React.createContext<IConversationContext>({
@@ -397,6 +400,29 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
     return [priorityConversations, inboxConversations];
   }, [conversationMap, user]);
 
+  const updateConversationPriority = useCallback(
+    async (conversationId: string, newState: MemberState) => {
+      try {
+        await updateConversationPriority(conversationId, newState);
+
+        setConversationMap((draft) => {
+          if (draft[conversationId]) {
+            const currUserMember = draft[conversationId].members.find(
+              (mem) => mem._id.toString() === user._id.toString(),
+            );
+
+            if (currUserMember) {
+              currUserMember.memberState = newState;
+            }
+          }
+        });
+      } catch (error) {
+        toast.error('problem in pinning conversation');
+      }
+    },
+    [setConversationMap, user],
+  );
+
   const handleEscape = useCallback(() => {
     selectConversation(undefined);
   }, [selectConversation]);
@@ -434,6 +460,7 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
         priorityConversations: masterConversations[0],
         inboxConversations: masterConversations[1],
         handleEscape,
+        updateConversationPriority,
       }}
     >
       {children}

@@ -1,4 +1,5 @@
-import Conversation from '@nirvana/core/models/conversation.model';
+import Conversation, { MemberState } from '@nirvana/core/models/conversation.model';
+
 import { ObjectId } from 'mongodb';
 import { collections } from './database.service';
 
@@ -64,5 +65,17 @@ export default class ConversationService {
     }
 
     return null;
+  }
+
+  static async updateUserConversationPriority(
+    conversationId: ObjectId,
+    memberId: ObjectId,
+    newState: MemberState,
+  ) {
+    const query = { _id: conversationId, 'members._id': memberId };
+
+    return await collections.conversations?.findOneAndUpdate(query, {
+      $set: { 'members.$.memberState': newState },
+    });
   }
 }
