@@ -320,7 +320,7 @@ function ConversationDetails({ masterConversation }: { masterConversation: Maste
             })}
         </Stack>
 
-        <Stack direction="row" alignItems="center" justifyContent={'flex-end'}>
+        <Stack direction="row" alignItems="center" justifyContent={'flex-end'} gap={1}>
           <Tooltip title="Paste image or link!">
             <IconButton size="small">
               <FiLink />
