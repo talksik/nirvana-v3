@@ -264,18 +264,23 @@ function OverlayConversation({
         }}
         max={3}
       >
-        {masterConversation.members?.map((conversationUser, index) => (
-          <Avatar
-            key={`${masterConversation._id.toString()}-${conversationUser._id.toString()}-convoIcon`}
-            alt={conversationUser?.givenName}
-            src={conversationUser?.picture}
-            sx={{
-              opacity: masterConversation.tunedInUsers?.includes(conversationUser._id.toString())
-                ? '100%'
-                : '20%',
-            }}
-          />
-        ))}
+        {masterConversation.members?.map(
+          (conversationUser, index) =>
+            (conversationUser._id.toString() !== user._id.toString() || isSelected) && (
+              <Avatar
+                key={`${masterConversation._id.toString()}-${conversationUser._id.toString()}-convoIcon`}
+                alt={conversationUser?.givenName}
+                src={conversationUser?.picture}
+                sx={{
+                  opacity: masterConversation.tunedInUsers?.includes(
+                    conversationUser._id.toString(),
+                  )
+                    ? '100%'
+                    : '20%',
+                }}
+              />
+            ),
+        )}
       </AvatarGroup>
 
       {isSelected && (
