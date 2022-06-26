@@ -19,7 +19,6 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import { Box } from '@mui/system';
 import ConversationLabel from '../subcomponents/ConversationLabel';
 import { MasterConversation } from '../util/types';
-// import ConversationDetails from './ConversationDetails';
 import { blueGrey } from '@mui/material/colors';
 import useAuth from '../providers/AuthProvider';
 import useConversations from '../providers/ConversationProvider';
