@@ -447,6 +447,7 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
   );
 
   const [userLocalStream, setUserLocalStream] = useState<MediaStream>();
+
   const handleCastVideo = useCallback(() => {
     // create a new stream
     // if there's a selected conversation, then send it to that conversation
@@ -459,7 +460,13 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
   }, [setUserLocalStream]);
 
   const handleStopVideo = useCallback(() => {
-    setUserLocalStream(undefined);
+    setUserLocalStream((prevStream) => {
+      if (prevStream) {
+        prevStream.getTracks().map((track) => track.stop());
+      }
+
+      return undefined;
+    });
   }, [setUserLocalStream]);
 
   const handleEscape = useCallback(() => {
