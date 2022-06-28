@@ -63,6 +63,12 @@ function useSocketFire() {
   return { handleConnectToLine, handleTuneIntoLine, handleUntuneFromLine };
 }
 
+const videoConstraints = {
+  frameRate: 15,
+  width: { max: 720, ideal: 720, min: 100 },
+  height: { max: 720, ideal: 720, min: 100 },
+};
+
 interface IConversationContext {
   conversationMap: ConversationMap;
 
@@ -78,6 +84,10 @@ interface IConversationContext {
   handleEscape?: () => void;
 
   updateConversationPriority?: (conversationId: string, newState: MemberState) => Promise<void>;
+
+  userLocalStream?: MediaStream;
+  handleCastVideo?: () => void;
+  handleStopVideo?: () => void;
 }
 
 const ConversationContext = React.createContext<IConversationContext>({
@@ -412,6 +422,7 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
     return [priorityConversations, inboxConversations];
   }, [conversationMap, user]);
 
+  // move from priority to inbox and vice versa
   const updateConversationPriorityHandler = useCallback(
     async (conversationId: string, newState: MemberState) => {
       try {
@@ -434,6 +445,22 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
     },
     [setConversationMap, user],
   );
+
+  const [userLocalStream, setUserLocalStream] = useState<MediaStream>();
+  const handleCastVideo = useCallback(() => {
+    // create a new stream
+    // if there's a selected conversation, then send it to that conversation
+    navigator.mediaDevices
+      .getUserMedia({ video: videoConstraints, audio: false })
+      .then((userStream: MediaStream) => {
+        setUserLocalStream(userStream);
+      })
+      .catch((error) => toast.error('problem getting video'));
+  }, [setUserLocalStream]);
+
+  const handleStopVideo = useCallback(() => {
+    setUserLocalStream(undefined);
+  }, [setUserLocalStream]);
 
   const handleEscape = useCallback(() => {
     selectConversation(undefined);
@@ -473,6 +500,9 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
         inboxConversations: masterConversations[1],
         handleEscape,
         updateConversationPriority: updateConversationPriorityHandler,
+        userLocalStream,
+        handleStopVideo,
+        handleCastVideo,
       }}
     >
       {children}
@@ -492,12 +522,6 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
 export default function useConversations() {
   return React.useContext(ConversationContext);
 }
-
-const videoConstraints = {
-  frameRate: 15,
-  width: { max: 100 },
-  height: { max: 200 },
-};
 
 const iceServers = [
   // { urls: 'stun:stun.l.google.com:19302' },

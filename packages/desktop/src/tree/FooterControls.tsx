@@ -30,7 +30,7 @@ import {
   FiZap,
   FiZapOff,
 } from 'react-icons/fi';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { MasterConversation } from '../util/types';
 import { MdOutlineRecordVoiceOver } from 'react-icons/md';
@@ -46,7 +46,13 @@ import useZen from '../providers/ZenProvider';
 export default function FooterControls() {
   const { handleFlowState } = useZen();
 
-  const { selectedConversation, priorityConversations } = useConversations();
+  const {
+    selectedConversation,
+    priorityConversations,
+    userLocalStream,
+    handleCastVideo,
+    handleStopVideo,
+  } = useConversations();
   const { user, handleLogout } = useAuth();
 
   const { handleToggleDesktopMode, desktopMode } = useElectron();
@@ -77,8 +83,16 @@ export default function FooterControls() {
   const [isVideoOn, setIsVideoOn] = useState<boolean>(false);
 
   const handleToggleVideo = useCallback(() => {
-    setIsVideoOn((prevVal) => !prevVal);
-  }, [setIsVideoOn]);
+    setIsVideoOn((prevVal) => {
+      if (!prevVal) {
+        handleCastVideo();
+      } else {
+        handleStopVideo();
+      }
+
+      return !prevVal;
+    });
+  }, [setIsVideoOn, handleCastVideo, handleStopVideo]);
 
   const handleCloseUserSettings = useCallback(() => {
     setOpenUserSettings(false);
@@ -95,6 +109,13 @@ export default function FooterControls() {
 
     return false;
   }, [selectedConversation, priorityConversations]);
+
+  const localVideoRef = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    if (localVideoRef?.current && userLocalStream) {
+      localVideoRef.current.srcObject = userLocalStream;
+    }
+  }, [localVideoRef, userLocalStream]);
 
   return (
     <Box
@@ -162,7 +183,11 @@ export default function FooterControls() {
           aria-haspopup="true"
           aria-expanded={open ? 'true' : undefined}
         >
-          <Avatar alt={user.givenName} src={user.picture} />
+          {isVideoOn ? (
+            <Box height={60} width={40} ref={localVideoRef} component={'video'} autoPlay />
+          ) : (
+            <Avatar alt={user.givenName} src={user.picture} />
+          )}
         </IconButton>
 
         <Divider orientation="horizontal" flexItem />
@@ -188,7 +213,8 @@ function OverlayConversation({
 }) {
   const { user } = useAuth();
 
-  const { selectConversation, handleEscape, updateConversationPriority } = useConversations();
+  const { selectConversation, handleEscape, updateConversationPriority, userLocalStream } =
+    useConversations();
 
   const handleSelectConversation = useCallback(() => {
     if (!isSelected) {
@@ -214,6 +240,10 @@ function OverlayConversation({
     }
     updateConversationPriority(masterConversation._id.toString(), 'priority');
   }, [updateConversationPriority, isPriority, masterConversation._id]);
+
+  const userVideoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {}, []);
 
   return (
     <Stack
@@ -264,8 +294,8 @@ function OverlayConversation({
         }}
         max={3}
       >
-        {masterConversation.members?.map(
-          (conversationUser, index) =>
+        {masterConversation.members?.map((conversationUser, index) => {
+          return (
             (conversationUser._id.toString() !== user._id.toString() || isSelected) && (
               <Avatar
                 key={`${masterConversation._id.toString()}-${conversationUser._id.toString()}-convoIcon`}
@@ -279,8 +309,9 @@ function OverlayConversation({
                     : '20%',
                 }}
               />
-            ),
-        )}
+            )
+          );
+        })}
       </AvatarGroup>
 
       {isSelected && (
