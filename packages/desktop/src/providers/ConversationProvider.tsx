@@ -668,6 +668,7 @@ function Room({
           localPeerConnection.on('signal', (signal) => {
             // console.log('have a signal to make call to someone ');
 
+            // TODO: try modifying signal and offer to force stereo
             $ws.emit(
               ServerRequestChannels.RTC_CALL_SOMEONE_FOR_LINE,
               new RtcCallRequest(otherUserId, conversation._id.toString(), signal),

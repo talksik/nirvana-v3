@@ -179,7 +179,7 @@ export default function FooterControls() {
           aria-expanded={open ? 'true' : undefined}
         >
           {userLocalStream ? (
-            <Box height={60} width={40} ref={localVideoRef} component={'video'} autoPlay />
+            <Box height={60} width={40} ref={localVideoRef} component={'video'} autoPlay muted />
           ) : (
             <Avatar alt={user.givenName} src={user.picture} />
           )}
