@@ -9,4 +9,8 @@ export const KeyboardShortcuts: Record<string, Shortcut> = {
     shortcutKey: 'Escape',
     label: 'esc',
   },
+  speak: {
+    shortcutKey: '`',
+    label: '~',
+  },
 };

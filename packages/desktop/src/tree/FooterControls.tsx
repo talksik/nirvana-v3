@@ -46,13 +46,8 @@ import useZen from '../providers/ZenProvider';
 export default function FooterControls() {
   const { handleFlowState } = useZen();
 
-  const {
-    selectedConversation,
-    priorityConversations,
-    userLocalStream,
-    handleCastVideo,
-    handleStopVideo,
-  } = useConversations();
+  const { selectedConversation, priorityConversations, userLocalStream, handleToggleVideo } =
+    useConversations();
   const { user, handleLogout } = useAuth();
 
   const { handleToggleDesktopMode, desktopMode } = useElectron();
@@ -82,17 +77,17 @@ export default function FooterControls() {
 
   const [isVideoOn, setIsVideoOn] = useState<boolean>(false);
 
-  const handleToggleVideo = useCallback(() => {
-    setIsVideoOn((prevVal) => {
-      if (!prevVal) {
-        handleCastVideo();
-      } else {
-        handleStopVideo();
-      }
+  // const handleToggleVideo = useCallback(() => {
+  //   setIsVideoOn((prevVal) => {
+  //     if (!prevVal) {
+  //       handleCastVideo();
+  //     } else {
+  //       handleStopVideo();
+  //     }
 
-      return !prevVal;
-    });
-  }, [setIsVideoOn, handleCastVideo, handleStopVideo]);
+  //     return !prevVal;
+  //   });
+  // }, [setIsVideoOn, handleCastVideo, handleStopVideo]);
 
   const handleCloseUserSettings = useCallback(() => {
     setOpenUserSettings(false);
@@ -183,7 +178,7 @@ export default function FooterControls() {
           aria-haspopup="true"
           aria-expanded={open ? 'true' : undefined}
         >
-          {isVideoOn ? (
+          {userLocalStream ? (
             <Box height={60} width={40} ref={localVideoRef} component={'video'} autoPlay />
           ) : (
             <Avatar alt={user.givenName} src={user.picture} />
@@ -243,7 +238,9 @@ function OverlayConversation({
 
   const userVideoRef = useRef<HTMLVideoElement>(null);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    //
+  }, []);
 
   return (
     <Stack

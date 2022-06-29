@@ -63,10 +63,16 @@ function useSocketFire() {
   return { handleConnectToLine, handleTuneIntoLine, handleUntuneFromLine };
 }
 
-const videoConstraints = {
+const VIDEO_CONSTRAINTS = {
   frameRate: 15,
   width: { max: 720, ideal: 720, min: 100 },
   height: { max: 720, ideal: 720, min: 100 },
+};
+
+const AUDIO_CONSTRAINTS = {
+  channelCount: {
+    ideal: 2,
+  },
 };
 
 interface IConversationContext {
@@ -86,8 +92,7 @@ interface IConversationContext {
   updateConversationPriority?: (conversationId: string, newState: MemberState) => Promise<void>;
 
   userLocalStream?: MediaStream;
-  handleCastVideo?: () => void;
-  handleStopVideo?: () => void;
+  handleToggleVideo?: () => void;
 }
 
 const ConversationContext = React.createContext<IConversationContext>({
@@ -298,6 +303,9 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
 
         return conversationToSelect;
       });
+
+      // !!TODO: go through each peer connection in the selected room and add the current stream
+      // remove/stop casting stream to previously selected room
     },
     [
       user,
@@ -447,27 +455,57 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
   );
 
   const [userLocalStream, setUserLocalStream] = useState<MediaStream>();
+  const [userVideo, setUserVideo] = useState<boolean>(true);
+  const [userAudio, setUserAudio] = useState<boolean>(true);
 
-  const handleCastVideo = useCallback(() => {
-    // create a new stream
-    // if there's a selected conversation, then send it to that conversation
-    navigator.mediaDevices
-      .getUserMedia({ video: videoConstraints, audio: false })
-      .then((userStream: MediaStream) => {
-        setUserLocalStream(userStream);
-      })
-      .catch((error) => toast.error('problem getting video'));
-  }, [setUserLocalStream]);
+  useEffect(() => {
+    // want to grab device stream even if not selected a room
+    // only upload this stream to a room if we have a selected room
 
-  const handleStopVideo = useCallback(() => {
-    setUserLocalStream((prevStream) => {
-      if (prevStream) {
-        prevStream.getTracks().map((track) => track.stop());
-      }
+    if (userVideo || userAudio) {
+      navigator.mediaDevices
+        .getUserMedia({
+          audio: userAudio ? AUDIO_CONSTRAINTS : false,
+          video: userVideo ? VIDEO_CONSTRAINTS : false,
+        })
+        .then((userStream) => {
+          console.log(`got new user stream`, userStream);
 
-      return undefined;
-    });
-  }, [setUserLocalStream]);
+          // set global stream for slight feedback while talking
+          setUserLocalStream(userStream);
+        });
+    } else {
+      setUserLocalStream(undefined);
+      // stop streaming to room now
+    }
+  }, [userVideo, userAudio, setUserLocalStream]);
+
+  useEffect(() => {
+    if (!userAudio) {
+      userLocalStream.getAudioTracks().map((track) => track.stop());
+    }
+  }, [userAudio, userLocalStream]);
+  useEffect(() => {
+    if (!userVideo) {
+      userLocalStream.getVideoTracks().map((track) => track.stop());
+    }
+  }, [userVideo, userLocalStream]);
+
+  // take the local stream and use simple peer add track
+  const handleToggleAudio = useCallback(() => {
+    setUserAudio((prevVal) => !prevVal);
+  }, []);
+
+  const handleToggleVideo = useCallback(() => {
+    setUserVideo((prevVal) => !prevVal);
+  }, [setUserVideo]);
+
+  // TODO: replace track of the same stream and
+  const handleShareScreen = useCallback(() => {
+    //
+  }, []);
+
+  useKeyPressEvent(KeyboardShortcuts.speak.shortcutKey, handleToggleAudio, handleToggleAudio);
 
   const handleEscape = useCallback(() => {
     selectConversation(undefined);
@@ -508,8 +546,7 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
         handleEscape,
         updateConversationPriority: updateConversationPriorityHandler,
         userLocalStream,
-        handleStopVideo,
-        handleCastVideo,
+        handleToggleVideo,
       }}
     >
       {children}

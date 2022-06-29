@@ -308,7 +308,7 @@ function ConversationDetails({ masterConversation }: { masterConversation: Maste
       <Box sx={{ p: 2, boxShadow: 3, zIndex: 5 }} flexDirection={'column'} mt={'auto'}>
         {/* live video and screenshares */}
         <Stack direction="row" alignItems={'center'}>
-          {masterConversation.room &&
+          {/* {masterConversation.room &&
             Object.entries(masterConversation.room).map(([userId, userPeerContents]) => {
               return (
                 <Video
@@ -316,7 +316,7 @@ function ConversationDetails({ masterConversation }: { masterConversation: Maste
                   stream={userPeerContents.stream}
                 />
               );
-            })}
+            })} */}
         </Stack>
 
         <Stack direction="row" alignItems="center" justifyContent={'flex-end'} gap={1}>

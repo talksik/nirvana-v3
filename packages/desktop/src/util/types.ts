@@ -15,15 +15,15 @@ export type MasterConversation = Conversation & {
   room?: {
     [userId: string]: {
       peer: Peer;
+
+      //the remote stream of this peer
       stream?: MediaStream;
-      audioTrack?: MediaStreamTrack;
-      videoTrack?: MediaStreamTrack;
-      screenTrack?: MediaStreamTrack;
 
       // calling happening whether it is a newbie or master
       isConnecting?: boolean;
     };
   };
+  localStream?: MediaStream;
 
   // all of audio clips, links, media, etc.
   content?: ContentBlock[];
