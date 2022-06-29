@@ -456,7 +456,7 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
 
   const [userLocalStream, setUserLocalStream] = useState<MediaStream>();
   const [userVideo, setUserVideo] = useState<boolean>(true);
-  const [userAudio, setUserAudio] = useState<boolean>(true);
+  const [userAudio, setUserAudio] = useState<boolean>(false);
 
   useEffect(() => {
     // want to grab device stream even if not selected a room
@@ -482,12 +482,12 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
 
   useEffect(() => {
     if (!userAudio) {
-      userLocalStream.getAudioTracks().map((track) => track.stop());
+      userLocalStream?.getAudioTracks().map((track) => track.stop());
     }
   }, [userAudio, userLocalStream]);
   useEffect(() => {
     if (!userVideo) {
-      userLocalStream.getVideoTracks().map((track) => track.stop());
+      userLocalStream?.getVideoTracks().map((track) => track.stop());
     }
   }, [userVideo, userLocalStream]);
 
