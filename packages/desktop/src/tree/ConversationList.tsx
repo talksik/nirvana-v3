@@ -143,15 +143,9 @@ export function ConversationRow({
         selected={selectedConversation?._id.toString() === conversation._id.toString()}
         onClick={handleSelectConversation}
       >
-        {conversation.tunedInUsers?.length > 0 ? (
-          <Box sx={{ color: 'primary.main', fontSize: 15, ml: 0 }}>
-            <FiSun />
-          </Box>
-        ) : (
-          <Box sx={{ color: 'GrayText', fontSize: 10, ml: 0 }}>
-            <FiCircle />
-          </Box>
-        )}
+        <Box sx={{ color: 'GrayText', fontSize: 10, ml: 0 }}>
+          <FiCircle />
+        </Box>
 
         <Stack
           direction={'row'}

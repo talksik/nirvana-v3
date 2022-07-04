@@ -13,7 +13,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { FiAirplay, FiLink, FiSun, FiUserPlus, FiZap } from 'react-icons/fi';
+import { FiAirplay, FiCircle, FiLink, FiSun, FiUserPlus, FiZap } from 'react-icons/fi';
 import React, { useEffect, useMemo, useRef } from 'react';
 
 import { Box } from '@mui/system';
@@ -89,10 +89,11 @@ function ConversationDetails({ masterConversation }: { masterConversation: Maste
           borderBottomColor: blueGrey[50],
         }}
       >
-        <Stack direction="row" alignItems="center">
-          <IconButton color="primary" size="small">
-            <FiSun />
-          </IconButton>
+        <Stack direction="row" alignItems="center" gap={1}>
+          <Box sx={{ color: 'GrayText', fontSize: 10, ml: 0 }}>
+            <FiCircle />
+          </Box>
+
           <ConversationLabel
             users={masterConversation.members}
             conversationName={masterConversation.name}
