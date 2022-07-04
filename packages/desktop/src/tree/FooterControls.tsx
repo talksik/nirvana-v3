@@ -75,18 +75,6 @@ export default function FooterControls() {
     [setOpenUserSettings, handleToggleDesktopMode, desktopMode],
   );
 
-  // const handleToggleVideo = useCallback(() => {
-  //   setIsVideoOn((prevVal) => {
-  //     if (!prevVal) {
-  //       handleCastVideo();
-  //     } else {
-  //       handleStopVideo();
-  //     }
-
-  //     return !prevVal;
-  //   });
-  // }, [setIsVideoOn, handleCastVideo, handleStopVideo]);
-
   const handleCloseUserSettings = useCallback(() => {
     setOpenUserSettings(false);
   }, [setOpenUserSettings]);
