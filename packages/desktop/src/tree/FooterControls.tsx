@@ -32,8 +32,8 @@ import {
 } from 'react-icons/fi';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+import { ConversationUserMember } from '@nirvana/core/models/conversation.model';
 import { MasterConversation } from '../util/types';
-import { MdOutlineRecordVoiceOver } from 'react-icons/md';
 import { SUPPORT_DISPLAY_NAME } from '../util/support';
 import { blueGrey } from '@mui/material/colors';
 import useAuth from '../providers/AuthProvider';
@@ -165,7 +165,7 @@ export default function FooterControls() {
           aria-expanded={open ? 'true' : undefined}
         >
           {userLocalStream ? (
-            <Box height={60} width={40} ref={localVideoRef} component={'video'} autoPlay muted />
+            <Box height={40} width={40} ref={localVideoRef} component={'video'} autoPlay muted />
           ) : (
             <Avatar alt={user.givenName} src={user.picture} />
           )}
@@ -277,24 +277,16 @@ function OverlayConversation({
         }}
         max={3}
       >
-        {masterConversation.members?.map((conversationUser, index) => {
-          return (
-            (conversationUser._id.toString() !== user._id.toString() || isSelected) && (
-              <Avatar
-                key={`${masterConversation._id.toString()}-${conversationUser._id.toString()}-convoIcon`}
-                alt={conversationUser?.givenName}
-                src={conversationUser?.picture}
-                sx={{
-                  opacity: masterConversation.tunedInUsers?.includes(
-                    conversationUser._id.toString(),
-                  )
-                    ? '100%'
-                    : '20%',
-                }}
-              />
-            )
-          );
-        })}
+        {masterConversation.members?.map((conversationUserMember, index) => (
+          <OverlayConversationAvatar
+            key={`${masterConversation._id.toString()}-${conversationUserMember._id.toString()}-overlayConvoAvatar`}
+            isTunedIn={masterConversation.tunedInUsers?.includes(
+              conversationUserMember._id.toString(),
+            )}
+            isConversationSelected={isSelected}
+            conversationUserMember={conversationUserMember}
+          />
+        ))}
       </AvatarGroup>
 
       {isSelected && (
@@ -337,6 +329,54 @@ function OverlayConversation({
       )}
     </Stack>
   );
+}
+
+function OverlayConversationAvatar({
+  conversationUserMember,
+  isTunedIn,
+  isConversationSelected,
+}: {
+  conversationUserMember: ConversationUserMember;
+  isTunedIn: boolean;
+  isConversationSelected: boolean; // if user is connecting or just have this conversation selected
+}) {
+  const { userLocalStream } = useConversations();
+  const { user } = useAuth();
+
+  const localVideoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (localVideoRef?.current && userLocalStream) {
+      localVideoRef.current.srcObject = userLocalStream;
+    }
+  }, [localVideoRef, userLocalStream]);
+
+  if (conversationUserMember._id.toString() === user._id.toString() && userLocalStream) {
+    return (
+      <Box
+        height={40}
+        width={40}
+        ref={localVideoRef}
+        component={'video'}
+        autoPlay
+        muted
+        border={'2px solid #fff'}
+      />
+    );
+  }
+
+  return (
+    (conversationUserMember._id.toString() !== user._id.toString() || isConversationSelected) && (
+      <Avatar
+        alt={conversationUserMember?.givenName}
+        src={conversationUserMember?.picture}
+        sx={{
+          opacity: isTunedIn ? '100%' : '20%',
+        }}
+      />
+    )
+  );
+  return <></>;
 }
 
 const NO_DEVICE_SELECTION = 'NA';
