@@ -262,32 +262,11 @@ function OverlayConversation({
         }}
       />
 
-      <AvatarGroup
-        variant={'rounded'}
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          '& >:first-child': {
-            marginTop: 0,
-          },
-          '& > *': {
-            marginLeft: '0 !important' as any,
-            marginTop: -2,
-          },
-        }}
-        max={3}
-      >
-        {masterConversation.members?.map((conversationUserMember, index) => (
-          <OverlayConversationAvatar
-            key={`${masterConversation._id.toString()}-${conversationUserMember._id.toString()}-overlayConvoAvatar`}
-            isTunedIn={masterConversation.tunedInUsers?.includes(
-              conversationUserMember._id.toString(),
-            )}
-            isConversationSelected={isSelected}
-            conversationUserMember={conversationUserMember}
-          />
-        ))}
-      </AvatarGroup>
+      <OverlayConversationAvatars
+        conversationUserMembers={masterConversation.members}
+        isConversationSelected={isSelected}
+        tunedInUserIds={masterConversation.tunedInUsers}
+      />
 
       {isSelected && (
         <>
@@ -331,6 +310,43 @@ function OverlayConversation({
   );
 }
 
+function OverlayConversationAvatars({
+  conversationUserMembers,
+  tunedInUserIds,
+  isConversationSelected,
+}: {
+  isConversationSelected: boolean;
+  tunedInUserIds: string[];
+  conversationUserMembers: ConversationUserMember[];
+}) {
+  return (
+    <AvatarGroup
+      variant={'rounded'}
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        '& >:first-child': {
+          marginTop: 0,
+        },
+        '& > *': {
+          marginLeft: '0 !important' as any,
+          marginTop: -2,
+        },
+      }}
+      max={3}
+    >
+      {conversationUserMembers?.map((conversationUserMember, index) => (
+        <OverlayConversationAvatar
+          key={`${conversationUserMember._id.toString()}-overlayConvoAvatar`}
+          isTunedIn={tunedInUserIds?.includes(conversationUserMember._id.toString())}
+          isConversationSelected={isConversationSelected}
+          conversationUserMember={conversationUserMember}
+        />
+      ))}
+    </AvatarGroup>
+  );
+}
+
 function OverlayConversationAvatar({
   conversationUserMember,
   isTunedIn,
@@ -366,15 +382,13 @@ function OverlayConversationAvatar({
   }
 
   return (
-    (conversationUserMember._id.toString() !== user._id.toString() || isConversationSelected) && (
-      <Avatar
-        alt={conversationUserMember?.givenName}
-        src={conversationUserMember?.picture}
-        sx={{
-          opacity: isTunedIn ? '100%' : '20%',
-        }}
-      />
-    )
+    <Avatar
+      alt={conversationUserMember?.givenName}
+      src={conversationUserMember?.picture}
+      sx={{
+        opacity: isTunedIn ? '100%' : '20%',
+      }}
+    />
   );
   return <></>;
 }
