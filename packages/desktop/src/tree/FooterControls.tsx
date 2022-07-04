@@ -319,6 +319,23 @@ function OverlayConversationAvatars({
   tunedInUserIds: string[];
   conversationUserMembers: ConversationUserMember[];
 }) {
+  const { user } = useAuth();
+
+  const sortedMembers = useMemo(() => {
+    const sortedUserMembers = [...conversationUserMembers];
+    sortedUserMembers.sort((convoUserA, convoUserB) => {
+      if (convoUserA._id.toString() === user?._id.toString()) return 2;
+
+      if (tunedInUserIds?.includes(convoUserA._id.toString())) return 1;
+
+      if (tunedInUserIds?.includes(convoUserB._id.toString())) return -1;
+
+      return -2;
+    });
+
+    return sortedUserMembers;
+  }, [conversationUserMembers, user, tunedInUserIds]);
+
   return (
     <AvatarGroup
       variant={'rounded'}
@@ -335,7 +352,7 @@ function OverlayConversationAvatars({
       }}
       max={3}
     >
-      {conversationUserMembers?.map((conversationUserMember, index) => (
+      {sortedMembers?.map((conversationUserMember, index) => (
         <OverlayConversationAvatar
           key={`${conversationUserMember._id.toString()}-overlayConvoAvatar`}
           isTunedIn={tunedInUserIds?.includes(conversationUserMember._id.toString())}

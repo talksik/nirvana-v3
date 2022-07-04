@@ -122,6 +122,21 @@ export function ConversationRow({
 
   useKeyPressEvent(`${keyboardShortcut?.toString()}`, handleSelectConversation);
 
+  const sortedMembers = useMemo(() => {
+    const sortedUserMembers = [...conversation.members];
+    sortedUserMembers.sort((convoUserA, convoUserB) => {
+      if (convoUserA._id.toString() === user?._id.toString()) return 2;
+
+      if (conversation.tunedInUsers?.includes(convoUserA._id.toString())) return 1;
+
+      if (conversation.tunedInUsers?.includes(convoUserB._id.toString())) return -1;
+
+      return -2;
+    });
+
+    return sortedUserMembers;
+  }, [conversation.members, user, conversation.tunedInUsers]);
+
   return (
     <ListItem>
       <ListItemButton
@@ -154,7 +169,7 @@ export function ConversationRow({
 
         <ListItemAvatar>
           <AvatarGroup variant={'rounded'}>
-            {conversation.members?.map((conversationUser, index) => {
+            {sortedMembers?.map((conversationUser, index) => {
               return (
                 <Avatar
                   key={`${conversation._id.toString()}-${conversationUser._id.toString()}-convoIcon`}
