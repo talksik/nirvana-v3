@@ -75,8 +75,6 @@ export default function FooterControls() {
     [setOpenUserSettings, handleToggleDesktopMode, desktopMode],
   );
 
-  const [isVideoOn, setIsVideoOn] = useState<boolean>(false);
-
   // const handleToggleVideo = useCallback(() => {
   //   setIsVideoOn((prevVal) => {
   //     if (!prevVal) {
@@ -160,7 +158,7 @@ export default function FooterControls() {
 
         <Tooltip title="Show video!">
           <IconButton size={'small'} sx={{ color: 'white' }} onClick={handleToggleVideo}>
-            {isVideoOn ? <FiVideo /> : <FiVideoOff />}
+            {userLocalStream ? <FiVideo /> : <FiVideoOff />}
           </IconButton>
         </Tooltip>
 
