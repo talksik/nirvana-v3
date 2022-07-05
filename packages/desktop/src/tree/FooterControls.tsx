@@ -343,6 +343,8 @@ function OverlayConversationAvatars({
     return sortedUserMembers;
   }, [conversationUserMembers, user, tunedInUserIds]);
 
+  console.log(roomPeers);
+
   return (
     <AvatarGroup
       variant={'rounded'}
@@ -397,6 +399,8 @@ function OverlayConversationAvatar({
       localVideoRef.current.srcObject = localStreamToPeers;
     }
   }, [localVideoRef, localStreamToPeers]);
+
+  console.log(isConnecting);
 
   if (isConnecting) {
     return <CircularProgress />;
