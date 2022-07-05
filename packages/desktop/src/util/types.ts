@@ -12,21 +12,24 @@ export type MasterConversation = Conversation & {
   // if action is take, normal ordering should take place with database upserts
   temporaryOverrideSort?: boolean;
 
-  room?: {
-    [userId: string]: {
-      peer: Peer;
-
-      //the remote stream of this peer
-      stream?: MediaStream;
-
-      // calling happening whether it is a newbie or master
-      isConnecting?: boolean;
-    };
-  };
+  room?: RoomMap;
+  // the local stream that we are casting to each peer
   localStream?: MediaStream;
 
   // all of audio clips, links, media, etc.
   content?: ContentBlock[];
+};
+
+export type RoomMap = {
+  [userId: string]: {
+    peer: Peer;
+
+    // the remote stream of this peer
+    stream?: MediaStream;
+
+    // calling happening whether it is a newbie or master
+    isConnecting?: boolean;
+  };
 };
 
 export type ConversationMap = {

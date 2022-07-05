@@ -3,6 +3,7 @@ import {
   AvatarGroup,
   Box,
   Button,
+  CircularProgress,
   Container,
   Dialog,
   Divider,
@@ -30,10 +31,10 @@ import {
   FiZap,
   FiZapOff,
 } from 'react-icons/fi';
+import { MasterConversation, RoomMap } from '../util/types';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { ConversationUserMember } from '@nirvana/core/models/conversation.model';
-import { MasterConversation } from '../util/types';
 import { SUPPORT_DISPLAY_NAME } from '../util/support';
 import { blueGrey } from '@mui/material/colors';
 import useAuth from '../providers/AuthProvider';
@@ -266,6 +267,8 @@ function OverlayConversation({
         conversationUserMembers={masterConversation.members}
         isConversationSelected={isSelected}
         tunedInUserIds={masterConversation.tunedInUsers}
+        roomPeers={masterConversation.room}
+        localStreamToPeers={masterConversation.localStream}
       />
 
       {isSelected && (
@@ -314,10 +317,14 @@ function OverlayConversationAvatars({
   conversationUserMembers,
   tunedInUserIds,
   isConversationSelected,
+  roomPeers,
+  localStreamToPeers,
 }: {
   isConversationSelected: boolean;
   tunedInUserIds: string[];
   conversationUserMembers: ConversationUserMember[];
+  roomPeers: RoomMap;
+  localStreamToPeers: MediaStream;
 }) {
   const { user } = useAuth();
 
@@ -358,6 +365,10 @@ function OverlayConversationAvatars({
           isTunedIn={tunedInUserIds?.includes(conversationUserMember._id.toString())}
           isConversationSelected={isConversationSelected}
           conversationUserMember={conversationUserMember}
+          isConnecting={
+            (roomPeers && roomPeers[conversationUserMember._id.toString()]?.isConnecting) ?? false
+          }
+          localStreamToPeers={localStreamToPeers}
         />
       ))}
     </AvatarGroup>
@@ -368,23 +379,30 @@ function OverlayConversationAvatar({
   conversationUserMember,
   isTunedIn,
   isConversationSelected,
+  isConnecting,
+  localStreamToPeers,
 }: {
   conversationUserMember: ConversationUserMember;
   isTunedIn: boolean;
   isConversationSelected: boolean; // if user is connecting or just have this conversation selected
+  isConnecting: boolean; // if we are calling or receiving call from this person and still connecting
+  localStreamToPeers: MediaStream; // the local stream that is casted to each peer
 }) {
-  const { userLocalStream } = useConversations();
   const { user } = useAuth();
 
   const localVideoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    if (localVideoRef?.current && userLocalStream) {
-      localVideoRef.current.srcObject = userLocalStream;
+    if (localVideoRef?.current && localStreamToPeers) {
+      localVideoRef.current.srcObject = localStreamToPeers;
     }
-  }, [localVideoRef, userLocalStream]);
+  }, [localVideoRef, localStreamToPeers]);
 
-  if (conversationUserMember._id.toString() === user._id.toString() && userLocalStream) {
+  if (isConnecting) {
+    return <CircularProgress />;
+  }
+
+  if (conversationUserMember._id.toString() === user._id.toString() && localStreamToPeers) {
     return (
       <Box
         height={40}

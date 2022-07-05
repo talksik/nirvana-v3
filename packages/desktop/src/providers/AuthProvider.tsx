@@ -23,15 +23,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // on load of this, if we already have jwt tokens in store,
     // then try using them with auth check
-    window.electronAPI.store.get(STORE_ITEMS.AUTH_SESSION_JWT).then((jwtToken: string) => {
-      if (jwtToken) {
-        setJwtToken(jwtToken);
-
-        console.log('retrieved jwtToken from storage', jwtToken);
-      } else {
-        console.log('no jwt token in store');
-      }
-    });
+    // window.electronAPI.store.get(STORE_ITEMS.AUTH_SESSION_JWT).then((jwtToken: string) => {
+    //   if (jwtToken) {
+    //     setJwtToken(jwtToken);
+    //     console.log('retrieved jwtToken from storage', jwtToken);
+    //   } else {
+    //     console.log('no jwt token in store');
+    //   }
+    // });
   }, []);
 
   // todo: check this in intervals repeatedly
