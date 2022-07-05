@@ -1,19 +1,5 @@
-import {
-  Avatar,
-  AvatarGroup,
-  Card,
-  CardMedia,
-  Container,
-  Divider,
-  Fab,
-  Grid,
-  IconButton,
-  Slider,
-  Stack,
-  Tooltip,
-  Typography,
-} from '@mui/material';
-import { FiAirplay, FiCircle, FiLink, FiSun, FiUserPlus, FiZap } from 'react-icons/fi';
+import { Avatar, Card, Container, IconButton, Stack, Tooltip, Typography } from '@mui/material';
+import { FiAirplay, FiCircle, FiLink, FiUserPlus } from 'react-icons/fi';
 import React, { useEffect, useMemo, useRef } from 'react';
 
 import { Box } from '@mui/system';
