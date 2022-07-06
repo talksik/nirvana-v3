@@ -627,128 +627,134 @@ function Room({
 
   // handle incoming calls and accept calls and create objects for them
   useEffectOnce(() => {
-    // TODO : bring this stream object higher and add this later to the room
-    // set up local stream for this room - temporary until we figure out global stream handling and passing down
-    // const localMediaStream = await navigator.mediaDevices.getUserMedia({
-    //   video: videoConstraints,
-    //   audio: true,
-    // });
-
-    // console.log(localMediaStream);
-
-    // setUserLocalStream(localMediaStream);
-
-    // ?will there be race condition where this room component is rendered but we don't have the latest
-    // ?list of tunedin folks and so we may just end up calling select few?
-    // ?in this case, start with initiating event to get all people in room first
-
-    if (conversation.tunedInUsers && conversation.tunedInUsers.length > 1) {
-      // going ahead and calling all of the other folks
-      const allOtherUserIds = conversation.tunedInUsers.filter(
-        (memberUserId) => memberUserId !== user._id.toString(),
-      );
-
-      // for each person, create peer object
-      allOtherUserIds.forEach((otherUserId) => {
-        const connectingToast = toast.loading('connecting you for a snappy experience');
-
-        // ========= PEER CREATION =============
-        // make sure this peer gets destroyed when it's time to remove this listener
-        const localPeerConnection = new Peer({
-          initiator: true,
-          // stream: localMediaStream,
-          trickle: false, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times,
-          config: {
-            iceServers,
-          },
-        });
-
-        // ========= PEER EVENT HANDLERS =============
-        localPeerConnection.on('signal', (signal) => {
-          // console.log('have a signal to make call to someone ');
-
-          // TODO: try modifying signal and offer to force stereo
-          $ws.emit(
-            ServerRequestChannels.RTC_CALL_SOMEONE_FOR_LINE,
-            new RtcCallRequest(otherUserId, conversation._id.toString(), signal),
-          );
-
-          toast.dismiss(connectingToast);
-
-          // todo, take trickle into account to not overwrite stream
-          // notifying globally that we are in the process now
-          setConversationMap((draft) => {
-            if (draft[conversation._id.toString()]) {
-              draft[conversation._id.toString()].room = {
-                ...(draft[conversation._id.toString()].room ?? {}),
-                [otherUserId]: { peer: localPeerConnection, isConnecting: true },
-              };
-            }
-          });
-        });
-
-        localPeerConnection.on('stream', (remoteStream: MediaStream) => {
-          // globally updating conversation so that other views can render what they want
-          // toast.success('got stream from remote, going to add to our ');
-
-          console.log('got stream from master');
-
-          setConversationMap((draft) => {
-            if (draft[conversation._id.toString()].room[otherUserId]) {
-              draft[conversation._id.toString()].room[otherUserId].stream = remoteStream;
-
-              remoteStream.getTracks().forEach((track) => {
-                // TODO: add particular track to right place
-              });
-            }
-          });
-        });
-
-        localPeerConnection.on('connect', () => {
-          console.log('successfully connected to another peer');
-          setConversationMap((draft) => {
-            if (draft[conversation._id.toString()].room[otherUserId]) {
-              draft[conversation._id.toString()].room[otherUserId].isConnecting = false;
-            }
-          });
-        });
-
-        localPeerConnection.on('track', (track, stream) => {
-          // TODO: add to room peer stream or replace the entire stream
-
-          toast('a peer added a track to a stream');
-        });
-
-        localPeerConnection.on('close', () => {
-          // the person will be removed from the tuned in list, but the connections here are decoupled from that flow
-          // we want to manage the room within the master conversation and remove it for ourselves
-          // !this is false, see unmount, we are relying on tuned list for disconnections
-
-          console.error('peer connection was closed');
-
-          setConversationMap((draft) => {
-            if (draft[conversation._id.toString()].room[otherUserId]) {
-              draft[conversation._id.toString()].room[otherUserId].peer?.destroy();
-              delete draft[conversation._id.toString()].room[otherUserId];
-            }
-          });
-
-          toast.error('peer connection was closed');
-        });
-
-        localPeerConnection.on('error', (err) => {
-          console.error(err);
-          toast.error('there was a problem with the connecting');
-
-          setConversationMap((draft) => {
-            if (draft[conversation._id.toString()].room[otherUserId]) {
-              draft[conversation._id.toString()].room[otherUserId].peer?.destroy();
-              delete draft[conversation._id.toString()].room[otherUserId];
-            }
-          });
-        });
+    (async () => {
+      // TODO : bring this stream object higher and add this later to the room
+      // set up local stream for this room - temporary until we figure out global stream handling and passing down
+      const localMediaStream = await navigator.mediaDevices.getUserMedia({
+        video: VIDEO_CONSTRAINTS,
+        audio: AUDIO_CONSTRAINTS,
       });
-    }
+
+      console.log(localMediaStream);
+
+      setUserLocalStream(localMediaStream);
+
+      // ?will there be race condition where this room component is rendered but we don't have the latest
+      // ?list of tunedin folks and so we may just end up calling select few?
+      // ?in this case, start with initiating event to get all people in room first
+
+      if (conversation.tunedInUsers && conversation.tunedInUsers.length > 1) {
+        // going ahead and calling all of the other folks
+        const allOtherUserIds = conversation.tunedInUsers.filter(
+          (memberUserId) => memberUserId !== user._id.toString(),
+        );
+
+        // for each person, create peer object
+        allOtherUserIds.forEach((otherUserId) => {
+          const connectingToast = toast.loading('connecting you for a snappy experience');
+
+          // ========= PEER CREATION =============
+          // make sure this peer gets destroyed when it's time to remove this listener
+          const localPeerConnection = new Peer({
+            initiator: true,
+            stream: localMediaStream,
+            trickle: false, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times,
+            config: {
+              iceServers,
+            },
+          });
+
+          // ========= PEER EVENT HANDLERS =============
+          localPeerConnection.on('signal', (signal) => {
+            // console.log('have a signal to make call to someone ');
+
+            // TODO: try modifying signal and offer to force stereo
+            $ws.emit(
+              ServerRequestChannels.RTC_CALL_SOMEONE_FOR_LINE,
+              new RtcCallRequest(otherUserId, conversation._id.toString(), signal),
+            );
+
+            toast.dismiss(connectingToast);
+
+            // todo, take trickle into account to not overwrite stream
+            // notifying globally that we are in the process now
+            setConversationMap((draft) => {
+              if (draft[conversation._id.toString()]) {
+                draft[conversation._id.toString()].room = {
+                  ...(draft[conversation._id.toString()].room ?? {}),
+                  [otherUserId]: { peer: localPeerConnection, isConnecting: true },
+                };
+              }
+            });
+          });
+
+          localPeerConnection.on('stream', (remoteStream: MediaStream) => {
+            // globally updating conversation so that other views can render what they want
+            // toast.success('got stream from remote, going to add to our ');
+
+            console.log('got stream from master');
+
+            setConversationMap((draft) => {
+              if (draft[conversation._id.toString()].room[otherUserId]) {
+                draft[conversation._id.toString()].room[otherUserId].stream = remoteStream;
+
+                remoteStream.getTracks().forEach((track) => {
+                  // TODO: add particular track to right place
+                });
+              }
+            });
+          });
+
+          localPeerConnection.on('connect', () => {
+            console.log('successfully connected to another peer');
+            setConversationMap((draft) => {
+              if (draft[conversation._id.toString()].room[otherUserId]) {
+                draft[conversation._id.toString()].room[otherUserId].isConnecting = false;
+              }
+            });
+          });
+
+          localPeerConnection.on('track', (track, stream) => {
+            // TODO: add to room peer stream or replace the entire stream
+
+            toast('a peer added a track to a stream');
+          });
+
+          localPeerConnection.on('close', () => {
+            // the person will be removed from the tuned in list, but the connections here are decoupled from that flow
+            // we want to manage the room within the master conversation and remove it for ourselves
+            // !this is false, see unmount, we are relying on tuned list for disconnections
+
+            console.error('peer connection was closed');
+
+            setConversationMap((draft) => {
+              if (draft[conversation._id.toString()].room[otherUserId]) {
+                draft[conversation._id.toString()].room[otherUserId].peer?.destroy(
+                  new Error('destroying!'),
+                );
+                delete draft[conversation._id.toString()].room[otherUserId];
+              }
+            });
+
+            toast.error('peer connection was closed');
+          });
+
+          localPeerConnection.on('error', (err) => {
+            console.error(err);
+            toast.error('there was a problem with the connecting');
+
+            setConversationMap((draft) => {
+              if (draft[conversation._id.toString()].room[otherUserId]) {
+                draft[conversation._id.toString()].room[otherUserId].peer?.destroy(
+                  new Error('destroying!'),
+                );
+                delete draft[conversation._id.toString()].room[otherUserId];
+              }
+            });
+          });
+        });
+      }
+    })();
   });
 
   // ======= LISTEN FOR INCOMING CALLS AND RETURN SIGNALS AND ACCEPT THEM
@@ -768,7 +774,7 @@ function Room({
 
       const peerForMeAndNewbie = new Peer({
         initiator: false,
-        // stream: userLocalStream,
+        stream: userLocalStream,
         trickle: false, // prevents the multiple tries on different ice servers and signal from getting called a bunch of times
         config: {
           iceServers,
@@ -833,7 +839,9 @@ function Room({
 
         setConversationMap((draft) => {
           if (draft[conversation._id.toString()].room[res.userWhoCalled]) {
-            draft[conversation._id.toString()].room[res.userWhoCalled].peer?.destroy();
+            draft[conversation._id.toString()].room[res.userWhoCalled].peer?.destroy(
+              new Error('destroying!'),
+            );
             delete draft[conversation._id.toString()].room[res.userWhoCalled];
           }
         });
@@ -849,7 +857,9 @@ function Room({
 
         setConversationMap((draft) => {
           if (draft[conversation._id.toString()].room[res.userWhoCalled]) {
-            draft[conversation._id.toString()].room[res.userWhoCalled].peer?.destroy();
+            draft[conversation._id.toString()].room[res.userWhoCalled].peer?.destroy(
+              new Error('destroying!'),
+            );
             delete draft[conversation._id.toString()].room[res.userWhoCalled];
           }
         });
@@ -889,7 +899,7 @@ function Room({
             if (!conversation.tunedInUsers.includes(roomUserId)) {
               console.log('someone left the room!!!');
 
-              roomContents.peer.destroy();
+              roomContents.peer.destroy(new Error('destroying!'));
 
               delete draft[conversation._id.toString()].room[roomUserId];
             }
@@ -904,7 +914,7 @@ function Room({
     setConversationMap((draft) => {
       if (draft[conversation._id.toString()].room) {
         Object.values(draft[conversation._id.toString()].room).forEach((roomPeerContents) => {
-          roomPeerContents.peer.destroy();
+          roomPeerContents.peer.destroy(new Error('destroying!'));
 
           console.log('destroyed peer connection as I am leaving room');
         });
