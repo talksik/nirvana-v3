@@ -323,10 +323,12 @@ function OverlayConversationAvatars({
   isConversationSelected: boolean;
   tunedInUserIds: string[];
   conversationUserMembers: ConversationUserMember[];
-  roomPeers: RoomMap;
-  localStreamToPeers: MediaStream;
+  roomPeers?: RoomMap;
+  localStreamToPeers?: MediaStream;
 }) {
   const { user } = useAuth();
+
+  console.log(roomPeers);
 
   const sortedMembers = useMemo(() => {
     const sortedUserMembers = [...conversationUserMembers];
@@ -342,8 +344,6 @@ function OverlayConversationAvatars({
 
     return sortedUserMembers;
   }, [conversationUserMembers, user, tunedInUserIds]);
-
-  console.log(roomPeers);
 
   return (
     <AvatarGroup
